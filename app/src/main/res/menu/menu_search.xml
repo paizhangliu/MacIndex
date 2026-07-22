@@ -12,7 +12,4 @@
     <item
         android:id="@+id/searchEveryMacItem"
         android:title="@string/submenu_search_everymac" />
-    <item
-        android:id="@+id/searchHelpItem"
-        android:title="@string/submenu_search_help" />
 </menu>

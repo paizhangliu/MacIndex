@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
@@ -46,6 +47,10 @@ public class SearchActivity extends AppCompatActivity {
 
     private boolean userStopped = true;
 
+    private Thread searchThread = null;
+
+    private volatile int searchRequestID = 0;
+
     /**
      * setOnItemSelectedListener() was called by system weirdly
      * Patch for the weird system call
@@ -56,6 +61,13 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        WindowInsetsHelper.apply(this);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navigateUp();
+            }
+        });
 
         MainActivity.validateOperation(this);
 
@@ -117,30 +129,24 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.searchClearItem:
-                resetIllegal();
-                clearSearch();
-                break;
-            case R.id.searchResetItem:
-                PrefsHelper.editPrefs("lastSearchFiltersSpinner", 0, SearchActivity.this);
-                PrefsHelper.editPrefs("lastSearchOptionsSpinner", 0, SearchActivity.this);
-                filtersSpinner.setSelection(0);
-                optionsSpinner.setSelection(0);
-                searchText.setQuery("", true);
-                searchText.clearFocus();
-                changeTips();
-                break;
-            case R.id.searchAppleSNItem:
-                LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", "https://checkcoverage.apple.com/", this);
-                break;
-            case R.id.searchEveryMacItem:
-                LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", "https://everymac.com/ultimate-mac-lookup/", this);
-                break;
-            case R.id.searchHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/search", this);
-            default:
-                return super.onOptionsItemSelected(item);
+        final int itemID = item.getItemId();
+        if (itemID == R.id.searchClearItem) {
+            resetIllegal();
+            clearSearch();
+        } else if (itemID == R.id.searchResetItem) {
+            PrefsHelper.editPrefs("lastSearchFiltersSpinner", 0, SearchActivity.this);
+            PrefsHelper.editPrefs("lastSearchOptionsSpinner", 0, SearchActivity.this);
+            filtersSpinner.setSelection(0);
+            optionsSpinner.setSelection(0);
+            searchText.setQuery("", true);
+            searchText.clearFocus();
+            changeTips();
+        } else if (itemID == R.id.searchAppleSNItem) {
+            LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", "https://checkcoverage.apple.com/", this);
+        } else if (itemID == R.id.searchEveryMacItem) {
+            LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", "https://everymac.com/ultimate-mac-lookup/", this);
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -156,17 +162,22 @@ public class SearchActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putIntArray("positions", positions);
         outState.putCharSequence("searchInput", searchText.getQuery());
-        if (!waitDialog.isShowing()) {
+        if (waitDialog != null && !waitDialog.isShowing()) {
             outState.putBoolean("loadComplete", true);
         } else {
             outState.putBoolean("loadComplete", false);
-            MainActivity.reloadDatabase(this);
         }
     }
 
     @Override
     protected void onDestroy() {
-        if (waitDialog.isShowing()) {
+        userStopped = true;
+        searchRequestID++;
+        if (searchThread != null) {
+            searchThread.interrupt();
+            searchThread = null;
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
         super.onDestroy();
@@ -178,18 +189,11 @@ public class SearchActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        navigateUp();
-        super.onBackPressed();
-    }
-
     private void navigateUp() {
-        if (MainActivity.getMainState()) {
-            finish();
-        } else {
+        if (!MainActivity.getMainState()) {
             startActivity(new Intent(this, MainActivity.class));
         }
+        finish();
     }
 
     private void initSpinners() {
@@ -438,6 +442,13 @@ public class SearchActivity extends AppCompatActivity {
 
     private void performSearch(final String searchInput, final boolean reloadPositions) {
         try {
+            final int requestID = ++searchRequestID;
+            if (searchThread != null) {
+                searchThread.interrupt();
+            }
+            if (waitDialog != null && waitDialog.isShowing()) {
+                waitDialog.dismiss();
+            }
             Log.i("performSearch", "Reload Flag: " + reloadPositions);
             userStopped = false;
             if (reloadPositions) {
@@ -447,15 +458,23 @@ public class SearchActivity extends AppCompatActivity {
                 waitDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(view -> {
                     Log.e("Search", "Terminated due to the user.");
                     userStopped = true;
+                    searchRequestID++;
+                    if (searchThread != null) {
+                        searchThread.interrupt();
+                        searchThread = null;
+                    }
                     waitDialog.dismiss();
-                    MainActivity.reloadDatabase(this);
                 });
             }
-            new Thread() {
+            final String[] searchColumnsForRequest = translateOptionsParam();
+            final String manufacturerForRequest = translateFiltersParam();
+            final boolean exactMatchForRequest = translateMatchParam();
+            searchThread = new Thread() {
                 @Override
                 public void run() {
+                    int[] positionsForRequest = positions;
                     if (reloadPositions) {
-                        final String[] searchColumns = translateOptionsParam();
+                        final String[] searchColumns = searchColumnsForRequest;
                         int[][] subPositions = new int[searchColumns.length][];
                         String rawSearchInput;
                         boolean rawMatchParam;
@@ -477,11 +496,11 @@ public class SearchActivity extends AppCompatActivity {
                                 rawMatchParam = false;
                             } else {
                                 rawSearchInput = searchInput;
-                                rawMatchParam = translateMatchParam();
+                                rawMatchParam = exactMatchForRequest;
                             }
                             Log.i("rawSearchInput", "Raw Input " + rawSearchInput + ", Current Manufacturer: "
-                                    + translateFiltersParam() + ", Raw Option: " + searchColumns[i] + ", Match Parameter: " + rawMatchParam);
-                            subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput, translateFiltersParam(),
+                                    + manufacturerForRequest + ", Raw Option: " + searchColumns[i] + ", Match Parameter: " + rawMatchParam);
+                            subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput, manufacturerForRequest,
                                     rawMatchParam, PrefsHelper.getBooleanPrefsSafe("isSortAgain", SearchActivity.this));
                             resultCount += subPositions[i].length;
                         }
@@ -495,20 +514,24 @@ public class SearchActivity extends AppCompatActivity {
                                 previousCount++;
                             }
                         }
-                        // Check duplicate although IDK the necessarily
-                        // newPositions = MainActivity.getMachineHelper().checkDuplicate(positions);
+                        // A model-number search can match the same machine in multiple columns.
+                        newPositions = MainActivity.getMachineHelper().checkDuplicate(newPositions);
 
-                        // Assign new positions
-                        if (waitDialog.isShowing()) {
-                            Log.w("Search", "Assigning new positions");
-                            positions = newPositions;
-                            userStopped = false;
-                        }
+                        positionsForRequest = newPositions;
                     }
+                    if (Thread.currentThread().isInterrupted() || requestID != searchRequestID) {
+                        return;
+                    }
+                    final int[] finalPositionsForRequest = positionsForRequest;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (requestID != searchRequestID || isFinishing()
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                return;
+                            }
                             try {
+                                positions = finalPositionsForRequest;
                                 if (reloadPositions) {
                                         waitDialog.dismiss();
                                 }
@@ -552,7 +575,8 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }.start();
+            };
+            searchThread.start();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }

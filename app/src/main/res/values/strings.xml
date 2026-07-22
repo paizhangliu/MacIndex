@@ -7,11 +7,10 @@
     <string name="information_specs_view_image">Long press the top image to view the large image</string>
     <string name="information_specs_copy_info">Long press any entry to copy information</string>
     <string name="information_specs_everymac">Tap below to access more specifications</string>
+    <string name="information_compare_open_specs">Tap on a machine name to open the Specification Page</string>
     <string name="information_specs_high_vol_warning">The current volume is too high. Do you want to proceed playing?\nSelect \"Confirm\" to turn this warning off temporarily.\nGo to preferences page to turn this function off.</string>
     <string name="information_first_lunch_title">Welcome to MacIndex</string>
-    <string name="information_first_lunch">Open the drawer to navigate inside the application. Open the menu to access more options and get help.</string>
-    <string name="information_double_press">Press the back button again to exit MacIndex</string>
-    <string name="information_set_everymac">Open Directly in EveryMac is enabled. MacIndex will open the EveryMac Page of the machine directly instead of the Specification Page. If you want to disable this function, please access the Preferences Page.</string>
+    <string name="information_first_lunch">Open the drawer to navigate inside the application. Open the menu to access more options.</string>
     <string name="setting_sort">Enhanced Sorting (Main/Search)</string>
     <string name="setting_sort_description">Sort by time again to ensure correct positions for machines not in the same category. Turn off can make the loading faster. This affects the Main Page and Search Page.</string>
     <string name="setting_sort_comment">Enhanced Sorting (Bookmark/Comment)</string>
@@ -39,7 +38,6 @@
     <string name="setting_search_open_directly_description">If only one search result was found, then open it directly.</string>
     <string name="setting_defaults_warning_content">Saved preference file will be completely cleared, including your preferences and all usage records. After you confirm, MacIndex will quit. This is helpful for troubleshooting, but cannot be undone.</string>
     <string name="setting_defaults_cleared">Operation completed.</string>
-    <string name="setting_help_prompt">For instructions on each item, please see help.</string>
     <string name="search_searchBy">Search Options</string>
     <string-array name="search_Filters">
         <item>All Categories</item>
@@ -83,36 +81,29 @@
     <string name="menu_group3" translatable="false">Intel Macintosh</string>
     <string name="menu_group4" translatable="false">Apple Silicon Macintosh</string>
     <string name="menu">Main Menu</string>
-    <string name="submenu_main_share">Open Shared Model</string>
     <string name="submenu_main_reset">Reset Filter and View</string>
-    <string name="submenu_main_help">Main Page Help</string>
     <string name="submenu_specs_favourite">Add/Remove Bookmark</string>
     <string name="submenu_specs_compare">Add to Compare List</string>
     <string name="submenu_specs_comment">Edit Comment</string>
-    <string name="submenu_specs_share">Copy and Share Specification</string>
-    <string name="submenu_specs_help">Specification Page Help</string>
+    <string name="submenu_specs_share">Copy Specification</string>
+    <string name="submenu_specs_share_link">Generate Share Link</string>
     <string name="submenu_search_clear">Clear Results</string>
     <string name="submenu_search_reset">Reset Filter and Option</string>
     <string name="submenu_search_SN">Apple S/N Lookup</string>
     <string name="submenu_search_everymac">EveryMac Lookup</string>
-    <string name="submenu_search_help">Search Page Help</string>
     <string name="submenu_favourite_add">Create New Folder</string>
     <string name="submenu_favourite_delete">Manage Folder(s)</string>
     <string name="submenu_favourite_rename">Rename Folder</string>
     <string name="submenu_favourite_clear">Clear Folder(s)</string>
-    <string name="submenu_favourite_help">Bookmark Page Help</string>
     <string name="submenu_compare_initialize">Select Comparing Machines</string>
     <string name="submenu_compare_clear_columns">Clear Comparing Machines</string>
     <string name="submenu_compare_exchange_columns">Exchange Comparing Machines</string>
     <string name="submenu_compare_manage">Manage Compare List</string>
     <string name="submenu_compare_clear">Clear Compare List</string>
-    <string name="submenu_compare_help">Compare Page Help</string>
     <string name="submenu_comments_delete">Manage Comment(s)</string>
     <string name="submenu_comments_clear">Clear Comment(s)</string>
-    <string name="submenu_comments_help">Comment Page Help</string>
     <string name="submenu_prefs_benchmark">Benchmark</string>
     <string name="submenu_prefs_clear">Application Reset</string>
-    <string name="submenu_prefs_help">Preferences Page Help</string>
     <string name="category0" translatable="false">Compact Macintosh</string>
     <string name="category1" translatable="false">Macintosh II</string>
     <string name="category2" translatable="false">Macintosh LC</string>
@@ -202,9 +193,9 @@
     <string name="compare_not_initialized">Please select machines to compare in the submenu</string>
     <string name="compare_clear_warning">The compare list will be deleted. This cannot be undone. Do you want to proceed?</string>
     <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
+    <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
     <string name="version_information_general">Version </string>
-    <string name="version_information_machine_count">Machines)</string>
-    <string name="about_information">©Copyright 2019–2022, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.</string>
+    <string name="about_information">©Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.</string>
     <string name="about_important">Important Information</string>
     <string name="about_opensource">Open Source Licenses</string>
     <string-array name="about_opensource_menu">
@@ -220,16 +211,14 @@
         <item>Copy Model Information</item>
         <item>Copy All Information</item>
         <item>Select Information Entries to Copy</item>
-        <item>Generate MacIndex Share Link</item>
     </string-array>
     <string-array name="share_description">
         <item>Available model information copied</item>
         <item>All available information copied</item>
         <item>Selected information entries copied</item>
-        <item>Share link generated</item>
     </string-array>
+    <string name="share_link_generated">Share link generated</string>
     <string name="share_menu_null">Select at least one entry to continue</string>
     <string name="share_menu_not_applicable">(No Info)</string>
-    <string name="share_main_decode">To open the corresponding specification page directly, paste one of the following supported information:\n• Machine name in MacIndex\n• Any sharing information copied from MacIndex\n• MacIndex share link generated by MacIndex</string>
-    <string name="share_main_decode_failed">Cannot read the information, or this machine does not exist in current version</string>
+    <string name="share_main_decode_failed">Cannot read the information, or one or more machines do not exist in current version</string>
 </resources>

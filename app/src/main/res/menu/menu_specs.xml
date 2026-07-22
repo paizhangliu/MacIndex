@@ -16,6 +16,6 @@
         android:id="@+id/shareItem"
         android:title="@string/submenu_specs_share" />
     <item
-        android:id="@+id/specsHelpItem"
-        android:title="@string/submenu_specs_help" />
+        android:id="@+id/shareLinkItem"
+        android:title="@string/submenu_specs_share_link" />
 </menu>

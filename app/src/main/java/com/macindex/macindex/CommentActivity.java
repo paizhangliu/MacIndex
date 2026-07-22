@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
@@ -23,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MacIndex Comment Activity
  * Jan. 13, 2021
@@ -33,6 +37,10 @@ public class CommentActivity extends AppCompatActivity {
 
     private ProgressDialog waitDialog = null;
 
+    private Thread commentsThread = null;
+
+    private volatile int commentsRequestID = 0;
+
     private boolean isAbleToManage = false;
 
     private MenuItem manageCommentsItem = null;
@@ -41,6 +49,13 @@ public class CommentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
+        WindowInsetsHelper.apply(this);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navigateUp();
+            }
+        });
         this.setTitle(getResources().getString(R.string.menu_comment));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -83,18 +98,22 @@ public class CommentActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (!waitDialog.isShowing()) {
+        if (waitDialog != null && !waitDialog.isShowing() && machineIDs != null) {
             outState.putBoolean("loadComplete", true);
             outState.putIntArray("machineIDs", machineIDs);
         } else {
             outState.putBoolean("loadComplete", false);
-            MainActivity.reloadDatabase(this);
         }
     }
 
     @Override
     protected void onDestroy() {
-        if (waitDialog.isShowing()) {
+        commentsRequestID++;
+        if (commentsThread != null) {
+            commentsThread.interrupt();
+            commentsThread = null;
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
         super.onDestroy();
@@ -111,28 +130,23 @@ public class CommentActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.deleteCommentsItem:
-                deleteComments();
-                break;
-            case R.id.clearCommentsItem:
-                final AlertDialog.Builder clearWarningDialog = new AlertDialog.Builder(this);
-                clearWarningDialog.setTitle(R.string.submenu_comments_clear);
-                clearWarningDialog.setMessage(R.string.comments_clear_warning);
-                clearWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    PrefsHelper.clearPrefs("userComments", this);
-                    initComments(true);
-                });
-                clearWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                    // Cancelled, nothing to do.
-                });
-                clearWarningDialog.show();
-                break;
-            case R.id.commentHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/comments", this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        final int itemID = item.getItemId();
+        if (itemID == R.id.deleteCommentsItem) {
+            deleteComments();
+        } else if (itemID == R.id.clearCommentsItem) {
+            final AlertDialog.Builder clearWarningDialog = new AlertDialog.Builder(this);
+            clearWarningDialog.setTitle(R.string.submenu_comments_clear);
+            clearWarningDialog.setMessage(R.string.comments_clear_warning);
+            clearWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                PrefsHelper.clearPrefs("userComments", this);
+                initComments(true);
+            });
+            clearWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
+                // Cancelled, nothing to do.
+            });
+            clearWarningDialog.show();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -143,22 +157,22 @@ public class CommentActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        navigateUp();
-        super.onBackPressed();
-    }
-
     private void navigateUp() {
-        if (MainActivity.getMainState()) {
-            finish();
-        } else {
+        if (!MainActivity.getMainState()) {
             startActivity(new Intent(this, MainActivity.class));
         }
+        finish();
     }
 
     private void initComments(final boolean reloadPositions) {
         try {
+            final int requestID = ++commentsRequestID;
+            if (commentsThread != null) {
+                commentsThread.interrupt();
+            }
+            if (waitDialog != null && waitDialog.isShowing()) {
+                waitDialog.dismiss();
+            }
             // Reset reload parameter
             PrefsHelper.editPrefs("isCommentsReloadNeeded", false, this);
 
@@ -176,69 +190,75 @@ public class CommentActivity extends AppCompatActivity {
                 setAbleToManage(true);
                 emptyLayout.setVisibility(View.GONE);
                 String[] thisCommentsStrings = PrefsHelper.getStringPrefs("userComments", this).split("││");
-                machineIDs = new int[thisCommentsStrings.length];
                 if (reloadPositions) {
                     waitDialog.show();
                 }
-                new Thread() {
+                commentsThread = new Thread() {
                     @Override
                     public void run() {
+                        final int[] machineIDsForRequest;
                         try {
                             if (reloadPositions) {
                                 // Run searches on the separate thread.
+                                final List<Integer> validMachineIDs = new ArrayList<>();
                                 for (int i = 0; i < thisCommentsStrings.length; i++) {
                                     String[] splitedThisString = thisCommentsStrings[i].split("│");
                                     int[] thisID = MainActivity.getMachineHelper().searchHelper("name", splitedThisString[0],
                                             "all", true, false);
                                     if (thisID.length != 1) {
                                         Log.e("CommentSearchThread", "Error occurred on search string " + splitedThisString[0]);
-                                        // For safety reason
-                                        thisID = new int[1];
-                                        thisID[0] = 1;
+                                        continue;
                                     }
-                                    machineIDs[i] = thisID[0];
+                                    validMachineIDs.add(thisID[0]);
+                                }
+                                machineIDsForRequest = new int[validMachineIDs.size()];
+                                for (int i = 0; i < validMachineIDs.size(); i++) {
+                                    machineIDsForRequest[i] = validMachineIDs.get(i);
                                 }
 
                                 // Is sorting needed?
                                 if (PrefsHelper.getBooleanPrefs("isSortComment", CommentActivity.this)) {
-                                    machineIDs = MainActivity.getMachineHelper().directSortByYear(machineIDs);
+                                    MainActivity.getMachineHelper().directSortByYear(machineIDsForRequest);
                                 }
+                            } else {
+                                machineIDsForRequest = machineIDs == null ? new int[0] : machineIDs;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            return;
+                        }
+                        if (Thread.currentThread().isInterrupted() || requestID != commentsRequestID) {
+                            return;
                         }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (requestID != commentsRequestID || isFinishing()
+                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                    return;
+                                }
                                 try {
+                                    machineIDs = machineIDsForRequest;
                                     if (reloadPositions) {
                                         waitDialog.dismiss();
                                     }
                                     // Update the UI after the thread done.
                                     for (int i = 0; i < machineIDs.length; i++) {
-                                        final View commentsChunk = getLayoutInflater().inflate(R.layout.chunk_comments, null);
+                                        final View commentsChunk = getLayoutInflater()
+                                                .inflate(R.layout.chunk_comments, commentContainer, false);
                                         final TextView machineName = commentsChunk.findViewById(R.id.machineName);
                                         final TextView machineComment = commentsChunk.findViewById(R.id.machineComment);
                                         final LinearLayout commentChunk = commentsChunk.findViewById(R.id.comment_chunk);
 
                                         // Set Machine Info Accordingly
-                                        if (PrefsHelper.getBooleanPrefsSafe("isSortComment", CommentActivity.this)) {
-                                            // Something complex here
-                                            final String thisName = MainActivity.getMachineHelper().getName(machineIDs[i]);
-                                            machineName.setText(thisName);
-                                            for (String thisString : thisCommentsStrings) {
-                                                if (thisString.split("│")[0].equals(thisName)) {
-                                                    machineComment.setText(thisString.split("│")[1]);
-                                                    break;
-                                                }
+                                        final String thisName = MainActivity.getMachineHelper().getName(machineIDs[i]);
+                                        machineName.setText(thisName);
+                                        for (String thisString : thisCommentsStrings) {
+                                            String[] commentParts = thisString.split("│", 2);
+                                            if (commentParts.length == 2 && commentParts[0].equals(thisName)) {
+                                                machineComment.setText(commentParts[1]);
+                                                break;
                                             }
-                                        } else {
-                                            String[] splitedThisString = thisCommentsStrings[i].split("│");
-                                            if (splitedThisString.length != 2) {
-                                                throw new IllegalStateException();
-                                            }
-                                            machineName.setText(splitedThisString[0]);
-                                            machineComment.setText(splitedThisString[1]);
                                         }
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                             machineName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
@@ -268,7 +288,8 @@ public class CommentActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }.start();
+                };
+                commentsThread.start();
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     emptyText.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);

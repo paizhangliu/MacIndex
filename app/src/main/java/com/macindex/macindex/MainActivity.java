@@ -1,6 +1,8 @@
 package com.macindex.macindex;
 
 import androidx.annotation.NonNull;
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +36,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -43,12 +46,13 @@ import java.util.Random;
  * University of Illinois, CS125 FA19 Final Project
  * University of Illinois, CS199 Kotlin SP20 Final Project
  * https://MacIndex.paizhang.info/
- * https://github.com/paizhangpi/MacIndex
+ * https://github.com/paizhangliu/MacIndex
  *
  * Basic functionality was finished on 16:12 CST, Dec 2, 2019.
  * 3.0 Update May 12, 2020 at Champaign, Illinois, U.S.A.
  * 4.0 Update June 13, 2020 at Shenyang, Liaoning, China.
  * 4.5 Update January 7, 2021 at Jinzhong, Shanxi, China.
+ * 4.9 Update July 22, 2026 at Jinzhong, Shanxi, China.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -68,9 +72,13 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView[][] machineLoadedCount = null;
 
-    private long mBackPressed = 0;
-
     private ProgressDialog waitDialog = null;
+
+    private Thread interfaceThread = null;
+
+    private volatile int interfaceRequestID = 0;
+
+    private boolean isDrawerGesture = false;
 
     private static boolean isMainRunning = false;
 
@@ -78,18 +86,80 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        WindowInsetsHelper.apply(this);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackStarted(@NonNull final BackEventCompat backEvent) {
+                isDrawerGesture = mDrawerLayout != null
+                        && !mDrawerLayout.isDrawerOpen(GravityCompat.START)
+                        && backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT;
+            }
+
+            @Override
+            public void handleOnBackPressed() {
+                if (isDrawerGesture) {
+                    isDrawerGesture = false;
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                } else {
+                    handleBackPressed();
+                }
+            }
+
+            @Override
+            public void handleOnBackCancelled() {
+                isDrawerGesture = false;
+            }
+        });
 
         try {
             isMainRunning = true;
-
             thisManufacturer = PrefsHelper.getStringPrefs("lastMainManufacturer", this);
             thisFilter = PrefsHelper.getStringPrefs("lastMainFilter", this);
             initMenu();
-
             waitDialog = new ProgressDialog(MainActivity.this);
             waitDialog.setMessage(getString(R.string.loading_category));
             waitDialog.setCancelable(false);
 
+            resources = getResources();
+            final File databaseFile = getDatabasePath("specs.db");
+            final boolean isNewVersion = PrefsHelper.registerNewVersion(this);
+            if ((!databaseFile.exists() || isNewVersion)
+                    && (database == null || !database.isOpen())) {
+                // The bundled database is large. Copy it off the UI thread on install and update.
+                waitDialog.show();
+                final Context applicationContext = getApplicationContext();
+                new Thread(() -> {
+                    Exception initializationError = null;
+                    try {
+                        initDatabase(applicationContext, isNewVersion);
+                    } catch (Exception e) {
+                        initializationError = e;
+                    }
+                    final Exception finalInitializationError = initializationError;
+                    runOnUiThread(() -> {
+                        if (isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                && isDestroyed())) {
+                            return;
+                        }
+                        waitDialog.dismiss();
+                        if (finalInitializationError == null) {
+                            completeCreation(savedInstanceState, isNewVersion);
+                        } else {
+                            ExceptionHelper.handleException(this, finalInitializationError,
+                                    "MainCreation", "Unable to initialize the database.");
+                        }
+                    });
+                }, "MacIndex-DatabaseInit").start();
+            } else {
+                completeCreation(savedInstanceState, isNewVersion);
+            }
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
+        }
+    }
+
+    private void completeCreation(final Bundle savedInstanceState, final boolean isNewVersion) {
+        try {
             if (savedInstanceState == null) {
                 // Creating activity due to user
                 Log.i("MacIndex", "Welcome to MacIndex.");
@@ -103,19 +173,15 @@ public class MainActivity extends AppCompatActivity {
                 // Reset Volume Warning
                 PrefsHelper.clearPrefs("isEnableVolWarningThisTime", this);
 
-                // Reset EveryMacIndex Warning
-                PrefsHelper.clearPrefs("isJustLunched", this);
-
-                resources = getResources();
                 if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
                     Log.i("MacIndex", "Initializing database.");
-                    initDatabase(this);
+                    initDatabase(this, false);
                 } else {
                     Log.w("MacIndex", "Database already initialized.");
                 }
 
                 // Cache clear if new version is registered
-                if (PrefsHelper.registerNewVersion(this)) {
+                if (isNewVersion) {
                     clearCache();
                 }
 
@@ -124,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 // Deep Link Support, Activity Not Present
                 Uri deepLink = getIntent().getData();
                 if (deepLink != null) {
-                    decodeDeepLink(deepLink.toString(), null);
+                    decodeDeepLink(deepLink.toString());
                 } else {
                     Log.w("onCreateDeepLinkEntry", "Got null data");
                 }
@@ -163,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         // Override this function due to the special lunch mode
         Uri deepLink = intent.getData();
         if (deepLink != null) {
-            decodeDeepLink(deepLink.toString(), null);
+            decodeDeepLink(deepLink.toString());
         } else {
             Log.w("onNewIntentDeepLinkEntry", "Got null data");
         }
@@ -191,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Is still loading?
-        if (!waitDialog.isShowing()) {
+        if (waitDialog != null && !waitDialog.isShowing() && machineHelper != null) {
             // Save the currently received ID list
             outState.putBoolean("loadComplete", true);
             outState.putInt("loadPositionsCount", loadPositions.length);
@@ -200,18 +266,22 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             outState.putBoolean("loadComplete", false);
-            MainActivity.reloadDatabase(this);
         }
 
         // Is drawer opened?
-        outState.putBoolean("drawerOpen", mDrawerLayout.isDrawerOpen(GravityCompat.START));
+        outState.putBoolean("drawerOpen", mDrawerLayout != null
+                && mDrawerLayout.isDrawerOpen(GravityCompat.START));
     }
 
     @Override
     protected void onDestroy() {
         isMainRunning = false;
-        closeDatabase();
-        if (waitDialog.isShowing()) {
+        interfaceRequestID++;
+        if (interfaceThread != null) {
+            interfaceThread.interrupt();
+            interfaceThread = null;
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
         super.onDestroy();
@@ -235,100 +305,107 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                }
-                break;
-            case R.id.mainDebugReloadItem:
+        final int itemID = item.getItemId();
+        if (itemID == android.R.id.home) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                reloadDatabase(this);
+            } else {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        } else if (itemID == R.id.mainDebugReloadItem) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            reloadDatabase(this);
+            initInterface(true);
+        } else if (itemID == R.id.mainDebugTriggerErrorItem) {
+            ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
+        } else if (itemID == R.id.mainDebugClearCacheItem) {
+            clearCache();
+        } else if (itemID == R.id.mainDebugVersionRegistration) {
+            PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1, this);
+            PrefsHelper.triggerRebirth(this);
+        } else if (itemID == R.id.mainDebugRunnerItem) {
+            Toast.makeText(this, "Complete", Toast.LENGTH_SHORT).show();
+        } else if (itemID == R.id.mainResetItem) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+            if (!(thisManufacturer.equals("all") && thisFilter.equals("names"))) {
+                thisManufacturer = "all";
+                thisFilter = "names";
+                PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
+                PrefsHelper.editPrefs("lastMainFilter", "names", this);
                 initInterface(true);
-                break;
-            case R.id.mainDebugTriggerErrorItem:
-                // Debug use only. Should not visible to users
-                ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
-                break;
-            case R.id.mainDebugClearCacheItem:
-                clearCache();
-                break;
-            case R.id.mainDebugVersionRegistration:
-                PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1, this);
-                PrefsHelper.triggerRebirth(this);
-                break;
-            case R.id.mainDebugRunnerItem:
-                /* For function testing */
-                Toast.makeText(this, "Complete", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.mainReadCodeItem:
-                decodeSharedInfo();
-                break;
-            case R.id.mainResetItem:
-                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                }
-                if (!(thisManufacturer.equals("all") && thisFilter.equals("names"))) {
-                    thisManufacturer = "all";
-                    thisFilter = "names";
-                    PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
-                    PrefsHelper.editPrefs("lastMainFilter", "names", this);
-                    initInterface(true);
-                }
-                break;
-            case R.id.mainHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/main-activity", this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+            }
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
+    private void handleBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            if (mBackPressed + 2000 > System.currentTimeMillis()) {
-                super.onBackPressed();
-                return;
-            } else {
-                Toast.makeText(this, R.string.information_double_press, Toast.LENGTH_SHORT).show();
-            }
-            mBackPressed = System.currentTimeMillis();
+            finish();
         }
     }
 
-    private static void initDatabase(final Context context) {
+    private static synchronized void initDatabase(final Context context, final boolean isNewVersion) {
         try {
             Log.w("Database", "Initializing.");
-            File dbFilePath = new File(context.getApplicationInfo().dataDir + "/databases/specs.db");
-            File dbFolder = new File(context.getApplicationInfo().dataDir + "/databases");
-            dbFilePath.delete();
-            dbFolder.delete();
-            dbFolder.mkdir();
-            InputStream inputStream = context.getAssets().open("specs.db");
-            OutputStream outputStream = new FileOutputStream(dbFilePath);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
+            if (database != null && database.isOpen() && machineHelper != null) {
+                return;
             }
-            outputStream.flush();
-            outputStream.close();
-            inputStream.close();
-            DatabaseOpenHelper dbHelper = new DatabaseOpenHelper(context);
+
+            final Context applicationContext = context.getApplicationContext();
+            final File dbFilePath = applicationContext.getDatabasePath("specs.db");
+            final File dbFolder = dbFilePath.getParentFile();
+            if (dbFolder == null || (!dbFolder.exists() && !dbFolder.mkdirs())) {
+                throw new IllegalStateException("Unable to create database directory");
+            }
+            if (!dbFilePath.exists() || isNewVersion) {
+                final File temporaryDatabase = new File(dbFolder, "specs.db.tmp");
+                if (temporaryDatabase.exists() && !temporaryDatabase.delete()) {
+                    throw new IllegalStateException("Unable to remove temporary database file");
+                }
+                try (InputStream inputStream = applicationContext.getAssets().open("specs.db");
+                     OutputStream outputStream = new FileOutputStream(temporaryDatabase)) {
+                    byte[] buffer = new byte[64 * 1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, length);
+                    }
+                    outputStream.flush();
+                } catch (Exception copyException) {
+                    if (!temporaryDatabase.delete()) {
+                        Log.w("Database", "Unable to remove partial database file.");
+                    }
+                    throw copyException;
+                }
+                if (dbFilePath.exists() && !applicationContext.deleteDatabase("specs.db")) {
+                    throw new IllegalStateException("Unable to remove outdated database");
+                }
+                if (!temporaryDatabase.renameTo(dbFilePath)) {
+                    if (!temporaryDatabase.delete()) {
+                        Log.w("Database", "Unable to remove temporary database file.");
+                    }
+                    throw new IllegalStateException("Unable to install bundled database");
+                }
+            }
+
+            DatabaseOpenHelper dbHelper = new DatabaseOpenHelper(applicationContext);
             database = dbHelper.getReadableDatabase();
 
             // Open MachineHelper
             machineHelper = new MachineHelper(database);
 
         } catch (Exception e) {
-            ExceptionHelper.handleException(context, e,
-                    "initDatabaseSafe", "Initialize failed!!");
+            if (isNewVersion) {
+                PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1,
+                        context.getApplicationContext());
+            }
+            Log.e("initDatabaseSafe", "Initialize failed.", e);
+            throw new IllegalStateException("Unable to initialize bundled database", e);
         }
     }
 
@@ -340,6 +417,8 @@ public class MainActivity extends AppCompatActivity {
             Log.w("Database", "Current database close.");
             database.close();
         }
+        database = null;
+        machineHelper = null;
     }
 
     private void initMenu() {
@@ -348,16 +427,9 @@ public class MainActivity extends AppCompatActivity {
             // Set the slide menu.
             // Set the edge size of drawer.
             mDrawerLayout = findViewById(R.id.mainContainer);
-            Field mDragger = mDrawerLayout.getClass().getDeclaredField(
-                    "mLeftDragger");
-            mDragger.setAccessible(true);
-            ViewDragHelper draggerObj = (ViewDragHelper) mDragger
-                    .get(mDrawerLayout);
-            Field mEdgeSize = draggerObj.getClass().getDeclaredField(
-                    "mEdgeSize");
-            mEdgeSize.setAccessible(true);
-            int edge = mEdgeSize.getInt(draggerObj);
-            mEdgeSize.setInt(draggerObj, edge * 10);
+            mDrawerLayout.addOnLayoutChangeListener((view, left, top, right, bottom,
+                                                     oldLeft, oldTop, oldRight, oldBottom) ->
+                    enlargeDrawerEdge());
 
             // Initialize the navigation bar
 
@@ -493,6 +565,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void enlargeDrawerEdge() {
+        try {
+            final Field mDragger = mDrawerLayout.getClass().getDeclaredField(
+                    "mLeftDragger");
+            mDragger.setAccessible(true);
+            final ViewDragHelper draggerObj = (ViewDragHelper) mDragger
+                    .get(mDrawerLayout);
+            draggerObj.setEdgeSize(draggerObj.getDefaultEdgeSize() * 10);
+        } catch (Exception e) {
+            // A changed AndroidX field must not take the whole main menu down.
+            Log.w("initMenu", "Unable to enlarge drawer edge.", e);
+        }
+    }
+
     private void resetDrawerTitle() {
         // Set if it is in EveryMac mode.
         if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", MainActivity.this)) {
@@ -567,6 +653,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initInterface(final boolean reloadPositions) {
         try {
+            final int requestID = ++interfaceRequestID;
+            if (interfaceThread != null) {
+                interfaceThread.interrupt();
+            }
+            if (waitDialog != null && waitDialog.isShowing()) {
+                waitDialog.dismiss();
+            }
             boolean internalReloadFlag = reloadPositions;
             // Set Activity title.
             setTitle(getString(translateTitleRes()));
@@ -588,27 +681,40 @@ public class MainActivity extends AppCompatActivity {
                 waitDialog.show();
             }
             final boolean finalInternalReloadFlag = internalReloadFlag;
-            new Thread() {
+            final String manufacturerForRequest = thisManufacturer;
+            interfaceThread = new Thread() {
                 @Override
                 public void run() {
+                    final int[][] positionsForRequest;
                     if (finalInternalReloadFlag) {
-                        loadPositions = machineHelper.filterSearchHelper(thisFilterString, thisManufacturer,
+                        positionsForRequest = machineHelper.filterSearchHelper(thisFilterString, manufacturerForRequest,
                                 PrefsHelper.getBooleanPrefsSafe("isSortAgain", MainActivity.this));
-                        // Write cache.
-                        operateCache(true);
+                    } else {
+                        positionsForRequest = loadPositions;
+                    }
+                    if (Thread.currentThread().isInterrupted() || requestID != interfaceRequestID) {
+                        return;
                     }
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (requestID != interfaceRequestID || isFinishing()
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                return;
+                            }
                             try {
+                                loadPositions = positionsForRequest;
                                 if (finalInternalReloadFlag) {
                                     waitDialog.dismiss();
+                                    // Cache only the request that is still current.
+                                    operateCache(true);
                                 }
                                 // Set up each category.
                                 machineLoadedCount = new TextView[loadPositions.length][];
                                 for (int i = 0; i < loadPositions.length; i++) {
-                                    final View categoryChunk = getLayoutInflater().inflate(R.layout.chunk_category, null);
+                                    final View categoryChunk = getLayoutInflater()
+                                            .inflate(R.layout.chunk_category, categoryContainer, false);
                                     final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
                                     final TextView categoryName = categoryChunk.findViewById(R.id.category);
 
@@ -694,25 +800,11 @@ public class MainActivity extends AppCompatActivity {
                                 PrefsHelper.editPrefs("isFirstLunch", false, MainActivity.this);
                             }
 
-                            // EveryMacIndex reminder
-                            if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", MainActivity.this)
-                                    && PrefsHelper.getBooleanPrefs("isJustLunched", MainActivity.this)) {
-                                final AlertDialog.Builder everyMacIndexReminder = new AlertDialog.Builder(MainActivity.this);
-                                everyMacIndexReminder.setTitle(R.string.app_name_everymac);
-                                everyMacIndexReminder.setMessage(R.string.information_set_everymac);
-                                everyMacIndexReminder.setPositiveButton(R.string.menu_about_settings, (dialogInterface, i) -> {
-                                    startActivity(new Intent(MainActivity.this, SettingsAboutActivity.class));
-                                });
-                                everyMacIndexReminder.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                                    // Do nothing
-                                });
-                                everyMacIndexReminder.show();
-                                PrefsHelper.editPrefs("isJustLunched", false, MainActivity.this);
-                            }
                         }
                     });
                 }
-            }.start();
+            };
+            interfaceThread.start();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e,
                     "initInterface", "Initialize failed!!");
@@ -742,7 +834,7 @@ public class MainActivity extends AppCompatActivity {
                     if (totalLoadad == 0) {
                         throw new IllegalStateException();
                     }
-                    int randomCode = new Random().nextInt(totalLoadad + 1);
+                    int randomCode = new Random().nextInt(totalLoadad);
                     Log.i("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
                     for (int[] loadPosition : loadPositions) {
                         if (randomCode >= loadPosition.length) {
@@ -1043,69 +1135,53 @@ public class MainActivity extends AppCompatActivity {
         PrefsHelper.clearPrefs("lastCachedM4F2", this);
     }
 
-    private void decodeSharedInfo() {
-        final View decodeChunk = getLayoutInflater().inflate(R.layout.chunk_edit_comment, null);
-        final EditText inputtedInfo = decodeChunk.findViewById(R.id.editComment);
-        final AlertDialog.Builder infoDecodeDialog = new AlertDialog.Builder(this);
-        infoDecodeDialog.setTitle(R.string.submenu_main_share);
-        infoDecodeDialog.setMessage(R.string.share_main_decode);
-        infoDecodeDialog.setView(decodeChunk);
-        infoDecodeDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-            // To be overwritten...
-        });
-        infoDecodeDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-            // Do nothing
-        });
-
-        final AlertDialog infoDecodeDialogCreated = infoDecodeDialog.create();
-        infoDecodeDialogCreated.show();
-        // Overwrite the positive button
-        infoDecodeDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            try {
-                final String inputtedString = inputtedInfo.getText().toString().trim();
-                if (!inputtedString.isEmpty()) {
-                    if (inputtedString.contains("paizhang.info/macindex/share")) {
-                        // Call deeplink handling
-                        decodeDeepLink(inputtedString, infoDecodeDialogCreated);
-                    } else {
-                        final int[] thisID = decodeStartedParam(inputtedString.split("\n")[0].trim());
-                        if (thisID.length != 1) {
-                            Log.w("infoDecodeDialog", "Unable to decode the requested information.");
-                            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
-                        } else {
-                            // Decoded successfully, call intent parser
-                            infoDecodeDialogCreated.dismiss();
-                            SpecsIntentHelper.sendIntent(thisID, thisID[0], this, false);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "infoDecodeDialog", "Unable to set positive button. Likely illegal info string. Please reset the application. String is: "
-                        + inputtedInfo.getText().toString().trim());
+    private void decodeDeepLink(final String deepLink) {
+        try {
+            if (ShareLinkHelper.isComparison(deepLink)) {
+                openComparison(ShareLinkHelper.decodeComparison(deepLink));
+                return;
             }
-        });
-    }
 
-    private void decodeDeepLink(final String deepLink, final AlertDialog parentDialog) {
-        String[] machineParam = deepLink.split("\\?code=");
-        Log.i("DeepLinkDecode", "Got data " + Arrays.toString(machineParam));
-        if (machineParam.length == 2) {
-            int[] decodedID = decodeStartedParam(machineParam[1].replace("_", " ").trim());
+            final String machineName = ShareLinkHelper.decode(deepLink);
+            Log.i("DeepLinkDecode", "Got machine " + machineName);
+            int[] decodedID = decodeStartedParam(machineName);
             if (decodedID.length != 1) {
                 Log.w("DeepLinkDecode", "Unable to decode the requested link.");
                 Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             } else {
                 // Decoded successfully, call intent parser
-                if (parentDialog != null) {
-                    // Dismiss parent dialog if present...
-                    parentDialog.dismiss();
-                }
                 SpecsIntentHelper.sendIntent(decodedID, decodedID[0], this, false);
             }
-        } else {
+        } catch (Exception e) {
             Log.w("DeepLinkDecode", "Unable to process the link due to illegal parameter.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void openComparison(final String[] machineNames) {
+        if (machineNames == null || machineNames.length != 2
+                || machineNames[0].equals(machineNames[1])
+                || decodeStartedParam(machineNames[0]).length != 1
+                || decodeStartedParam(machineNames[1]).length != 1) {
+            Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
+            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        final List<String> compareNames = new ArrayList<>(CompareActivity.getCompareList(this));
+        // Keep both shared machines in the original 10-machine compare list limit.
+        compareNames.remove(machineNames[0]);
+        compareNames.remove(machineNames[1]);
+        while (compareNames.size() > 8) {
+            compareNames.remove(0);
+        }
+        compareNames.add(machineNames[0]);
+        compareNames.add(machineNames[1]);
+        CompareActivity.saveCompareList(compareNames, this);
+        PrefsHelper.editPrefs("userComparesLeft", machineNames[0], this);
+        PrefsHelper.editPrefs("userComparesRight", machineNames[1], this);
+
+        startActivity(new Intent(this, CompareActivity.class));
     }
 
     // Return an ID array with matched name. Input: suspected machine name.
@@ -1118,7 +1194,8 @@ public class MainActivity extends AppCompatActivity {
             return MainActivity.getMachineHelper().searchHelper("name", param.trim(),
                     "all", true, false);
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "MachineParamDecoder", "Unable to decode the parameter: " + param.trim());
+            ExceptionHelper.handleException(this, e, "MachineParamDecoder",
+                    "Unable to decode the parameter: " + String.valueOf(param));
             return new int[0];
         }
     }
@@ -1136,7 +1213,7 @@ public class MainActivity extends AppCompatActivity {
         if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
             Log.w("MainValidate", "Process was killed. Reloading resources.");
             resources = context.getResources();
-            reloadDatabase(context);
+            initDatabase(context, false);
         }
     }
 
@@ -1147,7 +1224,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(context, "Database reload requested", Toast.LENGTH_SHORT).show();
         }
         closeDatabase();
-        initDatabase(context);
+        initDatabase(context, false);
     }
 
     public static boolean getMainState() {

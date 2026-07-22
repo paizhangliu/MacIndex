@@ -13,7 +13,4 @@
     <item
         android:id="@+id/clearFolderItem"
         android:title="@string/submenu_favourite_clear" />
-    <item
-        android:id="@+id/favouriteHelpItem"
-        android:title="@string/submenu_favourite_help" />
 </menu>

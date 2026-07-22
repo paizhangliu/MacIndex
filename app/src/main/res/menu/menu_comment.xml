@@ -7,7 +7,4 @@
     <item
         android:id="@+id/clearCommentsItem"
         android:title="@string/submenu_comments_clear" />
-    <item
-        android:id="@+id/commentHelpItem"
-        android:title="@string/submenu_comments_help" />
 </menu>

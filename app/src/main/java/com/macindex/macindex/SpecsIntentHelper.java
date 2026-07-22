@@ -24,7 +24,7 @@ class SpecsIntentHelper {
             for (int i = 0; i < machineIDs.length; i++) {
                 final int thisMachineID = machineIDs[i];
                 final View mainChunk = ((LayoutInflater) thisContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                        .inflate(R.layout.chunk_main, null);
+                        .inflate(R.layout.chunk_main, currentLayout, false);
                 final TextView machineName = mainChunk.findViewById(R.id.machineName);
                 final TextView machineYear = mainChunk.findViewById(R.id.machineYear);
                 final LinearLayout mainChunkToClick = mainChunk.findViewById(R.id.main_chunk_clickable);
@@ -84,6 +84,12 @@ class SpecsIntentHelper {
                     ((Activity) parentContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            final Activity parentActivity = (Activity) parentContext;
+                            if (parentActivity.isFinishing()
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                    && parentActivity.isDestroyed())) {
+                                return;
+                            }
                             try {
                                 waitDialog.dismiss();
                                 Log.i("sendIntent", "Fixed Navigation, Category IDs " + Arrays.toString(newCategory)

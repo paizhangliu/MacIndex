@@ -20,6 +20,7 @@ public class NewAboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_about);
+        WindowInsetsHelper.apply(this);
 
         this.setTitle(getResources().getString(R.string.menu_about));
 
@@ -37,8 +38,7 @@ public class NewAboutActivity extends AppCompatActivity {
 
             final String[] openSourceMenu = getResources().getStringArray(R.array.about_opensource_menu);
 
-            String versionString = getString(R.string.version_information_general) + " " + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-Debug\n" : "\n")
-                    + dateFormat.format(buildDate) + " (" + MainActivity.getMachineHelper().getMachineCount() + " " + getString(R.string.version_information_machine_count);
+            String versionString = getString(R.string.version_information_general) + " " + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-Debug\n" : "\n") + dateFormat.format(buildDate);
             ((TextView) findViewById(R.id.versionText)).setText(versionString);
 
             findViewById(R.id.appNameText).setOnClickListener(v -> {
@@ -61,7 +61,7 @@ public class NewAboutActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            LinkLoadingHelper.startBrowser("https://github.com/paizhangpi/MacIndex/blob/master/LICENSE",
+                            LinkLoadingHelper.startBrowser("https://github.com/paizhangliu/MacIndex/blob/master/LICENSE",
                                     null, NewAboutActivity.this);
                         } else if (which == 1) {
                             startActivity(new Intent(NewAboutActivity.this, OssLicensesMenuActivity.class));
@@ -78,8 +78,8 @@ public class NewAboutActivity extends AppCompatActivity {
                         "https://macindex.paizhang.info/feedback-and-evaluation", this);
             });
             findViewById(R.id.githubLogo).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://github.com/paizhangpi/MacIndex",
-                        "https://github.com/paizhangpi/MacIndex", this);
+                LinkLoadingHelper.startBrowser("https://github.com/paizhangliu/MacIndex",
+                        "https://github.com/paizhangliu/MacIndex", this);
             });
             findViewById(R.id.cs125Logo).setOnClickListener(v -> {
                 LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/story-of-macindex", this);

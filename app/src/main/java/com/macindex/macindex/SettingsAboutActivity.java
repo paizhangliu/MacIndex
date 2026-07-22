@@ -35,6 +35,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_about);
+        WindowInsetsHelper.apply(this);
         this.setTitle(getResources().getString(R.string.menu_about_settings));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,7 +45,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         initSettings();
 
         if (savedInstanceState != null) {
-            if (!savedInstanceState.getBoolean("benchmarkStopped")) {
+            if (!savedInstanceState.getBoolean("benchmarkComplete", true)) {
                 interruptBenchmarkDialog();
             }
         }
@@ -75,6 +76,14 @@ public class SettingsAboutActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        if (benchmarkThread != null && !benchmarkStopped) {
+            stopBenchmark(true);
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_prefs, menu);
@@ -83,27 +92,20 @@ public class SettingsAboutActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.benchmarkItem:
-                startBenchmark();
-                break;
-            case R.id.clearPrefsItem:
-                final AlertDialog.Builder defaultsWarningDialog = new AlertDialog.Builder(SettingsAboutActivity.this);
-                defaultsWarningDialog.setTitle(R.string.submenu_prefs_clear);
-                defaultsWarningDialog.setMessage(R.string.setting_defaults_warning_content);
-                defaultsWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    PrefsHelper.clearPrefs(this);
-                });
-                defaultsWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                    // Cancelled, nothing to do.
-                });
-                defaultsWarningDialog.show();
-                break;
-            case R.id.prefsHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/settings-activity", this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        final int itemID = item.getItemId();
+        if (itemID == R.id.benchmarkItem) {
+            startBenchmark();
+        } else if (itemID == R.id.clearPrefsItem) {
+            final AlertDialog.Builder defaultsWarningDialog = new AlertDialog.Builder(SettingsAboutActivity.this);
+            defaultsWarningDialog.setTitle(R.string.submenu_prefs_clear);
+            defaultsWarningDialog.setMessage(R.string.setting_defaults_warning_content);
+            defaultsWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> PrefsHelper.clearPrefs(this));
+            defaultsWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
+                // Cancelled, nothing to do.
+            });
+            defaultsWarningDialog.show();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -185,8 +187,6 @@ public class SettingsAboutActivity extends AppCompatActivity {
                 everyMacWarningDialog.setMessage(R.string.setting_everymac_warning_content);
                 everyMacWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
                     PrefsHelper.editPrefs("isOpenEveryMac", true, this);
-                    // Do not arm the warning for the current session.
-                    PrefsHelper.editPrefs("isJustLunched", false, this);
                     initSettings();
                 });
                 everyMacWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> swEveryMac.setChecked(false));
@@ -231,9 +231,16 @@ public class SettingsAboutActivity extends AppCompatActivity {
                     MainActivity.getMachineHelper().directSortByYear(benchTemp);
                     Log.i("Benchmark", "Benchmark Stage 2 ended at " + System.currentTimeMillis());
                     benchmarkTimer[1] = System.currentTimeMillis() - benchmarkTimer[1];
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                    && isDestroyed())) {
+                                return;
+                            }
                             try {
                                 if (!benchmarkStopped) {
                                     Log.w("Benchmark", "Terminated normally.");
@@ -331,13 +338,15 @@ public class SettingsAboutActivity extends AppCompatActivity {
     private void stopBenchmark(final boolean isReloadRequired) {
         Log.w("Benchmark", "Stopping.");
         benchmarkStopped = true;
-        waitDialog.dismiss();
+        final Thread threadToStop = benchmarkThread;
+        if (threadToStop != null && threadToStop != Thread.currentThread()) {
+            threadToStop.interrupt();
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
+            waitDialog.dismiss();
+        }
         waitDialog = null;
         benchmarkThread = null;
-        if (isReloadRequired) {
-            // Reload database
-            MainActivity.reloadDatabase(this);
-        }
     }
 
     private void interruptBenchmarkDialog() {

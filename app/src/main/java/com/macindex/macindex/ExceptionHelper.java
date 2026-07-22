@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import android.app.AlertDialog;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -47,6 +48,14 @@ class ExceptionHelper {
     }
 
     private static void handleExceptionDialog(final Context thisContext, final String exceptionInfo) {
+        if (thisContext instanceof Activity) {
+            final Activity activity = (Activity) thisContext;
+            if (activity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                    && activity.isDestroyed())) {
+                Log.e("ExceptionHelper", exceptionInfo);
+                return;
+            }
+        }
         final AlertDialog.Builder exceptionDialog = new AlertDialog.Builder(thisContext);
         exceptionDialog.setTitle(R.string.error);
         exceptionDialog.setMessage(R.string.error_information);

@@ -7,7 +7,4 @@
     <item
         android:id="@+id/clearPrefsItem"
         android:title="@string/submenu_prefs_clear" />
-    <item
-        android:id="@+id/prefsHelpItem"
-        android:title="@string/submenu_prefs_help" />
 </menu>

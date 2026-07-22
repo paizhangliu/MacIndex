@@ -17,6 +17,9 @@
         android:id="@+id/clearCompareItem"
         android:title="@string/submenu_compare_clear" />
     <item
-        android:id="@+id/compareHelpItem"
-        android:title="@string/submenu_compare_help" />
+        android:id="@+id/copyCompareItem"
+        android:title="@string/submenu_specs_share" />
+    <item
+        android:id="@+id/shareLinkCompareItem"
+        android:title="@string/submenu_specs_share_link" />
 </menu>

@@ -67,7 +67,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -87,7 +87,7 @@
 
                     <TextView
                         android:id="@+id/nameTextLeft"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:ellipsize="end"
                         android:gravity="center"
@@ -108,6 +108,7 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center" />
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,7 +128,7 @@
 
                     <TextView
                         android:id="@+id/nameTextRight"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:ellipsize="end"
                         android:gravity="center"
@@ -148,7 +149,91 @@
                             android:layout_height="40dp"
                             android:layout_gravity="center" />
                     </LinearLayout>
+
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/compareSpecsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/compareBottomLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/information_compare_open_specs"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/information_specs_full"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/information_specs_view_image"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/information_specs_copy_info"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/information_specs_everymac"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp" />
+
+                <ImageView
+                    android:id="@+id/everymac"
+                    android:layout_width="250dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/app_name_everymac"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/everymac" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -69,7 +69,6 @@ class PrefsHelper {
 
         /* Runtime Parameters */
         DEFAULT_VALUES.put("isFirstLunch", Boolean.TRUE);
-        DEFAULT_VALUES.put("isJustLunched", Boolean.TRUE);
         DEFAULT_VALUES.put("isEnableVolWarningThisTime", Boolean.TRUE);
         DEFAULT_VALUES.put("isReloadNeeded", Boolean.FALSE);
         DEFAULT_VALUES.put("isCommentsReloadNeeded", Boolean.FALSE);

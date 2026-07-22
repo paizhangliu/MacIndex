@@ -129,6 +129,10 @@ class MachineHelper {
         stopQuery = true;
     }
 
+    private boolean isQueryCancelled() {
+        return stopQuery || Thread.currentThread().isInterrupted();
+    }
+
     // Get the total count of categories
     public int getCategoryTotalCount() {
         return CATEGORIES_LIST.length;
@@ -196,7 +200,7 @@ class MachineHelper {
                 new String[]{"name"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("name"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("name"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -207,7 +211,7 @@ class MachineHelper {
                 new String[]{"processor"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("processor"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("processor"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -218,7 +222,7 @@ class MachineHelper {
                 new String[]{"ram"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("ram"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("ram"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -229,7 +233,7 @@ class MachineHelper {
                 new String[]{"year"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("year"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("year"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -240,7 +244,7 @@ class MachineHelper {
                 new String[]{"model"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("model"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("model"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -251,7 +255,7 @@ class MachineHelper {
                 new String[]{"rom"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("rom"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("rom"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -262,7 +266,7 @@ class MachineHelper {
                 new String[]{"ident"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("ident"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("ident"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -273,7 +277,7 @@ class MachineHelper {
                 new String[]{"graphics"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("graphics"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("graphics"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -284,7 +288,7 @@ class MachineHelper {
                 new String[]{"expansion"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("expansion"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("expansion"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -295,7 +299,7 @@ class MachineHelper {
                 new String[]{"storage"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("storage"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("storage"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -306,7 +310,7 @@ class MachineHelper {
                 new String[]{"gestalt"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("gestalt"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("gestalt"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -317,7 +321,7 @@ class MachineHelper {
                 new String[]{"\"order\""}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("order"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("order"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -328,7 +332,7 @@ class MachineHelper {
                 new String[]{"emc"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("emc"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("emc"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -339,7 +343,7 @@ class MachineHelper {
                 new String[]{"software"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("software"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("software"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -350,7 +354,7 @@ class MachineHelper {
                 new String[]{"design"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("design"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("design"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -361,7 +365,7 @@ class MachineHelper {
                 new String[]{"support"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("support"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("support"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -372,7 +376,7 @@ class MachineHelper {
                 new String[]{"syear"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("syear"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("syear"));
         tempCursor.close();
         return checkApplicability(tempResult);
     }
@@ -392,7 +396,7 @@ class MachineHelper {
                 new String[]{thisColumn}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex(thisColumn));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow(thisColumn));
         tempCursor.close();
         return tempResult;
     }
@@ -404,7 +408,7 @@ class MachineHelper {
                 new String[]{"sound"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String thisSound = tempCursor.getString(tempCursor.getColumnIndex("sound"));
+        String thisSound = tempCursor.getString(tempCursor.getColumnIndexOrThrow("sound"));
         tempCursor.close();
         int[] sound = {0, 0};
         // NullSafe
@@ -480,28 +484,42 @@ class MachineHelper {
     }
 
     public File getPicture(final int thisMachine, final Context thisContext) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"pic"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        byte[] thisBlob = tempCursor.getBlob(tempCursor.getColumnIndex("pic"));
-        tempCursor.close();
-        if (thisBlob == null) {
-            return getPicture(thisMachine - 1, thisContext);
-        } else {
-            String path = "/";
-            try {
-                Bitmap pic = BitmapFactory.decodeByteArray(thisBlob, 0, thisBlob.length);
-                File file = File.createTempFile("tempF", ".tmp");
-                FileOutputStream out = new FileOutputStream(file, false);
-                pic.compress(Bitmap.CompressFormat.PNG, 100, out);
-                path = file.getPath();
-            } catch (Exception e) {
-                ExceptionHelper.handleException(thisContext, e, null, null);
-            }
-            return new File(path);
+        if (thisMachine < 0 || thisMachine >= totalMachine) {
+            throw new IllegalArgumentException("Machine ID is out of range: " + thisMachine);
         }
+        for (int candidate = thisMachine; candidate >= 0; candidate--) {
+            final int[] position = getPosition(candidate);
+            final byte[] blob;
+            try (Cursor cursor = database.query(CATEGORIES_LIST[position[0]],
+                    new String[]{"pic"}, "id = ?", new String[]{String.valueOf(position[1])},
+                    null, null, null)) {
+                if (!cursor.moveToFirst()) {
+                    throw new IllegalStateException("Missing database row for machine " + candidate);
+                }
+                blob = cursor.getBlob(cursor.getColumnIndexOrThrow("pic"));
+            }
+            if (blob != null) {
+                final Bitmap picture = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+                if (picture == null) {
+                    throw new IllegalStateException("Unable to decode image for machine " + candidate);
+                }
+                try {
+                    final File file = File.createTempFile("tempF", ".tmp", thisContext.getCacheDir());
+                    try (FileOutputStream out = new FileOutputStream(file, false)) {
+                        if (!picture.compress(Bitmap.CompressFormat.PNG, 100, out)) {
+                            throw new IllegalStateException("Unable to encode machine image");
+                        }
+                        out.flush();
+                    }
+                    return file;
+                } catch (java.io.IOException e) {
+                    throw new IllegalStateException("Unable to create temporary machine image", e);
+                } finally {
+                    picture.recycle();
+                }
+            }
+        }
+        return new File(thisContext.getCacheDir(), "missing-machine-image");
     }
 
     // Should return "N" if EveryMac link is not available.
@@ -511,7 +529,7 @@ class MachineHelper {
                 new String[]{"links"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndex("links"));
+        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("links"));
         tempCursor.close();
         // NullSafe
         if (tempResult == null) {
@@ -528,7 +546,7 @@ class MachineHelper {
                 new String[]{"sprocessor"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndex("sprocessor"));
+        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("sprocessor"));
         tempCursor.close();
         Log.i("MHGetProcessorImageType", "Get ID " + thisProcessorImage);
         // NullSafe
@@ -569,10 +587,10 @@ class MachineHelper {
             case "cometlake":
             case "icelake":
             case "tigerlake":
-                return R.drawable.intelnew;
+                return R.drawable.intel;
             case "A12Z":
             case "m1":
-                return R.drawable.applenew;
+                return R.drawable.applelogo;
             default:
                 ExceptionHelper.handleException(thisContext, null,
                         "MHGetProcessorImageType", "Illegal parameter " + thisProcessorImage);
@@ -586,7 +604,7 @@ class MachineHelper {
                 new String[]{"processorid"}, "id = " + position[1], null, null, null,
                 null);
         tempCursor.moveToFirst();
-        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndex("processorid"));
+        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("processorid"));
         tempCursor.close();
         Log.i("MHGetProcessorImage", "Get ID " + thisProcessorImage);
         // NullSafe
@@ -959,25 +977,31 @@ class MachineHelper {
             // Setup temp cursor of each category for a query.
             for (int i = 0; i < thisCategoryCount; i++) {
                 // Terminate immediately.
-                if (stopQuery) {
+                if (isQueryCancelled()) {
                     throw new IllegalAccessException();
                 }
-                Cursor thisSearchIndividualCursor = database.query(thisCategoryRange[i], new String[]{"id"}, columnName + " LIKE ? ",
-                        new String[]{"%" + searchInput + "%"}, null, null, null);;
-                rawResults[i] = new int[thisSearchIndividualCursor.getCount()];
-                Log.i("MHSearchHelper", "Category " + thisCategoryRange[i] + " got "
-                        + thisSearchIndividualCursor.getCount() + " result(s).");
-                // Write raw query results.
-                int previousCount = 0;
-                while (thisSearchIndividualCursor.moveToNext()) {
-                    // Terminate immediately.
-                    if (stopQuery) {
-                        throw new IllegalAccessException();
+                Cursor thisSearchIndividualCursor = null;
+                try {
+                    thisSearchIndividualCursor = database.query(thisCategoryRange[i], new String[]{"id"}, columnName + " LIKE ? ",
+                            new String[]{"%" + searchInput + "%"}, null, null, null);
+                    rawResults[i] = new int[thisSearchIndividualCursor.getCount()];
+                    Log.i("MHSearchHelper", "Category " + thisCategoryRange[i] + " got "
+                            + thisSearchIndividualCursor.getCount() + " result(s).");
+                    // Write raw query results.
+                    int previousCount = 0;
+                    while (thisSearchIndividualCursor.moveToNext()) {
+                        if (isQueryCancelled()) {
+                            throw new IllegalAccessException();
+                        }
+                        rawResults[i][previousCount] = thisSearchIndividualCursor.getInt(
+                                thisSearchIndividualCursor.getColumnIndexOrThrow("id"));
+                        previousCount++;
                     }
-                    rawResults[i][previousCount] = thisSearchIndividualCursor.getInt(thisSearchIndividualCursor.getColumnIndex("id"));
-                    previousCount++;
+                } finally {
+                    if (thisSearchIndividualCursor != null) {
+                        thisSearchIndividualCursor.close();
+                    }
                 }
-                thisSearchIndividualCursor.close();
             }
 
             // Convert raw results to positions.
@@ -1030,18 +1054,17 @@ class MachineHelper {
             return finalPositions;
         } catch (Exception e) {
             Log.e("MHSearchHelper", "Exception Occurred, returning empty array");
-            setStopQuery();
             e.printStackTrace();
             return new int[0];
         }
     }
 
-    // Get year parameter for sorting. Y = Y, M = M/10. Returns double float number.
-    private double getYearForSorting(final String columnName, final String searchInput, final int thisMachine) {
+    // Get year parameter for sorting. Returns an integer in YYYYMM format.
+    private int getYearForSorting(final String columnName, final String searchInput, final int thisMachine) {
         try {
             String[] rawYear = getSYear(thisMachine).split(", ");
             // Terminate immediately.
-            if (stopQuery) {
+            if (isQueryCancelled()) {
                 throw new IllegalAccessException();
             }
             int targetIndex = 0;
@@ -1065,14 +1088,15 @@ class MachineHelper {
                         + ", searchInput " + searchInput + ", Machine Name " + getName(thisMachine) + ", Raw Year " + getSYear(thisMachine));
                 throw new IllegalArgumentException();
             }
-            double targetYearSplitedA = Integer.parseInt(targetYearSplited[0]);
-            double targetYearSplitedB = Integer.parseInt(targetYearSplited[1]);
-            targetYearSplitedB = targetYearSplitedB / 10;
-            return targetYearSplitedA + targetYearSplitedB;
+            int targetYearSplitedA = Integer.parseInt(targetYearSplited[0]);
+            int targetYearSplitedB = Integer.parseInt(targetYearSplited[1]);
+            if (targetYearSplitedB < 1 || targetYearSplitedB > 12) {
+                throw new IllegalArgumentException();
+            }
+            return targetYearSplitedA * 100 + targetYearSplitedB;
         } catch (Exception e) {
-            setStopQuery();
             e.printStackTrace();
-            return 0.0;
+            return 0;
         }
     }
 
@@ -1082,7 +1106,7 @@ class MachineHelper {
             int[][] finalPositions = new int[filterString[1].length][];
             for (int i = 0; i < filterString[1].length; i++) {
                 // Terminate immediately.
-                if (stopQuery) {
+                if (isQueryCancelled()) {
                     throw new IllegalAccessException();
                 }
                 finalPositions[i] = searchHelper(filterString[0][0], filterString[1][i], thisManufacturer,
@@ -1091,7 +1115,6 @@ class MachineHelper {
             return finalPositions;
         } catch (Exception e) {
             Log.e("MHFilterSearchHelper", "Exception Occurred, returning empty array");
-            setStopQuery();
             e.printStackTrace();
             return new int[0][0];
         }
@@ -1104,7 +1127,7 @@ class MachineHelper {
             for (int i = 0; i < input.length; i++) {
                 for (int j = i; j > 0; j--) {
                     // Terminate immediately.
-                    if (stopQuery) {
+                    if (isQueryCancelled()) {
                         throw new IllegalAccessException();
                     }
                     if (getYearForSorting("", "", input[j])
@@ -1118,7 +1141,6 @@ class MachineHelper {
             return input;
         } catch (Exception e) {
             e.printStackTrace();
-            setStopQuery();
             return input;
         }
     }

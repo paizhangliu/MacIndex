@@ -7,19 +7,11 @@ import androidx.core.widget.TextViewCompat;
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class SpecsActivity extends AppCompatActivity {
@@ -48,13 +37,7 @@ public class SpecsActivity extends AppCompatActivity {
 
     private int machineIDPosition = -1;
 
-    private boolean startup = true;
-
-    private MediaPlayer startupSound = null;
-
-    private MediaPlayer deathSound = null;
-
-    private Vibrator vibrator = null;
+    private SpecsHelper specsHelper = null;
 
     private String[] allComments = null;
 
@@ -100,6 +83,8 @@ public class SpecsActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_specs);
+        WindowInsetsHelper.apply(this);
+        specsHelper = new SpecsHelper(this);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -133,7 +118,6 @@ public class SpecsActivity extends AppCompatActivity {
             }
 
             ViewGroup mainView = findViewById(R.id.mainView);
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             LayoutTransition layoutTransition = mainView.getLayoutTransition();
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
             initialize();
@@ -166,24 +150,19 @@ public class SpecsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.shareItem:
-                shareDialog();
-                break;
-            case R.id.addFavouriteItem:
-                selectFolder();
-                break;
-            case R.id.addCompareItem:
-                addToCompare();
-                break;
-            case R.id.commentItem:
-                initCommentDialog();
-                break;
-            case R.id.specsHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/specs-activity", this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        final int itemID = item.getItemId();
+        if (itemID == R.id.shareItem) {
+            copySpecification();
+        } else if (itemID == R.id.shareLinkItem) {
+            generateShareLink();
+        } else if (itemID == R.id.addFavouriteItem) {
+            selectFolder();
+        } else if (itemID == R.id.addCompareItem) {
+            addToCompare();
+        } else if (itemID == R.id.commentItem) {
+            initCommentDialog();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -226,26 +205,8 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void release() {
-        try {
-            if (startupSound != null && startupSound.isPlaying()) {
-                startupSound.stop();
-                Log.i("releaseSound", "Startup sound stopped");
-            }
-            if (deathSound != null && deathSound.isPlaying()) {
-                deathSound.stop();
-                Log.i("releaseSound", "Death sound stopped");
-            }
-            if (startupSound != null) {
-                startupSound.release();
-                Log.i("releaseSound", "Startup sound released");
-            }
-            if (deathSound != null) {
-                deathSound.release();
-                Log.i("releaseSound", "Death sound released");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.w("SpecsActivity", "Unable to release all sounds.");
+        if (specsHelper != null) {
+            specsHelper.release();
         }
     }
 
@@ -290,225 +251,36 @@ public class SpecsActivity extends AppCompatActivity {
             reloadName();
 
             type.setText(thisType);
-            /* return true - do not attach another click event */
-            type.setOnLongClickListener(view -> {
-                if (thisType.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("typeInfo", thisType);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(type, thisType, "typeInfo");
             processor.setText(thisProcessor);
-            processor.setOnLongClickListener(view -> {
-                if (thisProcessor.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("processorInfo", thisProcessor);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(processor, thisProcessor, "processorInfo");
             maxram.setText(thisMaxram);
-            maxram.setOnLongClickListener(view -> {
-                if (thisMaxram.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("maxramInfo", thisMaxram);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(maxram, thisMaxram, "maxramInfo");
             year.setText(thisYear);
-            year.setOnLongClickListener(view -> {
-                if (thisYear.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("yearInfo", thisYear);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(year, thisYear, "yearInfo");
             model.setText(thisModel);
-            model.setOnLongClickListener(view -> {
-                if (thisModel.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("modelInfo", thisModel);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(model, thisModel, "modelInfo");
             id.setText(thisId);
-            id.setOnLongClickListener(view -> {
-                if (thisId.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("idInfo", thisId);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(id, thisId, "idInfo");
             graphics.setText(thisGraphics);
-            graphics.setOnLongClickListener(view -> {
-                if (thisGraphics.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("graphicsInfo", thisGraphics);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(graphics, thisGraphics, "graphicsInfo");
             expansion.setText(thisExpansion);
-            expansion.setOnLongClickListener(view -> {
-                if (thisExpansion.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("expansionInfo", thisExpansion);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(expansion, thisExpansion, "expansionInfo");
             storage.setText(thisStorage);
-            storage.setOnLongClickListener(view -> {
-                if (thisStorage.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("storageInfo", thisStorage);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(storage, thisStorage, "storageInfo");
             order.setText(thisOrder);
-            order.setOnLongClickListener(view -> {
-                if (thisOrder.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("orderInfo", thisOrder);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(order, thisOrder, "orderInfo");
             gestalt.setText(thisGestalt);
-            gestalt.setOnLongClickListener(view -> {
-                if (thisGestalt.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("gestaltInfo", thisGestalt);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(gestalt, thisGestalt, "gestaltInfo");
             emc.setText(thisEmc);
-            emc.setOnLongClickListener(view -> {
-                if (thisEmc.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("emcInfo", thisEmc);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(emc, thisEmc, "emcInfo");
             software.setText(thisSoftware);
-            software.setOnLongClickListener(view -> {
-                if (thisSoftware.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("softwareInfo", thisSoftware);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(software, thisSoftware, "softwareInfo");
             design.setText(thisDesign);
-            design.setOnLongClickListener(view -> {
-                if (thisDesign.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("designInfo", thisDesign);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(design, thisDesign, "designInfo");
             support.setText(thisSupport);
-            support.setOnLongClickListener(view -> {
-                if (thisSupport.equals(getString(R.string.not_applicable))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("supportInfo", thisSupport);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
-
-            // Set Support Box Text Color.
-            if (thisSupport.equals("Obsolete")) {
-                support.setTextColor(Color.RED);
-            } else if (thisSupport.equals("Vintage")) {
-                support.setTextColor(Color.MAGENTA);
-            } else if (thisSupport.equals("Supported")) {
-                support.setTextColor(Color.GREEN);
-            }
+            specsHelper.initCopy(support, thisSupport, "supportInfo");
+            specsHelper.setSupportColor(support, thisSupport);
 
             /*
                 Processor Images dynaLoad.
@@ -591,14 +363,7 @@ public class SpecsActivity extends AppCompatActivity {
         });
 
         // Set copy
-        name.setOnLongClickListener(view -> {
-            ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("nameInfo", thisName);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(SpecsActivity.this,
-                    getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-            return true;
-        });
+        specsHelper.initCopy(name, thisName, "nameInfo");
     }
 
     private void initImage() {
@@ -612,117 +377,8 @@ public class SpecsActivity extends AppCompatActivity {
             }
             imageFile.delete();
 
-            // Init startup and death sound
-            final int[] sound = MainActivity.getMachineHelper().getSound(machineID, SpecsActivity.this);
-            final int startupID = sound[0];
-            final int deathID = sound[1];
             final TextView informationLabel = findViewById(R.id.information);
-
-            if (startupID != 0 || deathID != 0) {
-                // Set Sound accordingly
-                if (startupID != 0 && deathID != 0
-                        && PrefsHelper.getBooleanPrefs("isPlayDeathSound", this)) {
-                    // Startup sound exists, death sound exists, and user prefers both
-                    informationLabel.setText(getResources().getString(R.string.information_specs_full));
-                    startupSound = MediaPlayer.create(this, startupID);
-                    deathSound = MediaPlayer.create(this, deathID);
-                    Log.i("InitSound", "Startup and death sound loaded");
-                } else {
-                    // Startup sound exists, death sound not exist
-                    // Fix IllegalStateException
-                    informationLabel.setText(getResources().getString(R.string.information_specs_no_death));
-                    startupSound = MediaPlayer.create(this, startupID);
-                    deathSound = null;
-                    Log.i("InitSound", "Startup sound loaded");
-                }
-                // Should set a listener
-                image.setOnClickListener(unused -> {
-                    // Initialize Sound.
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-                        } else {
-                            vibrator.vibrate(50);
-                        }
-                        if (!startupSound.isPlaying() && (deathSound == null || !deathSound.isPlaying())) {
-                            // Not playing any sound
-                            if (PrefsHelper.getBooleanPrefs("isEnableVolWarningThisTime", this)
-                                    && PrefsHelper.getBooleanPrefs("isEnableVolWarning", this)) {
-                                // High Volume Warning Enabled
-                                boolean currentOutputDevice = false;
-                                AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                                if (audioManager != null) {
-                                    for (AudioDeviceInfo deviceInfo : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
-                                        final int thisType = deviceInfo.getType();
-                                        Log.i("VolWarning", "Get type " + thisType);
-                                        if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                                                || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
-                                                || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
-                                                || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                                                || thisType == AudioDeviceInfo.TYPE_HEARING_AID) {
-                                            Log.i("VolWarning", "Earphone detected");
-                                            currentOutputDevice = true;
-                                            break;
-                                        }
-                                    }
-                                    int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                                    int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                                    int currentVolumePercentage = 100 * currentVolume / maxVolume;
-                                    Log.i("VolWarning", "Enabled, current percentage " + currentVolumePercentage
-                                            + " current output device " + currentOutputDevice);
-                                    if (currentVolumePercentage >= 60 && currentOutputDevice) {
-                                        Log.i("VolWarning", "Armed");
-                                        final AlertDialog.Builder volWarningDialog = new AlertDialog.Builder(SpecsActivity.this);
-                                        volWarningDialog.setMessage(R.string.information_specs_high_vol_warning);
-                                        volWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                                            // Enabled, and popup a warning
-                                            PrefsHelper.editPrefs("isEnableVolWarningThisTime", false, this);
-                                            playSound();
-                                        });
-                                        volWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                                            // Do nothing
-                                        });
-                                        volWarningDialog.show();
-                                    } else {
-                                        // Enabled, but should not popup a warning
-                                        Log.i("VolWarning", "Unarmed");
-                                        playSound();
-                                    }
-                                } else {
-                                    // Enabled, but audio service not available
-                                    ExceptionHelper.handleException(this, null,
-                                            "VolWarning",
-                                            "Audio Service Not Available.");
-                                    playSound();
-                                }
-                            } else {
-                                // High Volume Warning Disabled
-                                Log.i("VolWarning", "Disabled");
-                                playSound();
-                            }
-                        }
-                    } catch (Exception e) {
-                        ExceptionHelper.handleException(this, e,
-                                "initImage", "Unable to initialize sounds.");
-                    }
-                });
-            } else {
-                // Exception for PowerBook DuoDock...
-                // Fix IllegalStateException
-                startupSound = null;
-                deathSound = null;
-                Log.i("InitSound", "Startup and death sound do not exist");
-                image.setOnClickListener(v -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-                    } else {
-                        vibrator.vibrate(50);
-                    }
-                    Toast.makeText(SpecsActivity.this, R.string.information_specs_no_sound,
-                            Toast.LENGTH_SHORT).show();
-                });
-                informationLabel.setText(R.string.information_specs_no_sound);
-            }
+            specsHelper.initSound(machineID, image, informationLabel);
 
             // Set a long click listener
             image.setOnLongClickListener(v -> {
@@ -737,32 +393,9 @@ public class SpecsActivity extends AppCompatActivity {
         }
     }
 
-    private void playSound() {
-        try {
-            if (startupSound == null) {
-                throw new IllegalStateException();
-            }
-            if (deathSound != null) {
-                if (startup) {
-                    startupSound.start();
-                    startup = false;
-                } else {
-                    deathSound.start();
-                    startup = true;
-                }
-            } else {
-                startupSound.start();
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "playSound", "Unable to play sound.");
-        }
-    }
-
     private void initLinks() {
         final ImageView link = findViewById(R.id.everymac);
-        link.setOnClickListener(v -> LinkLoadingHelper.loadLinks(thisName,
-                MainActivity.getMachineHelper().getConfig(machineID), SpecsActivity.this));
+        specsHelper.initLinks(machineID, thisName, link);
     }
 
     private void initButtons() {
@@ -846,19 +479,7 @@ public class SpecsActivity extends AppCompatActivity {
             comment.setOnClickListener(view -> {
                 initCommentDialog();
             });
-            comment.setOnLongClickListener(view -> {
-                if (thisComment.equals(getString(R.string.comment_null))) {
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("userComment", thisComment);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this,
-                            getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                }
-                return true;
-            });
+            specsHelper.initCopy(comment, thisComment, "userComment");
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initComment", "Illegal comment prefs string. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userComments", this));
@@ -1137,30 +758,10 @@ public class SpecsActivity extends AppCompatActivity {
     /* Compare Functions */
     private void addToCompare() {
         try {
-            final String originalCompare = PrefsHelper.getStringPrefs("userCompares", this);
-            final String[] splitedCompare = originalCompare.split("│");
-            if (splitedCompare.length == 1 && splitedCompare[0].isEmpty()) {
-                // Original string is empty
-                PrefsHelper.editPrefs("userCompares", "[" + thisName + "]", this);
-            } else if (splitedCompare.length >= 1 && splitedCompare.length <= 10) {
-                if (originalCompare.contains("[" + thisName + "]")) {
-                    // Deletion
-                    if (splitedCompare.length == 1) {
-                        PrefsHelper.clearPrefs("userCompares", this);
-                    } else {
-                        PrefsHelper.editPrefs("userCompares", originalCompare.replace("│[" + thisName + "]", ""), this);
-                    }
-                    CompareActivity.checkIsComparing(thisName, this);
-                } else {
-                    // Addition
-                    PrefsHelper.editPrefs("userCompares", originalCompare.concat("│[" + thisName + "]"), this);
-                }
-            } else {
-                Log.e("initCompare", "Error length is " + splitedCompare.length);
-                throw new IllegalStateException();
+            if (!CompareActivity.toggleCompare(thisName, this)) {
+                Toast.makeText(this, R.string.compare_limit, Toast.LENGTH_SHORT).show();
             }
             initCompareCheckBox();
-            PrefsHelper.editPrefs("isCompareReloadNeeded", true, this);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "addToCompare", "Illegal Compare String. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userCompares", this));
@@ -1169,33 +770,14 @@ public class SpecsActivity extends AppCompatActivity {
 
     private void initCompareCheckBox() {
         try {
-            final String originalCompare = PrefsHelper.getStringPrefs("userCompares", this);
-            final String[] splitedCompare = originalCompare.split("│");
-            Log.e("stringis", originalCompare);
-            if (splitedCompare.length == 1 && splitedCompare[0].isEmpty()) {
-                compareItem.setChecked(false);
-                compareItem.setEnabled(true);
-                compareItem.setTitle(getString(R.string.submenu_specs_compare) + " (0)");
-            } else if (splitedCompare.length >= 1 && splitedCompare.length < 10) {
-                if (originalCompare.contains("[" + thisName + "]")) {
-                    compareItem.setChecked(true);
-                } else {
-                    compareItem.setChecked(false);
-                }
-                compareItem.setEnabled(true);
-                compareItem.setTitle(getString(R.string.submenu_specs_compare) + " (" + splitedCompare.length + ")");
-            } else if (splitedCompare.length == 10) {
-                if (originalCompare.contains("[" + thisName + "]")) {
-                    compareItem.setChecked(true);
-                    compareItem.setEnabled(true);
-                } else {
-                    compareItem.setChecked(false);
-                    compareItem.setEnabled(false);
-                }
+            final java.util.List<String> compareNames = CompareActivity.getCompareList(this);
+            final boolean containsCurrentMachine = compareNames.contains(thisName);
+            compareItem.setChecked(containsCurrentMachine);
+            compareItem.setEnabled(compareNames.size() < 10 || containsCurrentMachine);
+            if (compareNames.size() == 10) {
                 compareItem.setTitle(getString(R.string.submenu_specs_compare) + " " + getString(R.string.compare_limit));
             } else {
-                Log.e("initCompare", "Error length is " + splitedCompare.length);
-                throw new IllegalStateException();
+                compareItem.setTitle(getString(R.string.submenu_specs_compare) + " (" + compareNames.size() + ")");
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initCompareCheckBox", "Illegal Compare String. Please reset the application. String is: "
@@ -1203,201 +785,19 @@ public class SpecsActivity extends AppCompatActivity {
         }
     }
 
-    private void shareDialog() {
-        // 2021.11.13 at Jinzhong, Shanxi, China
-        AlertDialog.Builder shareDialog = new AlertDialog.Builder(this);
-        shareDialog.setTitle(getString(R.string.submenu_specs_share));
-        final String[] shareEntries = getResources().getStringArray(R.array.share_menu);
-        final String[] shareDescription = getResources().getStringArray(R.array.share_description);
-        shareDialog.setItems(shareEntries, (dialog, which) -> {
-            try {
-                if (which == 0 || which == 1) {
-                    // Model no. or all info
-                    List<Integer> currentEntries = new ArrayList<>(5);
-                    for (int i = 1; i < (which == 0 ? 6 : 16); i++) {
-                        currentEntries.add(i);
-                    }
-                    final String modelInfo = generateShareInfo(currentEntries);
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("MacIndexModelInfo", modelInfo);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this, shareDescription[which], Toast.LENGTH_LONG).show();
-                } else if (which == 2) {
-                    // User choose info
-                    // Construct the dialog view.
-                    final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
-                    final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-                    final String[] selectableSpecs = new String[]{
-                            getString(R.string.year), getString(R.string.model), getString(R.string.id), getString(R.string.gestalt),
-                            getString(R.string.order), getString(R.string.emc), getString(R.string.processor), getString(R.string.graphics),
-                            getString(R.string.type), getString(R.string.maxram), getString(R.string.software), getString(R.string.storage),
-                            getString(R.string.bus_expansion), getString(R.string.design), getString(R.string.support), getString(R.string.comment)};
-                    final boolean[] currentSelections = new boolean[selectableSpecs.length];
-                    for (int i = 0; i < selectableSpecs.length; i++) {
-                        CheckBox thisCheckBox = new CheckBox(this);
-                        thisCheckBox.setText(selectableSpecs[i]);
-                        thisCheckBox.setChecked(false);
-                        int finalI = i;
-                        thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-                            currentSelections[finalI] = thisCheckBox.isChecked();
-                        });
-                        // Use generateShareInfo to find if it is disabled
-                        List<Integer> currentEntries = new ArrayList<>(1);
-                        currentEntries.add(i);
-                        final String modelInfo = generateShareInfo(currentEntries);
-                        if (modelInfo.split("\n").length != 2) {
-                            // This is not supposed...
-                            thisCheckBox.setEnabled(false);
-                            thisCheckBox.setText(selectableSpecs[i] + " " + getString(R.string.share_menu_not_applicable));
-                        }
-                        selectLayout.addView(thisCheckBox);
-                    }
-
-                    // Create the dialog.
-                    final AlertDialog.Builder selectDialog = new AlertDialog.Builder(this);
-                    selectDialog.setTitle(shareEntries[which]);
-                    selectDialog.setView(selectChunk);
-                    selectDialog.setPositiveButton(R.string.link_confirm, (dialog2, which2) -> {
-                        // To be overwritten...
-                    });
-                    selectDialog.setNegativeButton(R.string.link_cancel, ((dialog2, which2) -> {
-                        // Cancelled, do nothing
-                    }));
-                    final AlertDialog selectDialogCreated = selectDialog.create();
-                    selectDialogCreated.show();
-
-                    selectDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-                        // Overwrite the positive button
-                        try {
-                            // Convert currentSelections to Entries Array.
-                            List<Integer> currentEntries = new ArrayList<>(0);
-                            for (int i = 0; i < currentSelections.length; i++) {
-                                if (currentSelections[i]) {
-                                    currentEntries.add(i);
-                                }
-                            }
-                            if (currentEntries.size() > 0) {
-                                final String modelInfo = generateShareInfo(currentEntries);
-                                ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("MacIndexModelInfo", modelInfo);
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(SpecsActivity.this, shareDescription[which], Toast.LENGTH_LONG).show();
-                                selectDialogCreated.dismiss();
-                            } else {
-                                Toast.makeText(SpecsActivity.this, R.string.share_menu_null, Toast.LENGTH_LONG).show();
-                            }
-                        } catch (Exception e) {
-                            ExceptionHelper.handleException(this, e, "selectDialog", "Error when copying currentSelections.");
-                        }
-                    });
-                } else if (which == 3) {
-                    // Generate link
-                    final String shareLink = "https://paizhang.info/macindex/share?code=" + thisName.replace(" ", "_") + "_";
-                    ClipboardManager clipboard = (ClipboardManager) SpecsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("MacIndexShareLink", shareLink);
-                    clipboard.setPrimaryClip(clip);
-                    Toast.makeText(SpecsActivity.this, shareDescription[which], Toast.LENGTH_LONG).show();
-                }
-            } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "shareDialog", "Unable to create the share dialog.");
-            }
-        });
-        shareDialog.show();
+    private void copySpecification() {
+        specsHelper.copySpecification(new String[]{thisName},
+                new String[][]{getSpecification()});
     }
 
-    private String generateShareInfo(final List<Integer> entries) {
-        String modelInfo = thisName + "\n";
-        try {
-            for (int i = 0; i < entries.size(); i++) {
-                switch (entries.get(i)) {
-                    case 0:
-                        // Introduction
-                        modelInfo = modelInfo.concat(thisYear.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.year) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisYear + "\n");
-                        break;
-                    case 1:
-                        // Model Number
-                        modelInfo = modelInfo.concat(thisModel.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.model) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisModel + "\n");
-                        break;
-                    case 2:
-                        // Identification
-                        modelInfo = modelInfo.concat(thisId.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.id) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisId + "\n");
-                        break;
-                    case 3:
-                        // Gestalt
-                        modelInfo = modelInfo.concat(thisGestalt.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.gestalt) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisGestalt + "\n");
-                        break;
-                    case 4:
-                        // Part Number
-                        modelInfo = modelInfo.concat(thisOrder.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.order) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisOrder + "\n");
-                        break;
-                    case 5:
-                        // EMC
-                        modelInfo = modelInfo.concat(thisEmc.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.emc) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisEmc + "\n");
-                        break;
-                    case 6:
-                        // Processor
-                        modelInfo = modelInfo.concat(thisProcessor.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.processor) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisProcessor + "\n");
-                        break;
-                    case 7:
-                        // Graphics and Display
-                        modelInfo = modelInfo.concat(thisGraphics.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.graphics) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisGraphics + "\n");
-                        break;
-                    case 8:
-                        // ROM Information
-                        modelInfo = modelInfo.concat(thisType.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.type) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisType + "\n");
-                        break;
-                    case 9:
-                        // RAM Information
-                        modelInfo = modelInfo.concat(thisMaxram.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.maxram) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisMaxram + "\n");
-                        break;
-                    case 10:
-                        // Software Support
-                        modelInfo = modelInfo.concat(thisSoftware.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.software) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisSoftware + "\n");
-                        break;
-                    case 11:
-                        // Storage
-                        modelInfo = modelInfo.concat(thisStorage.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.storage) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisStorage + "\n");
-                        break;
-                    case 12:
-                        // Features and Expansions
-                        modelInfo = modelInfo.concat(thisExpansion.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.bus_expansion) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisExpansion + "\n");
-                        break;
-                    case 13:
-                        // Design
-                        modelInfo = modelInfo.concat(thisDesign.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.design) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisDesign + "\n");
-                        break;
-                    case 14:
-                        // Support Status
-                        modelInfo = modelInfo.concat(thisSupport.equals(getString(R.string.not_applicable)) ? "" :
-                                getString(R.string.support) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisSupport + "\n");
-                        break;
-                    case 15:
-                        // Custom Comments
-                        modelInfo = modelInfo.concat(thisComment.equals(getString(R.string.comment_null)) ? "" :
-                                getString(R.string.comment) + (Locale.getDefault().getDisplayLanguage().equals("中文") ? "：" : ": ") + thisComment + "\n");
-                        break;
-                    default:
-                        throw new IllegalArgumentException();
-                }
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "generateShareInfo", "Illegal Argument. Received arguments:" + entries.toString());
-        }
-        return modelInfo.trim(); // Get rid of the last new line
+    private void generateShareLink() {
+        specsHelper.generateShareLink(thisName);
+    }
+
+    private String[] getSpecification() {
+        return new String[]{thisYear, thisModel, thisId, thisGestalt, thisOrder, thisEmc,
+                thisProcessor, thisGraphics, thisType, thisMaxram, thisSoftware, thisStorage,
+                thisExpansion, thisDesign, thisSupport, thisComment};
     }
 
     private void navPrev() {

@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
@@ -25,6 +26,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * MacIndex Favourite Activity
  * Jan. 15, 2021
@@ -34,6 +38,10 @@ public class FavouriteActivity extends AppCompatActivity {
     private int[][] loadPositions = {};
 
     private ProgressDialog waitDialog = null;
+
+    private Thread favouritesThread = null;
+
+    private volatile int favouritesRequestID = 0;
 
     private boolean isAbleToManage = false;
 
@@ -45,6 +53,13 @@ public class FavouriteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
+        WindowInsetsHelper.apply(this);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navigateUp();
+            }
+        });
         this.setTitle(getResources().getString(R.string.menu_favourite));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -97,7 +112,7 @@ public class FavouriteActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // Is still loading?
-        if (!waitDialog.isShowing()) {
+        if (waitDialog != null && !waitDialog.isShowing() && loadPositions != null) {
             // Save the currently received ID list
             outState.putBoolean("loadComplete", true);
             outState.putInt("loadPositionsCount", loadPositions.length);
@@ -106,17 +121,21 @@ public class FavouriteActivity extends AppCompatActivity {
             }
         } else {
             outState.putBoolean("loadComplete", false);
-            MainActivity.reloadDatabase(this);
         }
     }
 
     // Adapted from MainActivity
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        if (waitDialog.isShowing()) {
+        favouritesRequestID++;
+        if (favouritesThread != null) {
+            favouritesThread.interrupt();
+            favouritesThread = null;
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
+        super.onDestroy();
     }
 
     @Override
@@ -132,34 +151,27 @@ public class FavouriteActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.addFolderItem:
-                createFolder();
-                break;
-            case R.id.deleteFolderItem:
-                deleteFolder();
-                break;
-            case R.id.renameFolderItem:
-                renameFolder();
-                break;
-            case R.id.clearFolderItem:
-                final AlertDialog.Builder clearFoldersDialog = new AlertDialog.Builder(this);
-                clearFoldersDialog.setTitle(R.string.submenu_favourite_clear);
-                clearFoldersDialog.setMessage(R.string.favourites_clear_warning);
-                clearFoldersDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    PrefsHelper.clearPrefs("userFavourites", this);
-                    initFavourites(true);
-                });
-                clearFoldersDialog.setNegativeButton(R.string.link_cancel, ((dialogInterface, i) -> {
-                    // Cancelled.
-                }));
-                clearFoldersDialog.show();
-                break;
-            case R.id.favouriteHelpItem:
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/favourites", this);
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        final int itemID = item.getItemId();
+        if (itemID == R.id.addFolderItem) {
+            createFolder();
+        } else if (itemID == R.id.deleteFolderItem) {
+            deleteFolder();
+        } else if (itemID == R.id.renameFolderItem) {
+            renameFolder();
+        } else if (itemID == R.id.clearFolderItem) {
+            final AlertDialog.Builder clearFoldersDialog = new AlertDialog.Builder(this);
+            clearFoldersDialog.setTitle(R.string.submenu_favourite_clear);
+            clearFoldersDialog.setMessage(R.string.favourites_clear_warning);
+            clearFoldersDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                PrefsHelper.clearPrefs("userFavourites", this);
+                initFavourites(true);
+            });
+            clearFoldersDialog.setNegativeButton(R.string.link_cancel, ((dialogInterface, i) -> {
+                // Cancelled.
+            }));
+            clearFoldersDialog.show();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -170,21 +182,21 @@ public class FavouriteActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        navigateUp();
-        super.onBackPressed();
-    }
-
     private void navigateUp() {
-        if (MainActivity.getMainState()) {
-            finish();
-        } else {
+        if (!MainActivity.getMainState()) {
             startActivity(new Intent(this, MainActivity.class));
         }
+        finish();
     }
 
     private void initFavourites(final boolean reloadPositions) {
+        final int requestID = ++favouritesRequestID;
+        if (favouritesThread != null) {
+            favouritesThread.interrupt();
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
+            waitDialog.dismiss();
+        }
         // Reset reload parameter
         PrefsHelper.editPrefs("isFavouritesReloadNeeded", false, this);
         Log.i("initFavourites", PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
@@ -222,45 +234,59 @@ public class FavouriteActivity extends AppCompatActivity {
             if (reloadPositions) {
                 waitDialog.show();
             }
-            new Thread() {
+            favouritesThread = new Thread() {
                 @Override
                 public void run() {
                     try {
+                        final int[][] positionsForRequest;
                         if (reloadPositions) {
                             // Get Load Positions
-                            loadPositions = new int[allFolders.length][];
+                            positionsForRequest = new int[allFolders.length][];
                             for (int i = 0; i < allFolders.length; i++) {
                                 final String[] thisFolder = splitedString[i + 1].split("│");
-                                loadPositions[i] = new int[thisFolder.length - 1];
+                                final List<Integer> validMachineIDs = new ArrayList<>();
                                 for (int j = 0; j < thisFolder.length - 1; j++) {
                                     int[] thisID = MainActivity.getMachineHelper().searchHelper("name", thisFolder[j + 1].substring(1, thisFolder[j + 1].length() - 1),
                                             "all", true, false);
                                     if (thisID.length != 1) {
                                         Log.e("FavouritesSearchThread", "Error occurred on search string " + thisFolder[j + 1]);
-                                        // For safety reason
-                                        thisID = new int[1];
-                                        thisID[0] = 1;
+                                        continue;
                                     }
-                                    loadPositions[i][j] = thisID[0];
+                                    validMachineIDs.add(thisID[0]);
+                                }
+                                positionsForRequest[i] = new int[validMachineIDs.size()];
+                                for (int j = 0; j < validMachineIDs.size(); j++) {
+                                    positionsForRequest[i][j] = validMachineIDs.get(j);
                                 }
                                 // Is sorting needed?
                                 if (PrefsHelper.getBooleanPrefsSafe("isSortComment", FavouriteActivity.this)) {
-                                    loadPositions[i] = MainActivity.getMachineHelper().directSortByYear(loadPositions[i]);
+                                    positionsForRequest[i] = MainActivity.getMachineHelper().directSortByYear(positionsForRequest[i]);
                                 }
                             }
+                        } else {
+                            positionsForRequest = loadPositions;
+                        }
+                        if (Thread.currentThread().isInterrupted() || requestID != favouritesRequestID) {
+                            return;
                         }
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (requestID != favouritesRequestID || isFinishing()
+                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                    return;
+                                }
                                 try {
+                                    loadPositions = positionsForRequest;
                                     if (reloadPositions) {
                                         waitDialog.dismiss();
                                     }
                                     // Set up each category.
                                     TextView[][] allMachines = new TextView[loadPositions.length][];
                                     for (int i = 0; i < loadPositions.length; i++) {
-                                        final View categoryChunk = getLayoutInflater().inflate(R.layout.chunk_category, null);
+                                        final View categoryChunk = getLayoutInflater()
+                                                .inflate(R.layout.chunk_category, categoryContainer, false);
                                         final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
                                         final TextView categoryName = categoryChunk.findViewById(R.id.category);
 
@@ -347,7 +373,8 @@ public class FavouriteActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-            }.start();
+            };
+            favouritesThread.start();
         } catch (final Exception e) {
             ExceptionHelper.handleException(FavouriteActivity.this, e, "initFavourites", "Illegal Favourites String. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
