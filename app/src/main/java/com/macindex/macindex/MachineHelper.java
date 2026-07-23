@@ -1060,6 +1060,126 @@ class MachineHelper {
         return toReturn;
     }
 
+    public int[][] getGraphicsImage(final int thisMachine, final Context thisContext) {
+        int[] position = getPosition(thisMachine);
+        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
+                new String[]{"graphicsid"}, "id = " + position[1], null, null, null,
+                null);
+        tempCursor.moveToFirst();
+        String thisGraphicsImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("graphicsid"));
+        tempCursor.close();
+        Log.i("MHGetGraphicsImage", "Get ID " + thisGraphicsImage);
+        // NullSafe
+        if (thisGraphicsImage == null) {
+            return new int[][] {{0}};
+        }
+        String[] thisImages = thisGraphicsImage.split(",");
+        int[][] toReturn = new int[thisImages.length][];
+        for (int i = 0; i < thisImages.length; i++) {
+            switch (thisImages[i]) {
+                case "ati":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.ati;
+                    break;
+                case "atiradeon2000":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.atiradeon2000;
+                    break;
+                case "atiradeon2005":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.atiradeon2005;
+                    break;
+                case "atiradeon2007":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.atiradeon2007;
+                    break;
+                case "amdradeon":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.amdradeon;
+                    break;
+                case "amdradeon2013":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.amdradeon2013;
+                    break;
+                case "amdfirepro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.amdfirepro;
+                    break;
+                case "amdradeon2016":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.amdradeon2016;
+                    break;
+                case "amdradeonvega":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.amdradeonvega;
+                    break;
+                case "nvgeforce2mx":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce2mx;
+                    break;
+                case "nvgeforce3":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce3;
+                    break;
+                case "nvgeforce4":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce4;
+                    break;
+                case "nvgeforcefx":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforcefx;
+                    break;
+                case "nvgeforce6":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce6;
+                    break;
+                case "nvgeforce7":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce7;
+                    break;
+                case "nvgeforce2008":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforce2008;
+                    break;
+                case "nvgeforcegt2012":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforcegt2012;
+                    break;
+                case "nvgeforcegtx2012":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvgeforcegtx2012;
+                    break;
+                case "nvquadro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvquadro;
+                    break;
+                case "nvquadro2008":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.nvquadro2008;
+                    break;
+                case "intelhd":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.intelhd;
+                    break;
+                case "inteliris":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.inteliris;
+                    break;
+                case "inteliris2020":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.inteliris2020;
+                    break;
+                default:
+                    ExceptionHelper.handleException(thisContext, null,
+                            "MHGetGraphicsImage", "Illegal parameter " + thisGraphicsImage);
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = 0;
+                    break;
+            }
+        }
+        return toReturn;
+    }
+
     private int translateManufacturerID(final String thisManufacturer) {
         switch (thisManufacturer) {
             case "all":
