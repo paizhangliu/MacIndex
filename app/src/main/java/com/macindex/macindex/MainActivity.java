@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isDrawerGesture = false;
 
+    private Runnable pendingDrawerAction = null;
+
     private static boolean isMainRunning = false;
 
     @Override
@@ -279,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         isMainRunning = false;
+        pendingDrawerAction = null;
         interfaceRequestID++;
         if (interfaceThread != null) {
             interfaceThread.interrupt();
@@ -438,100 +441,78 @@ public class MainActivity extends AppCompatActivity {
 
             // Manufacturer Menu
             // Manufacturer 0: all (Default)
-            findViewById(R.id.group0MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.group0MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "all";
                 PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
                 initInterface(true);
-            });
+            }));
             // Manufacturer 1: apple68k
-            findViewById(R.id.group1MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.group1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "apple68k";
                 PrefsHelper.editPrefs("lastMainManufacturer", "apple68k", this);
                 initInterface(true);
-            });
+            }));
             // Manufacturer 2: appleppc
-            findViewById(R.id.group2MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.group2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "appleppc";
                 PrefsHelper.editPrefs("lastMainManufacturer", "appleppc", this);
                 initInterface(true);
-            });
+            }));
             // Manufacturer 3: appleintel
-            findViewById(R.id.group3MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.group3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "appleintel";
                 PrefsHelper.editPrefs("lastMainManufacturer", "appleintel", this);
                 initInterface(true);
-            });
+            }));
             // Manufacturer 4: applearm
-            findViewById(R.id.group4MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.group4MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "applearm";
                 PrefsHelper.editPrefs("lastMainManufacturer", "applearm", this);
                 initInterface(true);
-            });
+            }));
 
             // Filter Menu
             // Filter 1: names (Default)
-            findViewById(R.id.view1MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.view1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "names";
                 PrefsHelper.editPrefs("lastMainFilter", "names", this);
                 initInterface(true);
-            });
+            }));
             // Filter 2: processors
-            findViewById(R.id.view2MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.view2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "processors";
                 PrefsHelper.editPrefs("lastMainFilter", "processors", this);
                 initInterface(true);
-            });
+            }));
             // Filter 3: years
-            findViewById(R.id.view3MenuItem).setOnClickListener(view -> {
-                mDrawerLayout.closeDrawers();
+            findViewById(R.id.view3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "years";
                 PrefsHelper.editPrefs("lastMainFilter", "years", this);
                 initInterface(true);
-            });
+            }));
 
             // Main Menu
             // SearchActivity Entrance
-            findViewById(R.id.searchMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, SearchActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.searchMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, SearchActivity.class))));
             // Random Access
-            findViewById(R.id.randomMenuItem).setOnClickListener(view -> {
-                openRandom();
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.randomMenuItem).setOnClickListener(view ->
+                    closeDrawerWithAction(this::openRandom));
             // FavouriteActivity Entrance
-            findViewById(R.id.favouriteMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, FavouriteActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.favouriteMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, FavouriteActivity.class))));
             // CompareActivity Entrance
-            findViewById(R.id.compareMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, CompareActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.compareMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, CompareActivity.class))));
             // CommentActivity Entrance
-            findViewById(R.id.commentMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, CommentActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.commentMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, CommentActivity.class))));
             // SettingsAboutActivity Entrance
-            findViewById(R.id.aboutMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, SettingsAboutActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.aboutMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, SettingsAboutActivity.class))));
             // AboutActivity Entrance
-            findViewById(R.id.newAboutMenuItem).setOnClickListener(view -> {
-                startActivity(new Intent(MainActivity.this, NewAboutActivity.class));
-                mDrawerLayout.closeDrawers();
-            });
+            findViewById(R.id.newAboutMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
+                    startActivity(new Intent(MainActivity.this, NewAboutActivity.class))));
 
             // Set a drawer listener to change title and color.
             mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -547,6 +528,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onDrawerClosed(@NonNull final View drawerView) {
+                    runPendingDrawerAction();
                     setTitle(getString(translateTitleRes()));
                 }
 
@@ -568,18 +550,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void closeDrawerWithAction(final Runnable drawerAction) {
+        pendingDrawerAction = drawerAction;
+        if (mDrawerLayout.isDrawerVisible(GravityCompat.START)) {
+            closeDrawerQuickly();
+        } else {
+            runPendingDrawerAction();
+        }
+    }
+
+    private void closeDrawerQuickly() {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        try {
+            final ViewDragHelper draggerObj = getDrawerDragger();
+            final View drawerView = draggerObj.getCapturedView();
+            if (drawerView != null) {
+                // Close the drawer in half of the default duration.
+                draggerObj.smoothSlideViewTo(drawerView, -drawerView.getWidth(),
+                        drawerView.getTop(), 256, null);
+                mDrawerLayout.invalidate();
+            }
+        } catch (Exception e) {
+            // A changed AndroidX field must not take the whole main menu down.
+            Log.w("initMenu", "Unable to accelerate drawer.", e);
+        }
+    }
+
+    private void runPendingDrawerAction() {
+        final Runnable drawerAction = pendingDrawerAction;
+        pendingDrawerAction = null;
+        if (drawerAction != null) {
+            drawerAction.run();
+        }
+    }
+
     private void enlargeDrawerEdge() {
         try {
-            final Field mDragger = mDrawerLayout.getClass().getDeclaredField(
-                    "mLeftDragger");
-            mDragger.setAccessible(true);
-            final ViewDragHelper draggerObj = (ViewDragHelper) mDragger
-                    .get(mDrawerLayout);
+            final ViewDragHelper draggerObj = getDrawerDragger();
             draggerObj.setEdgeSize(draggerObj.getDefaultEdgeSize() * 10);
         } catch (Exception e) {
             // A changed AndroidX field must not take the whole main menu down.
             Log.w("initMenu", "Unable to enlarge drawer edge.", e);
         }
+    }
+
+    private ViewDragHelper getDrawerDragger() throws Exception {
+        final Field mDragger = mDrawerLayout.getClass().getDeclaredField(
+                "mLeftDragger");
+        mDragger.setAccessible(true);
+        return (ViewDragHelper) mDragger.get(mDrawerLayout);
     }
 
     private void resetDrawerTitle() {
