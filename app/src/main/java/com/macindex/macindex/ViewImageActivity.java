@@ -3,12 +3,10 @@ package com.macindex.macindex;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-
-import java.io.File;
 
 /**
  * MacIndex View Image Activity
@@ -50,12 +48,11 @@ public class ViewImageActivity extends AppCompatActivity {
         try {
             setTitle(MainActivity.getMachineHelper().getName(machineID));
             final ImageView image = findViewById(R.id.pic);
-            final File imageFile = MainActivity.getMachineHelper().getPicture(machineID, ViewImageActivity.this);
-            if (imageFile.exists()) {
+            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
+            if (picture != null) {
                 Log.i("SpecsAct", "Image exists");
-                image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getPath()));
+                image.setImageBitmap(picture);
             }
-            imageFile.delete();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }

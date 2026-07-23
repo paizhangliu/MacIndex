@@ -7,7 +7,7 @@ import androidx.core.widget.TextViewCompat;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,7 +21,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -356,16 +355,13 @@ public class CompareActivity extends AppCompatActivity {
 
     private void setMachineImage(final int viewID, final int machineID, final String name) {
         final ImageView image = findViewById(viewID);
-        final File imageFile = MainActivity.getMachineHelper().getPicture(machineID, this);
-        if (imageFile.exists()) {
-            image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getPath()));
+        final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
+        if (picture != null) {
+            image.setImageBitmap(picture);
         } else {
             image.setImageDrawable(null);
         }
         image.setContentDescription(name);
-        if (!imageFile.delete() && imageFile.exists()) {
-            Log.w("CompareActivity", "Unable to delete temporary image " + imageFile);
-        }
         // Set a long click listener
         image.setOnLongClickListener(v -> {
             Intent viewImageIntent = new Intent(CompareActivity.this, ViewImageActivity.class);

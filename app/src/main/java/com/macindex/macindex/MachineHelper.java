@@ -9,8 +9,6 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.util.Pair;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -485,7 +483,7 @@ class MachineHelper {
         return sound;
     }
 
-    public File getPicture(final int thisMachine, final Context thisContext) {
+    public Bitmap getPicture(final int thisMachine) {
         if (thisMachine < 0 || thisMachine >= totalMachine) {
             throw new IllegalArgumentException("Machine ID is out of range: " + thisMachine);
         }
@@ -505,23 +503,10 @@ class MachineHelper {
                 if (picture == null) {
                     throw new IllegalStateException("Unable to decode image for machine " + candidate);
                 }
-                try {
-                    final File file = File.createTempFile("tempF", ".tmp", thisContext.getCacheDir());
-                    try (FileOutputStream out = new FileOutputStream(file, false)) {
-                        if (!picture.compress(Bitmap.CompressFormat.PNG, 100, out)) {
-                            throw new IllegalStateException("Unable to encode machine image");
-                        }
-                        out.flush();
-                    }
-                    return file;
-                } catch (java.io.IOException e) {
-                    throw new IllegalStateException("Unable to create temporary machine image", e);
-                } finally {
-                    picture.recycle();
-                }
+                return picture;
             }
         }
-        return new File(thisContext.getCacheDir(), "missing-machine-image");
+        return null;
     }
 
     // Should return "N" if EveryMac link is not available.

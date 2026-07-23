@@ -9,7 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.regex.Pattern;
 
 public class SpecsActivity extends AppCompatActivity {
@@ -370,12 +369,11 @@ public class SpecsActivity extends AppCompatActivity {
         try {
             // Init image
             final ImageView image = findViewById(R.id.pic);
-            final File imageFile = MainActivity.getMachineHelper().getPicture(machineID, SpecsActivity.this);
-            if (imageFile.exists()) {
+            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
+            if (picture != null) {
                 Log.i("SpecsAct", "Image exists");
-                image.setImageBitmap(BitmapFactory.decodeFile(imageFile.getPath()));
+                image.setImageBitmap(picture);
             }
-            imageFile.delete();
 
             final TextView informationLabel = findViewById(R.id.information);
             specsHelper.initSound(machineID, image, informationLabel);
