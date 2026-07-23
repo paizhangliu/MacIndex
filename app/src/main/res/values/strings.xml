@@ -98,22 +98,6 @@
     <string name="submenu_compare_clear">Clear Compare List</string>
     <string name="submenu_comments_delete">Manage Comment(s)</string>
     <string name="submenu_comments_clear">Clear Comment(s)</string>
-    <string name="submenu_prefs_clear">Application Reset</string>
-    <string name="category0" translatable="false">Compact Macintosh</string>
-    <string name="category1" translatable="false">Macintosh II</string>
-    <string name="category2" translatable="false">Macintosh LC</string>
-    <string name="category3" translatable="false">Macintosh Centris</string>
-    <string name="category4" translatable="false">Macintosh Quadra</string>
-    <string name="category5" translatable="false">Macintosh Performa</string>
-    <string name="category6" translatable="false">Power Macintosh</string>
-    <string name="category7" translatable="false">Power Mac G3/G4/G5</string>
-    <string name="category8" translatable="false">iMac</string>
-    <string name="category9" translatable="false">eMac</string>
-    <string name="category10" translatable="false">Mac mini</string>
-    <string name="category11" translatable="false">PowerBook</string>
-    <string name="category12" translatable="false">PowerBook Duo</string>
-    <string name="category13" translatable="false">PowerBook G3/G4</string>
-    <string name="category14" translatable="false">iBook</string>
     <string name="year">Introduction</string>
     <string name="model">Model Number</string>
     <string name="id">Model Identifier</string>
