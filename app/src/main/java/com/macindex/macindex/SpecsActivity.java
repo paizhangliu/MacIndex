@@ -210,22 +210,24 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void getSpecs() {
-        thisName = MainActivity.getMachineHelper().getName(machineID);
-        thisType = MainActivity.getMachineHelper().getType(machineID);
-        thisProcessor = MainActivity.getMachineHelper().getProcessor(machineID);
-        thisMaxram = MainActivity.getMachineHelper().getMaxRam(machineID);
-        thisYear = MainActivity.getMachineHelper().getYear(machineID);
-        thisModel = MainActivity.getMachineHelper().getModel(machineID);
-        thisId = MainActivity.getMachineHelper().getMid(machineID);
-        thisGraphics = MainActivity.getMachineHelper().getGraphics(machineID);
-        thisExpansion = MainActivity.getMachineHelper().getExpansion(machineID);
-        thisStorage = MainActivity.getMachineHelper().getStorage(machineID);
-        thisOrder = MainActivity.getMachineHelper().getOrder(machineID);
-        thisGestalt = MainActivity.getMachineHelper().getGestalt(machineID);
-        thisEmc = MainActivity.getMachineHelper().getEMC(machineID);
-        thisSoftware = MainActivity.getMachineHelper().getSoftware(machineID);
-        thisDesign = MainActivity.getMachineHelper().getDesign(machineID);
-        thisSupport = MainActivity.getMachineHelper().getSupport(machineID);
+        final MachineHelper helper = MainActivity.getMachineHelper();
+        final String[] thisSpecs = helper.getSpecs(machineID);
+        thisName = helper.getName(machineID);
+        thisYear = thisSpecs[0];
+        thisModel = thisSpecs[1];
+        thisId = thisSpecs[2];
+        thisGestalt = thisSpecs[3];
+        thisOrder = thisSpecs[4];
+        thisEmc = thisSpecs[5];
+        thisProcessor = thisSpecs[6];
+        thisGraphics = thisSpecs[7];
+        thisType = thisSpecs[8];
+        thisMaxram = thisSpecs[9];
+        thisSoftware = thisSpecs[10];
+        thisStorage = thisSpecs[11];
+        thisExpansion = thisSpecs[12];
+        thisDesign = thisSpecs[13];
+        thisSupport = thisSpecs[14];
     }
 
     private void initSpecs() {

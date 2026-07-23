@@ -320,16 +320,8 @@ public class CompareActivity extends AppCompatActivity {
                 R.string.order, R.string.emc, R.string.processor, R.string.graphics,
                 R.string.maxram, R.string.type, R.string.software, R.string.storage,
                 R.string.bus_expansion, R.string.design, R.string.support};
-        leftSpecification = new String[]{helper.getYear(leftID), helper.getModel(leftID), helper.getMid(leftID),
-                helper.getGestalt(leftID), helper.getOrder(leftID), helper.getEMC(leftID),
-                helper.getProcessor(leftID), helper.getGraphics(leftID), helper.getType(leftID),
-                helper.getMaxRam(leftID), helper.getSoftware(leftID), helper.getStorage(leftID),
-                helper.getExpansion(leftID), helper.getDesign(leftID), helper.getSupport(leftID)};
-        rightSpecification = new String[]{helper.getYear(rightID), helper.getModel(rightID), helper.getMid(rightID),
-                helper.getGestalt(rightID), helper.getOrder(rightID), helper.getEMC(rightID),
-                helper.getProcessor(rightID), helper.getGraphics(rightID), helper.getType(rightID),
-                helper.getMaxRam(rightID), helper.getSoftware(rightID), helper.getStorage(rightID),
-                helper.getExpansion(rightID), helper.getDesign(rightID), helper.getSupport(rightID)};
+        leftSpecification = helper.getSpecs(leftID);
+        rightSpecification = helper.getSpecs(rightID);
         final int[] displayEntries = {0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14};
 
         final LinearLayout specsContainer = findViewById(R.id.compareSpecsContainer);

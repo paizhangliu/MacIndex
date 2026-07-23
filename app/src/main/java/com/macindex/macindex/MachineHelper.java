@@ -267,6 +267,22 @@ class MachineHelper {
         return checkApplicability(machineNameIndex[thisMachine]);
     }
 
+    public String[] getSpecs(final int thisMachine) {
+        int[] position = getPosition(thisMachine);
+        final String[] columns = {"year", "model", "ident", "gestalt", "\"order\"", "emc",
+                "processor", "graphics", "rom", "ram", "software", "storage", "expansion",
+                "design", "support"};
+        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
+                columns, "id = " + position[1], null, null, null, null);
+        tempCursor.moveToFirst();
+        final String[] tempResult = new String[columns.length];
+        for (int i = 0; i < columns.length; i++) {
+            tempResult[i] = checkApplicability(tempCursor.getString(i));
+        }
+        tempCursor.close();
+        return tempResult;
+    }
+
     public String getProcessor(final int thisMachine) {
         int[] position = getPosition(thisMachine);
         Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
