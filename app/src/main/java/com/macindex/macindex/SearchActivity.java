@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,13 +34,13 @@ public class SearchActivity extends AppCompatActivity {
 
     private TextView textResult = null;
 
-    private LinearLayout currentLayout = null;
+    private ListView resultList = null;
 
     private Spinner filtersSpinner = null;
 
     private Spinner optionsSpinner = null;
 
-    private TextView[][] loadedResults = null;
+    private MachineListAdapter resultListAdapter = null;
 
     private int[] positions = null;
 
@@ -154,7 +155,9 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        SpecsIntentHelper.refreshFavourites(loadedResults, this);
+        if (resultListAdapter != null) {
+            resultListAdapter.refreshFavourites();
+        }
     }
 
     @Override
@@ -308,7 +311,7 @@ public class SearchActivity extends AppCompatActivity {
     private void initSearch() {
         searchText = findViewById(R.id.searchInput);
         textResult = findViewById(R.id.textResult);
-        currentLayout = findViewById(R.id.resultFullContainer);
+        resultList = findViewById(R.id.resultList);
 
         searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -342,8 +345,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void clearSearch() {
-        loadedResults = null;
-        currentLayout.removeAllViews();
+        resultListAdapter = null;
+        resultList.setAdapter(null);
     }
 
     private void resetIllegal() {
@@ -550,20 +553,14 @@ public class SearchActivity extends AppCompatActivity {
                                             textResult.setText(getString(R.string.search_found) + positions.length + getString(R.string.search_results));
                                             textResult.setTextColor(getColor(R.color.colorDefaultText));
                                         }
-                                        loadedResults = new TextView[1][positions.length];
-                                        loadedResults[0] = SpecsIntentHelper.initCategory(currentLayout, positions,
-                                                true, SearchActivity.this);
-                                        SpecsIntentHelper.refreshFavourites(loadedResults, SearchActivity.this);
+                                        resultListAdapter = new MachineListAdapter(positions, SearchActivity.this);
+                                        resultList.setAdapter(resultListAdapter);
 
                                         // Open directly?
                                         if (reloadPositions && positions.length == 1
                                                 && PrefsHelper.getBooleanPrefs("isOpenDirectly", SearchActivity.this)) {
-                                            if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", SearchActivity.this)) {
-                                                LinkLoadingHelper.loadLinks(MainActivity.getMachineHelper().getName(positions[0]),
-                                                        MainActivity.getMachineHelper().getConfig(positions[0]), SearchActivity.this);
-                                            } else {
-                                                SpecsIntentHelper.sendIntent(positions, positions[0], SearchActivity.this, false);
-                                            }
+                                            SpecsIntentHelper.openMachine(positions, positions[0],
+                                                    SearchActivity.this);
                                         }
                                     }
                                 } else {

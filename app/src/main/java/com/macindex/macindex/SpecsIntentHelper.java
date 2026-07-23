@@ -18,7 +18,7 @@ import java.util.Arrays;
 class SpecsIntentHelper {
 
     public static TextView[] initCategory(final LinearLayout currentLayout, final int[] machineIDs,
-                                   final boolean isVisible, final Context thisContext) {
+                                          final boolean isVisible, final Context thisContext) {
         try {
             TextView[] machineLoaded = new TextView[machineIDs.length];
             for (int i = 0; i < machineIDs.length; i++) {
@@ -42,14 +42,8 @@ class SpecsIntentHelper {
                     TextViewCompat.setAutoSizeTextTypeWithDefaults(machineName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                 }
 
-                mainChunkToClick.setOnClickListener(unused -> {
-                    if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", thisContext)) {
-                        LinkLoadingHelper.loadLinks(thisName,
-                                MainActivity.getMachineHelper().getConfig(thisMachineID), thisContext);
-                    } else {
-                        SpecsIntentHelper.sendIntent(machineIDs, thisMachineID, thisContext, false);
-                    }
-                });
+                mainChunkToClick.setOnClickListener(unused -> openMachine(
+                        machineIDs, thisMachineID, thisContext));
 
                 if (!isVisible) {
                     mainChunk.setVisibility(View.GONE);
@@ -63,6 +57,16 @@ class SpecsIntentHelper {
             ExceptionHelper.handleException(thisContext, e,
                     "initCategory", "Category initialization failed.");
             return null;
+        }
+    }
+
+    public static void openMachine(final int[] machineIDs, final int thisMachineID,
+                                   final Context thisContext) {
+        if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", thisContext)) {
+            LinkLoadingHelper.loadLinks(MainActivity.getMachineHelper().getName(thisMachineID),
+                    MainActivity.getMachineHelper().getConfig(thisMachineID), thisContext);
+        } else {
+            SpecsIntentHelper.sendIntent(machineIDs, thisMachineID, thisContext, false);
         }
     }
 
@@ -122,26 +126,40 @@ class SpecsIntentHelper {
                 // NullSafe
                 if (thisViewGroup != null) {
                     for (TextView thisView : thisViewGroup) {
-                        if (FavouriteActivity.isFavourite(thisView.getText().toString(), userFavourites)) {
-                            thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_star_24, 0);
-                        } else {
-                            thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-                            } else {
-                                TextViewCompat.setAutoSizeTextTypeWithDefaults(thisView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-                            }
-
-                            // Reset the text size
-                            thisView.setTextSize(18);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                            } else {
-                                TextViewCompat.setAutoSizeTextTypeWithDefaults(thisView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                            }
-                        }
+                        refreshFavourite(thisView, userFavourites);
                     }
                 }
+            }
+        }
+    }
+
+    public static void refreshFavourite(final TextView thisView,
+                                        final String userFavourites) {
+        if (FavouriteActivity.isFavourite(thisView.getText().toString(), userFavourites)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            } else {
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                        thisView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            }
+            thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0, 0, R.drawable.ic_baseline_star_24, 0);
+        } else {
+            thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+            } else {
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                        thisView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+            }
+
+            // Reset the text size
+            thisView.setTextSize(18);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            } else {
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                        thisView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
             }
         }
     }

@@ -5,12 +5,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
-import android.animation.LayoutTransition;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,8 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,10 +173,8 @@ public class CommentActivity extends AppCompatActivity {
             PrefsHelper.editPrefs("isCommentsReloadNeeded", false, this);
 
             // Init Container...
-            final LinearLayout commentContainer = findViewById(R.id.commentContainer);
-            LayoutTransition layoutTransition = commentContainer.getLayoutTransition();
-            layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-            commentContainer.removeAllViews();
+            final ListView commentList = findViewById(R.id.commentList);
+            commentList.setAdapter(null);
 
             final LinearLayout emptyLayout = findViewById(R.id.emptyLayout);
             final TextView emptyText = findViewById(R.id.emptyText);
@@ -243,43 +237,8 @@ public class CommentActivity extends AppCompatActivity {
                                         waitDialog.dismiss();
                                     }
                                     // Update the UI after the thread done.
-                                    for (int i = 0; i < machineIDs.length; i++) {
-                                        final View commentsChunk = getLayoutInflater()
-                                                .inflate(R.layout.chunk_comments, commentContainer, false);
-                                        final TextView machineName = commentsChunk.findViewById(R.id.machineName);
-                                        final TextView machineComment = commentsChunk.findViewById(R.id.machineComment);
-                                        final LinearLayout commentChunk = commentsChunk.findViewById(R.id.comment_chunk);
-
-                                        // Set Machine Info Accordingly
-                                        final String thisName = MainActivity.getMachineHelper().getName(machineIDs[i]);
-                                        machineName.setText(thisName);
-                                        for (String thisString : thisCommentsStrings) {
-                                            String[] commentParts = thisString.split("│", 2);
-                                            if (commentParts.length == 2 && commentParts[0].equals(thisName)) {
-                                                machineComment.setText(commentParts[1]);
-                                                break;
-                                            }
-                                        }
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                            machineName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                                        } else {
-                                            TextViewCompat.setAutoSizeTextTypeWithDefaults(machineName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                                        }
-
-                                        int finalI = i;
-                                        commentChunk.setOnClickListener(view -> {
-                                            SpecsIntentHelper.sendIntent(machineIDs, machineIDs[finalI], CommentActivity.this, false);
-                                        });
-                                        commentChunk.setOnLongClickListener(view -> {
-                                            ClipboardManager clipboard = (ClipboardManager) CommentActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                                            ClipData clip = ClipData.newPlainText("userComment", machineComment.getText());
-                                            clipboard.setPrimaryClip(clip);
-                                            Toast.makeText(CommentActivity.this, MainActivity.getRes().getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
-                                            return true;
-                                        });
-
-                                        commentContainer.addView(commentsChunk);
-                                    }
+                                    commentList.setAdapter(new CommentListAdapter(machineIDs,
+                                            thisCommentsStrings, CommentActivity.this));
                                     Log.i("CommentSearchThread", thisCommentsStrings.length + " Machines loaded in the container.");
                                 } catch (final Exception e) {
                                     ExceptionHelper.handleException(CommentActivity.this, e, "CommentSearchThread", "Cannot add children to container. Likely illegal comment prefs string. Please reset the application. String is: "
