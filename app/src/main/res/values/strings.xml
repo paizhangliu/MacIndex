@@ -11,10 +11,6 @@
     <string name="information_specs_high_vol_warning">The current volume is too high. Do you want to proceed playing?\nSelect \"Confirm\" to turn this warning off temporarily.\nGo to preferences page to turn this function off.</string>
     <string name="information_first_lunch_title">Welcome to MacIndex</string>
     <string name="information_first_lunch">Open the drawer to navigate inside the application. Open the menu to access more options.</string>
-    <string name="setting_sort">Enhanced Sorting (Main/Search)</string>
-    <string name="setting_sort_description">Sort by time again to ensure correct positions for machines not in the same category. Turn off can make the loading faster. This affects the Main Page and Search Page.</string>
-    <string name="setting_sort_comment">Enhanced Sorting (Bookmark/Comment)</string>
-    <string name="setting_sort_comment_description">Sort by time or sort by the order of addition. Turn off can make the loading faster. This affects the Bookmark Page and Comment Page.</string>
     <string name="setting_everymac">Open Directly in EveryMac</string>
     <string name="setting_everymac_description">Open the EveryMac Page of the machine directly instead of the Specification Page. Will ask for specific configuration if the machine has more than one configurations.</string>
     <string name="setting_everymac_warning_content">This is effective for both Main Page and Search Page. Some functions will no longer be available as well.</string>
@@ -102,7 +98,6 @@
     <string name="submenu_compare_clear">Clear Compare List</string>
     <string name="submenu_comments_delete">Manage Comment(s)</string>
     <string name="submenu_comments_clear">Clear Comment(s)</string>
-    <string name="submenu_prefs_benchmark">Benchmark</string>
     <string name="submenu_prefs_clear">Application Reset</string>
     <string name="category0" translatable="false">Compact Macintosh</string>
     <string name="category1" translatable="false">Macintosh II</string>
@@ -134,11 +129,6 @@
     <string name="bus_expansion">Feature &amp; Expansion</string>
     <string name="design">Design</string>
     <string name="support">Support Status</string>
-    <string name="benchmark_warning">This can evaluate the performance of the current version MacIndex.</string>
-    <string name="benchmark_result">Benchmark has completed. This reflects the performance of the current version of MacIndex. Lower is better.</string>
-    <string name="benchmark_advice">Benchmark has completed. Based on the score, enabling enhanced sorting is not recommended. Turning it off will improve your experience. You can enable it later at the preferences page.</string>
-    <string name="benchmark_high">Benchmark has completed. Based on the score, enabling enhanced sorting is recommended. Turning it on can ensure the correct order and will not impact your experience. You can disable it later at the preferences page.</string>
-    <string name="benchmark_error">Benchmark was interrupted. Please do not use your phone or leave MacIndex during the process.</string>
     <string name="comment">Comment</string>
     <string name="comment_null">Not Specified</string>
     <string name="comment_illegal">The special character \'│\' is internally used by MacIndex and cannot be included in the comment</string>
@@ -163,7 +153,6 @@
     <string name="get_started">Get Started</string>
     <string name="loading_category">Loading Categories</string>
     <string name="loading_fixed_nav">Fixed Navigation Enabled</string>
-    <string name="loading_benchmark">Benchmark in progress, please wait. Do not use your phone or leave MacIndex.</string>
     <string name="loading_search">Searching</string>
     <string name="loading_comments">Loading Comments</string>
     <string name="loading_favourites">Loading Bookmarks</string>

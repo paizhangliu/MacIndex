@@ -10,10 +10,6 @@
     <string name="information_specs_high_vol_warning">目前的音量较高。是否要继续播放？\n选择“确认”来暂时关闭本警告。\n打开设置来关闭这个功能。</string>
     <string name="information_first_lunch_title">欢迎使用 MacIndex</string>
     <string name="information_first_lunch">打开抽屉在应用功能间导航。打开菜单来探索更多选项。</string>
-    <string name="setting_sort">二次排序（主页与搜索）</string>
-    <string name="setting_sort_description">重新按照时间排序来保证非同个分组的机型排序正确。关闭可使加载更快。影响主页和搜索页。</string>
-    <string name="setting_sort_comment">二次排序（收藏与备注）</string>
-    <string name="setting_sort_comment_description">按照时间排序或按照添加顺序排序。关闭可使加载更快。影响收藏页和备注页。</string>
     <string name="setting_everymac">默认从 EveryMac 打开</string>
     <string name="setting_everymac_description">直接跳转到当前机型对应的 EveryMac 网页，而不打开参数页面。若该机型有多种不同的配置，将特别询问。</string>
     <string name="setting_everymac_warning_content">这会对主页和搜索结果生效。同时，某些功能将不再可用。</string>
@@ -97,7 +93,6 @@
     <string name="submenu_compare_clear">清除比较列表</string>
     <string name="submenu_comments_delete">管理备注</string>
     <string name="submenu_comments_clear">清除备注</string>
-    <string name="submenu_prefs_benchmark">基准测试</string>
     <string name="submenu_prefs_clear">重置应用</string>
     <string name="year">推出时间</string>
     <string name="model">机型号</string>
@@ -114,11 +109,6 @@
     <string name="bus_expansion">功能与扩展</string>
     <string name="design">设计</string>
     <string name="support">售后状态</string>
-    <string name="benchmark_warning">此功能可以评估当前版本的 MacIndex 的性能表现。</string>
-    <string name="benchmark_result">基准测试已完毕。该成绩可以反映该手机使用当前版本 MacIndex 的性能表现。得分越低越好。</string>
-    <string name="benchmark_advice">基准测试已完毕。基于得分，不推荐使用二次排序功能。将其关闭可以提升使用体验。可以在设置页重新打开该功能。</string>
-    <string name="benchmark_high">基准测试已完毕。基于得分，推荐使用二次排序功能。将其打开可以保证分组排列正确，且不会影响使用体验。可以在设置页再次关闭该功能。</string>
-    <string name="benchmark_error">基准测试被中断。请勿在测试期间操作手机或离开 MacIndex。</string>
     <string name="comment">备注</string>
     <string name="comment_null">暂无备注</string>
     <string name="comment_illegal">很抱歉，特殊字符 \'│\' 被 MacIndex 内部使用且无法用作备注</string>
@@ -143,7 +133,6 @@
     <string name="get_started">开始使用</string>
     <string name="loading_category">正在加载分组</string>
     <string name="loading_fixed_nav">导航范围已固定</string>
-    <string name="loading_benchmark">正在基准测试，请稍候。请勿操作手机或离开 MacIndex。</string>
     <string name="loading_search">正在搜索</string>
     <string name="loading_comments">正在加载备注</string>
     <string name="loading_favourites">正在加载收藏</string>

@@ -25,8 +25,6 @@ class PrefsHelper {
         DEFAULT_VALUES = new HashMap<>();
 
         /* User Preferences */
-        DEFAULT_VALUES.put("isSortAgain", Boolean.TRUE);
-        DEFAULT_VALUES.put("isSortComment", Boolean.FALSE);
         DEFAULT_VALUES.put("isOpenEveryMac", Boolean.FALSE);
         DEFAULT_VALUES.put("isPlayDeathSound", Boolean.TRUE);
         DEFAULT_VALUES.put("isEnableVolWarning", Boolean.TRUE);
@@ -106,24 +104,6 @@ class PrefsHelper {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "Preference Helper", "Unable to get Boolean preference: " + thisPrefsName);
-            return false;
-        }
-    }
-
-    public static Boolean getBooleanPrefsSafe(final String thisPrefsName, final Context thisContext) {
-        try {
-            final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
-            if (DEFAULT_VALUES.containsKey(thisPrefsName) && DEFAULT_VALUES.get(thisPrefsName) instanceof Boolean) {
-                Boolean value = prefsFile.getBoolean(thisPrefsName, (Boolean) DEFAULT_VALUES.get(thisPrefsName));
-                Log.i("Preference Helper", "Got Boolean preference: " + thisPrefsName
-                        + " with value " + value);
-                return value;
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } catch (Exception e) {
-            Log.e("Preference Helper", "Unable to get Boolean preference: " + thisPrefsName);
-            e.printStackTrace();
             return false;
         }
     }
