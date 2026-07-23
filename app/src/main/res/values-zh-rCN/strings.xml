@@ -33,8 +33,6 @@
     <string name="setting_save_compare_description">保存上次选中的机型和比较栏位。</string>
     <string name="setting_search_open_directly">打开唯一的搜索结果</string>
     <string name="setting_search_open_directly_description">若搜索后只找到一个结果，则直接打开它。</string>
-    <string name="setting_defaults_warning_content">已保存的设置文件将会被完全清除，包括偏好设置和所有使用记录等。在确认后 MacIndex 将会退出。此操作可能有助于解决问题，但不能撤销。</string>
-    <string name="setting_defaults_cleared">操作已完成</string>
     <string name="search_searchBy">搜索方式</string>
     <string-array name="search_Filters">
         <item>所有分组</item>

@@ -296,8 +296,8 @@ public class MainActivity extends AppCompatActivity {
             Log.i("DebugMode", "Disabling debug menu items.");
             menu.findItem(R.id.mainDebugReloadItem).setVisible(false);
             menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
-            menu.findItem(R.id.mainDebugRunnerItem).setVisible(false);
             menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
+            menu.findItem(R.id.mainDebugResetItem).setVisible(false);
         }
         return true;
     }
@@ -321,8 +321,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemID == R.id.mainDebugVersionRegistration) {
             PrefsHelper.clearPrefs("lastKnownVersion", this);
             PrefsHelper.triggerRebirth(this);
-        } else if (itemID == R.id.mainDebugRunnerItem) {
-            Toast.makeText(this, "Complete", Toast.LENGTH_SHORT).show();
+        } else if (itemID == R.id.mainDebugResetItem) {
+            Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
+            PrefsHelper.clearPrefs(this);
         } else if (itemID == R.id.mainResetItem) {
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);

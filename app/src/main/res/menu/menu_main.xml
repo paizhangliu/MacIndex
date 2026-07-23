@@ -11,8 +11,8 @@
         android:id="@+id/mainDebugVersionRegistration"
         android:title="Debug: Register New Version" />
     <item
-        android:id="@+id/mainDebugRunnerItem"
-        android:title="Debug: Run Code" />
+        android:id="@+id/mainDebugResetItem"
+        android:title="Debug: Reset App" />
     <item
         android:id="@+id/mainResetItem"
         android:title="@string/submenu_main_reset" />

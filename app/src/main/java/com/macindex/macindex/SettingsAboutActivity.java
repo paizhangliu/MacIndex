@@ -1,13 +1,9 @@
 package com.macindex.macindex;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -23,33 +19,10 @@ public class SettingsAboutActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        MainActivity.validateOperation(this);
-        initSettings();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_prefs, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final int itemID = item.getItemId();
-        if (itemID == R.id.clearPrefsItem) {
-            final AlertDialog.Builder defaultsWarningDialog = new AlertDialog.Builder(SettingsAboutActivity.this);
-            defaultsWarningDialog.setTitle(R.string.submenu_prefs_clear);
-            defaultsWarningDialog.setMessage(R.string.setting_defaults_warning_content);
-            defaultsWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> PrefsHelper.clearPrefs(this));
-            defaultsWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                // Cancelled, nothing to do.
-            });
-            defaultsWarningDialog.show();
-        } else {
-            return super.onOptionsItemSelected(item);
+        if (!MainActivity.validateOperation(this)) {
+            return;
         }
-        return true;
+        initSettings();
     }
 
     @Override
@@ -57,8 +30,6 @@ public class SettingsAboutActivity extends AppCompatActivity {
         finish();
         return true;
     }
-
-
 
     private void initSettings() {
         final SwitchMaterial swSortComment = findViewById(R.id.switchSortComment);

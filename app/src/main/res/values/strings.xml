@@ -34,8 +34,6 @@
     <string name="setting_save_compare_description">Save the last selected machines and column.</string>
     <string name="setting_search_open_directly">Open the Individual Search Result</string>
     <string name="setting_search_open_directly_description">If only one search result was found, then open it directly.</string>
-    <string name="setting_defaults_warning_content">Saved preference file will be completely cleared, including your preferences and all usage records. After you confirm, MacIndex will quit. This is helpful for troubleshooting, but cannot be undone.</string>
-    <string name="setting_defaults_cleared">Operation completed.</string>
     <string name="search_searchBy">Search Options</string>
     <string-array name="search_Filters">
         <item>All Categories</item>
