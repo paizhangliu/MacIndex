@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -347,8 +348,8 @@ public class CompareActivity extends AppCompatActivity {
 
         final TextView nameLeft = findViewById(R.id.nameTextLeft);
         final TextView nameRight = findViewById(R.id.nameTextRight);
-        nameLeft.setText(leftName);
-        nameRight.setText(rightName);
+        reloadName(nameLeft, leftName);
+        reloadName(nameRight, rightName);
         nameLeft.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{leftID}, leftID, this, false));
         nameRight.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{rightID}, rightID, this, false));
 
@@ -379,6 +380,35 @@ public class CompareActivity extends AppCompatActivity {
             }
             specsContainer.addView(row);
         }
+    }
+
+    private void reloadName(final TextView name, final String thisName) {
+        name.setVisibility(View.INVISIBLE);
+
+        // Reset the auto-sizing
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+        } else {
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(name,
+                    TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
+        }
+
+        // Reset the Machine Name.
+        name.setText(thisName);
+        name.setTextSize(20);
+
+        // Auto-sizing only if two lines are insufficient.
+        name.post(() -> {
+            if (!name.getLayout().getText().toString().equals(thisName)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                } else {
+                    TextViewCompat.setAutoSizeTextTypeWithDefaults(name,
+                            TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                }
+            }
+            name.setVisibility(View.VISIBLE);
+        });
     }
 
     private void setMachineImage(final int viewID, final int machineID, final String name) {
