@@ -258,6 +258,10 @@ public class FavouriteActivity extends AppCompatActivity {
                                 for (int j = 0; j < validMachineIDs.size(); j++) {
                                     positionsForRequest[i][j] = validMachineIDs.get(j);
                                 }
+                                // Is sorting needed?
+                                if (PrefsHelper.getBooleanPrefsSafe("isSortComment", FavouriteActivity.this)) {
+                                    positionsForRequest[i] = MainActivity.getMachineHelper().directSortByYear(positionsForRequest[i]);
+                                }
                             }
                         } else {
                             positionsForRequest = loadPositions;

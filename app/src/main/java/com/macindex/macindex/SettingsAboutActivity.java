@@ -61,6 +61,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
 
 
     private void initSettings() {
+        final SwitchMaterial swSortComment = findViewById(R.id.switchSortComment);
         final SwitchMaterial swEveryMac = findViewById(R.id.switchEveryMac);
         final SwitchMaterial swDeathSound = findViewById(R.id.switchDeathSound);
         final SwitchMaterial swNavButtons = findViewById(R.id.switchNavButtons);
@@ -72,6 +73,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         final SwitchMaterial swVolWarning = findViewById(R.id.switchVolWarning);
         final SwitchMaterial swOpenDirectly = findViewById(R.id.switchOpenDirectly);
 
+        swSortComment.setChecked(PrefsHelper.getBooleanPrefs("isSortComment", this));
         final Boolean everyMacSelection = PrefsHelper.getBooleanPrefs("isOpenEveryMac", this);
         swEveryMac.setChecked(everyMacSelection);
         swDeathSound.setChecked(PrefsHelper.getBooleanPrefs("isPlayDeathSound", this));
@@ -84,6 +86,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         swVolWarning.setChecked(PrefsHelper.getBooleanPrefs("isEnableVolWarning", this));
         swOpenDirectly.setChecked(PrefsHelper.getBooleanPrefs("isOpenDirectly", this));
 
+        swSortComment.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSortComment", isChecked, this));
         swDeathSound.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isPlayDeathSound", isChecked, this));
         swNavButtons.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isUseNavButtons", isChecked, this));
         swQuickNav.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isFixedNav", isChecked, this));
@@ -96,6 +99,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
 
         // If EveryMac is checked, disable following settings.
         if (everyMacSelection) {
+            swSortComment.setEnabled(false);
             swDeathSound.setEnabled(false);
             swNavButtons.setEnabled(false);
             swQuickNav.setEnabled(false);
@@ -103,6 +107,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
             swVolWarning.setEnabled(false);
             swSaveCompareUsage.setEnabled(false);
         } else {
+            swSortComment.setEnabled(true);
             swDeathSound.setEnabled(true);
             swNavButtons.setEnabled(true);
             swQuickNav.setEnabled(true);

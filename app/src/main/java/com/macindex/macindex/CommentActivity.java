@@ -215,6 +215,11 @@ public class CommentActivity extends AppCompatActivity {
                                 for (int i = 0; i < validMachineIDs.size(); i++) {
                                     machineIDsForRequest[i] = validMachineIDs.get(i);
                                 }
+
+                                // Is sorting needed?
+                                if (PrefsHelper.getBooleanPrefs("isSortComment", CommentActivity.this)) {
+                                    MainActivity.getMachineHelper().directSortByYear(machineIDsForRequest);
+                                }
                             } else {
                                 machineIDsForRequest = machineIDs == null ? new int[0] : machineIDs;
                             }
