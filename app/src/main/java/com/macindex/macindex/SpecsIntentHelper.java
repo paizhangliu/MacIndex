@@ -80,7 +80,8 @@ class SpecsIntentHelper {
             new Thread() {
                 @Override
                 public void run() {
-                    final int[] newCategory = MainActivity.getMachineHelper().getCategoryRangeIDs(thisMachineID, PrefsHelper.getBooleanPrefsSafe("isSortAgain", parentContext));
+                    final int[] newCategory = MainActivity.getMachineHelper()
+                            .getCategoryRangeIDs(thisMachineID);
                     ((Activity) parentContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

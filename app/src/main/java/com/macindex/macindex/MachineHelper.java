@@ -12,6 +12,7 @@ import android.util.Pair;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -151,9 +152,9 @@ class MachineHelper {
     }
 
     // Get category range for fixed navigation
-    public int[] getCategoryRangeIDs(final int thisMachine, final boolean isSortAgain) {
+    public int[] getCategoryRangeIDs(final int thisMachine) {
         return searchHelper("stype", getUndefined(thisMachine, "stype"),
-                "all", false, isSortAgain);
+                "all", false, true);
     }
 
 
@@ -188,7 +189,8 @@ class MachineHelper {
     // Get machine ID by a specific position. Updated to adapt String type.
     public int findByPosition(final Pair<String, Integer> thisPosition) {
         int machineID = 0;
-        for (int i = 0; i < convertToMHCategoryID(thisPosition.first); i++) {
+        final int categoryID = convertToMHCategoryID(thisPosition.first);
+        for (int i = 0; i < categoryID; i++) {
             machineID += categoryIndividualCount[i];
         }
         return machineID + thisPosition.second;
@@ -966,7 +968,7 @@ class MachineHelper {
 
     // For search use. Return machine IDs. Adapted with category range.
     public int[] searchHelper(final String columnName, final String searchInput, final String thisManufacturer,
-                              final boolean isExactMatch, final boolean isSortAgain) {
+                              final boolean isExactMatch, final boolean sortResults) {
         try {
             Log.i("MHSearchHelper", "Get parameter: column " + columnName + ", input " + searchInput);
             // Raw results (categoryID/remainders)
@@ -1045,11 +1047,11 @@ class MachineHelper {
             Log.i("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
 
             // Sort if required.
-            if (isSortAgain && resultTotalCount > 1) {
-                // Insertion sort for best runtime
+            if (sortResults && resultTotalCount > 1) {
+                // Sort by introduction date.
                 finalPositions = directSortByYear(finalPositions);
             }
-            Log.i("MHSearchHelper", "Sorting is " + isSortAgain + ".");
+            Log.i("MHSearchHelper", "Sorting is " + sortResults + ".");
             Log.i("MHSearchHelper", "Returning " + finalPositions.length + " result(s).");
             return finalPositions;
         } catch (Exception e) {
@@ -1101,7 +1103,7 @@ class MachineHelper {
     }
 
     // For filter-based fixed search use. Return (filterIDs/machineIDs).
-    public int[][] filterSearchHelper(final String[][] filterString, final String thisManufacturer, final boolean isSortAgain) {
+    public int[][] filterSearchHelper(final String[][] filterString, final String thisManufacturer) {
         try {
             int[][] finalPositions = new int[filterString[1].length][];
             for (int i = 0; i < filterString[1].length; i++) {
@@ -1109,8 +1111,8 @@ class MachineHelper {
                 if (isQueryCancelled()) {
                     throw new IllegalAccessException();
                 }
-                finalPositions[i] = searchHelper(filterString[0][0], filterString[1][i], thisManufacturer,
-                        false, isSortAgain);
+                finalPositions[i] = searchHelper(filterString[0][0], filterString[1][i],
+                        thisManufacturer, false, true);
             }
             return finalPositions;
         } catch (Exception e) {
@@ -1124,19 +1126,20 @@ class MachineHelper {
     public int[] directSortByYear(final int[] input) {
         try {
             Log.i("MHDirectSort", "Starting Direct Sorting.");
+            final int[] originalInput = input.clone();
+            final long[] sortValues = new long[input.length];
             for (int i = 0; i < input.length; i++) {
-                for (int j = i; j > 0; j--) {
-                    // Terminate immediately.
-                    if (isQueryCancelled()) {
-                        throw new IllegalAccessException();
-                    }
-                    if (getYearForSorting("", "", input[j])
-                            < getYearForSorting("", "", input[j - 1])) {
-                        int shiftTemp = input[j];
-                        input[j] = input[j - 1];
-                        input[j - 1] = shiftTemp;
-                    }
+                // Terminate immediately.
+                if (isQueryCancelled()) {
+                    throw new IllegalAccessException();
                 }
+                // Keep the original position in the low bits for stable sorting.
+                sortValues[i] = ((long) getYearForSorting("", "", input[i]) << 32)
+                        | (i & 0xffffffffL);
+            }
+            Arrays.sort(sortValues);
+            for (int i = 0; i < input.length; i++) {
+                input[i] = originalInput[(int) sortValues[i]];
             }
             return input;
         } catch (Exception e) {
@@ -1152,23 +1155,15 @@ class MachineHelper {
                 return input;
             }
             Log.i("MHCheckDuplicate", "Input is " + Arrays.toString(input));
-            int[] temp = new int[input.length];
-            int tempIndex = 0;
-            for (int i = 0; i < input.length; i++) {
-                for (int j = 0; j <= tempIndex; j++) {
-                    if (j == tempIndex) {
-                        temp[tempIndex] = input[i];
-                        tempIndex++;
-                        break;
-                    }
-                    if (temp[j] == input[i]) {
-                        break;
-                    }
-                }
+            final LinkedHashSet<Integer> uniqueInput = new LinkedHashSet<>();
+            for (int entry : input) {
+                uniqueInput.add(entry);
             }
-            int[] toReturn = new int[tempIndex];
-            for (int i = 0; i < tempIndex; i++) {
-                toReturn[i] = temp[i];
+            int[] toReturn = new int[uniqueInput.size()];
+            int toReturnIndex = 0;
+            for (int entry : uniqueInput) {
+                toReturn[toReturnIndex] = entry;
+                toReturnIndex++;
             }
             Log.i("MHCheckDuplicate", "Output is " + Arrays.toString(toReturn));
             return toReturn;

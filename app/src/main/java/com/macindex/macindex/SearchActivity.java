@@ -500,8 +500,8 @@ public class SearchActivity extends AppCompatActivity {
                             }
                             Log.i("rawSearchInput", "Raw Input " + rawSearchInput + ", Current Manufacturer: "
                                     + manufacturerForRequest + ", Raw Option: " + searchColumns[i] + ", Match Parameter: " + rawMatchParam);
-                            subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput, manufacturerForRequest,
-                                    rawMatchParam, PrefsHelper.getBooleanPrefsSafe("isSortAgain", SearchActivity.this));
+                            subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
+                                    manufacturerForRequest, rawMatchParam, true);
                             resultCount += subPositions[i].length;
                         }
 

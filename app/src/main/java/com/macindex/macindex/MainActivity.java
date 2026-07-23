@@ -687,8 +687,8 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     final int[][] positionsForRequest;
                     if (finalInternalReloadFlag) {
-                        positionsForRequest = machineHelper.filterSearchHelper(thisFilterString, manufacturerForRequest,
-                                PrefsHelper.getBooleanPrefsSafe("isSortAgain", MainActivity.this));
+                        positionsForRequest = machineHelper.filterSearchHelper(thisFilterString,
+                                manufacturerForRequest);
                     } else {
                         positionsForRequest = loadPositions;
                     }
