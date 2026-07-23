@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -295,6 +296,7 @@ public class SpecsActivity extends AppCompatActivity {
             final LinearLayout processorTypeImageLayout = findViewById(R.id.processorTypeImageLayout);
             final ImageView processorTypeImage = findViewById(R.id.processorTypeImage);
             final LinearLayout processorImageLayoutContainer = findViewById(R.id.processorImageLayoutContainer);
+            final HorizontalScrollView processorImageScrollView = findViewById(R.id.processorImageScrollView);
             final LinearLayout processorImages = findViewById(R.id.processorImageLayout);
             final int[][] processorImageRes = MainActivity.getMachineHelper().getProcessorImage(machineID, SpecsActivity.this);
 
@@ -324,11 +326,85 @@ public class SpecsActivity extends AppCompatActivity {
                 }
                 // Remove the last space.
                 ((LinearLayout) processorImages.getChildAt(processorImages.getChildCount() - 1)).removeViewAt(1);
+                fitImageLayout(processorImageScrollView, processorImages, R.id.processorImage);
+            }
+
+            /*
+                Graphics Images dynaLoad.
+
+                (1) Try getting specific image. Will load if specific image(s) is/are present.
+                (2) No action. The case is not applicable for the loading process.
+            */
+            final LinearLayout graphicsImageLayoutContainer = findViewById(R.id.graphicsImageLayoutContainer);
+            final HorizontalScrollView graphicsImageScrollView = findViewById(R.id.graphicsImageScrollView);
+            final LinearLayout graphicsImages = findViewById(R.id.graphicsImageLayout);
+            final int[][] graphicsImageRes = MainActivity.getMachineHelper().getGraphicsImage(machineID, SpecsActivity.this);
+
+            // Default state is hidden.
+            graphicsImageLayoutContainer.setVisibility(View.GONE);
+
+            if (graphicsImageRes[0][0] != 0) {
+                // Got specific images. Now loading.
+                graphicsImageLayoutContainer.setVisibility(View.VISIBLE);
+                // Clear all existing children.
+                graphicsImages.removeAllViews();
+                for (int[] graphicsImageResGroup : graphicsImageRes) {
+                    for (final int thisGraphicsImageRes : graphicsImageResGroup) {
+                        @SuppressLint("InflateParams")
+                        final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_graphics_image, null);
+                        final ImageView thisGraphicsImage = imageChunk.findViewById(R.id.graphicsImage);
+                        thisGraphicsImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), thisGraphicsImageRes, 200, 200));
+                        graphicsImages.addView(imageChunk);
+                    }
+                }
+                // Remove the last space.
+                ((LinearLayout) graphicsImages.getChildAt(graphicsImages.getChildCount() - 1)).removeViewAt(1);
+                fitImageLayout(graphicsImageScrollView, graphicsImages, R.id.graphicsImage);
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e,
                     "initSpecs", "Failed, Machine ID " + machineID);
         }
+    }
+
+    private void fitImageLayout(final HorizontalScrollView thisScrollView,
+                                final LinearLayout thisImageLayout, final int thisImageID) {
+        thisScrollView.post(() -> {
+            final float density = getResources().getDisplayMetrics().density;
+            final ImageView firstImage = thisImageLayout.getChildAt(0).findViewById(thisImageID);
+            final int maximumImageHeight = firstImage.getLayoutParams().height;
+            final int minimumImageHeight = Math.round(50 * density);
+            final int allSpacesWidth = Math.round(5 * density)
+                    * (thisImageLayout.getChildCount() - 1);
+            float allImagesRatio = 0;
+
+            for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
+                final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
+                if (thisImage.getDrawable() != null
+                        && thisImage.getDrawable().getIntrinsicHeight() != 0) {
+                    allImagesRatio += (float) thisImage.getDrawable().getIntrinsicWidth()
+                            / thisImage.getDrawable().getIntrinsicHeight();
+                }
+            }
+
+            if (allImagesRatio == 0) {
+                return;
+            }
+
+            final int availableWidth = thisScrollView.getWidth()
+                    - thisScrollView.getPaddingLeft() - thisScrollView.getPaddingRight();
+            int imageHeight = Math.round((availableWidth - allSpacesWidth) / allImagesRatio);
+            imageHeight = Math.max(minimumImageHeight, Math.min(maximumImageHeight, imageHeight));
+
+            for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
+                final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
+                final ViewGroup.LayoutParams imageParams = thisImage.getLayoutParams();
+                imageParams.height = imageHeight;
+                thisImage.setLayoutParams(imageParams);
+            }
+
+            thisScrollView.scrollTo(0, 0);
+        });
     }
 
     private void reloadName() {
