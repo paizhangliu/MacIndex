@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.Locale;
 
 /*
  * MacIndex MachineHelper.
@@ -96,6 +96,31 @@ class MachineHelper {
     /* Machine ID starts from 0, ends total -1. */
     private final int[] categoryIndividualCount;
 
+    /* Directory index. */
+    private final int[] machineCategoryIndex;
+
+    private final int[] machineDatabaseIndex;
+
+    private final String[] machineNameIndex;
+
+    private final String[] machineSearchNameIndex;
+
+    private final String[] machineYearIndex;
+
+    private final String[] machineTypeIndex;
+
+    private final String[] machineProcessorIndex;
+
+    private final String[] machineModelIndex;
+
+    private final String[] machineIdentifierIndex;
+
+    private final String[] machineGestaltIndex;
+
+    private final String[] machineOrderIndex;
+
+    private final String[] machineEMCIndex;
+
     /* starts from 0, actual total -1. */
     private int totalMachine = 0;
 
@@ -106,18 +131,73 @@ class MachineHelper {
         database = thisDatabase;
 
         categoryIndividualCount = new int[CATEGORIES_LIST.length];
+        final int[] categoryStartPosition = new int[CATEGORIES_LIST.length + 1];
         for (int i = 0; i < CATEGORIES_LIST.length; i++) {
             // Well, I am short enough!
             // Let's do this efficiently
             final int thisTableCount = (int) DatabaseUtils.queryNumEntries(database, CATEGORIES_LIST[i]);
 
             // Self check was removed since ver. 4.9
+            categoryStartPosition[i] = totalMachine;
             categoryIndividualCount[i] = thisTableCount;
             totalMachine += thisTableCount;
             Log.i("MachineHelperInit", "Category cursor " + CATEGORIES_LIST[i]
                     + " loaded with row count " + thisTableCount
                     + ", accumulated total row count " + totalMachine);
 
+        }
+        categoryStartPosition[CATEGORIES_LIST.length] = totalMachine;
+
+        machineCategoryIndex = new int[totalMachine];
+        machineDatabaseIndex = new int[totalMachine];
+        machineNameIndex = new String[totalMachine];
+        machineSearchNameIndex = new String[totalMachine];
+        machineYearIndex = new String[totalMachine];
+        machineTypeIndex = new String[totalMachine];
+        machineProcessorIndex = new String[totalMachine];
+        machineModelIndex = new String[totalMachine];
+        machineIdentifierIndex = new String[totalMachine];
+        machineGestaltIndex = new String[totalMachine];
+        machineOrderIndex = new String[totalMachine];
+        machineEMCIndex = new String[totalMachine];
+        for (int i = 0; i < CATEGORIES_LIST.length; i++) {
+            try (Cursor directoryCursor = database.query(CATEGORIES_LIST[i],
+                    new String[]{"id", "name", "sname", "syear", "stype", "sprocessor",
+                            "smodel", "sident", "sgestalt", "sorder", "semc"},
+                    null, null, null, null, null)) {
+                while (directoryCursor.moveToNext()) {
+                    final int databaseID = directoryCursor.getInt(
+                            directoryCursor.getColumnIndexOrThrow("id"));
+                    final int machineID = categoryStartPosition[i] + databaseID;
+                    if (machineID < categoryStartPosition[i]
+                            || machineID >= categoryStartPosition[i + 1]) {
+                        throw new IllegalStateException("Illegal database ID " + databaseID
+                                + " in category " + CATEGORIES_LIST[i]);
+                    }
+                    machineCategoryIndex[machineID] = i;
+                    machineDatabaseIndex[machineID] = databaseID;
+                    machineNameIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("name"));
+                    machineSearchNameIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("sname"));
+                    machineYearIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("syear"));
+                    machineTypeIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("stype"));
+                    machineProcessorIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("sprocessor"));
+                    machineModelIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("smodel"));
+                    machineIdentifierIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("sident"));
+                    machineGestaltIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("sgestalt"));
+                    machineOrderIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("sorder"));
+                    machineEMCIndex[machineID] = directoryCursor.getString(
+                            directoryCursor.getColumnIndexOrThrow("semc"));
+                }
+            }
         }
         Log.w("MachineHelper", "Initialized with " + totalMachine + " machines.");
 
@@ -158,17 +238,15 @@ class MachineHelper {
 
     // Get specific position of a machine ID.
     private int[] getPosition(final int thisMachine) {
+        validateMachineID(thisMachine);
         // Category ID / Remainder
-        int[] position = {0, thisMachine};
-        while (position[0] < CATEGORIES_LIST.length) {
-            if (position[1] >= categoryIndividualCount[position[0]]) {
-                position[1] -= categoryIndividualCount[position[0]];
-                position[0]++;
-            } else {
-                break;
-            }
+        return new int[]{machineCategoryIndex[thisMachine], machineDatabaseIndex[thisMachine]};
+    }
+
+    private void validateMachineID(final int thisMachine) {
+        if (thisMachine < 0 || thisMachine >= totalMachine) {
+            throw new IllegalArgumentException("Machine ID is out of range: " + thisMachine);
         }
-        return position;
     }
 
     // Convert Internal Database Category ID to MH Category ID
@@ -184,25 +262,9 @@ class MachineHelper {
         return toReturn;
     }
 
-    // Get machine ID by a specific position. Updated to adapt String type.
-    public int findByPosition(final Pair<String, Integer> thisPosition) {
-        int machineID = 0;
-        final int categoryID = convertToMHCategoryID(thisPosition.first);
-        for (int i = 0; i < categoryID; i++) {
-            machineID += categoryIndividualCount[i];
-        }
-        return machineID + thisPosition.second;
-    }
-
     public String getName(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"name"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("name"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
+        validateMachineID(thisMachine);
+        return checkApplicability(machineNameIndex[thisMachine]);
     }
 
     public String getProcessor(final int thisMachine) {
@@ -371,14 +433,8 @@ class MachineHelper {
     }
 
     public String getSYear(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"syear"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("syear"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
+        validateMachineID(thisMachine);
+        return checkApplicability(machineYearIndex[thisMachine]);
     }
 
     // NullSafe
@@ -391,6 +447,10 @@ class MachineHelper {
     }
 
     private String getUndefined(final int thisMachine, final String thisColumn) {
+        if (isDirectoryColumn(thisColumn)) {
+            validateMachineID(thisMachine);
+            return getDirectoryValue(thisMachine, thisColumn);
+        }
         int[] position = getPosition(thisMachine);
         Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
                 new String[]{thisColumn}, "id = " + position[1], null, null, null,
@@ -399,6 +459,51 @@ class MachineHelper {
         String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow(thisColumn));
         tempCursor.close();
         return tempResult;
+    }
+
+    private boolean isDirectoryColumn(final String thisColumn) {
+        switch (thisColumn) {
+            case "name":
+            case "sname":
+            case "syear":
+            case "stype":
+            case "sprocessor":
+            case "smodel":
+            case "sident":
+            case "sgestalt":
+            case "sorder":
+            case "semc":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private String getDirectoryValue(final int thisMachine, final String thisColumn) {
+        switch (thisColumn) {
+            case "name":
+                return machineNameIndex[thisMachine];
+            case "sname":
+                return machineSearchNameIndex[thisMachine];
+            case "syear":
+                return machineYearIndex[thisMachine];
+            case "stype":
+                return machineTypeIndex[thisMachine];
+            case "sprocessor":
+                return machineProcessorIndex[thisMachine];
+            case "smodel":
+                return machineModelIndex[thisMachine];
+            case "sident":
+                return machineIdentifierIndex[thisMachine];
+            case "sgestalt":
+                return machineGestaltIndex[thisMachine];
+            case "sorder":
+                return machineOrderIndex[thisMachine];
+            case "semc":
+                return machineEMCIndex[thisMachine];
+            default:
+                throw new IllegalArgumentException("Column is not indexed: " + thisColumn);
+        }
     }
 
     // Integrated with SoundHelper
@@ -956,63 +1061,49 @@ class MachineHelper {
                               final boolean isExactMatch, final boolean sortResults) {
         try {
             Log.i("MHSearchHelper", "Get parameter: column " + columnName + ", input " + searchInput);
-            // Raw results (categoryID/remainders)
-            final String[] thisCategoryRange = getCategoryRange(thisManufacturer);
-            final int thisCategoryCount = thisCategoryRange.length;
-            int[][] rawResults = new int[thisCategoryCount][];
+            if (!isDirectoryColumn(columnName)) {
+                throw new IllegalArgumentException("Column is not indexed: " + columnName);
+            }
 
-            // Setup temp cursor of each category for a query.
-            for (int i = 0; i < thisCategoryCount; i++) {
+            final String[] thisCategoryRange = getCategoryRange(thisManufacturer);
+            final boolean[] includedCategories = new boolean[CATEGORIES_LIST.length];
+            for (String thisCategory : thisCategoryRange) {
+                includedCategories[convertToMHCategoryID(thisCategory)] = true;
+            }
+            final List<Integer> rawPositions = new ArrayList<>();
+            final String normalizedSearchInput = searchInput.toLowerCase(Locale.ROOT);
+
+            // Search the directory index.
+            for (int machineID = 0; machineID < totalMachine; machineID++) {
                 // Terminate immediately.
                 if (isQueryCancelled()) {
                     throw new IllegalAccessException();
                 }
-                Cursor thisSearchIndividualCursor = null;
-                try {
-                    thisSearchIndividualCursor = database.query(thisCategoryRange[i], new String[]{"id"}, columnName + " LIKE ? ",
-                            new String[]{"%" + searchInput + "%"}, null, null, null);
-                    rawResults[i] = new int[thisSearchIndividualCursor.getCount()];
-                    Log.i("MHSearchHelper", "Category " + thisCategoryRange[i] + " got "
-                            + thisSearchIndividualCursor.getCount() + " result(s).");
-                    // Write raw query results.
-                    int previousCount = 0;
-                    while (thisSearchIndividualCursor.moveToNext()) {
-                        if (isQueryCancelled()) {
-                            throw new IllegalAccessException();
-                        }
-                        rawResults[i][previousCount] = thisSearchIndividualCursor.getInt(
-                                thisSearchIndividualCursor.getColumnIndexOrThrow("id"));
-                        previousCount++;
-                    }
-                } finally {
-                    if (thisSearchIndividualCursor != null) {
-                        thisSearchIndividualCursor.close();
-                    }
+                final int categoryID = machineCategoryIndex[machineID];
+                if (!includedCategories[categoryID]) {
+                    continue;
+                }
+                final String directoryValue = getDirectoryValue(machineID, columnName);
+                if (directoryValue != null
+                        && directoryValue.toLowerCase(Locale.ROOT).contains(normalizedSearchInput)) {
+                    rawPositions.add(machineID);
                 }
             }
-
-            // Convert raw results to positions.
-            int resultTotalCount = 0;
-            for (int[] thisRawResult : rawResults) {
-                if (thisRawResult != null) {
-                    resultTotalCount += thisRawResult.length;
-                }
-            }
-            int[] finalPositions = new int[resultTotalCount];
-            int previousCount = 0;
-            for (int j = 0; j < thisCategoryCount; j++) {
-                for (int k = 0; k < rawResults[j].length; k++) {
-                    finalPositions[previousCount] = findByPosition(new Pair<>(thisCategoryRange[j], rawResults[j][k]));
-                    previousCount++;
-                }
+            int[] finalPositions = new int[rawPositions.size()];
+            for (int i = 0; i < rawPositions.size(); i++) {
+                finalPositions[i] = rawPositions.get(i);
             }
             Log.i("MHSearchHelper", "Raw Matched: " + finalPositions.length + " result(s).");
 
             // Verify Exact Match if required.
             if (isExactMatch) {
-                List<Integer> verifiedPositions = new Vector<>(0);
+                final List<Integer> verifiedPositions = new ArrayList<>();
                 for (int machineToVerify : finalPositions) {
-                    String[] rawUndefinedQuery = getUndefined(machineToVerify, columnName).split("~");
+                    final String directoryValue = getDirectoryValue(machineToVerify, columnName);
+                    if (directoryValue == null) {
+                        continue;
+                    }
+                    String[] rawUndefinedQuery = directoryValue.split("~");
                     for (String resultToVerify : rawUndefinedQuery) {
                         if (resultToVerify.equalsIgnoreCase(searchInput)) {
                             verifiedPositions.add(machineToVerify);
@@ -1020,11 +1111,9 @@ class MachineHelper {
                         }
                     }
                 }
-                resultTotalCount = verifiedPositions.size();
-
-                // Not in Java 8: go over the vector.
-                finalPositions = new int[resultTotalCount];
-                for (int i = 0; i < resultTotalCount; i++) {
+                // Go over the list.
+                finalPositions = new int[verifiedPositions.size()];
+                for (int i = 0; i < verifiedPositions.size(); i++) {
                     finalPositions[i] = verifiedPositions.get(i);
                 }
             }
@@ -1032,7 +1121,7 @@ class MachineHelper {
             Log.i("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
 
             // Sort if required.
-            if (sortResults && resultTotalCount > 1) {
+            if (sortResults && finalPositions.length > 1) {
                 // Sort by introduction date.
                 finalPositions = directSortByYear(finalPositions);
             }
