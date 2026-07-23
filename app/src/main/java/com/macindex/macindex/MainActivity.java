@@ -36,9 +36,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -907,29 +905,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openComparison(final String[] machineNames) {
+        final int[] leftID;
+        final int[] rightID;
         if (machineNames == null || machineNames.length != 2
-                || machineNames[0].equals(machineNames[1])
-                || decodeStartedParam(machineNames[0]).length != 1
-                || decodeStartedParam(machineNames[1]).length != 1) {
+                || machineNames[0] == null || machineNames[1] == null) {
+            Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
+            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        leftID = decodeStartedParam(machineNames[0]);
+        rightID = decodeStartedParam(machineNames[1]);
+        if (machineNames[0].equals(machineNames[1])
+                || leftID.length != 1 || rightID.length != 1) {
             Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             return;
         }
 
-        final List<String> compareNames = new ArrayList<>(CompareActivity.getCompareList(this));
-        // Keep both shared machines in the original 10-machine compare list limit.
-        compareNames.remove(machineNames[0]);
-        compareNames.remove(machineNames[1]);
-        while (compareNames.size() > 8) {
-            compareNames.remove(0);
-        }
-        compareNames.add(machineNames[0]);
-        compareNames.add(machineNames[1]);
-        CompareActivity.saveCompareList(compareNames, this);
-        PrefsHelper.editPrefs("userComparesLeft", machineNames[0], this);
-        PrefsHelper.editPrefs("userComparesRight", machineNames[1], this);
-
-        startActivity(new Intent(this, CompareActivity.class));
+        // Open shared comparison without editing user's compare list.
+        final Intent compareIntent = new Intent(this, CompareActivity.class);
+        compareIntent.putExtra("compareLeft", machineNames[0]);
+        compareIntent.putExtra("compareRight", machineNames[1]);
+        startActivity(compareIntent);
     }
 
     // Return an ID array with matched name. Input: suspected machine name.

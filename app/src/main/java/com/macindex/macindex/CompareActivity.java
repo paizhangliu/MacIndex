@@ -77,7 +77,7 @@ public class CompareActivity extends AppCompatActivity {
         if (!MainActivity.validateOperation(this)) {
             return;
         }
-        if (getCompareList(this).size() < 2) {
+        if (getSharedComparison() == null && getCompareList(this).size() < 2) {
             final AlertDialog.Builder insufficientDialog = new AlertDialog.Builder(this);
             insufficientDialog.setTitle(R.string.menu_compare);
             insufficientDialog.setMessage(R.string.compare_insufficient);
@@ -87,7 +87,22 @@ public class CompareActivity extends AppCompatActivity {
             insufficientDialog.show();
         }
 
-        if (!PrefsHelper.getBooleanPrefs("isSaveCompareUsage", this)) {
+        if (getSharedComparison() == null
+                && !PrefsHelper.getBooleanPrefs("isSaveCompareUsage", this)) {
+            clearComparing(this);
+        }
+        initCompare();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
+        if (getSharedComparison() == null
+                && !PrefsHelper.getBooleanPrefs("isSaveCompareUsage", this)) {
             clearComparing(this);
         }
         initCompare();
@@ -133,12 +148,22 @@ public class CompareActivity extends AppCompatActivity {
         if (itemID == R.id.initCompareItem) {
             initCompareItem();
         } else if (itemID == R.id.clearColumnCompareItem) {
-            clearComparing(this);
-            initCompare();
+            if (getSharedComparison() == null) {
+                clearComparing(this);
+                initCompare();
+            } else {
+                finish();
+            }
         } else if (itemID == R.id.switchCompareItem) {
-            final String oldLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
-            PrefsHelper.editPrefs("userComparesLeft", PrefsHelper.getStringPrefs("userComparesRight", this), this);
-            PrefsHelper.editPrefs("userComparesRight", oldLeft, this);
+            final String[] sharedComparison = getSharedComparison();
+            if (sharedComparison == null) {
+                final String oldLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
+                PrefsHelper.editPrefs("userComparesLeft", PrefsHelper.getStringPrefs("userComparesRight", this), this);
+                PrefsHelper.editPrefs("userComparesRight", oldLeft, this);
+            } else {
+                getIntent().putExtra("compareLeft", sharedComparison[1]);
+                getIntent().putExtra("compareRight", sharedComparison[0]);
+            }
             initCompare();
         } else if (itemID == R.id.copyCompareItem) {
             specsHelperLeft.copySpecification(new String[]{leftName, rightName},
@@ -175,7 +200,10 @@ public class CompareActivity extends AppCompatActivity {
     private void initCompare() {
         release();
         try {
-            PrefsHelper.editPrefs("isCompareReloadNeeded", false, this);
+            final String[] sharedComparison = getSharedComparison();
+            if (sharedComparison == null) {
+                PrefsHelper.editPrefs("isCompareReloadNeeded", false, this);
+            }
             final List<String> compareNames = getCompareList(this);
             final LinearLayout emptyLayout = findViewById(R.id.emptyLayout);
             final LinearLayout initialLayout = findViewById(R.id.initialLayout);
@@ -183,25 +211,29 @@ public class CompareActivity extends AppCompatActivity {
             final TextView initialText = findViewById(R.id.initialText);
             final ScrollView compareScroll = findViewById(R.id.compareScroll);
 
-            if (compareNames.size() >= 2) {
-                final String compareLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
-                final String compareRight = PrefsHelper.getStringPrefs("userComparesRight", this);
-                if (!compareLeft.equals(compareRight) && compareNames.contains(compareLeft)
-                        && compareNames.contains(compareRight)) {
+            if (sharedComparison != null || compareNames.size() >= 2) {
+                final String compareLeft = sharedComparison == null
+                        ? PrefsHelper.getStringPrefs("userComparesLeft", this) : sharedComparison[0];
+                final String compareRight = sharedComparison == null
+                        ? PrefsHelper.getStringPrefs("userComparesRight", this) : sharedComparison[1];
+                if (sharedComparison != null || (!compareLeft.equals(compareRight)
+                        && compareNames.contains(compareLeft) && compareNames.contains(compareRight))) {
                     int[] leftID = MainActivity.getMachineHelper().searchHelper("name", compareLeft,
                             "all", true, false);
                     int[] rightID = MainActivity.getMachineHelper().searchHelper("name", compareRight,
                             "all", true, false);
                     if (leftID.length != 1 || rightID.length != 1) {
-                        clearComparing(this);
+                        if (sharedComparison == null) {
+                            clearComparing(this);
+                        }
                         throw new IllegalArgumentException("Invalid machine selection");
                     }
                     initialLayout.setVisibility(View.GONE);
                     emptyLayout.setVisibility(View.GONE);
                     compareScroll.setVisibility(View.VISIBLE);
-                    setAbleToInitialize(true);
+                    setAbleToInitialize(compareNames.size() >= 2);
                     setInitialized(true);
-                    setAbleToManage(true);
+                    setAbleToManage(!compareNames.isEmpty());
                     loadSpecs(leftID[0], rightID[0]);
                 } else {
                     TextViewCompat.setAutoSizeTextTypeWithDefaults(initialText,
@@ -278,6 +310,8 @@ public class CompareActivity extends AppCompatActivity {
                     }
                     PrefsHelper.editPrefs("userComparesLeft", selected.get(0), this);
                     PrefsHelper.editPrefs("userComparesRight", selected.get(1), this);
+                    // Continue with user's compare list after manual selection.
+                    clearSharedComparison();
                     selectDialogCreated.dismiss();
                     initCompare();
                 } catch (Exception e) {
@@ -473,6 +507,24 @@ public class CompareActivity extends AppCompatActivity {
         Log.i("CompareActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         updateMenuState();
+    }
+
+    private String[] getSharedComparison() {
+        final Intent intent = getIntent();
+        if (intent == null) {
+            return null;
+        }
+        final String compareLeft = intent.getStringExtra("compareLeft");
+        final String compareRight = intent.getStringExtra("compareRight");
+        if (compareLeft == null || compareRight == null || compareLeft.equals(compareRight)) {
+            return null;
+        }
+        return new String[]{compareLeft, compareRight};
+    }
+
+    private void clearSharedComparison() {
+        getIntent().removeExtra("compareLeft");
+        getIntent().removeExtra("compareRight");
     }
 
     static List<String> getCompareList(final Context thisContext) {
