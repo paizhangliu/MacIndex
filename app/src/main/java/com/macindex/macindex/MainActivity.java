@@ -669,9 +669,8 @@ public class MainActivity extends AppCompatActivity {
             // Parent layout of all categories.
             final LinearLayout categoryContainer = findViewById(R.id.categoryContainer);
             // Fix an animation bug here
-            LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
+            final LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-            categoryContainer.removeAllViews();
             // Get filter string and positions.
             final String[][] thisFilterString = machineHelper.getFilterString(thisFilter);
 
@@ -714,81 +713,95 @@ public class MainActivity extends AppCompatActivity {
                                     operateCache(true);
                                 }
                                 // Set up each category.
-                                machineLoadedCount = new TextView[loadPositions.length][];
-                                for (int i = 0; i < loadPositions.length; i++) {
-                                    final View categoryChunk = getLayoutInflater()
-                                            .inflate(R.layout.chunk_category, categoryContainer, false);
-                                    final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
-                                    final TextView categoryName = categoryChunk.findViewById(R.id.category);
+                                categoryContainer.setLayoutTransition(null);
+                                try {
+                                    categoryContainer.removeAllViews();
+                                    machineLoadedCount = new TextView[loadPositions.length][];
+                                    for (int i = 0; i < loadPositions.length; i++) {
+                                        if (loadPositions[i].length != 0) {
+                                            final int categoryID = i;
+                                            final int[] thisCategoryPositions = loadPositions[i];
+                                            final View categoryChunk = getLayoutInflater()
+                                                    .inflate(R.layout.chunk_category, categoryContainer, false);
+                                            final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
+                                            final TextView categoryName = categoryChunk.findViewById(R.id.category);
 
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        categoryName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                                    } else {
-                                        TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                                    }
-
-                                    if (loadPositions[i].length != 0) {
-                                        categoryName.setText(thisFilterString[2][i]);
-
-                                        /* Remake my teammate's code */
-                                        categoryName.setOnClickListener(new View.OnClickListener() {
-                                            private boolean thisVisibility = false;
-
-                                            @Override
-                                            public void onClick(final View view) {
-                                                try {
-                                                    final View firstChild = categoryChunkLayout.getChildAt(1);
-                                                    if (thisVisibility) {
-                                                        // Make machines invisible.
-                                                        if (!(firstChild instanceof LinearLayout)) {
-                                                            // Have the divider
-                                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                                thisVisibility = false;
-                                                            }
-                                                            firstChild.setVisibility(View.VISIBLE);
-                                                        } else {
-                                                            // Does not have the divider
-                                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                                thisVisibility = false;
-                                                            }
-                                                        }
-                                                    } else {
-                                                        // Make machines visible.
-                                                        if (!(firstChild instanceof LinearLayout)) {
-                                                            // Have the divider
-                                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                                thisVisibility = true;
-                                                            }
-                                                            firstChild.setVisibility(View.GONE);
-                                                        } else {
-                                                            // Does not have the divider
-                                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                                thisVisibility = true;
-                                                            }
-                                                        }
-                                                    }
-                                                } catch (Exception e) {
-                                                    ExceptionHelper.handleException(MainActivity.this, e, null, null);
-                                                }
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                categoryName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                                            } else {
+                                                TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                                             }
-                                        });
-                                        Log.i("initCategory", "Loading category " + i);
-                                        machineLoadedCount[i] = SpecsIntentHelper
-                                                .initCategory(categoryChunkLayout, loadPositions[i], false, MainActivity.this);
-                                        categoryContainer.addView(categoryChunk);
-                                    }
-                                }
-                                // Remove the last divider.
-                                if (categoryContainer.getChildCount() != 0) {
-                                    ((LinearLayout) categoryContainer.getChildAt(categoryContainer.getChildCount() - 1)).removeViewAt(1);
-                                }
+                                            categoryName.setText(thisFilterString[2][i]);
 
-                                // Load the favourites star.
-                                SpecsIntentHelper.refreshFavourites(machineLoadedCount, MainActivity.this);
+                                            /* Remake my teammate's code */
+                                            categoryName.setOnClickListener(new View.OnClickListener() {
+                                                private boolean thisVisibility = false;
+                                                private boolean isCategoryLoaded = false;
+
+                                                @Override
+                                                public void onClick(final View view) {
+                                                    try {
+                                                        if (!isCategoryLoaded) {
+                                                            Log.i("initCategory", "Loading category " + categoryID);
+                                                            machineLoadedCount[categoryID] = SpecsIntentHelper
+                                                                    .initCategory(categoryChunkLayout, thisCategoryPositions,
+                                                                            false, MainActivity.this);
+                                                            SpecsIntentHelper.refreshFavourites(
+                                                                    new TextView[][]{machineLoadedCount[categoryID]},
+                                                                    MainActivity.this);
+                                                            isCategoryLoaded = true;
+                                                        }
+
+                                                        final View firstChild = categoryChunkLayout.getChildAt(1);
+                                                        if (thisVisibility) {
+                                                            // Make machines invisible.
+                                                            if (!(firstChild instanceof LinearLayout)) {
+                                                                // Have the divider
+                                                                for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
+                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
+                                                                    thisVisibility = false;
+                                                                }
+                                                                firstChild.setVisibility(View.VISIBLE);
+                                                            } else {
+                                                                // Does not have the divider
+                                                                for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
+                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
+                                                                    thisVisibility = false;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            // Make machines visible.
+                                                            if (!(firstChild instanceof LinearLayout)) {
+                                                                // Have the divider
+                                                                for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
+                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
+                                                                    thisVisibility = true;
+                                                                }
+                                                                firstChild.setVisibility(View.GONE);
+                                                            } else {
+                                                                // Does not have the divider
+                                                                for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
+                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
+                                                                    thisVisibility = true;
+                                                                }
+                                                            }
+                                                        }
+                                                    } catch (Exception e) {
+                                                        ExceptionHelper.handleException(MainActivity.this, e, null, null);
+                                                    }
+                                                }
+                                            });
+                                            categoryContainer.addView(categoryChunk);
+                                        }
+                                    }
+                                    // Remove the last divider.
+                                    if (categoryContainer.getChildCount() != 0) {
+                                        ((LinearLayout) categoryContainer.getChildAt(
+                                                categoryContainer.getChildCount() - 1)).removeViewAt(1);
+                                    }
+                                } finally {
+                                    categoryContainer.setLayoutTransition(layoutTransition);
+                                }
                             } catch (Exception e) {
                                 ExceptionHelper.handleException(MainActivity.this, e, null, null);
                             }
@@ -916,17 +929,19 @@ public class MainActivity extends AppCompatActivity {
         try {
             String toWrite = "";
             if (isWrite) {
+                final StringBuilder cacheBuilder = new StringBuilder();
                 for (int i = 0; i < loadPositions.length; i++) {
                     for (int j = 0; j < loadPositions[i].length; j++) {
-                        toWrite = toWrite.concat(String.valueOf(loadPositions[i][j]));
+                        cacheBuilder.append(loadPositions[i][j]);
                         if (!(j + 1 == loadPositions[i].length)) {
-                            toWrite = toWrite.concat(",");
+                            cacheBuilder.append(",");
                         }
                     }
                     if (!(i + 1 == loadPositions.length)) {
-                        toWrite = toWrite.concat(";");
+                        cacheBuilder.append(";");
                     }
                 }
+                toWrite = cacheBuilder.toString();
                 Log.w("operateCache", "String to write: " + toWrite);
             }
             switch (thisManufacturer) {
