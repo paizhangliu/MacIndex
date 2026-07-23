@@ -113,7 +113,7 @@
     <string name="comment_illegal">很抱歉，特殊字符 \'│\' 被 MacIndex 内部使用且无法用作备注</string>
     <string name="comment_length">输入过长，每个机型的限度是 500 个字符</string>
     <string name="comment_tips">在备注页中浏览所有备注。</string>
-    <string name="not_applicable">不适用/无信息</string>
+    <string name="not_applicable">N/A</string>
     <string name="link_confirm">确认</string>
     <string name="link_cancel">取消</string>
     <string name="link_opening">正在 EveryMac 中浏览：</string>
@@ -162,8 +162,7 @@
     <string name="compare_manage">请选择要从比较列表删除的机型。此操作不能撤销。</string>
     <string name="compare_select_exactly_two">请选择且仅选择两个要比较的机型。</string>
     <string name="version_information_general">版本 </string>
-    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 许可证开源。</string>
-    <string name="about_important">重要说明</string>
+    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 许可证开源。\n\nMacIndex 是一个非营利、开源的资料项目，仅供参考与学习。机型资料、图片及声音根据公开可获取的资料整理，可能存在错误或遗漏，不提供任何保证。所有产品名称、标志及商标均归各自权利人所有；MacIndex 与所提及的任何公司或服务均无隶属、合作或背书关系。如有权利或内容问题，请联系开发者。</string>
     <string name="about_opensource">第三方开源许可证</string>
     <string name="about_update">发行说明</string>
     <string name="about_feedback">反馈</string>
@@ -182,6 +181,6 @@
     </string-array>
     <string name="share_link_generated">分享链接已复制</string>
     <string name="share_menu_null">请选择至少一项来继续</string>
-    <string name="share_menu_not_applicable">（无信息）</string>
+    <string name="share_menu_not_applicable">（N/A）</string>
     <string name="share_main_decode_failed">无法读取该信息，或其中一个机型在这个版本中不存在</string>
 </resources>

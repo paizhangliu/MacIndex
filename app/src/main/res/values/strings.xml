@@ -118,7 +118,7 @@
     <string name="comment_illegal">The special character \'│\' is internally used by MacIndex and cannot be included in the comment</string>
     <string name="comment_length">Input is too long, the max limit for each machine is 500 characters</string>
     <string name="comment_tips">Access all existing comments in the Comment Page.</string>
-    <string name="not_applicable">Not Applicable/No Info</string>
+    <string name="not_applicable">N/A</string>
     <string name="link_confirm">Confirm</string>
     <string name="link_cancel">Cancel</string>
     <string name="link_opening">Opening in EveryMac:&#160;</string>
@@ -167,8 +167,7 @@
     <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
     <string name="version_information_general">Version </string>
-    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.</string>
-    <string name="about_important">Important Information</string>
+    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.\n\nMacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned. Please contact the developer regarding any rights or content concerns.</string>
     <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_update">Release Notes</string>
     <string name="about_feedback">Feedback</string>
@@ -187,6 +186,6 @@
     </string-array>
     <string name="share_link_generated">Share link generated</string>
     <string name="share_menu_null">Select at least one entry to continue</string>
-    <string name="share_menu_not_applicable">(No Info)</string>
+    <string name="share_menu_not_applicable">(N/A)</string>
     <string name="share_main_decode_failed">Cannot read the information, or one or more machines do not exist in current version</string>
 </resources>

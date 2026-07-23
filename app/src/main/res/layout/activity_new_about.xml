@@ -72,13 +72,6 @@
                 android:text="@string/about_opensource" />
 
             <Button
-                android:id="@+id/importantButton"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="120pt"
-                android:layout_height="wrap_content"
-                android:text="@string/about_important" />
-
-            <Button
                 android:id="@+id/updateButton"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="120pt"

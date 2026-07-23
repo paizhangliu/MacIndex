@@ -47,10 +47,6 @@ public class NewAboutActivity extends AppCompatActivity {
                 LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/v/english/",
                         "https://macindex.paizhang.info/", this);
             });
-            findViewById(R.id.importantButton).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/v/english/important-information",
-                        "https://macindex.paizhang.info/important-information", this);
-            });
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_opensource));
             findViewById(R.id.openSourceButton).setOnClickListener(v ->
                     startActivity(new Intent(NewAboutActivity.this, OssLicensesMenuActivity.class)));
