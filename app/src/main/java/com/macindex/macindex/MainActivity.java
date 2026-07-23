@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Deep Link Support, Activity Not Present
                 Uri deepLink = getIntent().getData();
+                getIntent().setData(null);
                 if (deepLink != null) {
                     decodeDeepLink(deepLink.toString());
                 } else {
@@ -228,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
         // Deep Link Support, Activity Present
         // Override this function due to the special lunch mode
         Uri deepLink = intent.getData();
+        intent.setData(null);
+        setIntent(intent);
         if (deepLink != null) {
             decodeDeepLink(deepLink.toString());
         } else {
