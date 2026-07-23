@@ -2,8 +2,6 @@ package com.macindex.macindex;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -38,8 +36,6 @@ public class NewAboutActivity extends AppCompatActivity {
             Date buildDate = new Date();
             buildDate.setTime(BuildConfig.TIMESTAMP);
 
-            final String[] openSourceMenu = getResources().getStringArray(R.array.about_opensource_menu);
-
             String versionString = getString(R.string.version_information_general) + " " + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-Debug\n" : "\n") + dateFormat.format(buildDate);
             ((TextView) findViewById(R.id.versionText)).setText(versionString);
 
@@ -56,22 +52,8 @@ public class NewAboutActivity extends AppCompatActivity {
                         "https://macindex.paizhang.info/important-information", this);
             });
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_opensource));
-            findViewById(R.id.openSourceButton).setOnClickListener(v -> {
-                AlertDialog.Builder openSourceDialog = new AlertDialog.Builder(this);
-                openSourceDialog.setTitle(getString(R.string.about_opensource));
-                openSourceDialog.setItems(openSourceMenu, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            LinkLoadingHelper.startBrowser("https://github.com/paizhangliu/MacIndex/blob/master/LICENSE",
-                                    null, NewAboutActivity.this);
-                        } else if (which == 1) {
-                            startActivity(new Intent(NewAboutActivity.this, OssLicensesMenuActivity.class));
-                        }
-                    }
-                });
-                openSourceDialog.show();
-            });
+            findViewById(R.id.openSourceButton).setOnClickListener(v ->
+                    startActivity(new Intent(NewAboutActivity.this, OssLicensesMenuActivity.class)));
             findViewById(R.id.updateButton).setOnClickListener(v -> {
                 LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/download-and-update-history", this);
             });

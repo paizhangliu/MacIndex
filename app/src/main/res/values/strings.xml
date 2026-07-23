@@ -183,13 +183,9 @@
     <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
     <string name="version_information_general">Version </string>
-    <string name="about_information">©Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.</string>
+    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.</string>
     <string name="about_important">Important Information</string>
-    <string name="about_opensource">Open Source Licenses</string>
-    <string-array name="about_opensource_menu">
-        <item>MacIndex (MIT License)</item>
-        <item>Other Libraries\' Licenses</item>
-    </string-array>
+    <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_update">Release Notes</string>
     <string name="about_feedback">Feedback</string>
     <string name="viewimage_rotate">For reference only\nRotate your device to change the orientation</string>

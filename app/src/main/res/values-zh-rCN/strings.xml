@@ -163,15 +163,11 @@
     <string name="compare_manage">请选择要从比较列表删除的机型。此操作不能撤销。</string>
     <string name="compare_select_exactly_two">请选择且仅选择两个要比较的机型。</string>
     <string name="version_information_general">版本 </string>
-    <string name="about_information">©版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 许可证开源。</string>
+    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 许可证开源。</string>
     <string name="about_important">重要说明</string>
-    <string name="about_opensource">开源许可证</string>
-    <string-array name="about_opensource_menu">
-        <item>MacIndex（MIT 许可证）</item>
-        <item>其他开源库许可证</item>
-    </string-array>
+    <string name="about_opensource">第三方开源许可证</string>
     <string name="about_update">发行说明</string>
-    <string name="about_feedback">常见问题与反馈</string>
+    <string name="about_feedback">反馈</string>
     <string name="viewimage_rotate">示意图仅供参考\n旋转设备来改变图片方向</string>
     <string name="random_lucky_title">运气不错</string>
     <string name="ramdom_lucky_message">随机进入了收藏夹中的机型。</string>
