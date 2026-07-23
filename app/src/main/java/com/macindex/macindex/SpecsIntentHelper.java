@@ -32,7 +32,6 @@ class SpecsIntentHelper {
                 // Find information necessary for interface.
                 final String thisName = MainActivity.getMachineHelper().getName(thisMachineID);
                 final String thisYear = MainActivity.getMachineHelper().getSYear(thisMachineID);
-                final String thisLinks = MainActivity.getMachineHelper().getConfig(thisMachineID);
 
                 machineName.setText(thisName);
                 machineYear.setText(thisYear);
@@ -45,7 +44,8 @@ class SpecsIntentHelper {
 
                 mainChunkToClick.setOnClickListener(unused -> {
                     if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", thisContext)) {
-                        LinkLoadingHelper.loadLinks(thisName, thisLinks, thisContext);
+                        LinkLoadingHelper.loadLinks(thisName,
+                                MainActivity.getMachineHelper().getConfig(thisMachineID), thisContext);
                     } else {
                         SpecsIntentHelper.sendIntent(machineIDs, thisMachineID, thisContext, false);
                     }
@@ -117,11 +117,12 @@ class SpecsIntentHelper {
     public static void refreshFavourites(final TextView[][] textViewGroup, final Context thisContext) {
         // NullSafe
         if (textViewGroup != null) {
+            final String userFavourites = PrefsHelper.getStringPrefs("userFavourites", thisContext);
             for (TextView[] thisViewGroup : textViewGroup) {
                 // NullSafe
                 if (thisViewGroup != null) {
                     for (TextView thisView : thisViewGroup) {
-                        if (FavouriteActivity.isFavourite(thisView.getText().toString(), thisContext)) {
+                        if (FavouriteActivity.isFavourite(thisView.getText().toString(), userFavourites)) {
                             thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_star_24, 0);
                         } else {
                             thisView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);

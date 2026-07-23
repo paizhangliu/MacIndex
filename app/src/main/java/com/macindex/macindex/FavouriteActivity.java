@@ -430,12 +430,17 @@ public class FavouriteActivity extends AppCompatActivity {
             if (machineName == null) {
                 throw new IllegalArgumentException();
             }
-            return PrefsHelper.getStringPrefs("userFavourites", thisContext).contains("[" + machineName + "]");
+            return isFavourite(machineName,
+                    PrefsHelper.getStringPrefs("userFavourites", thisContext));
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "isFavourite", "Illegal Favourites String. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userFavourites", thisContext));
             return false;
         }
+    }
+
+    static boolean isFavourite(final String machineName, final String userFavourites) {
+        return userFavourites.contains("[" + machineName + "]");
     }
 
     private void createFolder() {
