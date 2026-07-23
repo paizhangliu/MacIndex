@@ -24,7 +24,9 @@ public class ViewImageActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        MainActivity.validateOperation(this);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
 
         try {
             final Intent intent = getIntent();

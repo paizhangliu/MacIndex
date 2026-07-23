@@ -28,7 +28,9 @@ public class NewAboutActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        MainActivity.validateOperation(this);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
 
         try {
             // Get build time information

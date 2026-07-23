@@ -65,7 +65,9 @@ public class FavouriteActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        MainActivity.validateOperation(this);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
 
         waitDialog = new ProgressDialog(this);
         waitDialog.setMessage(getString(R.string.loading_favourites));

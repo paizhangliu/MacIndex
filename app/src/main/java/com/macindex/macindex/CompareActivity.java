@@ -74,7 +74,9 @@ public class CompareActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        MainActivity.validateOperation(this);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
         if (getCompareList(this).size() < 2) {
             final AlertDialog.Builder insufficientDialog = new AlertDialog.Builder(this);
             insufficientDialog.setTitle(R.string.menu_compare);

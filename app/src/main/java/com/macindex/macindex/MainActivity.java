@@ -173,7 +173,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
                     Log.i("MacIndex", "Initializing database.");
-                    initDatabase(this, false);
+                    if (!validateOperation(this)) {
+                        return;
+                    }
                 } else {
                     Log.w("MacIndex", "Database already initialized.");
                 }
@@ -192,7 +194,9 @@ public class MainActivity extends AppCompatActivity {
                 // Creating activity due to system
                 Log.i("MacIndex", "Reloading the main activity.");
 
-                validateOperation(this);
+                if (!validateOperation(this)) {
+                    return;
+                }
                 if (savedInstanceState.getBoolean("loadComplete")) {
                     // Restore the saved ID list
                     final int loadPositionsCount = savedInstanceState.getInt("loadPositionsCount");
@@ -224,6 +228,10 @@ public class MainActivity extends AppCompatActivity {
         Uri deepLink = intent.getData();
         intent.setData(null);
         setIntent(intent);
+        if (PrefsHelper.getIntPrefs("lastKnownVersion", this) != BuildConfig.VERSION_CODE) {
+            Log.w("onNewIntentDeepLinkEntry", "Version registration is required");
+            return;
+        }
         if (deepLink != null) {
             decodeDeepLink(deepLink.toString());
         } else {
@@ -305,12 +313,13 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (itemID == R.id.mainDebugReloadItem) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-            reloadDatabase(this);
-            initInterface(true);
+            if (reloadDatabase(this)) {
+                initInterface(true);
+            }
         } else if (itemID == R.id.mainDebugTriggerErrorItem) {
             ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
         } else if (itemID == R.id.mainDebugVersionRegistration) {
-            PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1, this);
+            PrefsHelper.clearPrefs("lastKnownVersion", this);
             PrefsHelper.triggerRebirth(this);
         } else if (itemID == R.id.mainDebugRunnerItem) {
             Toast.makeText(this, "Complete", Toast.LENGTH_SHORT).show();
@@ -389,10 +398,7 @@ public class MainActivity extends AppCompatActivity {
             machineHelper = new MachineHelper(database);
 
         } catch (Exception e) {
-            if (isNewVersion) {
-                PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1,
-                        context.getApplicationContext());
-            }
+            closeDatabase();
             Log.e("initDatabaseSafe", "Initialize failed.", e);
             throw new IllegalStateException("Unable to initialize bundled database", e);
         }
@@ -950,22 +956,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Verify if the application was killed due to system's process termination.
-    public static void validateOperation(final Context context) {
+    public static boolean validateOperation(final Context context) {
+        if (PrefsHelper.getIntPrefs("lastKnownVersion", context) != BuildConfig.VERSION_CODE) {
+            Log.w("MainValidate", "Version registration is required.");
+            PrefsHelper.triggerRebirth(context);
+            return false;
+        }
         if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
             Log.w("MainValidate", "Process was killed. Reloading resources.");
             resources = context.getResources();
-            initDatabase(context, false);
+            try {
+                initDatabase(context, false);
+            } catch (Exception e) {
+                ExceptionHelper.handleException(context, e,
+                        "MainValidate", "Unable to initialize the database.");
+                return false;
+            }
         }
+        return true;
     }
 
     // When there is an incomplete database query, reload the database.
-    public static void reloadDatabase(final Context context) {
+    public static boolean reloadDatabase(final Context context) {
         Log.w("Database", "Reload requested.");
         if (BuildConfig.DEBUG) {
             Toast.makeText(context, "Database reload requested", Toast.LENGTH_SHORT).show();
         }
         closeDatabase();
-        initDatabase(context, false);
+        return validateOperation(context);
     }
 
     public static boolean getMainState() {

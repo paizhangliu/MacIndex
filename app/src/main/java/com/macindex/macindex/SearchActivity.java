@@ -70,7 +70,9 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        MainActivity.validateOperation(this);
+        if (!MainActivity.validateOperation(this)) {
+            return;
+        }
 
         // Set the dialog AT HERE; its structure is different from other activities
         waitDialog = new ProgressDialog(SearchActivity.this);

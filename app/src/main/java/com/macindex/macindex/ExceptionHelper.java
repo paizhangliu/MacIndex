@@ -21,6 +21,17 @@ class ExceptionHelper {
     public static void handleException(final Context thisContext, final Exception thisException,
                                                  final String exceptionModule, final String exceptionMessage) {
         if (thisContext != null) {
+            try {
+                final boolean versionInvalidated = thisContext.getSharedPreferences(
+                                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE).edit()
+                        .putInt("lastKnownVersion", 0).commit();
+                if (!versionInvalidated) {
+                    Log.e("ExceptionHelper", "Unable to register the current version again.");
+                }
+            } catch (Exception e) {
+                Log.e("ExceptionHelper", "Unable to register the current version again.", e);
+            }
+
             final String basicInfo = "Generated: " + Calendar.getInstance().getTime() + "\n"
                     + "MacIndex Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")\n"
                     + "Android Version: " + Build.VERSION.RELEASE + "\n"
@@ -60,12 +71,8 @@ class ExceptionHelper {
         exceptionDialog.setTitle(R.string.error);
         exceptionDialog.setMessage(R.string.error_information);
         exceptionDialog.setCancelable(false);
-        exceptionDialog.setPositiveButton(R.string.error_dismiss, (dialogInterface, i) -> {
-            // Do nothing
-        });
-        exceptionDialog.setNegativeButton(R.string.error_restart, (dialogInterface, i) -> {
-            PrefsHelper.triggerRebirth(thisContext);
-        });
+        exceptionDialog.setPositiveButton(R.string.error_restart, (dialogInterface, i) ->
+                PrefsHelper.triggerRebirth(thisContext));
         exceptionDialog.setNeutralButton(R.string.error_copy_button, (dialogInterface, i) -> {
             // To be override
         });
@@ -79,7 +86,7 @@ class ExceptionHelper {
         final AlertDialog exceptionDialogCreated = exceptionDialog.create();
         exceptionDialogCreated.show();
 
-        // Override the negative button
+        // Override the neutral button
         exceptionDialogCreated.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("ExceptionInfo", exceptionInfo);
