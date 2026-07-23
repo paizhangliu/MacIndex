@@ -2,7 +2,6 @@ package com.macindex.macindex;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -65,6 +64,11 @@ class MachineHelper {
             "mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm", "macbook_air_arm", "mac_studio"};
 
     /*
+     * machine_directory and main_cache are generated from the tables above.
+     * Run generateMachineIndexes after updating categories, filters, or database contents.
+     */
+
+    /*
      * getSound
      * Available Parameters: 0 Macintosh 128k, mac128, no death sound
      *                       1 Macintosh II, macii, macii_death
@@ -121,6 +125,8 @@ class MachineHelper {
 
     private final String[] machineEMCIndex;
 
+    private final int[][][][] mainPositions;
+
     /* starts from 0, actual total -1. */
     private int totalMachine = 0;
 
@@ -130,77 +136,130 @@ class MachineHelper {
     MachineHelper(final SQLiteDatabase thisDatabase) {
         database = thisDatabase;
 
-        categoryIndividualCount = new int[CATEGORIES_LIST.length];
-        final int[] categoryStartPosition = new int[CATEGORIES_LIST.length + 1];
-        for (int i = 0; i < CATEGORIES_LIST.length; i++) {
-            // Well, I am short enough!
-            // Let's do this efficiently
-            final int thisTableCount = (int) DatabaseUtils.queryNumEntries(database, CATEGORIES_LIST[i]);
-
-            // Self check was removed since ver. 4.9
-            categoryStartPosition[i] = totalMachine;
-            categoryIndividualCount[i] = thisTableCount;
-            totalMachine += thisTableCount;
-            Log.i("MachineHelperInit", "Category cursor " + CATEGORIES_LIST[i]
-                    + " loaded with row count " + thisTableCount
-                    + ", accumulated total row count " + totalMachine);
-
+        try (Cursor directoryCursor = database.query("machine_directory",
+                new String[]{"machine_id", "category_id", "database_id", "name", "sname",
+                        "syear", "stype", "sprocessor", "smodel", "sident", "sgestalt",
+                        "sorder", "semc"}, null, null, null, null, "machine_id")) {
+            totalMachine = directoryCursor.getCount();
+            if (totalMachine == 0) {
+                throw new IllegalStateException("Machine directory is empty");
+            }
+            categoryIndividualCount = new int[CATEGORIES_LIST.length];
+            machineCategoryIndex = new int[totalMachine];
+            machineDatabaseIndex = new int[totalMachine];
+            machineNameIndex = new String[totalMachine];
+            machineSearchNameIndex = new String[totalMachine];
+            machineYearIndex = new String[totalMachine];
+            machineTypeIndex = new String[totalMachine];
+            machineProcessorIndex = new String[totalMachine];
+            machineModelIndex = new String[totalMachine];
+            machineIdentifierIndex = new String[totalMachine];
+            machineGestaltIndex = new String[totalMachine];
+            machineOrderIndex = new String[totalMachine];
+            machineEMCIndex = new String[totalMachine];
+            int expectedMachineID = 0;
+            while (directoryCursor.moveToNext()) {
+                final int machineID = directoryCursor.getInt(
+                        directoryCursor.getColumnIndexOrThrow("machine_id"));
+                final int categoryID = directoryCursor.getInt(
+                        directoryCursor.getColumnIndexOrThrow("category_id"));
+                final int databaseID = directoryCursor.getInt(
+                        directoryCursor.getColumnIndexOrThrow("database_id"));
+                if (machineID != expectedMachineID
+                        || categoryID < 0 || categoryID >= CATEGORIES_LIST.length
+                        || databaseID != categoryIndividualCount[categoryID]) {
+                    throw new IllegalStateException("Illegal machine directory position "
+                            + machineID + "/" + categoryID + "/" + databaseID);
+                }
+                categoryIndividualCount[categoryID]++;
+                machineCategoryIndex[machineID] = categoryID;
+                machineDatabaseIndex[machineID] = databaseID;
+                machineNameIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("name"));
+                machineSearchNameIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("sname"));
+                machineYearIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("syear"));
+                machineTypeIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("stype"));
+                machineProcessorIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("sprocessor"));
+                machineModelIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("smodel"));
+                machineIdentifierIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("sident"));
+                machineGestaltIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("sgestalt"));
+                machineOrderIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("sorder"));
+                machineEMCIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("semc"));
+                expectedMachineID++;
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load the machine directory", e);
         }
-        categoryStartPosition[CATEGORIES_LIST.length] = totalMachine;
 
-        machineCategoryIndex = new int[totalMachine];
-        machineDatabaseIndex = new int[totalMachine];
-        machineNameIndex = new String[totalMachine];
-        machineSearchNameIndex = new String[totalMachine];
-        machineYearIndex = new String[totalMachine];
-        machineTypeIndex = new String[totalMachine];
-        machineProcessorIndex = new String[totalMachine];
-        machineModelIndex = new String[totalMachine];
-        machineIdentifierIndex = new String[totalMachine];
-        machineGestaltIndex = new String[totalMachine];
-        machineOrderIndex = new String[totalMachine];
-        machineEMCIndex = new String[totalMachine];
-        for (int i = 0; i < CATEGORIES_LIST.length; i++) {
-            try (Cursor directoryCursor = database.query(CATEGORIES_LIST[i],
-                    new String[]{"id", "name", "sname", "syear", "stype", "sprocessor",
-                            "smodel", "sident", "sgestalt", "sorder", "semc"},
-                    null, null, null, null, null)) {
-                while (directoryCursor.moveToNext()) {
-                    final int databaseID = directoryCursor.getInt(
-                            directoryCursor.getColumnIndexOrThrow("id"));
-                    final int machineID = categoryStartPosition[i] + databaseID;
-                    if (machineID < categoryStartPosition[i]
-                            || machineID >= categoryStartPosition[i + 1]) {
-                        throw new IllegalStateException("Illegal database ID " + databaseID
-                                + " in category " + CATEGORIES_LIST[i]);
+        mainPositions = new int[5][3][][];
+        try (Cursor cacheCursor = database.query("main_cache",
+                new String[]{"manufacturer", "filter", "positions"},
+                null, null, null, null, null)) {
+            int cacheCount = 0;
+            while (cacheCursor.moveToNext()) {
+                final String thisManufacturer = cacheCursor.getString(
+                        cacheCursor.getColumnIndexOrThrow("manufacturer"));
+                final String thisFilter = cacheCursor.getString(
+                        cacheCursor.getColumnIndexOrThrow("filter"));
+                final int manufacturerID = translateManufacturerID(thisManufacturer);
+                final int filterID = translateFilterID(thisFilter);
+                if (mainPositions[manufacturerID][filterID] != null) {
+                    throw new IllegalStateException("Duplicate main cache "
+                            + thisManufacturer + "/" + thisFilter);
+                }
+
+                final String[] rawCategories = cacheCursor.getString(
+                        cacheCursor.getColumnIndexOrThrow("positions")).split(";", -1);
+                if (rawCategories.length != getFilterString(thisFilter)[1].length) {
+                    throw new IllegalStateException("Illegal main cache category count "
+                            + thisManufacturer + "/" + thisFilter);
+                }
+                final int[][] thisPositions = new int[rawCategories.length][];
+                for (int i = 0; i < rawCategories.length; i++) {
+                    if (rawCategories[i].isEmpty()) {
+                        thisPositions[i] = new int[0];
+                        continue;
                     }
-                    machineCategoryIndex[machineID] = i;
-                    machineDatabaseIndex[machineID] = databaseID;
-                    machineNameIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("name"));
-                    machineSearchNameIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("sname"));
-                    machineYearIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("syear"));
-                    machineTypeIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("stype"));
-                    machineProcessorIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("sprocessor"));
-                    machineModelIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("smodel"));
-                    machineIdentifierIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("sident"));
-                    machineGestaltIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("sgestalt"));
-                    machineOrderIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("sorder"));
-                    machineEMCIndex[machineID] = directoryCursor.getString(
-                            directoryCursor.getColumnIndexOrThrow("semc"));
+                    final String[] rawMachineIDs = rawCategories[i].split(",");
+                    final boolean[] matchedMachines = new boolean[totalMachine];
+                    thisPositions[i] = new int[rawMachineIDs.length];
+                    for (int j = 0; j < rawMachineIDs.length; j++) {
+                        final int machineID = Integer.parseInt(rawMachineIDs[j]);
+                        if (machineID < 0 || machineID >= totalMachine
+                                || matchedMachines[machineID]) {
+                            throw new IllegalStateException("Illegal cached machine ID "
+                                    + machineID + " in " + thisManufacturer + "/" + thisFilter);
+                        }
+                        matchedMachines[machineID] = true;
+                        thisPositions[i][j] = machineID;
+                    }
+                }
+                mainPositions[manufacturerID][filterID] = thisPositions;
+                cacheCount++;
+            }
+            if (cacheCount != 15) {
+                throw new IllegalStateException("Illegal main cache count " + cacheCount);
+            }
+            for (int[][][] manufacturerPositions : mainPositions) {
+                for (int[][] filterPositions : manufacturerPositions) {
+                    if (filterPositions == null) {
+                        throw new IllegalStateException("Incomplete main cache");
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load the main cache", e);
         }
         Log.w("MachineHelper", "Initialized with " + totalMachine + " machines.");
-
     }
 
     public void setStopQuery() {
@@ -227,6 +286,11 @@ class MachineHelper {
     // Get total machines in a category.
     public int getCategoryCount(final int thisCategory) {
         return categoryIndividualCount[thisCategory];
+    }
+
+    // Get generated positions for the MainActivity.
+    public int[][] getMainPositions(final String thisFilter, final String thisManufacturer) {
+        return mainPositions[translateManufacturerID(thisManufacturer)][translateFilterID(thisFilter)];
     }
 
     // Get category range for fixed navigation
@@ -996,6 +1060,36 @@ class MachineHelper {
         return toReturn;
     }
 
+    private int translateManufacturerID(final String thisManufacturer) {
+        switch (thisManufacturer) {
+            case "all":
+                return 0;
+            case "apple68k":
+                return 1;
+            case "appleppc":
+                return 2;
+            case "appleintel":
+                return 3;
+            case "applearm":
+                return 4;
+            default:
+                throw new IllegalArgumentException("Illegal manufacturer " + thisManufacturer);
+        }
+    }
+
+    private int translateFilterID(final String thisFilter) {
+        switch (thisFilter) {
+            case "names":
+                return 0;
+            case "processors":
+                return 1;
+            case "years":
+                return 2;
+            default:
+                throw new IllegalArgumentException("Illegal filter " + thisFilter);
+        }
+    }
+
     // Get category range by manufacturer. Should be updated accordingly.
     // This provides table names for query, when adding new tables, should be updated accordingly.
     private String[] getCategoryRange(final String thisManufacturer) {
@@ -1189,26 +1283,6 @@ class MachineHelper {
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
-        }
-    }
-
-    // For filter-based fixed search use. Return (filterIDs/machineIDs).
-    public int[][] filterSearchHelper(final String[][] filterString, final String thisManufacturer) {
-        try {
-            int[][] finalPositions = new int[filterString[1].length][];
-            for (int i = 0; i < filterString[1].length; i++) {
-                // Terminate immediately.
-                if (isQueryCancelled()) {
-                    throw new IllegalAccessException();
-                }
-                finalPositions[i] = searchHelper(filterString[0][0], filterString[1][i],
-                        thisManufacturer, false, true);
-            }
-            return finalPositions;
-        } catch (Exception e) {
-            Log.e("MHFilterSearchHelper", "Exception Occurred, returning empty array");
-            e.printStackTrace();
-            return new int[0][0];
         }
     }
 

@@ -74,10 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog waitDialog = null;
 
-    private Thread interfaceThread = null;
-
-    private volatile int interfaceRequestID = 0;
-
     private boolean isDrawerGesture = false;
 
     private Runnable pendingDrawerAction = null;
@@ -145,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         waitDialog.dismiss();
                         if (finalInitializationError == null) {
-                            completeCreation(savedInstanceState, isNewVersion);
+                            completeCreation(savedInstanceState);
                         } else {
                             ExceptionHelper.handleException(this, finalInitializationError,
                                     "MainCreation", "Unable to initialize the database.");
@@ -153,14 +149,14 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }, "MacIndex-DatabaseInit").start();
             } else {
-                completeCreation(savedInstanceState, isNewVersion);
+                completeCreation(savedInstanceState);
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
         }
     }
 
-    private void completeCreation(final Bundle savedInstanceState, final boolean isNewVersion) {
+    private void completeCreation(final Bundle savedInstanceState) {
         try {
             if (savedInstanceState == null) {
                 // Creating activity due to user
@@ -180,11 +176,6 @@ public class MainActivity extends AppCompatActivity {
                     initDatabase(this, false);
                 } else {
                     Log.w("MacIndex", "Database already initialized.");
-                }
-
-                // Cache clear if new version is registered
-                if (isNewVersion) {
-                    clearCache();
                 }
 
                 initInterface(true);
@@ -282,11 +273,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         isMainRunning = false;
         pendingDrawerAction = null;
-        interfaceRequestID++;
-        if (interfaceThread != null) {
-            interfaceThread.interrupt();
-            interfaceThread = null;
-        }
         if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
@@ -303,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.mainDebugReloadItem).setVisible(false);
             menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
             menu.findItem(R.id.mainDebugRunnerItem).setVisible(false);
-            menu.findItem(R.id.mainDebugClearCacheItem).setVisible(false);
             menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
         }
         return true;
@@ -324,8 +309,6 @@ public class MainActivity extends AppCompatActivity {
             initInterface(true);
         } else if (itemID == R.id.mainDebugTriggerErrorItem) {
             ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
-        } else if (itemID == R.id.mainDebugClearCacheItem) {
-            clearCache();
         } else if (itemID == R.id.mainDebugVersionRegistration) {
             PrefsHelper.editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE - 1, this);
             PrefsHelper.triggerRebirth(this);
@@ -675,14 +658,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initInterface(final boolean reloadPositions) {
         try {
-            final int requestID = ++interfaceRequestID;
-            if (interfaceThread != null) {
-                interfaceThread.interrupt();
-            }
-            if (waitDialog != null && waitDialog.isShowing()) {
-                waitDialog.dismiss();
-            }
-            boolean internalReloadFlag = reloadPositions;
             // Set Activity title.
             setTitle(getString(translateTitleRes()));
             // Parent layout of all categories.
@@ -693,153 +668,110 @@ public class MainActivity extends AppCompatActivity {
             // Get filter string and positions.
             final String[][] thisFilterString = machineHelper.getFilterString(thisFilter);
 
-            // Query cache.
-            if (internalReloadFlag) {
-                internalReloadFlag = !(operateCache(false));
+            if (reloadPositions) {
+                loadPositions = machineHelper.getMainPositions(thisFilter, thisManufacturer);
             }
 
-            if (internalReloadFlag) {
-                waitDialog.show();
-            }
-            final boolean finalInternalReloadFlag = internalReloadFlag;
-            final String manufacturerForRequest = thisManufacturer;
-            interfaceThread = new Thread() {
-                @Override
-                public void run() {
-                    final int[][] positionsForRequest;
-                    if (finalInternalReloadFlag) {
-                        positionsForRequest = machineHelper.filterSearchHelper(thisFilterString,
-                                manufacturerForRequest);
-                    } else {
-                        positionsForRequest = loadPositions;
-                    }
-                    if (Thread.currentThread().isInterrupted() || requestID != interfaceRequestID) {
-                        return;
-                    }
+            // Set up each category.
+            categoryContainer.setLayoutTransition(null);
+            try {
+                categoryContainer.removeAllViews();
+                machineLoadedCount = new TextView[loadPositions.length][];
+                for (int i = 0; i < loadPositions.length; i++) {
+                    if (loadPositions[i].length != 0) {
+                        final int categoryID = i;
+                        final int[] thisCategoryPositions = loadPositions[i];
+                        final View categoryChunk = getLayoutInflater()
+                                .inflate(R.layout.chunk_category, categoryContainer, false);
+                        final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
+                        final TextView categoryName = categoryChunk.findViewById(R.id.category);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (requestID != interfaceRequestID || isFinishing()
-                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
-                                return;
-                            }
-                            try {
-                                loadPositions = positionsForRequest;
-                                if (finalInternalReloadFlag) {
-                                    waitDialog.dismiss();
-                                    // Cache only the request that is still current.
-                                    operateCache(true);
-                                }
-                                // Set up each category.
-                                categoryContainer.setLayoutTransition(null);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            categoryName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                        } else {
+                            TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                        }
+                        categoryName.setText(thisFilterString[2][i]);
+
+                        /* Remake my teammate's code */
+                        categoryName.setOnClickListener(new View.OnClickListener() {
+                            private boolean thisVisibility = false;
+                            private boolean isCategoryLoaded = false;
+
+                            @Override
+                            public void onClick(final View view) {
                                 try {
-                                    categoryContainer.removeAllViews();
-                                    machineLoadedCount = new TextView[loadPositions.length][];
-                                    for (int i = 0; i < loadPositions.length; i++) {
-                                        if (loadPositions[i].length != 0) {
-                                            final int categoryID = i;
-                                            final int[] thisCategoryPositions = loadPositions[i];
-                                            final View categoryChunk = getLayoutInflater()
-                                                    .inflate(R.layout.chunk_category, categoryContainer, false);
-                                            final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
-                                            final TextView categoryName = categoryChunk.findViewById(R.id.category);
+                                    if (!isCategoryLoaded) {
+                                        Log.i("initCategory", "Loading category " + categoryID);
+                                        machineLoadedCount[categoryID] = SpecsIntentHelper
+                                                .initCategory(categoryChunkLayout, thisCategoryPositions,
+                                                        false, MainActivity.this);
+                                        SpecsIntentHelper.refreshFavourites(
+                                                new TextView[][]{machineLoadedCount[categoryID]},
+                                                MainActivity.this);
+                                        isCategoryLoaded = true;
+                                    }
 
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                categoryName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                                            } else {
-                                                TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                                    final View firstChild = categoryChunkLayout.getChildAt(1);
+                                    if (thisVisibility) {
+                                        // Make machines invisible.
+                                        if (!(firstChild instanceof LinearLayout)) {
+                                            // Have the divider
+                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
+                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
+                                                thisVisibility = false;
                                             }
-                                            categoryName.setText(thisFilterString[2][i]);
-
-                                            /* Remake my teammate's code */
-                                            categoryName.setOnClickListener(new View.OnClickListener() {
-                                                private boolean thisVisibility = false;
-                                                private boolean isCategoryLoaded = false;
-
-                                                @Override
-                                                public void onClick(final View view) {
-                                                    try {
-                                                        if (!isCategoryLoaded) {
-                                                            Log.i("initCategory", "Loading category " + categoryID);
-                                                            machineLoadedCount[categoryID] = SpecsIntentHelper
-                                                                    .initCategory(categoryChunkLayout, thisCategoryPositions,
-                                                                            false, MainActivity.this);
-                                                            SpecsIntentHelper.refreshFavourites(
-                                                                    new TextView[][]{machineLoadedCount[categoryID]},
-                                                                    MainActivity.this);
-                                                            isCategoryLoaded = true;
-                                                        }
-
-                                                        final View firstChild = categoryChunkLayout.getChildAt(1);
-                                                        if (thisVisibility) {
-                                                            // Make machines invisible.
-                                                            if (!(firstChild instanceof LinearLayout)) {
-                                                                // Have the divider
-                                                                for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                                    thisVisibility = false;
-                                                                }
-                                                                firstChild.setVisibility(View.VISIBLE);
-                                                            } else {
-                                                                // Does not have the divider
-                                                                for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                                    thisVisibility = false;
-                                                                }
-                                                            }
-                                                        } else {
-                                                            // Make machines visible.
-                                                            if (!(firstChild instanceof LinearLayout)) {
-                                                                // Have the divider
-                                                                for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                                    thisVisibility = true;
-                                                                }
-                                                                firstChild.setVisibility(View.GONE);
-                                                            } else {
-                                                                // Does not have the divider
-                                                                for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                                    categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                                    thisVisibility = true;
-                                                                }
-                                                            }
-                                                        }
-                                                    } catch (Exception e) {
-                                                        ExceptionHelper.handleException(MainActivity.this, e, null, null);
-                                                    }
-                                                }
-                                            });
-                                            categoryContainer.addView(categoryChunk);
+                                            firstChild.setVisibility(View.VISIBLE);
+                                        } else {
+                                            // Does not have the divider
+                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
+                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
+                                                thisVisibility = false;
+                                            }
+                                        }
+                                    } else {
+                                        // Make machines visible.
+                                        if (!(firstChild instanceof LinearLayout)) {
+                                            // Have the divider
+                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
+                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
+                                                thisVisibility = true;
+                                            }
+                                            firstChild.setVisibility(View.GONE);
+                                        } else {
+                                            // Does not have the divider
+                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
+                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
+                                                thisVisibility = true;
+                                            }
                                         }
                                     }
-                                    // Remove the last divider.
-                                    if (categoryContainer.getChildCount() != 0) {
-                                        ((LinearLayout) categoryContainer.getChildAt(
-                                                categoryContainer.getChildCount() - 1)).removeViewAt(1);
-                                    }
-                                } finally {
-                                    categoryContainer.setLayoutTransition(layoutTransition);
+                                } catch (Exception e) {
+                                    ExceptionHelper.handleException(MainActivity.this, e, null, null);
                                 }
-                            } catch (Exception e) {
-                                ExceptionHelper.handleException(MainActivity.this, e, null, null);
                             }
-
-                            // If user lunched MacIndex for the first time, a message should show.
-                            if (PrefsHelper.getBooleanPrefs("isFirstLunch", MainActivity.this)) {
-                                final AlertDialog.Builder firstLunchGreet = new AlertDialog.Builder(MainActivity.this);
-                                firstLunchGreet.setTitle(R.string.information_first_lunch_title);
-                                firstLunchGreet.setMessage(R.string.information_first_lunch);
-                                firstLunchGreet.setPositiveButton(R.string.get_started, (dialogInterface, i) -> mDrawerLayout.openDrawer(GravityCompat.START));
-                                firstLunchGreet.show();
-                                PrefsHelper.editPrefs("isFirstLunch", false, MainActivity.this);
-                            }
-
-                        }
-                    });
+                        });
+                        categoryContainer.addView(categoryChunk);
+                    }
                 }
-            };
-            interfaceThread.start();
+                // Remove the last divider.
+                if (categoryContainer.getChildCount() != 0) {
+                    ((LinearLayout) categoryContainer.getChildAt(
+                            categoryContainer.getChildCount() - 1)).removeViewAt(1);
+                }
+            } finally {
+                categoryContainer.setLayoutTransition(layoutTransition);
+            }
+
+            // If user lunched MacIndex for the first time, a message should show.
+            if (PrefsHelper.getBooleanPrefs("isFirstLunch", MainActivity.this)) {
+                final AlertDialog.Builder firstLunchGreet = new AlertDialog.Builder(MainActivity.this);
+                firstLunchGreet.setTitle(R.string.information_first_lunch_title);
+                firstLunchGreet.setMessage(R.string.information_first_lunch);
+                firstLunchGreet.setPositiveButton(R.string.get_started, (dialogInterface, i) -> mDrawerLayout.openDrawer(GravityCompat.START));
+                firstLunchGreet.show();
+                PrefsHelper.editPrefs("isFirstLunch", false, MainActivity.this);
+            }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e,
                     "initInterface", "Initialize failed!!");
@@ -942,234 +874,6 @@ public class MainActivity extends AppCompatActivity {
                         "Not a Valid Search Column Selection, This should NOT happen!!");
                 return R.id.view1MenuItem;
         }
-    }
-
-    private boolean operateCache(final boolean isWrite) {
-        try {
-            String toWrite = "";
-            if (isWrite) {
-                final StringBuilder cacheBuilder = new StringBuilder();
-                for (int i = 0; i < loadPositions.length; i++) {
-                    for (int j = 0; j < loadPositions[i].length; j++) {
-                        cacheBuilder.append(loadPositions[i][j]);
-                        if (!(j + 1 == loadPositions[i].length)) {
-                            cacheBuilder.append(",");
-                        }
-                    }
-                    if (!(i + 1 == loadPositions.length)) {
-                        cacheBuilder.append(";");
-                    }
-                }
-                toWrite = cacheBuilder.toString();
-                Log.w("operateCache", "String to write: " + toWrite);
-            }
-            switch (thisManufacturer) {
-                case "all":
-                    switch (thisFilter) {
-                        case "names":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM0F0", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM0F0", this);
-                                break;
-                            }
-                        case "processors":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM0F1", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM0F1", this);
-                                break;
-                            }
-                        case "years":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM0F2", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM0F2", this);
-                                break;
-                            }
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                    break;
-                case "apple68k":
-                    switch (thisFilter) {
-                        case "names":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM1F0", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM1F0", this);
-                                break;
-                            }
-                        case "processors":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM1F1", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM1F1", this);
-                                break;
-                            }
-                        case "years":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM1F2", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM1F2", this);
-                                break;
-                            }
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                    break;
-                case "appleppc":
-                    switch (thisFilter) {
-                        case "names":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM2F0", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM2F0", this);
-                                break;
-                            }
-                        case "processors":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM2F1", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM2F1", this);
-                                break;
-                            }
-                        case "years":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM2F2", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM2F2", this);
-                                break;
-                            }
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                    break;
-                case "appleintel":
-                    switch (thisFilter) {
-                        case "names":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM3F0", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM3F0", this);
-                                break;
-                            }
-                        case "processors":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM3F1", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM3F1", this);
-                                break;
-                            }
-                        case "years":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM3F2", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM3F2", this);
-                                break;
-                            }
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                    break;
-                case "applearm":
-                    switch (thisFilter) {
-                        case "names":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM4F0", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM4F0", this);
-                                break;
-                            }
-                        case "processors":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM4F1", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM4F1", this);
-                                break;
-                            }
-                        case "years":
-                            if (isWrite) {
-                                PrefsHelper.editPrefs("lastCachedM4F2", toWrite, this);
-                                return true;
-                            } else {
-                                toWrite = PrefsHelper.getStringPrefs("lastCachedM4F2", this);
-                                break;
-                            }
-                        default:
-                            throw new IllegalArgumentException();
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
-            if (!isWrite) {
-                if (toWrite.isEmpty()) {
-                    Log.i("MainCache", "Cache is empty.");
-                    return false;
-                } else {
-                    Log.i("MainCache", "Hit cache string: " + toWrite);
-                    String[] splitedCategories = toWrite.split(";");
-                    loadPositions = new int[splitedCategories.length][];
-                    for (int i = 0; i < splitedCategories.length; i++) {
-                        // Check if empty:
-                        if (splitedCategories[i].isEmpty()) {
-                            loadPositions[i] = new int[0];
-                            continue;
-                        }
-                        String[] splitedMachineIDs = splitedCategories[i].split(",");
-                        loadPositions[i] = new int[splitedMachineIDs.length];
-                        for (int j = 0; j < splitedMachineIDs.length; j++) {
-                            loadPositions[i][j] = Integer.parseInt(splitedMachineIDs[j]);
-                        }
-                    }
-                    return true;
-                }
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "MainCache",
-                    "Unable to operate the cache.");
-            return false;
-        }
-    }
-
-    private void clearCache() {
-        Log.w("MainCache", "Clearing cache.");
-        if (BuildConfig.DEBUG) {
-            Toast.makeText(this, "Cache clear requested.", Toast.LENGTH_SHORT).show();
-        }
-        PrefsHelper.clearPrefs("lastCachedM0F0", this);
-        PrefsHelper.clearPrefs("lastCachedM0F1", this);
-        PrefsHelper.clearPrefs("lastCachedM0F2", this);
-        PrefsHelper.clearPrefs("lastCachedM1F0", this);
-        PrefsHelper.clearPrefs("lastCachedM1F1", this);
-        PrefsHelper.clearPrefs("lastCachedM1F2", this);
-        PrefsHelper.clearPrefs("lastCachedM2F0", this);
-        PrefsHelper.clearPrefs("lastCachedM2F1", this);
-        PrefsHelper.clearPrefs("lastCachedM2F2", this);
-        PrefsHelper.clearPrefs("lastCachedM3F0", this);
-        PrefsHelper.clearPrefs("lastCachedM3F1", this);
-        PrefsHelper.clearPrefs("lastCachedM3F2", this);
-        PrefsHelper.clearPrefs("lastCachedM4F0", this);
-        PrefsHelper.clearPrefs("lastCachedM4F1", this);
-        PrefsHelper.clearPrefs("lastCachedM4F2", this);
     }
 
     private void decodeDeepLink(final String deepLink) {

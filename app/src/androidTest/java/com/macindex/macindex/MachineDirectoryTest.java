@@ -1,5 +1,6 @@
 package com.macindex.macindex;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
@@ -90,11 +91,33 @@ public class MachineDirectoryTest {
         assertSearchMatchesDatabase("semc", "2104", true);
     }
 
+    @Test
+    public void generatedMainCacheMatchesDirectory() {
+        final String[] manufacturers = {"all", "apple68k", "appleppc", "appleintel", "applearm"};
+        final String[] filters = {"names", "processors", "years"};
+        for (String thisManufacturer : manufacturers) {
+            for (String thisFilter : filters) {
+                final String[][] filterString = MainActivity.getMachineHelper()
+                        .getFilterString(thisFilter);
+                final int[][] cachedPositions = MainActivity.getMachineHelper()
+                        .getMainPositions(thisFilter, thisManufacturer);
+                assertEquals(filterString[1].length, cachedPositions.length);
+                for (int i = 0; i < filterString[1].length; i++) {
+                    assertArrayEquals(MainActivity.getMachineHelper().searchHelper(
+                                    filterString[0][0], filterString[1][i],
+                                    thisManufacturer, false, true),
+                            cachedPositions[i]);
+                }
+            }
+        }
+    }
+
     private void assertSearchMatchesDatabase(final String columnName, final String searchInput,
                                              final boolean isExactMatch) {
         final List<String> expectedNames = new ArrayList<>();
         try (Cursor tablesCursor = database.query("sqlite_master", new String[]{"name"},
-                "type = ? AND name NOT LIKE ?", new String[]{"table", "android_%"},
+                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?)",
+                new String[]{"table", "android_%", "machine_directory", "main_cache"},
                 null, null, null)) {
             while (tablesCursor.moveToNext()) {
                 final String tableName = tablesCursor.getString(0);

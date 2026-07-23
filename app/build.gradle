@@ -48,3 +48,19 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.7.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }
+
+tasks.register('generateMachineIndexes', Exec) {
+    commandLine 'python3', rootProject.file('tools/generate_machine_indexes.py'),
+            file('src/main/assets/specs.db')
+}
+
+def verifyMachineIndexes = tasks.register('verifyMachineIndexes', Exec) {
+    commandLine 'python3', rootProject.file('tools/generate_machine_indexes.py'), '--check',
+            file('src/main/assets/specs.db')
+}
+
+tasks.configureEach {
+    if (name == 'preReleaseBuild') {
+        dependsOn verifyMachineIndexes
+    }
+}

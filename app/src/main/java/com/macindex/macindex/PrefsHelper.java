@@ -50,21 +50,6 @@ class PrefsHelper {
         DEFAULT_VALUES.put("lastSearchFiltersSpinner", 0);
         DEFAULT_VALUES.put("lastSearchOptionsSpinner", 0);
         DEFAULT_VALUES.put("lastKnownVersion", 0);
-        DEFAULT_VALUES.put("lastCachedM0F0", "");
-        DEFAULT_VALUES.put("lastCachedM0F1", "");
-        DEFAULT_VALUES.put("lastCachedM0F2", "");
-        DEFAULT_VALUES.put("lastCachedM1F0", "");
-        DEFAULT_VALUES.put("lastCachedM1F1", "");
-        DEFAULT_VALUES.put("lastCachedM1F2", "");
-        DEFAULT_VALUES.put("lastCachedM2F0", "");
-        DEFAULT_VALUES.put("lastCachedM2F1", "");
-        DEFAULT_VALUES.put("lastCachedM2F2", "");
-        DEFAULT_VALUES.put("lastCachedM3F0", "");
-        DEFAULT_VALUES.put("lastCachedM3F1", "");
-        DEFAULT_VALUES.put("lastCachedM3F2", "");
-        DEFAULT_VALUES.put("lastCachedM4F0", "");
-        DEFAULT_VALUES.put("lastCachedM4F1", "");
-        DEFAULT_VALUES.put("lastCachedM4F2", "");
 
         /* Runtime Parameters */
         DEFAULT_VALUES.put("isFirstLunch", Boolean.TRUE);
