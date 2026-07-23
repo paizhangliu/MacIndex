@@ -41,6 +41,8 @@ public class CommentActivity extends AppCompatActivity {
 
     private MenuItem manageCommentsItem = null;
 
+    private MenuItem clearCommentsItem = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,16 +71,6 @@ public class CommentActivity extends AppCompatActivity {
             machineIDs = savedInstanceState.getIntArray("machineIDs");
             initComments(false);
         } else {
-            // Check whether if the string is empty on creation.
-            if (PrefsHelper.getStringPrefs("userComments", this).isEmpty()) {
-                final AlertDialog.Builder nullWarningDialog = new AlertDialog.Builder(this);
-                nullWarningDialog.setTitle(R.string.menu_comment);
-                nullWarningDialog.setMessage(R.string.comments_not_available);
-                nullWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    // Confirmed.
-                });
-                nullWarningDialog.show();
-            }
             initComments(true);
         }
     }
@@ -122,7 +114,9 @@ public class CommentActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_comment, menu);
         manageCommentsItem = menu.findItem(R.id.deleteCommentsItem);
+        clearCommentsItem = menu.findItem(R.id.clearCommentsItem);
         manageCommentsItem.setEnabled(isAbleToManage);
+        clearCommentsItem.setEnabled(isAbleToManage);
         return true;
     }
 
@@ -265,59 +259,52 @@ public class CommentActivity extends AppCompatActivity {
         }
     }
 
-    // Deleted previous empty detection since ver. 4.9
-
     // Adapted from FavouriteActivity
     private void deleteComments() {
         try {
-            if (PrefsHelper.getStringPrefs("userComments", this).isEmpty()) {
-                // Under the new behaviour, this branch should not be taken.
-                throw new IllegalAccessException("Should not enter this MenuItem");
-            } else {
-                final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
-                final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-                final String[] thisCommentsStrings = PrefsHelper.getStringPrefs("userComments", this).split("││");
-                final int[] currentSelections = new int[thisCommentsStrings.length];
-                for (int i = 0; i < thisCommentsStrings.length; i++) {
-                    CheckBox thisCheckBox = new CheckBox(this);
-                    thisCheckBox.setText(thisCommentsStrings[i].split("│")[0]);
-                    thisCheckBox.setChecked(false);
-                    int finalI = i;
-                    thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-                        currentSelections[finalI] = thisCheckBox.isChecked() ? 1 : 0;
-                    });
-                    selectLayout.addView(thisCheckBox);
-                }
-
-                // Create the dialog.
-                final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
-                deleteDialog.setTitle(R.string.submenu_comments_delete);
-                deleteDialog.setMessage(R.string.comments_delete);
-                deleteDialog.setView(selectChunk);
-                deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
-                    try {
-                        // Delete the folders.
-                        String newString = "";
-                        for (int j = 0; j < thisCommentsStrings.length; j++) {
-                            if (currentSelections[j] == 0) {
-                                newString = newString.concat("││" + thisCommentsStrings[j]);
-                            }
-                        }
-                        if (!newString.isEmpty()) {
-                            newString = newString.substring(2);
-                        }
-                        PrefsHelper.editPrefs("userComments", newString, this);
-                        initComments(true);
-                    } catch (Exception e) {
-                        ExceptionHelper.handleException(this, e, "deleteCommentsConfirm", "Illegal comment prefs string. Please reset the application. String is: "
-                                + PrefsHelper.getStringPrefs("userComments", this));
-                    }
+            final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
+            final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
+            final String[] thisCommentsStrings = PrefsHelper.getStringPrefs("userComments", this).split("││");
+            final int[] currentSelections = new int[thisCommentsStrings.length];
+            for (int i = 0; i < thisCommentsStrings.length; i++) {
+                CheckBox thisCheckBox = new CheckBox(this);
+                thisCheckBox.setText(thisCommentsStrings[i].split("│")[0]);
+                thisCheckBox.setChecked(false);
+                int finalI = i;
+                thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+                    currentSelections[finalI] = thisCheckBox.isChecked() ? 1 : 0;
                 });
-                deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
-                    // Cancelled, do nothing
-                }));
-                deleteDialog.show();
+                selectLayout.addView(thisCheckBox);
             }
+
+            // Create the dialog.
+            final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
+            deleteDialog.setTitle(R.string.submenu_comments_delete);
+            deleteDialog.setMessage(R.string.comments_delete);
+            deleteDialog.setView(selectChunk);
+            deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+                try {
+                    // Delete the folders.
+                    String newString = "";
+                    for (int j = 0; j < thisCommentsStrings.length; j++) {
+                        if (currentSelections[j] == 0) {
+                            newString = newString.concat("││" + thisCommentsStrings[j]);
+                        }
+                    }
+                    if (!newString.isEmpty()) {
+                        newString = newString.substring(2);
+                    }
+                    PrefsHelper.editPrefs("userComments", newString, this);
+                    initComments(true);
+                } catch (Exception e) {
+                    ExceptionHelper.handleException(this, e, "deleteCommentsConfirm", "Illegal comment prefs string. Please reset the application. String is: "
+                            + PrefsHelper.getStringPrefs("userComments", this));
+                }
+            });
+            deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
+                // Cancelled, do nothing
+            }));
+            deleteDialog.show();
         } catch (final Exception e) {
             ExceptionHelper.handleException(CommentActivity.this, e, "deleteComments", "Illegal comment prefs string. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userComments", CommentActivity.this));
@@ -328,8 +315,9 @@ public class CommentActivity extends AppCompatActivity {
         Log.i("CommentActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         // Avoid null pointers
-        if (manageCommentsItem != null) {
+        if (manageCommentsItem != null && clearCommentsItem != null) {
             manageCommentsItem.setEnabled(newStatus);
+            clearCommentsItem.setEnabled(newStatus);
         }
     }
 }

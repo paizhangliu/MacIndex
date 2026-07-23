@@ -88,7 +88,7 @@ class CommentListAdapter extends BaseAdapter {
         }
 
         commentHolder.commentLayout.setOnClickListener(unused -> SpecsIntentHelper.sendIntent(
-                machineIDs, machineIDs[position], thisContext, false));
+                machineIDs, machineIDs[position], thisContext));
         commentHolder.commentLayout.setOnLongClickListener(unused -> {
             ClipboardManager clipboard = (ClipboardManager) thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("userComment", commentHolder.machineComment.getText());

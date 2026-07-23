@@ -8,8 +8,6 @@
     <string name="information_specs_everymac">点击下方来浏览更加详尽的数据</string>
     <string name="information_compare_open_specs">点击机型名称来进入参数页面</string>
     <string name="information_specs_high_vol_warning">目前的音量较高。是否要继续播放？\n选择“确认”来暂时关闭本警告。\n打开设置来关闭这个功能。</string>
-    <string name="information_first_lunch_title">欢迎使用 MacIndex</string>
-    <string name="information_first_lunch">打开抽屉在应用功能间导航。打开菜单来探索更多选项。</string>
     <string name="setting_sort_comment">收藏与备注排序</string>
     <string name="setting_sort_comment_description">按照推出时间而非添加顺序排列收藏与备注。</string>
     <string name="setting_everymac">默认从 EveryMac 打开</string>
@@ -128,17 +126,14 @@
     <string name="error_restart">重新启动</string>
     <string name="first_one">已是第一台</string>
     <string name="last_one">已是最后一台</string>
-    <string name="get_started">开始使用</string>
     <string name="loading_category">正在加载数据库</string>
     <string name="loading_fixed_nav">导航范围已固定</string>
     <string name="loading_search">正在搜索</string>
     <string name="loading_comments">正在加载备注</string>
     <string name="loading_favourites">正在加载收藏</string>
-    <string name="comments_not_available">还没有保存任何备注。可以在任意参数页面中添加。</string>
     <string name="comments_not_available_tips">还没有保存任何备注</string>
     <string name="comments_delete">请选择要删除的备注。此操作不能撤销。</string>
     <string name="comments_clear_warning">所有备注将被清除，且不能撤销。仍想要继续吗？</string>
-    <string name="favourites_no_folder">还没有创建任何收藏夹。可以立刻新建一个，或在收藏页中随后新建。</string>
     <string name="favourites_no_folder_tips">还没有创建任何收藏夹</string>
     <string name="favourites_tips">请选择对应的收藏夹。在收藏页中管理所有收藏夹。</string>
     <string name="favourites_delete">请选择要删除的收藏夹。此操作不能撤销。</string>
@@ -148,11 +143,10 @@
     <string name="favourites_error_empty">输入为空</string>
     <string name="favourites_error_illegal">很抱歉，特殊字符 \'│\' 被 MacIndex 内部使用且无法用作收藏夹名</string>
     <string name="favourites_error_length">输入过长，每个收藏夹的限度是 1 行 30 个字符</string>
-    <string name="favourites_error_conflict">该名称已被指定，且无法重用</string>
+    <string name="favourites_error_conflict">该名称已被使用</string>
     <string name="favourites_error_limit">只能最多创建 15 个收藏夹。</string>
     <string name="favourites_clear_warning">所有收藏夹将被删除，且不能撤销。仍想要继续吗？</string>
     <string name="compare_limit">(已满)</string>
-    <string name="compare_insufficient">比较列表中至少需要两个机型才能进行比较。可以在任意参数页面中添加。</string>
     <string-array name="compare_insufficient_tips">
         <item>比较列表中至少需要两个机型\n当前列表为空</item>
         <item>比较列表中至少需要两个机型\n当前列表中有 1 个机型</item>
@@ -162,13 +156,11 @@
     <string name="compare_manage">请选择要从比较列表删除的机型。此操作不能撤销。</string>
     <string name="compare_select_exactly_two">请选择且仅选择两个要比较的机型。</string>
     <string name="version_information_general">版本 </string>
-    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 许可证开源。\n\nMacIndex 是一个非营利、开源的资料项目，仅供参考与学习。机型资料、图片及声音根据公开可获取的资料整理，可能存在错误或遗漏，不提供任何保证。所有产品名称、标志及商标均归各自权利人所有；MacIndex 与所提及的任何公司或服务均无隶属、合作或背书关系。如有权利或内容问题，请联系开发者。</string>
+    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 开源许可证。\n\nMacIndex 是一个非营利、开源的资料项目，仅供参考与学习。机型资料、图片及声音根据公开可获取的资料整理，可能存在错误或遗漏，不提供任何保证。所有产品名称、标志及商标均归各自权利人所有；MacIndex 与所提及的任何公司或服务均无隶属、合作或背书关系。</string>
     <string name="about_opensource">第三方开源许可证</string>
     <string name="about_update">发行说明</string>
-    <string name="about_feedback">反馈</string>
+    <string name="about_feedback">问题反馈</string>
     <string name="viewimage_rotate">示意图仅供参考\n旋转设备来改变图片方向</string>
-    <string name="random_lucky_title">运气不错</string>
-    <string name="ramdom_lucky_message">随机进入了收藏夹中的机型。</string>
     <string-array name="share_menu">
         <item>复制型号信息</item>
         <item>复制所有信息</item>

@@ -51,6 +51,8 @@ public class CompareActivity extends AppCompatActivity {
 
     private MenuItem manageListMenuItem = null;
 
+    private MenuItem clearListMenuItem = null;
+
     private SpecsHelper specsHelperLeft = null;
 
     private SpecsHelper specsHelperRight = null;
@@ -77,15 +79,6 @@ public class CompareActivity extends AppCompatActivity {
 
         if (!MainActivity.validateOperation(this)) {
             return;
-        }
-        if (getSharedComparison() == null && getCompareList(this).size() < 2) {
-            final AlertDialog.Builder insufficientDialog = new AlertDialog.Builder(this);
-            insufficientDialog.setTitle(R.string.menu_compare);
-            insufficientDialog.setMessage(R.string.compare_insufficient);
-            insufficientDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                // Confirmed.
-            });
-            insufficientDialog.show();
         }
 
         if (getSharedComparison() == null
@@ -139,6 +132,7 @@ public class CompareActivity extends AppCompatActivity {
         copyCompareMenuItem = menu.findItem(R.id.copyCompareItem);
         shareLinkCompareMenuItem = menu.findItem(R.id.shareLinkCompareItem);
         manageListMenuItem = menu.findItem(R.id.manageCompareItem);
+        clearListMenuItem = menu.findItem(R.id.clearCompareItem);
         updateMenuState();
         return true;
     }
@@ -269,11 +263,6 @@ public class CompareActivity extends AppCompatActivity {
     private void initCompareItem() {
         try {
             final List<String> compareNames = getCompareList(this);
-            if (compareNames.size() < 2) {
-                Toast.makeText(this, R.string.compare_insufficient, Toast.LENGTH_LONG).show();
-                return;
-            }
-
             final String currentLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
             final String currentRight = PrefsHelper.getStringPrefs("userComparesRight", this);
             final CharSequence[] choices = compareNames.toArray(new CharSequence[0]);
@@ -350,8 +339,8 @@ public class CompareActivity extends AppCompatActivity {
         final TextView nameRight = findViewById(R.id.nameTextRight);
         reloadName(nameLeft, leftName);
         reloadName(nameRight, rightName);
-        nameLeft.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{leftID}, leftID, this, false));
-        nameRight.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{rightID}, rightID, this, false));
+        nameLeft.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{leftID}, leftID, this));
+        nameRight.setOnClickListener(view -> SpecsIntentHelper.sendIntent(new int[]{rightID}, rightID, this));
 
         final int[] labels = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
                 R.string.order, R.string.emc, R.string.processor, R.string.graphics,
@@ -453,9 +442,6 @@ public class CompareActivity extends AppCompatActivity {
     private void manageList() {
         try {
             final List<String> compareNames = getCompareList(this);
-            if (compareNames.isEmpty()) {
-                throw new IllegalAccessException("Should not enter this MenuItem");
-            }
             final View selectChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
             final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
             final boolean[] deleteSelections = new boolean[compareNames.size()];
@@ -519,6 +505,9 @@ public class CompareActivity extends AppCompatActivity {
         if (manageListMenuItem != null) {
             manageListMenuItem.setEnabled(isAbleToManage);
         }
+        if (clearListMenuItem != null) {
+            clearListMenuItem.setEnabled(isAbleToManage);
+        }
     }
 
     private void setAbleToInitialize(final boolean newStatus) {
@@ -566,20 +555,19 @@ public class CompareActivity extends AppCompatActivity {
         PrefsHelper.editPrefs("isCompareReloadNeeded", true, thisContext);
     }
 
-    static boolean toggleCompare(final String machineName, final Context thisContext) {
+    static void toggleCompare(final String machineName, final Context thisContext) {
         final List<String> compareNames = getCompareList(thisContext);
         if (compareNames.contains(machineName)) {
             compareNames.remove(machineName);
             saveCompareList(compareNames, thisContext);
             ensureSelectionValid(thisContext);
-            return true;
+            return;
         }
         if (compareNames.size() >= 10) {
-            return false;
+            return;
         }
         compareNames.add(machineName);
         saveCompareList(compareNames, thisContext);
-        return true;
     }
 
     public static void checkIsComparing(final String machineName, final Context thisContext) {

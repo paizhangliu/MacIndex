@@ -49,6 +49,8 @@ public class FavouriteActivity extends AppCompatActivity {
 
     private MenuItem manageFolderItem = null;
 
+    private MenuItem clearFolderItem = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,19 +84,6 @@ public class FavouriteActivity extends AppCompatActivity {
             }
             initFavourites(false);
         } else {
-            if (PrefsHelper.getStringPrefs("userFavourites", this).isEmpty()) {
-                final AlertDialog.Builder emptyStringDialog = new AlertDialog.Builder(this);
-                emptyStringDialog.setTitle(R.string.menu_favourite);
-                emptyStringDialog.setMessage(R.string.favourites_no_folder);
-                emptyStringDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    // Create new folder
-                    createFolder();
-                });
-                emptyStringDialog.setNegativeButton(R.string.link_cancel, ((dialogInterface, i) -> {
-                    // Cancelled, do nothing
-                }));
-                emptyStringDialog.show();
-            }
             initFavourites(true);
         }
     }
@@ -146,8 +135,10 @@ public class FavouriteActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.menu_favourite, menu);
         renameFolderItem = menu.findItem(R.id.renameFolderItem);
         manageFolderItem = menu.findItem(R.id.deleteFolderItem);
+        clearFolderItem = menu.findItem(R.id.clearFolderItem);
         renameFolderItem.setEnabled(isAbleToManage);
         manageFolderItem.setEnabled(isAbleToManage);
+        clearFolderItem.setEnabled(isAbleToManage);
         return true;
     }
 
@@ -400,8 +391,6 @@ public class FavouriteActivity extends AppCompatActivity {
         }
     }
 
-    // Deleted previous empty detection since ver. 4.9
-
     public static String[] getFolders(final Context thisContext, final Boolean isTailing) {
         try {
             String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", thisContext).split("││");
@@ -515,53 +504,47 @@ public class FavouriteActivity extends AppCompatActivity {
 
     private void deleteFolder() {
         try {
-            // Check if totally empty.
-            if (PrefsHelper.getStringPrefs("userFavourites", this).isEmpty()) {
-                // Under the new behaviour, this branch should not be taken.
-                throw new IllegalAccessException("Should not enter this MenuItem");
-            } else {
-                final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
-                final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-                final String[] currentStrings = getFolders(this, true);
-                final int[] currentSelections = new int[currentStrings.length];
-                for (int i = 0; i < currentStrings.length; i++) {
-                    CheckBox thisCheckBox = new CheckBox(this);
-                    thisCheckBox.setText(currentStrings[i]);
-                    thisCheckBox.setChecked(false);
-                    int finalI = i;
-                    thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-                        currentSelections[finalI] = thisCheckBox.isChecked() ? 1 : 0;
-                    });
-                    selectLayout.addView(thisCheckBox);
-                }
-
-                // Create the dialog.
-                final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
-                deleteDialog.setTitle(R.string.submenu_favourite_delete);
-                deleteDialog.setMessage(R.string.favourites_delete);
-                deleteDialog.setView(selectChunk);
-                deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
-                    try {
-                        // Delete the folders.
-                        String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", this).split("││");
-                        String newString = "";
-                        for (int j = 1; j < splitedString.length; j++) {
-                            if (currentSelections[j - 1] == 0) {
-                                newString = newString.concat("││" + splitedString[j]);
-                            }
-                        }
-                        PrefsHelper.editPrefs("userFavourites", newString, this);
-                        initFavourites(true);
-                    } catch (Exception e) {
-                        ExceptionHelper.handleException(this, e, "deleteFolderConfirm", "Illegal Favourites String. Please reset the application. String is: "
-                                + PrefsHelper.getStringPrefs("userFavourites", this));
-                    }
+            final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
+            final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
+            final String[] currentStrings = getFolders(this, true);
+            final int[] currentSelections = new int[currentStrings.length];
+            for (int i = 0; i < currentStrings.length; i++) {
+                CheckBox thisCheckBox = new CheckBox(this);
+                thisCheckBox.setText(currentStrings[i]);
+                thisCheckBox.setChecked(false);
+                int finalI = i;
+                thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+                    currentSelections[finalI] = thisCheckBox.isChecked() ? 1 : 0;
                 });
-                deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
-                    // Cancelled, do nothing
-                }));
-                deleteDialog.show();
+                selectLayout.addView(thisCheckBox);
             }
+
+            // Create the dialog.
+            final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
+            deleteDialog.setTitle(R.string.submenu_favourite_delete);
+            deleteDialog.setMessage(R.string.favourites_delete);
+            deleteDialog.setView(selectChunk);
+            deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+                try {
+                    // Delete the folders.
+                    String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", this).split("││");
+                    String newString = "";
+                    for (int j = 1; j < splitedString.length; j++) {
+                        if (currentSelections[j - 1] == 0) {
+                            newString = newString.concat("││" + splitedString[j]);
+                        }
+                    }
+                    PrefsHelper.editPrefs("userFavourites", newString, this);
+                    initFavourites(true);
+                } catch (Exception e) {
+                    ExceptionHelper.handleException(this, e, "deleteFolderConfirm", "Illegal Favourites String. Please reset the application. String is: "
+                            + PrefsHelper.getStringPrefs("userFavourites", this));
+                }
+            });
+            deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
+                // Cancelled, do nothing
+            }));
+            deleteDialog.show();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "deleteFolder", "Illegal Favourites String. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userFavourites", this));
@@ -570,78 +553,72 @@ public class FavouriteActivity extends AppCompatActivity {
 
     private void renameFolder() {
         try {
-            // Check if totally empty.
-            if (PrefsHelper.getStringPrefs("userFavourites", this).isEmpty()) {
-                // Under the new behaviour, this branch should not be taken.
-                throw new IllegalAccessException("Should not enter this MenuItem");
-            } else {
-                final AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
-                renameDialog.setTitle(R.string.submenu_favourite_rename);
-                renameDialog.setMessage(R.string.favourites_rename);
-                // Setup each option in dialog.
-                final View folderChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_list, null);
-                final RadioGroup folderOptions = folderChunk.findViewById(R.id.option);
-                final String[] allFolders = getFolders(this, false);
-                for (int i = 0; i < allFolders.length; i++) {
-                    final RadioButton folderOption = new RadioButton(this);
-                    folderOption.setText(allFolders[i]);
-                    folderOption.setId(i);
-                    if (i == 0) {
-                        folderOption.setChecked(true);
-                    }
-                    folderOptions.addView(folderOption);
+            final AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
+            renameDialog.setTitle(R.string.submenu_favourite_rename);
+            renameDialog.setMessage(R.string.favourites_rename);
+            // Setup each option in dialog.
+            final View folderChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_list, null);
+            final RadioGroup folderOptions = folderChunk.findViewById(R.id.option);
+            final String[] allFolders = getFolders(this, false);
+            for (int i = 0; i < allFolders.length; i++) {
+                final RadioButton folderOption = new RadioButton(this);
+                folderOption.setText(allFolders[i]);
+                folderOption.setId(i);
+                if (i == 0) {
+                    folderOption.setChecked(true);
                 }
-                renameDialog.setView(folderChunk);
-
-                // When user tapped confirm or cancel...
-                renameDialog.setPositiveButton(MainActivity.getRes().getString(R.string.link_confirm),
-                        (dialog, which) -> {
-                            try {
-                                // Adapt New Folder Dialog
-                                final View newFolderChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_new, null);
-                                final EditText folderName = newFolderChunk.findViewById(R.id.folderName);
-                                folderName.setText(allFolders[folderOptions.getCheckedRadioButtonId()]);
-                                final AlertDialog.Builder newFolderDialog = new AlertDialog.Builder(this);
-                                newFolderDialog.setTitle(R.string.submenu_favourite_rename);
-                                newFolderDialog.setMessage(R.string.favourites_new_folder);
-                                newFolderDialog.setView(newFolderChunk);
-                                newFolderDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                                    // To be overwritten...
-                                });
-                                newFolderDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                                    // Do nothing
-                                });
-
-                                final AlertDialog newFolderDialogCreated = newFolderDialog.create();
-                                newFolderDialogCreated.show();
-                                // Overwrite the positive button
-                                newFolderDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-                                    try {
-                                        final String inputtedName = folderName.getText().toString().trim();
-                                        // Check if the input is legal
-                                        if (validateFolderName(inputtedName, allFolders, this)) {
-                                            // Rename the folder.
-                                            PrefsHelper.editPrefs("userFavourites",
-                                                    PrefsHelper.getStringPrefs("userFavourites", this)
-                                                            .replace("{" + allFolders[folderOptions.getCheckedRadioButtonId()] + "}", "{" + inputtedName + "}"), this);
-                                            initFavourites(true);
-                                            newFolderDialogCreated.dismiss();
-                                        }
-                                    } catch (Exception e) {
-                                        ExceptionHelper.handleException(FavouriteActivity.this, e, "newFolderDialog_Rename", "Illegal Favourites String. Please reset the application. String is: "
-                                                + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
-                                    }
-                                });
-                            } catch (Exception e) {
-                                ExceptionHelper.handleException(this, e, null, null);
-                            }
-                        });
-                renameDialog.setNegativeButton(MainActivity.getRes().getString(R.string.link_cancel),
-                        (dialog, which) -> {
-                            // Cancelled.
-                        });
-                renameDialog.show();
+                folderOptions.addView(folderOption);
             }
+            renameDialog.setView(folderChunk);
+
+            // When user tapped confirm or cancel...
+            renameDialog.setPositiveButton(MainActivity.getRes().getString(R.string.link_confirm),
+                    (dialog, which) -> {
+                        try {
+                            // Adapt New Folder Dialog
+                            final View newFolderChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_new, null);
+                            final EditText folderName = newFolderChunk.findViewById(R.id.folderName);
+                            folderName.setText(allFolders[folderOptions.getCheckedRadioButtonId()]);
+                            final AlertDialog.Builder newFolderDialog = new AlertDialog.Builder(this);
+                            newFolderDialog.setTitle(R.string.submenu_favourite_rename);
+                            newFolderDialog.setMessage(R.string.favourites_new_folder);
+                            newFolderDialog.setView(newFolderChunk);
+                            newFolderDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                                // To be overwritten...
+                            });
+                            newFolderDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
+                                // Do nothing
+                            });
+
+                            final AlertDialog newFolderDialogCreated = newFolderDialog.create();
+                            newFolderDialogCreated.show();
+                            // Overwrite the positive button
+                            newFolderDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                                try {
+                                    final String inputtedName = folderName.getText().toString().trim();
+                                    // Check if the input is legal
+                                    if (validateFolderName(inputtedName, allFolders, this)) {
+                                        // Rename the folder.
+                                        PrefsHelper.editPrefs("userFavourites",
+                                                PrefsHelper.getStringPrefs("userFavourites", this)
+                                                        .replace("{" + allFolders[folderOptions.getCheckedRadioButtonId()] + "}", "{" + inputtedName + "}"), this);
+                                        initFavourites(true);
+                                        newFolderDialogCreated.dismiss();
+                                    }
+                                } catch (Exception e) {
+                                    ExceptionHelper.handleException(FavouriteActivity.this, e, "newFolderDialog_Rename", "Illegal Favourites String. Please reset the application. String is: "
+                                            + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+                                }
+                            });
+                        } catch (Exception e) {
+                            ExceptionHelper.handleException(this, e, null, null);
+                        }
+                    });
+            renameDialog.setNegativeButton(MainActivity.getRes().getString(R.string.link_cancel),
+                    (dialog, which) -> {
+                        // Cancelled.
+                    });
+            renameDialog.show();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "renameFolder", "Illegal Favourites String. Please reset the application. String is: "
                     + PrefsHelper.getStringPrefs("userFavourites", this));
@@ -652,9 +629,10 @@ public class FavouriteActivity extends AppCompatActivity {
         Log.i("FavouriteActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         // Avoid null pointers
-        if (renameFolderItem != null && manageFolderItem != null) {
+        if (renameFolderItem != null && manageFolderItem != null && clearFolderItem != null) {
             renameFolderItem.setEnabled(newStatus);
             manageFolderItem.setEnabled(newStatus);
+            clearFolderItem.setEnabled(newStatus);
         }
     }
 }

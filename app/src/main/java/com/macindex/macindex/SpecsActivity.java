@@ -123,19 +123,6 @@ public class SpecsActivity extends AppCompatActivity {
             LayoutTransition layoutTransition = mainView.getLayoutTransition();
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
             initialize();
-
-            // Is randomized into a favourite machine?
-            if (intent.getBooleanExtra("isRandom", false)
-                    && FavouriteActivity.isFavourite(thisName, this)) {
-                Log.i("Random", "User wins.");
-                final AlertDialog.Builder congratsDialog = new AlertDialog.Builder(SpecsActivity.this);
-                congratsDialog.setTitle(R.string.random_lucky_title);
-                congratsDialog.setMessage(R.string.ramdom_lucky_message);
-                congratsDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                    // Do nothing..
-                });
-                congratsDialog.show();
-            }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }
@@ -780,17 +767,7 @@ public class SpecsActivity extends AppCompatActivity {
     // Modified from the original one from the FavouriteActivity
     private boolean isEmptyString() {
         if (PrefsHelper.getStringPrefs("userFavourites", this).isEmpty()) {
-            final AlertDialog.Builder emptyStringDialog = new AlertDialog.Builder(this);
-            emptyStringDialog.setTitle(R.string.submenu_specs_favourite);
-            emptyStringDialog.setMessage(R.string.favourites_no_folder);
-            emptyStringDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                // Create new folder
-                createFolder();
-            });
-            emptyStringDialog.setNegativeButton(R.string.link_cancel, ((dialogInterface, i) -> {
-                // Cancelled, do nothing
-            }));
-            emptyStringDialog.show();
+            createFolder();
             return true;
         } else {
             return false;
@@ -836,9 +813,7 @@ public class SpecsActivity extends AppCompatActivity {
     /* Compare Functions */
     private void addToCompare() {
         try {
-            if (!CompareActivity.toggleCompare(thisName, this)) {
-                Toast.makeText(this, R.string.compare_limit, Toast.LENGTH_SHORT).show();
-            }
+            CompareActivity.toggleCompare(thisName, this);
             initCompareCheckBox();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "addToCompare", "Illegal Compare String. Please reset the application. String is: "

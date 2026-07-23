@@ -66,12 +66,12 @@ class SpecsIntentHelper {
             LinkLoadingHelper.loadLinks(MainActivity.getMachineHelper().getName(thisMachineID),
                     MainActivity.getMachineHelper().getConfig(thisMachineID), thisContext);
         } else {
-            SpecsIntentHelper.sendIntent(machineIDs, thisMachineID, thisContext, false);
+            SpecsIntentHelper.sendIntent(machineIDs, thisMachineID, thisContext);
         }
     }
 
     public static void sendIntent(final int[] thisCategory, final int thisMachineID,
-                                  final Context parentContext, final boolean isRandom) {
+                                  final Context parentContext) {
         final Intent intent = new Intent(parentContext, SpecsActivity.class);
         intent.putExtra("machineID", thisMachineID);
 
@@ -100,7 +100,6 @@ class SpecsIntentHelper {
                                 Log.i("sendIntent", "Fixed Navigation, Category IDs " + Arrays.toString(newCategory)
                                         + ", thisMachineID " + thisMachineID);
                                 intent.putExtra("thisCategory", newCategory);
-                                intent.putExtra("isRandom", isRandom);
                                 parentContext.startActivity(intent);
                             } catch (final Exception e) {
                                 ExceptionHelper.handleException(parentContext, e, null, null);
@@ -113,7 +112,6 @@ class SpecsIntentHelper {
             Log.i("sendIntent", "Normal Navigation, Category IDs " + Arrays.toString(thisCategory)
                     + ", thisMachineID " + thisMachineID);
             intent.putExtra("thisCategory", thisCategory);
-            intent.putExtra("isRandom", isRandom);
             parentContext.startActivity(intent);
         }
     }

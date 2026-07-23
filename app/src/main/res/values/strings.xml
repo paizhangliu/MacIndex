@@ -9,8 +9,6 @@
     <string name="information_specs_everymac">Tap below to access more specifications</string>
     <string name="information_compare_open_specs">Tap on a machine name to open the Specification Page</string>
     <string name="information_specs_high_vol_warning">The current volume is too high. Do you want to proceed playing?\nSelect \"Confirm\" to turn this warning off temporarily.\nGo to preferences page to turn this function off.</string>
-    <string name="information_first_lunch_title">Welcome to MacIndex</string>
-    <string name="information_first_lunch">Open the drawer to navigate inside the application. Open the menu to access more options.</string>
     <string name="setting_sort_comment">Favourites/Comments Sorting</string>
     <string name="setting_sort_comment_description">Sort favourites and comments by introduction date instead of the order of addition.</string>
     <string name="setting_everymac">Open Directly in EveryMac</string>
@@ -25,14 +23,14 @@
     <string name="setting_quicknav">Fixed Navigation Range</string>
     <string name="setting_quicknav_description">Always override the navigation range to the belonged category.</string>
     <string name="setting_randomall">Limit Random Range</string>
-    <string name="setting_randomall_description">Only pick random machines inside the current group instead of all categories.</string>
+    <string name="setting_randomall_description">Only pick the random machine inside the current group instead of all categories.</string>
     <string name="setting_save_main">Save Usage (Main Page)</string>
     <string name="setting_save_main_description">Save the last selected filter and viewing method.</string>
     <string name="setting_save_search">Save Usage (Search Page)</string>
     <string name="setting_save_search_description">Save the last used filter and search options.</string>
     <string name="setting_save_compare">Save Usage (Compare Page)</string>
     <string name="setting_save_compare_description">Save the last selected machines and column.</string>
-    <string name="setting_search_open_directly">Open the Individual Search Result</string>
+    <string name="setting_search_open_directly">Open the Only Search Result</string>
     <string name="setting_search_open_directly_description">If only one search result was found, then open it directly.</string>
     <string name="search_searchBy">Search Options</string>
     <string-array name="search_Filters">
@@ -133,18 +131,15 @@
     <string name="error_restart">Restart</string>
     <string name="first_one">Already the first one</string>
     <string name="last_one">Already the last one</string>
-    <string name="get_started">Get Started</string>
     <string name="loading_category">Loading Database</string>
     <string name="loading_fixed_nav">Fixed Navigation Enabled</string>
     <string name="loading_search">Searching</string>
     <string name="loading_comments">Loading Comments</string>
     <string name="loading_favourites">Loading Bookmarks</string>
-    <string name="comments_not_available">No comment has been saved yet. You can add a comment at any Specification Page.</string>
     <string name="comments_not_available_tips">No comment has been saved yet</string>
     <string name="comments_delete">Please select the comment(s) to delete. This cannot be undone.</string>
     <string name="comments_clear_warning">All existing comments will be deleted. This cannot be undone. Do you want to proceed?</string>
-    <string name="favourites_no_folder">No folder has been created yet. You can create a new folder right now, or you can create it later at the Bookmark Page.</string>
-    <string name="favourites_no_folder_tips">No folder has been created yet</string>
+    <string name="favourites_no_folder_tips">No folder has been created yet.</string>
     <string name="favourites_tips">Please select the folder(s). Manage your bookmark folders in the Bookmark Page.</string>
     <string name="favourites_delete">Please select the folder(s) to delete. This cannot be undone.</string>
     <string name="favourites_rename">Please select the folder to rename.</string>
@@ -153,11 +148,10 @@
     <string name="favourites_error_empty">Input is empty</string>
     <string name="favourites_error_illegal">The special character \'│\' is internally used by MacIndex and cannot be included in the folder name</string>
     <string name="favourites_error_length">Input is too long, the max limit for each folder is 1 line and 30 characters</string>
-    <string name="favourites_error_conflict">This name was already specified and cannot be reused</string>
+    <string name="favourites_error_conflict">This name was already occupied</string>
     <string name="favourites_error_limit">You can only create no more than 15 folders.</string>
     <string name="favourites_clear_warning">All folders will be deleted. This cannot be undone. Do you want to proceed?</string>
-    <string name="compare_limit">(Max)</string>
-    <string name="compare_insufficient">You need at least 2 machines in the compare list to compare them. You can add a machine at any Specification Page.</string>
+    <string name="compare_limit">(Full)</string>
     <string-array name="compare_insufficient_tips">
         <item>You need at least 2 machines in the compare list\nCurrently the list is empty</item>
         <item>You need at least 2 machines in the compare list\nCurrently there are only 1 in the list</item>
@@ -167,13 +161,11 @@
     <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
     <string name="version_information_general">Version </string>
-    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Licensed under the MIT License.\n\nMacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned. Please contact the developer regarding any rights or content concerns.</string>
+    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Opened source under the MIT License.  MacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned.</string>
     <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_update">Release Notes</string>
     <string name="about_feedback">Feedback</string>
     <string name="viewimage_rotate">For reference only\nRotate your device to change the orientation</string>
-    <string name="random_lucky_title">You Are Lucky</string>
-    <string name="ramdom_lucky_message">Randomly entered one of your bookmarked machine.</string>
     <string-array name="share_menu">
         <item>Copy Model Information</item>
         <item>Copy All Information</item>

@@ -12,7 +12,6 @@ import androidx.customview.widget.ViewDragHelper;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.animation.LayoutTransition;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -767,16 +766,6 @@ public class MainActivity extends AppCompatActivity {
             } finally {
                 categoryContainer.setLayoutTransition(layoutTransition);
             }
-
-            // If user lunched MacIndex for the first time, a message should show.
-            if (PrefsHelper.getBooleanPrefs("isFirstLunch", MainActivity.this)) {
-                final AlertDialog.Builder firstLunchGreet = new AlertDialog.Builder(MainActivity.this);
-                firstLunchGreet.setTitle(R.string.information_first_lunch_title);
-                firstLunchGreet.setMessage(R.string.information_first_lunch);
-                firstLunchGreet.setPositiveButton(R.string.get_started, (dialogInterface, i) -> mDrawerLayout.openDrawer(GravityCompat.START));
-                firstLunchGreet.show();
-                PrefsHelper.editPrefs("isFirstLunch", false, MainActivity.this);
-            }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e,
                     "initInterface", "Initialize failed!!");
@@ -788,38 +777,33 @@ public class MainActivity extends AppCompatActivity {
             if (machineHelper.getMachineCount() == 0) {
                 throw new IllegalStateException();
             }
-            if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", this)) {
-                // This should not happen.
-                throw new IllegalStateException();
+            int machineID = 0;
+            if (!PrefsHelper.getBooleanPrefs("isRandomAll", this)) {
+                // Random All mode.
+                machineID = new Random().nextInt(machineHelper.getMachineCount());
+                Log.i("RandomAccess", "Random All mode, get total " + machineHelper.getMachineCount() + " , ID " + machineID);
             } else {
-                int machineID = 0;
-                if (!PrefsHelper.getBooleanPrefs("isRandomAll", this)) {
-                    // Random All mode.
-                    machineID = new Random().nextInt(machineHelper.getMachineCount());
-                    Log.i("RandomAccess", "Random All mode, get total " + machineHelper.getMachineCount() + " , ID " + machineID);
-                } else {
-                    // Limited Random mode.
-                    int totalLoadad = 0;
-                    for (int[] i : loadPositions) {
-                        totalLoadad += i.length;
-                    }
-                    if (totalLoadad == 0) {
-                        throw new IllegalStateException();
-                    }
-                    int randomCode = new Random().nextInt(totalLoadad);
-                    Log.i("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
-                    for (int[] loadPosition : loadPositions) {
-                        if (randomCode >= loadPosition.length) {
-                            randomCode -= loadPosition.length;
-                        } else {
-                            machineID = loadPosition[randomCode];
-                            break;
-                        }
+                // Limited Random mode.
+                int totalLoadad = 0;
+                for (int[] i : loadPositions) {
+                    totalLoadad += i.length;
+                }
+                if (totalLoadad == 0) {
+                    throw new IllegalStateException();
+                }
+                int randomCode = new Random().nextInt(totalLoadad);
+                Log.i("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
+                for (int[] loadPosition : loadPositions) {
+                    if (randomCode >= loadPosition.length) {
+                        randomCode -= loadPosition.length;
+                    } else {
+                        machineID = loadPosition[randomCode];
+                        break;
                     }
                 }
-                Log.i("RandomAccess", "Machine ID " + machineID);
-                SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this, true);
             }
+            Log.i("RandomAccess", "Machine ID " + machineID);
+            SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }
@@ -896,7 +880,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             } else {
                 // Decoded successfully, call intent parser
-                SpecsIntentHelper.sendIntent(decodedID, decodedID[0], this, false);
+                SpecsIntentHelper.sendIntent(decodedID, decodedID[0], this);
             }
         } catch (Exception e) {
             Log.w("DeepLinkDecode", "Unable to process the link due to illegal parameter.");
