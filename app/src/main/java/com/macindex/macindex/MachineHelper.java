@@ -1085,9 +1085,9 @@ class MachineHelper {
                     toReturn[i] = new int[1];
                     toReturn[i][0] = R.drawable.atiradeon2000;
                     break;
-                case "atiradeon2005":
+                case "atiradeon2004":
                     toReturn[i] = new int[1];
-                    toReturn[i][0] = R.drawable.atiradeon2005;
+                    toReturn[i][0] = R.drawable.atiradeon2004;
                     break;
                 case "atiradeon2007":
                     toReturn[i] = new int[1];
