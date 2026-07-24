@@ -111,7 +111,7 @@ class SpecsHelper {
                                         Log.i("VolWarning", "Armed");
                                         final AlertDialog.Builder volWarningDialog = new AlertDialog.Builder(thisContext);
                                         volWarningDialog.setMessage(R.string.information_specs_high_vol_warning);
-                                        volWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                                        volWarningDialog.setPositiveButton(R.string.action_play_anyway, (dialogInterface, i) -> {
                                             // Enabled, and popup a warning
                                             PrefsHelper.editPrefs("isEnableVolWarningThisTime", false, thisContext);
                                             playSound();
@@ -183,7 +183,7 @@ class SpecsHelper {
                 Toast.makeText(thisContext,
                         thisContext.getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
             } else {
-                copy(clipLabel, thisInfo, R.string.error_copy_information);
+                copy(clipLabel, thisInfo, R.string.copy_information_success);
             }
             return true;
         });
@@ -197,7 +197,7 @@ class SpecsHelper {
                         thisContext.getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
             } else {
                 copy("compareInfo", generateCompareInfo(leftName, leftInfo, rightName, rightInfo),
-                        R.string.error_copy_information);
+                        R.string.copy_information_success);
             }
             return true;
         });
@@ -262,8 +262,8 @@ class SpecsHelper {
                             if (!isAvailable(machineSpecs, i)) {
                                 // This is not supposed...
                                 thisCheckBox.setEnabled(false);
-                                thisCheckBox.setText(selectableSpecs[i] + " "
-                                        + thisContext.getString(R.string.share_menu_not_applicable));
+                                thisCheckBox.setText(thisContext.getString(
+                                        R.string.share_menu_unavailable, selectableSpecs[i]));
                             }
                             selectLayout.addView(thisCheckBox);
                         }

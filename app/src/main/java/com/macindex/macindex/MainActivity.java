@@ -650,10 +650,10 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.commentMenuItem).setEnabled(true);
         }
 
-        // If limit range enabled, a message should append
+        // If limit range is enabled, show the limited label.
         if (PrefsHelper.getBooleanPrefs("isRandomAll", MainActivity.this)) {
             ((TextView) findViewById(R.id.randomMenuItem))
-                    .setText(getString(R.string.menu_random) + getString(R.string.menu_random_limited));
+                    .setText(R.string.menu_random_limited_label);
         } else {
             ((TextView) findViewById(R.id.randomMenuItem))
                     .setText(getString(R.string.menu_random));

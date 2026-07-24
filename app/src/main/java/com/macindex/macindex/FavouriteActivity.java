@@ -155,7 +155,7 @@ public class FavouriteActivity extends AppCompatActivity {
             final AlertDialog.Builder clearFoldersDialog = new AlertDialog.Builder(this);
             clearFoldersDialog.setTitle(R.string.submenu_favourite_clear);
             clearFoldersDialog.setMessage(R.string.favourites_clear_warning);
-            clearFoldersDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+            clearFoldersDialog.setPositiveButton(R.string.action_clear, (dialogInterface, i) -> {
                 PrefsHelper.clearPrefs("userFavourites", this);
                 initFavourites(true);
             });
@@ -360,8 +360,9 @@ public class FavouriteActivity extends AppCompatActivity {
                                                 categoryContainer.addView(categoryChunk);
                                             } else {
                                                 // Empty folder
-                                                categoryName.setText(thisFolderName + " "
-                                                        + getString(R.string.favourites_new_folder_tips));
+                                                categoryName.setText(getString(
+                                                        R.string.favourites_empty_folder,
+                                                        thisFolderName));
                                                 categoryContainer.addView(categoryChunk);
                                             }
                                         }
@@ -524,7 +525,7 @@ public class FavouriteActivity extends AppCompatActivity {
             deleteDialog.setTitle(R.string.submenu_favourite_delete);
             deleteDialog.setMessage(R.string.favourites_delete);
             deleteDialog.setView(selectChunk);
-            deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+            deleteDialog.setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 try {
                     // Delete the folders.
                     String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", this).split("││");

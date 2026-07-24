@@ -1,74 +1,76 @@
 <resources>
     <string name="app_name" translatable="false">MacIndex</string>
     <string name="app_name_everymac" translatable="false">EveryMacIndex</string>
-    <string name="information_specs_full">Tap on the top image to play startup and death sound</string>
-    <string name="information_specs_no_death">Tap on the top image to play startup sound</string>
-    <string name="information_specs_no_sound">This machine does not have startup or death sound</string>
-    <string name="information_specs_view_image">Long press the top image to view the large image</string>
-    <string name="information_specs_copy_info">Long press any entry to copy information</string>
+    <string name="information_specs_full">Tap the top image to play the startup and death sounds</string>
+    <string name="information_specs_no_death">Tap the top image to play the startup sound</string>
+    <string name="information_specs_no_sound">This machine has no startup or death sounds</string>
+    <string name="information_specs_view_image">Press and hold the top image to view it full size</string>
+    <string name="information_specs_copy_info">Press and hold any entry to copy its information</string>
     <string name="information_specs_everymac">Tap below to access more specifications</string>
-    <string name="information_compare_open_specs">Tap on a machine name to open the Specification Page</string>
-    <string name="information_specs_high_vol_warning">The current volume is too high. Do you want to proceed playing?\nSelect \"Confirm\" to turn this warning off temporarily.\nGo to preferences page to turn this function off.</string>
-    <string name="setting_sort_comment">Favourites/Comments Sorting</string>
-    <string name="setting_sort_comment_description">Sort favourites and comments by introduction date instead of the order of addition.</string>
-    <string name="setting_everymac">Open Directly in EveryMac</string>
-    <string name="setting_everymac_description">Open the EveryMac Page of the machine directly instead of the Specification Page. Will ask for specific configuration if the machine has more than one configurations.</string>
-    <string name="setting_everymac_warning_content">This is effective for both Main Page and Search Page. Some functions will no longer be available as well.</string>
+    <string name="information_compare_open_specs">Tap a machine name to open its Specifications page</string>
+    <string name="information_specs_high_vol_warning">The current volume is high. Continue playback?\nTap \"Play Anyway\" to dismiss this warning temporarily.\nYou can disable this warning in Preferences.</string>
+    <string name="setting_sort_comment">Bookmark/Comment Sorting</string>
+    <string name="setting_sort_comment_description">Sort bookmarks and comments by introduction date rather than by the order in which they were added.</string>
+    <string name="setting_everymac">Open Directly on EveryMac</string>
+    <string name="setting_everymac_description">Open this machine’s EveryMac page directly instead of the Specifications page. If multiple configurations are available, you will be asked to choose one.</string>
+    <string name="setting_everymac_warning_content">This applies to both the main page and the search page. Some features will also be unavailable.</string>
     <string name="setting_deathsound">Enable Death Sound</string>
-    <string name="setting_deathsound_deathsound_description">Play startup and death sound alternatively in the Specification Page, or play the startup sound only.</string>
+    <string name="setting_deathsound_deathsound_description">Alternate between the startup and death sounds on the Specifications page. When disabled, only the startup sound is played.</string>
     <string name="setting_high_vol_warning">High Volume Warning</string>
-    <string name="setting_high_vol_warning_description">Enable high volume warning when using headphones in the Specification Page.</string>
+    <string name="setting_high_vol_warning_description">Warn when headphone volume is high while playing sounds on the Specifications page.</string>
     <string name="setting_navbuttons">Enable Navigation Buttons</string>
-    <string name="setting_navbuttons_description">Enable buttons to navigate between machines in the Specification Page.</string>
+    <string name="setting_navbuttons_description">Enable buttons for navigating between adjacent machines on the Specifications page.</string>
     <string name="setting_quicknav">Fixed Navigation Range</string>
-    <string name="setting_quicknav_description">Always override the navigation range to the belonged category.</string>
+    <string name="setting_quicknav_description">Always limit previous/next navigation to the current category.</string>
     <string name="setting_randomall">Limit Random Range</string>
-    <string name="setting_randomall_description">Only pick the random machine inside the current group instead of all categories.</string>
-    <string name="setting_save_main">Save Usage (Main Page)</string>
-    <string name="setting_save_main_description">Save the last selected filter and viewing method.</string>
-    <string name="setting_save_search">Save Usage (Search Page)</string>
-    <string name="setting_save_search_description">Save the last used filter and search options.</string>
-    <string name="setting_save_compare">Save Usage (Compare Page)</string>
-    <string name="setting_save_compare_description">Save the last selected machines and column.</string>
-    <string name="setting_search_open_directly">Open the Only Search Result</string>
-    <string name="setting_search_open_directly_description">If only one search result was found, then open it directly.</string>
+    <string name="setting_randomall_description">Pick a random machine only from the current group instead of all categories.</string>
+    <string name="setting_save_main">Remember Main Page State</string>
+    <string name="setting_save_main_description">Remember the last selected category filter and view.</string>
+    <string name="setting_save_search">Remember Search Page State</string>
+    <string name="setting_save_search_description">Remember the last selected category filter and search option.</string>
+    <string name="setting_save_compare">Remember Compare Page State</string>
+    <string name="setting_save_compare_description">Remember the two machines selected for comparison and their left/right order.</string>
+    <string name="setting_search_open_directly">Open Single Search Result</string>
+    <string name="setting_search_open_directly_description">Open the result automatically when a search returns exactly one machine.</string>
     <string name="search_searchBy">Search Options</string>
     <string-array name="search_Filters">
         <item>All Categories</item>
         <item>68K Macintosh</item>
         <item>PowerPC Macintosh</item>
         <item>Intel Macintosh</item>
-        <item>ARM Macintosh</item>
+        <item>Apple Silicon Macintosh</item>
     </string-array>
     <string-array name="search_Options">
-        <item>General Searching by Name</item>
-        <item>Automatic Match by Model Number</item>
+        <item>Search by Machine Name</item>
+        <item>Search by Model Identifiers</item>
     </string-array>
     <string-array name="search_Tips">
         <item>Machine Name</item>
-        <item>Model No./Order No./Ident./EMC/Gestalt</item>
+        <item>Model No. / Part No. / Identifier / EMC / Gestalt</item>
     </string-array>
-    <string name="search_noResult">No result</string>
-    <string name="search_found">Found&#160;</string>
-    <string name="search_results">&#160;result(s)</string>
-    <string name="search_prompt">Press return to start searching</string>
-    <string name="search_illegal">Input contains illegal character(s)</string>
-    <string name="search_illegal_message">Input contains illegal character(s) for the current searching option. Please double check your input, then try again.</string>
+    <string name="search_noResult">No results</string>
+    <plurals name="search_results">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
+    <string name="search_prompt">Press Enter to search</string>
+    <string name="search_illegal">Input contains invalid characters</string>
+    <string name="search_illegal_message">The input contains characters that are invalid for the current search option. Double-check it and try again.</string>
     <string name="search_overlength">Input is too long</string>
-    <string name="search_overlength_message">Input exceed the maximum allowed length for the current searching option. Please double check your input, then try again.</string>
+    <string name="search_overlength_message">The input exceeds the maximum length allowed for the current search option. Double-check it and try again.</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
-    <string name="menu_random_limited">&#160;(Limited)</string>
-    <string name="menu_favourite">Bookmark</string>
+    <string name="menu_random_limited_label">I\'m Feeling Lucky (Limited)</string>
+    <string name="menu_favourite">Bookmarks</string>
     <string name="menu_compare">Compare</string>
-    <string name="menu_comment">Comment</string>
+    <string name="menu_comment">Comments</string>
     <string name="menu_about_settings">Preferences</string>
     <string name="menu_about">About MacIndex</string>
     <string name="menu_view">View By</string>
     <string name="menu_view1">Product Categories</string>
     <string name="menu_view2">Processor Types</string>
-    <string name="menu_view3">Introduction Years</string>
-    <string name="menu_group">Categories Filter</string>
+    <string name="menu_view3">Introduction Year</string>
+    <string name="menu_group">Category Filter</string>
     <string name="menu_group0">All Categories</string>
     <string name="menu_group1" translatable="false">68K Macintosh</string>
     <string name="menu_group2" translatable="false">PowerPC Macintosh</string>
@@ -82,20 +84,20 @@
     <string name="submenu_specs_share">Copy Specification</string>
     <string name="submenu_specs_share_link">Generate Share Link</string>
     <string name="submenu_search_clear">Clear Results</string>
-    <string name="submenu_search_reset">Reset Filter and Option</string>
-    <string name="submenu_search_SN">Apple S/N Lookup</string>
+    <string name="submenu_search_reset">Reset Filter and Search Options</string>
+    <string name="submenu_search_SN">Apple Serial Number Lookup</string>
     <string name="submenu_search_everymac">EveryMac Lookup</string>
     <string name="submenu_favourite_add">Create New Folder</string>
-    <string name="submenu_favourite_delete">Manage Folder(s)</string>
+    <string name="submenu_favourite_delete">Manage Folders</string>
     <string name="submenu_favourite_rename">Rename Folder</string>
-    <string name="submenu_favourite_clear">Clear Folder(s)</string>
-    <string name="submenu_compare_initialize">Select Comparing Machines</string>
-    <string name="submenu_compare_clear_columns">Clear Comparing Machines</string>
-    <string name="submenu_compare_exchange_columns">Exchange Comparing Machines</string>
-    <string name="submenu_compare_manage">Manage Compare List</string>
+    <string name="submenu_favourite_clear">Clear Folders</string>
+    <string name="submenu_compare_initialize">Select Machines to Compare</string>
+    <string name="submenu_compare_clear_columns">Clear Current Comparison</string>
+    <string name="submenu_compare_exchange_columns">Swap Machines</string>
+    <string name="submenu_compare_manage">Manage Comparison List</string>
     <string name="submenu_compare_clear">Clear Compare List</string>
-    <string name="submenu_comments_delete">Manage Comment(s)</string>
-    <string name="submenu_comments_clear">Clear Comment(s)</string>
+    <string name="submenu_comments_delete">Manage Comments</string>
+    <string name="submenu_comments_clear">Clear Comments</string>
     <string name="year">Introduction</string>
     <string name="model">Model Number</string>
     <string name="id">Model Identifier</string>
@@ -108,76 +110,81 @@
     <string name="maxram">RAM Information</string>
     <string name="software">Software Support</string>
     <string name="storage">Storage</string>
-    <string name="bus_expansion">Feature &amp; Expansion</string>
+    <string name="bus_expansion">Features &amp; Expansion</string>
     <string name="design">Design</string>
     <string name="support">Support Status</string>
     <string name="comment">Comment</string>
-    <string name="comment_null">Not Specified</string>
-    <string name="comment_illegal">The special character \'│\' is internally used by MacIndex and cannot be included in the comment</string>
-    <string name="comment_length">Input is too long, the max limit for each machine is 500 characters</string>
-    <string name="comment_tips">Access all existing comments in the Comment Page.</string>
+    <string name="comment_null">No Comment</string>
+    <string name="comment_illegal">The character \'│\' is reserved by MacIndex and cannot be used in comments.</string>
+    <string name="comment_length">Comments are limited to 500 characters.</string>
+    <string name="comment_tips">View all saved comments on the Comments page.</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">Confirm</string>
     <string name="link_cancel">Cancel</string>
-    <string name="link_opening">Opening in EveryMac:&#160;</string>
-    <string name="link_message">More than one configurations were found for this machine. Please make a selection then confirm.</string>
-    <string name="link_not_available">Due to sale region or special purpose, this machine is not available in EveryMac</string>
-    <string name="link_only_available">Sorry, but this page is only available in Chinese. Proceed to the page?</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_open">Open</string>
+    <string name="action_play_anyway">Play Anyway</string>
+    <string name="link_opening">Opening on EveryMac: %1$s</string>
+    <string name="link_message">Multiple configurations are available for this machine. Select one to continue.</string>
+    <string name="link_not_available">EveryMac information is unavailable for this machine, possibly because it was region-specific or built to order.</string>
+    <string name="link_only_available">This page is available only in Chinese. Open it anyway?</string>
     <string name="error">Internal Error</string>
-    <string name="error_information">Please report the bug to the developer. Restart the application to continue.</string>
-    <string name="error_copy_button">Copy Information</string>
-    <string name="error_copy_information">Information copied</string>
-    <string name="error_copy_not_available">Nothing to copy</string>
+    <string name="error_information">Report this problem to the developer, then restart MacIndex to continue.</string>
+    <string name="error_copy_button">Copy Details</string>
+    <string name="error_copy_information">Error details copied</string>
+    <string name="copy_information_success">Information copied</string>
+    <string name="error_copy_not_available">Nothing available to copy</string>
     <string name="error_restart">Restart</string>
-    <string name="first_one">Already the first one</string>
-    <string name="last_one">Already the last one</string>
+    <string name="first_one">Already the first machine</string>
+    <string name="last_one">Already the last machine</string>
     <string name="loading_category">Loading Database</string>
-    <string name="loading_fixed_nav">Fixed Navigation Enabled</string>
+    <string name="loading_fixed_nav">Preparing Navigation</string>
     <string name="loading_search">Searching</string>
     <string name="loading_comments">Loading Comments</string>
     <string name="loading_favourites">Loading Bookmarks</string>
-    <string name="comments_not_available_tips">No comment has been saved yet</string>
-    <string name="comments_delete">Please select the comment(s) to delete. This cannot be undone.</string>
-    <string name="comments_clear_warning">All existing comments will be deleted. This cannot be undone. Do you want to proceed?</string>
-    <string name="favourites_no_folder_tips">No folder has been created yet.</string>
-    <string name="favourites_tips">Please select the folder(s). Manage your bookmark folders in the Bookmark Page.</string>
-    <string name="favourites_delete">Please select the folder(s) to delete. This cannot be undone.</string>
-    <string name="favourites_rename">Please select the folder to rename.</string>
-    <string name="favourites_new_folder">Enter the folder name.</string>
-    <string name="favourites_new_folder_tips">(Empty)</string>
-    <string name="favourites_error_empty">Input is empty</string>
-    <string name="favourites_error_illegal">The special character \'│\' is internally used by MacIndex and cannot be included in the folder name</string>
-    <string name="favourites_error_length">Input is too long, the max limit for each folder is 1 line and 30 characters</string>
-    <string name="favourites_error_conflict">This name was already occupied</string>
-    <string name="favourites_error_limit">You can only create no more than 15 folders.</string>
-    <string name="favourites_clear_warning">All folders will be deleted. This cannot be undone. Do you want to proceed?</string>
+    <string name="comments_not_available_tips">No comments have been saved yet</string>
+    <string name="comments_delete">Select the comments to delete. This cannot be undone.</string>
+    <string name="comments_clear_warning">All comments will be deleted. This cannot be undone.</string>
+    <string name="favourites_no_folder_tips">No bookmark folders have been created yet.</string>
+    <string name="favourites_tips">Select one or more folders. You can manage folders on the Bookmarks page.</string>
+    <string name="favourites_delete">Select the folders to delete. This cannot be undone.</string>
+    <string name="favourites_rename">Select the folder to rename.</string>
+    <string name="favourites_new_folder">Enter a folder name.</string>
+    <string name="favourites_empty_folder">%1$s (Empty)</string>
+    <string name="favourites_error_empty">Folder name cannot be empty.</string>
+    <string name="favourites_error_illegal">The character \'│\' is reserved by MacIndex and cannot be used in folder names.</string>
+    <string name="favourites_error_length">Folder names are limited to one line and 30 characters.</string>
+    <string name="favourites_error_conflict">A folder with this name already exists.</string>
+    <string name="favourites_error_limit">You can create up to 15 folders.</string>
+    <string name="favourites_clear_warning">All folders will be deleted. This cannot be undone.</string>
     <string name="compare_limit">(Full)</string>
     <string-array name="compare_insufficient_tips">
-        <item>You need at least 2 machines in the compare list\nCurrently the list is empty</item>
-        <item>You need at least 2 machines in the compare list\nCurrently there are only 1 in the list</item>
+        <item>At least two machines are required\nThe compare list is currently empty</item>
+        <item>At least two machines are required\nThe compare list currently contains only one machine</item>
     </string-array>
-    <string name="compare_not_initialized">Please select machines to compare in the submenu</string>
-    <string name="compare_clear_warning">The compare list will be deleted. This cannot be undone. Do you want to proceed?</string>
-    <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
+    <string name="compare_not_initialized">Select two machines from the menu to start comparing</string>
+    <string name="compare_clear_warning">All machines will be removed from the compare list. This cannot be undone.</string>
+    <string name="compare_manage">Select the machines to remove from the comparison list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
-    <string name="version_information_general">Version </string>
-    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Opened source under the MIT License.\n\nMacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned.</string>
+    <string name="version_information_general">Version %1$s</string>
+    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Released under the MIT License.\n\nMacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned.</string>
     <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_update">Release Notes</string>
     <string name="about_feedback">Feedback</string>
-    <string name="viewimage_rotate">For reference only\nRotate your device to change the orientation</string>
+    <string name="viewimage_rotate">Image for reference only\nRotate your device to change the orientation</string>
     <string-array name="share_menu">
-        <item>Copy Model Information</item>
-        <item>Copy All Information</item>
-        <item>Select Information Entries to Copy</item>
+        <item>Copy Model Identifiers</item>
+        <item>Copy All Specifications</item>
+        <item>Choose Information to Copy</item>
     </string-array>
     <string-array name="share_description">
-        <item>Available model information copied</item>
-        <item>All available information copied</item>
-        <item>Selected information entries copied</item>
+        <item>Model identifiers copied</item>
+        <item>All available specifications copied</item>
+        <item>Selected information copied</item>
     </string-array>
-    <string name="share_link_generated">Share link generated</string>
-    <string name="share_menu_null">Select at least one entry to continue</string>
-    <string name="share_menu_not_applicable">(N/A)</string>
-    <string name="share_main_decode_failed">Cannot read the information, or one or more machines do not exist in current version</string>
+    <string name="share_link_generated">Share link copied</string>
+    <string name="share_menu_null">Select at least one item to continue</string>
+    <string name="share_menu_unavailable">%1$s (N/A)</string>
+    <string name="share_main_decode_failed">This share link cannot be read, or one or more machines are unavailable in this version.</string>
 </resources>

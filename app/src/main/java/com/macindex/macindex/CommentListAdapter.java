@@ -93,7 +93,7 @@ class CommentListAdapter extends BaseAdapter {
             ClipboardManager clipboard = (ClipboardManager) thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("userComment", commentHolder.machineComment.getText());
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(thisContext, MainActivity.getRes().getString(R.string.error_copy_information),
+            Toast.makeText(thisContext, MainActivity.getRes().getString(R.string.copy_information_success),
                     Toast.LENGTH_LONG).show();
             return true;
         });

@@ -171,7 +171,7 @@ public class CompareActivity extends AppCompatActivity {
             final AlertDialog.Builder clearWarningDialog = new AlertDialog.Builder(this);
             clearWarningDialog.setTitle(R.string.submenu_compare_clear);
             clearWarningDialog.setMessage(R.string.compare_clear_warning);
-            clearWarningDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+            clearWarningDialog.setPositiveButton(R.string.action_clear, (dialog, which) -> {
                 saveCompareList(new ArrayList<>(), this);
                 clearComparing(this);
                 initCompare();
@@ -458,7 +458,7 @@ public class CompareActivity extends AppCompatActivity {
             deleteDialog.setTitle(R.string.submenu_compare_manage);
             deleteDialog.setMessage(R.string.compare_manage);
             deleteDialog.setView(selectChunk);
-            deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+            deleteDialog.setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 try {
                     final List<String> remaining = new ArrayList<>();
                     for (int i = 0; i < compareNames.size(); i++) {

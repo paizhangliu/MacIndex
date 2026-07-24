@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="information_specs_full">点击顶部图片来试听开机和宕机音效</string>
-    <string name="information_specs_no_death">点击顶部图片来试听开机音效</string>
-    <string name="information_specs_no_sound">这个机型没有开机或宕机音效</string>
-    <string name="information_specs_view_image">长按顶部图片来查看大图</string>
-    <string name="information_specs_copy_info">长按任一栏来复制信息</string>
+    <string name="information_specs_full">点击顶部图片播放开机音和宕机音</string>
+    <string name="information_specs_no_death">点击顶部图片播放开机音</string>
+    <string name="information_specs_no_sound">该机型没有开机音或宕机音</string>
+    <string name="information_specs_view_image">长按顶部图片查看大图</string>
+    <string name="information_specs_copy_info">长按任一项复制信息</string>
     <string name="information_specs_everymac">点击下方来浏览更加详尽的数据</string>
-    <string name="information_compare_open_specs">点击机型名称来进入参数页面</string>
-    <string name="information_specs_high_vol_warning">目前的音量较高。是否要继续播放？\n选择“确认”来暂时关闭本警告。\n打开设置来关闭这个功能。</string>
+    <string name="information_compare_open_specs">点击机型名称打开参数页</string>
+    <string name="information_specs_high_vol_warning">当前音量较高，是否继续播放？\n选择“仍要播放”可暂时不再提示。\n你可以在偏好设置中关闭此警告。</string>
     <string name="setting_sort_comment">收藏与备注排序</string>
     <string name="setting_sort_comment_description">按照推出时间而非添加顺序排列收藏与备注。</string>
-    <string name="setting_everymac">默认从 EveryMac 打开</string>
-    <string name="setting_everymac_description">直接跳转到当前机型对应的 EveryMac 网页，而不打开参数页面。若该机型有多种不同的配置，将特别询问。</string>
-    <string name="setting_everymac_warning_content">这会对主页和搜索结果生效。同时，某些功能将不再可用。</string>
+    <string name="setting_everymac">直接打开 EveryMac</string>
+    <string name="setting_everymac_description">直接打开当前机型对应的 EveryMac 页面，不再进入参数页。若有多个配置，会先让你选择。</string>
+    <string name="setting_everymac_warning_content">此设置同时影响主页和搜索页，并会停用部分功能。</string>
     <string name="setting_deathsound">启用宕机音</string>
-    <string name="setting_deathsound_deathsound_description">在参数页面中交替播放启动和宕机音，或仅播放启动音。</string>
+    <string name="setting_deathsound_deathsound_description">在参数页交替播放开机音和宕机音；关闭后只播放开机音。</string>
     <string name="setting_high_vol_warning">高音量警告</string>
-    <string name="setting_high_vol_warning_description">在参数页面中启用高音量警告。</string>
+    <string name="setting_high_vol_warning_description">在参数页使用耳机播放声音时，启用高音量警告。</string>
     <string name="setting_navbuttons">启用导航按钮</string>
-    <string name="setting_navbuttons_description">在参数页面中启用按钮以便在不同机型中导航。</string>
+    <string name="setting_navbuttons_description">在参数页启用按钮，以便在相邻机型之间切换。</string>
     <string name="setting_quicknav">固定导航范围</string>
-    <string name="setting_quicknav_description">总是覆盖导航范围至所属的分组内。</string>
+    <string name="setting_quicknav_description">始终将前后导航限制在当前分组内。</string>
     <string name="setting_randomall">限制随机范围</string>
-    <string name="setting_randomall_description">只在目前的部分选定的分组中随机打开某个机型，而不是全部分组中。</string>
-    <string name="setting_save_main">保存使用记录（主页）</string>
-    <string name="setting_save_main_description">保存上次选中的分组和浏览方式。</string>
-    <string name="setting_save_search">保存使用记录（搜索页）</string>
-    <string name="setting_save_search_description">保存上次使用的分组和搜索方式。</string>
-    <string name="setting_save_compare">保存使用记录（比较页）</string>
-    <string name="setting_save_compare_description">保存上次选中的机型和比较栏位。</string>
-    <string name="setting_search_open_directly">打开唯一的搜索结果</string>
-    <string name="setting_search_open_directly_description">若搜索后只找到一个结果，则直接打开它。</string>
+    <string name="setting_randomall_description">只从当前分组中随机选择机型，而不是从所有分组中选择。</string>
+    <string name="setting_save_main">记住主页状态</string>
+    <string name="setting_save_main_description">记住上次选择的分组筛选和浏览方式。</string>
+    <string name="setting_save_search">记住搜索页状态</string>
+    <string name="setting_save_search_description">记住上次选择的分组筛选和搜索方式。</string>
+    <string name="setting_save_compare">记住比较页状态</string>
+    <string name="setting_save_compare_description">记住上次比较的两个机型及左右顺序。</string>
+    <string name="setting_search_open_directly">自动打开唯一结果</string>
+    <string name="setting_search_open_directly_description">搜索结果仅有一个机型时，自动将其打开。</string>
     <string name="search_searchBy">搜索方式</string>
     <string-array name="search_Filters">
         <item>所有分组</item>
         <item>68K Macintosh</item>
         <item>PowerPC Macintosh</item>
         <item>Intel Macintosh</item>
-        <item>ARM Macintosh</item>
+        <item>Apple Silicon Macintosh</item>
     </string-array>
     <string-array name="search_Options">
-        <item>名称模糊搜索</item>
-        <item>型号自动匹配</item>
+        <item>按机型名称搜索</item>
+        <item>按机型标识符搜索</item>
     </string-array>
     <string-array name="search_Tips">
         <item>机型名称</item>
-        <item>机型号/部件号/标识符/EMC/Gestalt</item>
+        <item>型号 / 部件号 / 机型标识符 / EMC / Gestalt</item>
     </string-array>
     <string name="search_noResult">无结果</string>
-    <string name="search_found">共找到&#160;</string>
-    <string name="search_results">&#160;个结果</string>
-    <string name="search_prompt">点按回车来开始搜索</string>
+    <plurals name="search_results">
+        <item quantity="other">共找到 %d 个结果</item>
+    </plurals>
+    <string name="search_prompt">按回车键开始搜索</string>
     <string name="search_illegal">搜索词包含无效字符</string>
     <string name="search_illegal_message">搜索词包含当前搜索方式的无效字符，请检查输入（尤其是全/半角符号）后重试。</string>
     <string name="search_overlength">搜索词太长</string>
     <string name="search_overlength_message">搜索词超过当前搜索方式的最大允许长度，请检查输入后重试。</string>
     <string name="menu_search">机型搜索</string>
     <string name="menu_random">试试手气</string>
-    <string name="menu_random_limited">（限制范围）</string>
+    <string name="menu_random_limited_label">试试手气（限制范围）</string>
     <string name="menu_favourite">机型收藏</string>
     <string name="menu_compare">参数比较</string>
     <string name="menu_comment">自定义备注</string>
@@ -66,7 +67,7 @@
     <string name="menu_view">浏览方式</string>
     <string name="menu_view1">产品分组</string>
     <string name="menu_view2">处理器类型</string>
-    <string name="menu_view3">推出年代</string>
+    <string name="menu_view3">推出年份</string>
     <string name="menu_group">分组筛选</string>
     <string name="menu_group0">所有分组</string>
     <string name="menu">主菜单</string>
@@ -78,21 +79,21 @@
     <string name="submenu_specs_share_link">生成分享链接</string>
     <string name="submenu_search_clear">清除搜索结果</string>
     <string name="submenu_search_reset">重置筛选器与搜索方式</string>
-    <string name="submenu_search_SN">苹果序列号查询</string>
+    <string name="submenu_search_SN">Apple 序列号查询</string>
     <string name="submenu_search_everymac">EveryMac 查询</string>
     <string name="submenu_favourite_add">新建收藏夹</string>
     <string name="submenu_favourite_delete">管理收藏夹</string>
     <string name="submenu_favourite_rename">重命名收藏夹</string>
     <string name="submenu_favourite_clear">清除收藏夹</string>
     <string name="submenu_compare_initialize">选择要比较的机型</string>
-    <string name="submenu_compare_clear_columns">清除正在比较的机型</string>
-    <string name="submenu_compare_exchange_columns">交换正在比较的机型</string>
+    <string name="submenu_compare_clear_columns">清除当前比较</string>
+    <string name="submenu_compare_exchange_columns">交换左右机型</string>
     <string name="submenu_compare_manage">管理比较列表</string>
     <string name="submenu_compare_clear">清除比较列表</string>
     <string name="submenu_comments_delete">管理备注</string>
     <string name="submenu_comments_clear">清除备注</string>
     <string name="year">推出时间</string>
-    <string name="model">机型号</string>
+    <string name="model">型号</string>
     <string name="id">机型标识符</string>
     <string name="gestalt">Gestalt 标识符</string>
     <string name="order">部件号</string>
@@ -108,71 +109,76 @@
     <string name="support">售后状态</string>
     <string name="comment">备注</string>
     <string name="comment_null">暂无备注</string>
-    <string name="comment_illegal">很抱歉，特殊字符 \'│\' 被 MacIndex 内部使用且无法用作备注</string>
-    <string name="comment_length">输入过长，每个机型的限度是 500 个字符</string>
-    <string name="comment_tips">在备注页中浏览所有备注。</string>
+    <string name="comment_illegal">字符“│”为 MacIndex 内部保留字符，不能用于备注。</string>
+    <string name="comment_length">每个机型的备注最多可输入 500 个字符。</string>
+    <string name="comment_tips">可在备注页查看所有已有备注。</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">确认</string>
     <string name="link_cancel">取消</string>
-    <string name="link_opening">正在 EveryMac 中浏览：</string>
-    <string name="link_message">该机型有多种不同的配置。请做出选择并确认。</string>
-    <string name="link_not_available">这个型号可能是定制或地域限制型号，在 EveryMac 中不存在</string>
-    <string name="link_only_available">很抱歉，但这个页面只有英文版本。继续浏览吗？</string>
+    <string name="action_delete">删除</string>
+    <string name="action_clear">清除</string>
+    <string name="action_open">打开</string>
+    <string name="action_play_anyway">仍要播放</string>
+    <string name="link_opening">正在打开 EveryMac：%1$s</string>
+    <string name="link_message">该机型有多个配置，请选择一个以继续。</string>
+    <string name="link_not_available">EveryMac 中没有该机型的对应页面，可能因为它是地区限定或定制型号。</string>
+    <string name="link_only_available">此页面仅提供英文版本，是否继续打开？</string>
     <string name="error">内部错误</string>
-    <string name="error_information">请向开发者报告这个 Bug。请重新启动应用程序以继续。</string>
-    <string name="error_copy_button">复制信息</string>
-    <string name="error_copy_information">信息已复制</string>
-    <string name="error_copy_not_available">没有能复制的信息</string>
+    <string name="error_information">请向开发者报告此问题，然后重新启动 MacIndex 以继续。</string>
+    <string name="error_copy_button">复制详情</string>
+    <string name="error_copy_information">错误详情已复制</string>
+    <string name="copy_information_success">信息已复制</string>
+    <string name="error_copy_not_available">没有可复制的信息</string>
     <string name="error_restart">重新启动</string>
-    <string name="first_one">已是第一台</string>
-    <string name="last_one">已是最后一台</string>
+    <string name="first_one">已经是第一个机型</string>
+    <string name="last_one">已经是最后一个机型</string>
     <string name="loading_category">正在加载数据库</string>
-    <string name="loading_fixed_nav">导航范围已固定</string>
+    <string name="loading_fixed_nav">正在准备导航</string>
     <string name="loading_search">正在搜索</string>
     <string name="loading_comments">正在加载备注</string>
     <string name="loading_favourites">正在加载收藏</string>
-    <string name="comments_not_available_tips">还没有保存任何备注</string>
+    <string name="comments_not_available_tips">尚未保存任何备注</string>
     <string name="comments_delete">请选择要删除的备注。此操作不能撤销。</string>
-    <string name="comments_clear_warning">所有备注将被清除，且不能撤销。仍想要继续吗？</string>
-    <string name="favourites_no_folder_tips">还没有创建任何收藏夹</string>
-    <string name="favourites_tips">请选择对应的收藏夹。在收藏页中管理所有收藏夹。</string>
+    <string name="comments_clear_warning">所有备注将被清除，且无法撤销。</string>
+    <string name="favourites_no_folder_tips">尚未创建任何收藏夹</string>
+    <string name="favourites_tips">请选择一个或多个收藏夹。你可以在收藏页管理所有收藏夹。</string>
     <string name="favourites_delete">请选择要删除的收藏夹。此操作不能撤销。</string>
     <string name="favourites_rename">请选择要重命名的收藏夹。</string>
-    <string name="favourites_new_folder">输入收藏夹名。</string>
-    <string name="favourites_new_folder_tips">（空）</string>
-    <string name="favourites_error_empty">输入为空</string>
-    <string name="favourites_error_illegal">很抱歉，特殊字符 \'│\' 被 MacIndex 内部使用且无法用作收藏夹名</string>
-    <string name="favourites_error_length">输入过长，每个收藏夹的限度是 1 行 30 个字符</string>
-    <string name="favourites_error_conflict">该名称已被使用</string>
-    <string name="favourites_error_limit">只能最多创建 15 个收藏夹。</string>
-    <string name="favourites_clear_warning">所有收藏夹将被删除，且不能撤销。仍想要继续吗？</string>
-    <string name="compare_limit">(已满)</string>
+    <string name="favourites_new_folder">输入收藏夹名称。</string>
+    <string name="favourites_empty_folder">%1$s（空）</string>
+    <string name="favourites_error_empty">收藏夹名称不能为空。</string>
+    <string name="favourites_error_illegal">字符“│”为 MacIndex 内部保留字符，不能用于收藏夹名称。</string>
+    <string name="favourites_error_length">收藏夹名称限一行，最多 30 个字符。</string>
+    <string name="favourites_error_conflict">已存在同名收藏夹。</string>
+    <string name="favourites_error_limit">最多只能创建 15 个收藏夹。</string>
+    <string name="favourites_clear_warning">所有收藏夹将被删除，且无法撤销。</string>
+    <string name="compare_limit">（已满）</string>
     <string-array name="compare_insufficient_tips">
         <item>比较列表中至少需要两个机型\n当前列表为空</item>
-        <item>比较列表中至少需要两个机型\n当前列表中有 1 个机型</item>
+        <item>比较列表中至少需要两个机型\n当前只有一个机型</item>
     </string-array>
-    <string name="compare_not_initialized">请从右上角菜单中选择要比较的机型</string>
-    <string name="compare_clear_warning">整个比较列表将被清空，且不能撤销。仍想要继续吗？</string>
+    <string name="compare_not_initialized">请从右上角菜单选择两个机型开始比较</string>
+    <string name="compare_clear_warning">比较列表中的所有机型将被移除，且无法撤销。</string>
     <string name="compare_manage">请选择要从比较列表删除的机型。此操作不能撤销。</string>
     <string name="compare_select_exactly_two">请选择且仅选择两个要比较的机型。</string>
-    <string name="version_information_general">版本 </string>
-    <string name="about_information">© 版权所有 2019–2026，paizhang，Victor Jiao，Mation Wang。基于 MIT 开源许可证。\n\nMacIndex 是一个非营利、开源的资料项目，仅供参考与学习。机型资料、图片及声音根据公开可获取的资料整理，可能存在错误或遗漏，不提供任何保证。所有产品名称、标志及商标均归各自权利人所有；MacIndex 与所提及的任何公司或服务均无隶属、合作或背书关系。</string>
+    <string name="version_information_general">版本 %1$s</string>
+    <string name="about_information">© 2019–2026 paizhang、Victor Jiao、Mation Wang。采用 MIT 许可证开源。\n\nMacIndex 是一个非营利的开源资料项目，仅供参考与学习。机型资料、图片和声音整理自公开资料，可能存在错误或遗漏，且不提供任何保证。所有产品名称、标志和商标均归各自权利人所有。MacIndex 与上述公司或服务不存在隶属、合作或背书关系。</string>
     <string name="about_opensource">第三方开源许可证</string>
     <string name="about_update">发行说明</string>
-    <string name="about_feedback">问题反馈</string>
-    <string name="viewimage_rotate">示意图仅供参考\n旋转设备来改变图片方向</string>
+    <string name="about_feedback">反馈与建议</string>
+    <string name="viewimage_rotate">图片仅供参考\n旋转设备可切换显示方向</string>
     <string-array name="share_menu">
-        <item>复制型号信息</item>
-        <item>复制所有信息</item>
+        <item>复制机型标识信息</item>
+        <item>复制全部参数</item>
         <item>选择要复制的信息</item>
     </string-array>
     <string-array name="share_description">
-        <item>可用的型号信息均已复制</item>
-        <item>所有可用的信息均已复制</item>
-        <item>已选择的信息均已复制</item>
+        <item>机型标识信息已复制</item>
+        <item>所有可用参数已复制</item>
+        <item>所选信息已复制</item>
     </string-array>
     <string name="share_link_generated">分享链接已复制</string>
-    <string name="share_menu_null">请选择至少一项来继续</string>
-    <string name="share_menu_not_applicable">（N/A）</string>
-    <string name="share_main_decode_failed">无法读取该信息，或其中一个机型在这个版本中不存在</string>
+    <string name="share_menu_null">请至少选择一项以继续</string>
+    <string name="share_menu_unavailable">%1$s（N/A）</string>
+    <string name="share_main_decode_failed">无法读取该分享链接，或其中一个或多个机型在当前版本中不存在。</string>
 </resources>

@@ -552,7 +552,9 @@ public class SearchActivity extends AppCompatActivity {
                                             textResult.setText(R.string.search_noResult);
                                             textResult.setTextColor(getColor(R.color.colorDefaultText));
                                         } else {
-                                            textResult.setText(getString(R.string.search_found) + positions.length + getString(R.string.search_results));
+                                            textResult.setText(getResources().getQuantityString(
+                                                    R.plurals.search_results, positions.length,
+                                                    positions.length));
                                             textResult.setTextColor(getColor(R.color.colorDefaultText));
                                         }
                                         resultListAdapter = new MachineListAdapter(positions, SearchActivity.this);

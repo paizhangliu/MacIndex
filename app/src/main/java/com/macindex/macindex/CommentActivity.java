@@ -129,7 +129,7 @@ public class CommentActivity extends AppCompatActivity {
             final AlertDialog.Builder clearWarningDialog = new AlertDialog.Builder(this);
             clearWarningDialog.setTitle(R.string.submenu_comments_clear);
             clearWarningDialog.setMessage(R.string.comments_clear_warning);
-            clearWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+            clearWarningDialog.setPositiveButton(R.string.action_clear, (dialogInterface, i) -> {
                 PrefsHelper.clearPrefs("userComments", this);
                 initComments(true);
             });
@@ -282,7 +282,7 @@ public class CommentActivity extends AppCompatActivity {
             deleteDialog.setTitle(R.string.submenu_comments_delete);
             deleteDialog.setMessage(R.string.comments_delete);
             deleteDialog.setView(selectChunk);
-            deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
+            deleteDialog.setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 try {
                     // Delete the folders.
                     String newString = "";

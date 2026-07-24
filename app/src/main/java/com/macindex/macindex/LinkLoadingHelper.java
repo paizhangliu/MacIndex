@@ -183,7 +183,7 @@ class LinkLoadingHelper {
                 if (urlChinese == null) {
                     final AlertDialog.Builder langWarningDialog = new AlertDialog.Builder(thisContext);
                     langWarningDialog.setMessage(R.string.link_only_available);
-                    langWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                    langWarningDialog.setPositiveButton(R.string.action_open, (dialogInterface, i) -> {
                         customTabsIntent.launchUrl(thisContext, Uri.parse(urlEnglish));
                     });
                     langWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
@@ -197,7 +197,7 @@ class LinkLoadingHelper {
                 if (urlEnglish == null) {
                     final AlertDialog.Builder langWarningDialog = new AlertDialog.Builder(thisContext);
                     langWarningDialog.setMessage(R.string.link_only_available);
-                    langWarningDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+                    langWarningDialog.setPositiveButton(R.string.action_open, (dialogInterface, i) -> {
                         customTabsIntent.launchUrl(thisContext, Uri.parse(urlChinese));
                     });
                     langWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
@@ -217,6 +217,7 @@ class LinkLoadingHelper {
     public static void startEveryMac(final String thisName, final String url, final Context thisContext) {
         startBrowser(url, url, thisContext);
         Toast.makeText(thisContext,
-                MainActivity.getRes().getString(R.string.link_opening) + thisName, Toast.LENGTH_LONG).show();
+                MainActivity.getRes().getString(R.string.link_opening, thisName),
+                Toast.LENGTH_LONG).show();
     }
 }
