@@ -240,13 +240,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         try {
-            // If reload is needed..
-            if (PrefsHelper.getBooleanPrefs("isReloadNeeded", this)) {
-                setTitle(getString(translateTitleRes()));
-                initInterface(true);
-                PrefsHelper.editPrefs("isReloadNeeded", false, this);
-            }
-
             // Reload favourites
             SpecsIntentHelper.refreshFavourites(machineLoadedCount, this);
         } catch (Exception e) {
@@ -291,7 +284,6 @@ public class MainActivity extends AppCompatActivity {
         // Debug items visibility
         if (!BuildConfig.DEBUG) {
             Log.i("DebugMode", "Disabling debug menu items.");
-            menu.findItem(R.id.mainDebugReloadItem).setVisible(false);
             menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
             menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
             menu.findItem(R.id.mainDebugResetItem).setVisible(false);
@@ -307,11 +299,6 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             } else {
                 mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        } else if (itemID == R.id.mainDebugReloadItem) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            if (reloadDatabase(this)) {
-                initInterface(true);
             }
         } else if (itemID == R.id.mainDebugTriggerErrorItem) {
             ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
@@ -956,16 +943,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
-    }
-
-    // When there is an incomplete database query, reload the database.
-    public static boolean reloadDatabase(final Context context) {
-        Log.w("Database", "Reload requested.");
-        if (BuildConfig.DEBUG) {
-            Toast.makeText(context, "Database reload requested", Toast.LENGTH_SHORT).show();
-        }
-        closeDatabase();
-        return validateOperation(context);
     }
 
     public static boolean getMainState() {
