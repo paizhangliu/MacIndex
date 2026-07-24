@@ -161,7 +161,7 @@
     <string name="compare_manage">Please select the machine(s) to delete from the compare list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
     <string name="version_information_general">Version </string>
-    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Opened source under the MIT License.  MacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned.</string>
+    <string name="about_information">© Copyright 2019–2026, paizhang, Victor Jiao, Mation Wang. Opened source under the MIT License.\n\nMacIndex is a non-profit, open-source reference project for informational and educational use. Machine data, images, and sounds are compiled from publicly available sources and may contain errors or omissions; no warranty is provided. All product names, logos, and trademarks remain the property of their respective owners. MacIndex is not affiliated with, sponsored by, or endorsed by any company or service mentioned.</string>
     <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_update">Release Notes</string>
     <string name="about_feedback">Feedback</string>
