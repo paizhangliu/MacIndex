@@ -235,10 +235,10 @@ public class CommentActivity extends AppCompatActivity {
                                     // Update the UI after the thread done.
                                     commentList.setAdapter(new CommentListAdapter(machineIDs,
                                             thisCommentsStrings, CommentActivity.this));
-                                    Log.i("CommentSearchThread", thisCommentsStrings.length + " Machines loaded in the container.");
+                                    DebugHelper.log("CommentSearchThread", thisCommentsStrings.length + " Machines loaded in the container.");
                                 } catch (final Exception e) {
-                                    ExceptionHelper.handleException(CommentActivity.this, e, "CommentSearchThread", "Cannot add children to container. Likely illegal comment prefs string. Please reset the application. String is: "
-                                            + PrefsHelper.getStringPrefs("userComments", CommentActivity.this));
+                                    ExceptionHelper.handleException(CommentActivity.this, e,
+                                            "CommentSearchThread", "Cannot add children to container. Likely illegal comment prefs string. Please reset the application.");
                                 }
                             }
                         });
@@ -297,8 +297,8 @@ public class CommentActivity extends AppCompatActivity {
                     PrefsHelper.editPrefs("userComments", newString, this);
                     initComments(true);
                 } catch (Exception e) {
-                    ExceptionHelper.handleException(this, e, "deleteCommentsConfirm", "Illegal comment prefs string. Please reset the application. String is: "
-                            + PrefsHelper.getStringPrefs("userComments", this));
+                    ExceptionHelper.handleException(this, e, "deleteCommentsConfirm",
+                            "Illegal comment prefs string. Please reset the application.");
                 }
             });
             deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -306,13 +306,13 @@ public class CommentActivity extends AppCompatActivity {
             }));
             deleteDialog.show();
         } catch (final Exception e) {
-            ExceptionHelper.handleException(CommentActivity.this, e, "deleteComments", "Illegal comment prefs string. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userComments", CommentActivity.this));
+            ExceptionHelper.handleException(CommentActivity.this, e, "deleteComments",
+                    "Illegal comment prefs string. Please reset the application.");
         }
     }
 
     private void setAbleToManage(final boolean newStatus) {
-        Log.i("CommentActivity", "isAbleToManage set to " + newStatus);
+        DebugHelper.log("CommentActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         // Avoid null pointers
         if (manageCommentsItem != null && clearCommentsItem != null) {

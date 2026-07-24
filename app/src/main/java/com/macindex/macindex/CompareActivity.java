@@ -255,8 +255,7 @@ public class CompareActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initCompare",
-                    "Unable to initialize comparison. Data: "
-                            + PrefsHelper.getStringPrefs("userCompares", this));
+                    "Unable to initialize comparison.");
         }
     }
 
@@ -306,14 +305,12 @@ public class CompareActivity extends AppCompatActivity {
                     initCompare();
                 } catch (Exception e) {
                     ExceptionHelper.handleException(this, e, "initCompareItem",
-                            "Unable to set comparing machines. String is: "
-                                    + PrefsHelper.getStringPrefs("userCompares", this));
+                            "Unable to set comparing machines.");
                 }
             });
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initCompareItem",
-                    "Unable to initialize the selection dialog. String is: "
-                            + PrefsHelper.getStringPrefs("userCompares", this));
+                    "Unable to initialize the selection dialog.");
         }
     }
 
@@ -471,8 +468,7 @@ public class CompareActivity extends AppCompatActivity {
                     initCompare();
                 } catch (Exception e) {
                     ExceptionHelper.handleException(this, e, "manageListConfirm",
-                            "Unable to edit compare list. String is: "
-                                    + PrefsHelper.getStringPrefs("userCompares", this));
+                            "Unable to edit compare list.");
                 }
             });
             deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -481,8 +477,7 @@ public class CompareActivity extends AppCompatActivity {
             deleteDialog.show();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "manageList",
-                    "Unable to manage compare list. String is: "
-                            + PrefsHelper.getStringPrefs("userCompares", this));
+                    "Unable to manage compare list.");
         }
     }
 
@@ -511,19 +506,19 @@ public class CompareActivity extends AppCompatActivity {
     }
 
     private void setAbleToInitialize(final boolean newStatus) {
-        Log.i("CompareActivity", "isAbleToInitialize set to " + newStatus);
+        DebugHelper.log("CompareActivity", "isAbleToInitialize set to " + newStatus);
         isAbleToInitialize = newStatus;
         updateMenuState();
     }
 
     private void setInitialized(final boolean newStatus) {
-        Log.i("CompareActivity", "isInitialized set to " + newStatus);
+        DebugHelper.log("CompareActivity", "isInitialized set to " + newStatus);
         isInitialized = newStatus;
         updateMenuState();
     }
 
     private void setAbleToManage(final boolean newStatus) {
-        Log.i("CompareActivity", "isAbleToManage set to " + newStatus);
+        DebugHelper.log("CompareActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         updateMenuState();
     }
@@ -573,7 +568,7 @@ public class CompareActivity extends AppCompatActivity {
     public static void checkIsComparing(final String machineName, final Context thisContext) {
         final String normalizedName = machineName.startsWith("[") && machineName.endsWith("]")
                 ? machineName.substring(1, machineName.length() - 1) : machineName;
-        Log.i("CompareActivity", "Checking for deletion");
+        DebugHelper.log("CompareActivity", "Checking for deletion");
         if (normalizedName.equals(PrefsHelper.getStringPrefs("userComparesLeft", thisContext))
                 || normalizedName.equals(PrefsHelper.getStringPrefs("userComparesRight", thisContext))) {
             clearComparing(thisContext);

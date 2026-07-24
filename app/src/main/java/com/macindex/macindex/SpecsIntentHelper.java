@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -97,7 +96,7 @@ class SpecsIntentHelper {
                             }
                             try {
                                 waitDialog.dismiss();
-                                Log.i("sendIntent", "Fixed Navigation, Category IDs " + Arrays.toString(newCategory)
+                                DebugHelper.log("sendIntent", "Fixed Navigation, Category IDs " + Arrays.toString(newCategory)
                                         + ", thisMachineID " + thisMachineID);
                                 intent.putExtra("thisCategory", newCategory);
                                 parentContext.startActivity(intent);
@@ -109,7 +108,7 @@ class SpecsIntentHelper {
                 }
             }.start();
         } else {
-            Log.i("sendIntent", "Normal Navigation, Category IDs " + Arrays.toString(thisCategory)
+            DebugHelper.log("sendIntent", "Normal Navigation, Category IDs " + Arrays.toString(thisCategory)
                     + ", thisMachineID " + thisMachineID);
             intent.putExtra("thisCategory", thisCategory);
             parentContext.startActivity(intent);

@@ -182,7 +182,7 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        Log.i("SpecsInitialize", "Machine ID " + machineID);
+        DebugHelper.log("SpecsInitialize", "Machine ID " + machineID);
         if (PrefsHelper.getBooleanPrefs("isUseNavButtons", this) && categoryStartEnd.length > 1) {
             initButtons();
         }
@@ -438,7 +438,7 @@ public class SpecsActivity extends AppCompatActivity {
             final ImageView image = findViewById(R.id.pic);
             final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
             if (picture != null) {
-                Log.i("SpecsAct", "Image exists");
+                DebugHelper.log("SpecsAct", "Image exists");
                 image.setImageBitmap(picture);
             }
 
@@ -465,7 +465,7 @@ public class SpecsActivity extends AppCompatActivity {
 
     private void initButtons() {
         try {
-            Log.i("SpecNavButtons", "Loading");
+            DebugHelper.log("SpecNavButtons", "Loading");
             // Reset the padding
             final LinearLayout basicInfoLayout = findViewById(R.id.basicInfoLayout);
             final float density = getResources().getDisplayMetrics().density;
@@ -519,7 +519,6 @@ public class SpecsActivity extends AppCompatActivity {
     /* Comments Functions */
     private void initComment() {
         try {
-            Log.i("initComment", PrefsHelper.getStringPrefs("userComments", this));
             allComments = PrefsHelper.getStringPrefs("userComments", this).split("││");
             if (allComments.length == 0) {
                 commentID = -1;
@@ -546,8 +545,8 @@ public class SpecsActivity extends AppCompatActivity {
             });
             specsHelper.initCopy(comment, thisComment, "userComment");
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "initComment", "Illegal comment prefs string. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userComments", this));
+            ExceptionHelper.handleException(this, e, "initComment",
+                    "Illegal comment prefs string. Please reset the application.");
         }
     }
 
@@ -639,8 +638,8 @@ public class SpecsActivity extends AppCompatActivity {
                     commentDialogCreated.dismiss();
                 }
             } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "commentDialog", "Unable to set positive button. Likely illegal comment prefs string. Please reset the application. String is: "
-                        + PrefsHelper.getStringPrefs("userComments", this));
+                ExceptionHelper.handleException(this, e, "commentDialog",
+                        "Unable to set positive button. Likely illegal comment prefs string. Please reset the application.");
             }
         });
     }
@@ -749,8 +748,8 @@ public class SpecsActivity extends AppCompatActivity {
                         PrefsHelper.editPrefs("isCompareReloadNeeded", true, this);
                         reloadName();
                     } catch (Exception e) {
-                        ExceptionHelper.handleException(this, e, "selectFolder", "Illegal Favourites String. Please reset the application. String is: "
-                                + PrefsHelper.getStringPrefs("userFavourites", this));
+                        ExceptionHelper.handleException(this, e, "selectFolder",
+                                "Illegal Favourites String. Please reset the application.");
                     }
                 });
                 deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -759,8 +758,8 @@ public class SpecsActivity extends AppCompatActivity {
                 deleteDialog.show();
             }
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "deleteFolder", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", this));
+            ExceptionHelper.handleException(this, e, "deleteFolder",
+                    "Illegal Favourites String. Please reset the application.");
         }
     }
 
@@ -804,8 +803,8 @@ public class SpecsActivity extends AppCompatActivity {
                     selectFolder();
                 }
             } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "newFolderDialog", "Illegal Favourites String. Please reset the application. String is: "
-                        + PrefsHelper.getStringPrefs("userFavourites", this));
+                ExceptionHelper.handleException(this, e, "newFolderDialog",
+                        "Illegal Favourites String. Please reset the application.");
             }
         });
     }
@@ -816,8 +815,8 @@ public class SpecsActivity extends AppCompatActivity {
             CompareActivity.toggleCompare(thisName, this);
             initCompareCheckBox();
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "addToCompare", "Illegal Compare String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userCompares", this));
+            ExceptionHelper.handleException(this, e, "addToCompare",
+                    "Illegal Compare String. Please reset the application.");
         }
     }
 
@@ -833,8 +832,8 @@ public class SpecsActivity extends AppCompatActivity {
                 compareItem.setTitle(getString(R.string.submenu_specs_compare) + " (" + compareNames.size() + ")");
             }
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "initCompareCheckBox", "Illegal Compare String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userCompares", this));
+            ExceptionHelper.handleException(this, e, "initCompareCheckBox",
+                    "Illegal Compare String. Please reset the application.");
         }
     }
 

@@ -62,7 +62,7 @@ class PrefsHelper {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
             if (DEFAULT_VALUES.containsKey(thisPrefsName) && DEFAULT_VALUES.get(thisPrefsName) instanceof Integer) {
                 int value = prefsFile.getInt(thisPrefsName, (Integer) DEFAULT_VALUES.get(thisPrefsName));
-                Log.i("Preference Helper", "Got Int preference " + thisPrefsName
+                DebugHelper.log("Preference Helper", "Got Int preference " + thisPrefsName
                         + " with value " + value);
                 return value;
             } else {
@@ -79,7 +79,7 @@ class PrefsHelper {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
             if (DEFAULT_VALUES.containsKey(thisPrefsName) && DEFAULT_VALUES.get(thisPrefsName) instanceof Boolean) {
                 Boolean value = prefsFile.getBoolean(thisPrefsName, (Boolean) DEFAULT_VALUES.get(thisPrefsName));
-                Log.i("Preference Helper", "Got Boolean preference: " + thisPrefsName
+                DebugHelper.log("Preference Helper", "Got Boolean preference: " + thisPrefsName
                         + " with value " + value);
                 return value;
             } else {
@@ -96,7 +96,7 @@ class PrefsHelper {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
             if (DEFAULT_VALUES.containsKey(thisPrefsName) && DEFAULT_VALUES.get(thisPrefsName) instanceof Boolean) {
                 Boolean value = prefsFile.getBoolean(thisPrefsName, (Boolean) DEFAULT_VALUES.get(thisPrefsName));
-                Log.i("Preference Helper", "Got Boolean preference: " + thisPrefsName
+                DebugHelper.log("Preference Helper", "Got Boolean preference: " + thisPrefsName
                         + " with value " + value);
                 return value;
             } else {
@@ -114,8 +114,6 @@ class PrefsHelper {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
             if (DEFAULT_VALUES.containsKey(thisPrefsName) && DEFAULT_VALUES.get(thisPrefsName) instanceof String) {
                 String value = prefsFile.getString(thisPrefsName, (String) DEFAULT_VALUES.get(thisPrefsName));
-                Log.i("Preference Helper", "Got String preference: " + thisPrefsName
-                        + " with value " + value);
                 return value;
             } else {
                 throw new IllegalArgumentException();
@@ -135,22 +133,20 @@ class PrefsHelper {
                         throw new IllegalArgumentException();
                     }
                     prefsFile.edit().putInt(thisPrefsName, (Integer) thisPrefsValue).commit();
-                    Log.i("Preference Helper", "Edited Int preference "
+                    DebugHelper.log("Preference Helper", "Edited Int preference "
                             + thisPrefsName + " with value " + thisPrefsValue);
                 } else if (thisPrefsValue instanceof Boolean) {
                     if (!(DEFAULT_VALUES.get(thisPrefsName) instanceof Boolean)) {
                         throw new IllegalArgumentException();
                     }
                     prefsFile.edit().putBoolean(thisPrefsName, (Boolean) thisPrefsValue).commit();
-                    Log.i("Preference Helper", "Edited Boolean preference "
+                    DebugHelper.log("Preference Helper", "Edited Boolean preference "
                             + thisPrefsName + " with value " + thisPrefsValue);
                 } else if (thisPrefsValue instanceof String) {
                     if (!(DEFAULT_VALUES.get(thisPrefsName) instanceof String)) {
                         throw new IllegalArgumentException();
                     }
                     prefsFile.edit().putString(thisPrefsName, (String) thisPrefsValue).commit();
-                    Log.i("Preference Helper", "Edited String preference "
-                            + thisPrefsName + " with value " + thisPrefsValue);
                 } else {
                     throw new IllegalArgumentException();
                 }
@@ -159,8 +155,7 @@ class PrefsHelper {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "Preference Helper",
-                    "Unable to edit preference "
-                    + thisPrefsName + " with value " + thisPrefsValue);
+                    "Unable to edit preference " + thisPrefsName);
         }
     }
 
@@ -195,7 +190,7 @@ class PrefsHelper {
                 editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE, thisContext);
                 return true;
             } else if (getIntPrefs("lastKnownVersion", thisContext) == BuildConfig.VERSION_CODE) {
-                Log.i("VersionControl", "No new known version");
+                DebugHelper.log("VersionControl", "No new known version");
                 return false;
             } else {
                 Log.e("VersionControl", "Newer version was already registered.");

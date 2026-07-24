@@ -192,8 +192,7 @@ public class FavouriteActivity extends AppCompatActivity {
         }
         // Reset reload parameter
         PrefsHelper.editPrefs("isFavouritesReloadNeeded", false, this);
-        Log.i("initFavourites", PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
-        Log.i("initFavouritesReload", String.valueOf(reloadPositions));
+        DebugHelper.log("initFavouritesReload", String.valueOf(reloadPositions));
 
         // Adapt initInterface from MainActivity
         try {
@@ -304,8 +303,6 @@ public class FavouriteActivity extends AppCompatActivity {
                                                     public void onClick(final View view) {
                                                         try {
                                                             if (!isCategoryLoaded) {
-                                                                Log.i("FavouriteActivity", "Loading folder "
-                                                                        + thisFolderName);
                                                                 final TextView[] thisMachines = SpecsIntentHelper
                                                                         .initCategory(categoryChunkLayout,
                                                                                 thisCategoryPositions, false,
@@ -352,8 +349,7 @@ public class FavouriteActivity extends AppCompatActivity {
                                                             }
                                                         } catch (Exception e) {
                                                             ExceptionHelper.handleException(FavouriteActivity.this, e,
-                                                                    "initFavourites", "Illegal Favourites String. Please reset the application. String is: "
-                                                                            + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+                                                                    "initFavourites", "Illegal Favourites String. Please reset the application.");
                                                         }
                                                     }
                                                 });
@@ -375,8 +371,8 @@ public class FavouriteActivity extends AppCompatActivity {
                                         categoryContainer.setLayoutTransition(layoutTransition);
                                     }
                                 } catch (Exception e) {
-                                    ExceptionHelper.handleException(FavouriteActivity.this, e, "initFavourites", "Illegal Favourites String. Please reset the application. String is: "
-                                            + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+                                    ExceptionHelper.handleException(FavouriteActivity.this, e,
+                                            "initFavourites", "Illegal Favourites String. Please reset the application.");
                                 }
                             }
                         });
@@ -387,8 +383,8 @@ public class FavouriteActivity extends AppCompatActivity {
             };
             favouritesThread.start();
         } catch (final Exception e) {
-            ExceptionHelper.handleException(FavouriteActivity.this, e, "initFavourites", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+            ExceptionHelper.handleException(FavouriteActivity.this, e,
+                    "initFavourites", "Illegal Favourites String. Please reset the application.");
         }
     }
 
@@ -406,8 +402,8 @@ public class FavouriteActivity extends AppCompatActivity {
             }
             return toReturn;
         } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e, "getFolders", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", thisContext));
+            ExceptionHelper.handleException(thisContext, e, "getFolders",
+                    "Illegal Favourites String. Please reset the application.");
             return new String[0];
         }
     }
@@ -446,8 +442,8 @@ public class FavouriteActivity extends AppCompatActivity {
             return isFavourite(machineName,
                     PrefsHelper.getStringPrefs("userFavourites", thisContext));
         } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e, "isFavourite", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", thisContext));
+            ExceptionHelper.handleException(thisContext, e, "isFavourite",
+                    "Illegal Favourites String. Please reset the application.");
             return false;
         }
     }
@@ -496,8 +492,8 @@ public class FavouriteActivity extends AppCompatActivity {
                         initFavourites(true);
                     }
                 } catch (Exception e) {
-                    ExceptionHelper.handleException(FavouriteActivity.this, e, "newFolderDialog", "Illegal Favourites String. Please reset the application. String is: "
-                            + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+                    ExceptionHelper.handleException(FavouriteActivity.this, e,
+                            "newFolderDialog", "Illegal Favourites String. Please reset the application.");
                 }
             });
         }
@@ -538,8 +534,8 @@ public class FavouriteActivity extends AppCompatActivity {
                     PrefsHelper.editPrefs("userFavourites", newString, this);
                     initFavourites(true);
                 } catch (Exception e) {
-                    ExceptionHelper.handleException(this, e, "deleteFolderConfirm", "Illegal Favourites String. Please reset the application. String is: "
-                            + PrefsHelper.getStringPrefs("userFavourites", this));
+                    ExceptionHelper.handleException(this, e, "deleteFolderConfirm",
+                            "Illegal Favourites String. Please reset the application.");
                 }
             });
             deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -547,8 +543,8 @@ public class FavouriteActivity extends AppCompatActivity {
             }));
             deleteDialog.show();
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "deleteFolder", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", this));
+            ExceptionHelper.handleException(this, e, "deleteFolder",
+                    "Illegal Favourites String. Please reset the application.");
         }
     }
 
@@ -607,8 +603,8 @@ public class FavouriteActivity extends AppCompatActivity {
                                         newFolderDialogCreated.dismiss();
                                     }
                                 } catch (Exception e) {
-                                    ExceptionHelper.handleException(FavouriteActivity.this, e, "newFolderDialog_Rename", "Illegal Favourites String. Please reset the application. String is: "
-                                            + PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this));
+                                    ExceptionHelper.handleException(FavouriteActivity.this, e,
+                                            "newFolderDialog_Rename", "Illegal Favourites String. Please reset the application.");
                                 }
                             });
                         } catch (Exception e) {
@@ -621,13 +617,13 @@ public class FavouriteActivity extends AppCompatActivity {
                     });
             renameDialog.show();
         } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "renameFolder", "Illegal Favourites String. Please reset the application. String is: "
-                    + PrefsHelper.getStringPrefs("userFavourites", this));
+            ExceptionHelper.handleException(this, e, "renameFolder",
+                    "Illegal Favourites String. Please reset the application.");
         }
     }
 
     private void setAbleToManage(final boolean newStatus) {
-        Log.i("FavouriteActivity", "isAbleToManage set to " + newStatus);
+        DebugHelper.log("FavouriteActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         // Avoid null pointers
         if (renameFolderItem != null && manageFolderItem != null && clearFolderItem != null) {

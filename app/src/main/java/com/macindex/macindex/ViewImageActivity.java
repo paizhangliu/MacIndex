@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -52,7 +51,7 @@ public class ViewImageActivity extends AppCompatActivity {
             final ImageView image = findViewById(R.id.pic);
             final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
             if (picture != null) {
-                Log.i("SpecsAct", "Image exists");
+                DebugHelper.log("SpecsAct", "Image exists");
                 image.setImageBitmap(picture);
             }
         } catch (Exception e) {

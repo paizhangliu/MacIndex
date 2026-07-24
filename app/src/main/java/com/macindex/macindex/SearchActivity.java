@@ -119,8 +119,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
 
-        Log.i("SearchActivity", "Current Query: " + searchText.getQuery()
-                + ", Current Manufacturer: " + translateFiltersParam() + ", Current Option: " + (translateMatchParam()? "MODEL NO." : "NAME"));
     }
 
     @Override
@@ -372,8 +370,6 @@ public class SearchActivity extends AppCompatActivity {
     private boolean startSearch(final String s) {
         try {
             String searchInput = s.trim();
-            Log.i("startSearch", "Current Input: " + searchInput + ", Current Manufacturer: "
-                    + translateFiltersParam() + ", Current Option: " + (translateMatchParam() ? "MODEL NO." : "NAME"));
             if (!searchInput.equals("")) {
                 if (characterCheck(searchInput, translateMatchParam())) {
                     // Remove Results only before actual search starts.
@@ -416,7 +412,7 @@ public class SearchActivity extends AppCompatActivity {
     private boolean characterCheck(final String validateInput, final boolean method) {
         // Check the length first
         if ((method && validateInput.length() > 20) || (!method && validateInput.length() > 50)) {
-            Log.i("validate", "Overlength Detected!");
+            DebugHelper.log("validate", "Overlength Detected!");
             // Set the overlength prompt here..
             textResult.setText(R.string.search_overlength);
             textResult.setTextColor(Color.RED);
@@ -435,7 +431,7 @@ public class SearchActivity extends AppCompatActivity {
         for (int i = 0; i < validateInput.length(); i++) {
             // If it contains illegal character, it is not valid.
             if (!legalCharacters.contains(String.valueOf(validateInput.charAt(i)))) {
-                Log.i("validate", "Illegal Char Detected!");
+                DebugHelper.log("validate", "Illegal Char Detected!");
                 // Set the illegal prompt here..
                 textResult.setText(R.string.search_illegal);
                 textResult.setTextColor(Color.RED);
@@ -454,7 +450,7 @@ public class SearchActivity extends AppCompatActivity {
             if (waitDialog != null && waitDialog.isShowing()) {
                 waitDialog.dismiss();
             }
-            Log.i("performSearch", "Reload Flag: " + reloadPositions);
+            DebugHelper.log("performSearch", "Reload Flag: " + reloadPositions);
             userStopped = false;
             if (reloadPositions) {
                 waitDialog.show();
@@ -503,8 +499,6 @@ public class SearchActivity extends AppCompatActivity {
                                 rawSearchInput = searchInput;
                                 rawMatchParam = exactMatchForRequest;
                             }
-                            Log.i("rawSearchInput", "Raw Input " + rawSearchInput + ", Current Manufacturer: "
-                                    + manufacturerForRequest + ", Raw Option: " + searchColumns[i] + ", Match Parameter: " + rawMatchParam);
                             subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
                                     manufacturerForRequest, rawMatchParam, true);
                             resultCount += subPositions[i].length;
@@ -541,12 +535,12 @@ public class SearchActivity extends AppCompatActivity {
                                         waitDialog.dismiss();
                                 }
                                 if (!userStopped) {
-                                    Log.i("Search", "Terminated normally.");
+                                    DebugHelper.log("Search", "Terminated normally.");
                                     userStopped = true;
                                     clearSearch();
                                     // NullSafe
                                     if (positions != null) {
-                                        Log.i("performSearchLoad", "Position Length: "
+                                        DebugHelper.log("performSearchLoad", "Position Length: "
                                                 + positions.length + ", Reload Flag: " + reloadPositions);
                                         if (positions.length == 0) {
                                             textResult.setText(R.string.search_noResult);

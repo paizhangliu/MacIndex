@@ -600,7 +600,7 @@ class MachineHelper {
         if (thisSound == null) {
             return sound;
         }
-        Log.i("MachineHelperGetSound", "Get parameter " + thisSound);
+        DebugHelper.log("MachineHelperGetSound", "Get parameter " + thisSound);
         switch (thisSound) {
             case "0":
                 sound[0] = R.raw.mac128;
@@ -720,7 +720,7 @@ class MachineHelper {
         tempCursor.moveToFirst();
         String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("sprocessor"));
         tempCursor.close();
-        Log.i("MHGetProcessorImageType", "Get ID " + thisProcessorImage);
+        DebugHelper.log("MHGetProcessorImageType", "Get ID " + thisProcessorImage);
         // NullSafe
         if (thisProcessorImage == null) {
             return 0;
@@ -778,7 +778,7 @@ class MachineHelper {
         tempCursor.moveToFirst();
         String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("processorid"));
         tempCursor.close();
-        Log.i("MHGetProcessorImage", "Get ID " + thisProcessorImage);
+        DebugHelper.log("MHGetProcessorImage", "Get ID " + thisProcessorImage);
         // NullSafe
         if (thisProcessorImage == null) {
             return new int[][] {{0}};
@@ -1068,7 +1068,7 @@ class MachineHelper {
         tempCursor.moveToFirst();
         String thisGraphicsImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("graphicsid"));
         tempCursor.close();
-        Log.i("MHGetGraphicsImage", "Get ID " + thisGraphicsImage);
+        DebugHelper.log("MHGetGraphicsImage", "Get ID " + thisGraphicsImage);
         // NullSafe
         if (thisGraphicsImage == null) {
             return new int[][] {{0}};
@@ -1213,7 +1213,7 @@ class MachineHelper {
     // Get category range by manufacturer. Should be updated accordingly.
     // This provides table names for query, when adding new tables, should be updated accordingly.
     private String[] getCategoryRange(final String thisManufacturer) {
-        Log.i("MHRange", "Get parameter " + thisManufacturer);
+        DebugHelper.log("MHRange", "Get parameter " + thisManufacturer);
         final String[] apple68k = {"compact_mac", "mac_ii", "mac_lc", "mac_quadra",
                 "mac_performa_68k", "mac_centris", "mac_server_68k", "powerbook_68k", "powerbook_duo_68k"};
         final String[] appleppc = {"power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic",
@@ -1271,7 +1271,7 @@ class MachineHelper {
                  "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003",
                  "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013",
                  "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"}};
-        Log.i("MHGetFilter", "Get parameters " + thisFilter);
+        DebugHelper.log("MHGetFilter", "Get parameters " + thisFilter);
         switch (thisFilter) {
             case "names":
                 return names;
@@ -1290,7 +1290,6 @@ class MachineHelper {
     public int[] searchHelper(final String columnName, final String searchInput, final String thisManufacturer,
                               final boolean isExactMatch, final boolean sortResults) {
         try {
-            Log.i("MHSearchHelper", "Get parameter: column " + columnName + ", input " + searchInput);
             if (!isDirectoryColumn(columnName)) {
                 throw new IllegalArgumentException("Column is not indexed: " + columnName);
             }
@@ -1323,7 +1322,7 @@ class MachineHelper {
             for (int i = 0; i < rawPositions.size(); i++) {
                 finalPositions[i] = rawPositions.get(i);
             }
-            Log.i("MHSearchHelper", "Raw Matched: " + finalPositions.length + " result(s).");
+            DebugHelper.log("MHSearchHelper", "Raw Matched: " + finalPositions.length + " result(s).");
 
             // Verify Exact Match if required.
             if (isExactMatch) {
@@ -1347,16 +1346,16 @@ class MachineHelper {
                     finalPositions[i] = verifiedPositions.get(i);
                 }
             }
-            Log.i("MHSearchHelper", "Exact Match is " + isExactMatch + ".");
-            Log.i("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
+            DebugHelper.log("MHSearchHelper", "Exact Match is " + isExactMatch + ".");
+            DebugHelper.log("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
 
             // Sort if required.
             if (sortResults && finalPositions.length > 1) {
                 // Sort by introduction date.
                 finalPositions = directSortByYear(finalPositions);
             }
-            Log.i("MHSearchHelper", "Sorting is " + sortResults + ".");
-            Log.i("MHSearchHelper", "Returning " + finalPositions.length + " result(s).");
+            DebugHelper.log("MHSearchHelper", "Sorting is " + sortResults + ".");
+            DebugHelper.log("MHSearchHelper", "Returning " + finalPositions.length + " result(s).");
             return finalPositions;
         } catch (Exception e) {
             Log.e("MHSearchHelper", "Exception Occurred, returning empty array");
@@ -1409,7 +1408,7 @@ class MachineHelper {
     // Sorting used by ver. 4.9
     public int[] directSortByYear(final int[] input) {
         try {
-            Log.i("MHDirectSort", "Starting Direct Sorting.");
+            DebugHelper.log("MHDirectSort", "Starting Direct Sorting.");
             final int[] originalInput = input.clone();
             final long[] sortValues = new long[input.length];
             for (int i = 0; i < input.length; i++) {
@@ -1438,7 +1437,7 @@ class MachineHelper {
                 Log.w("MHCheckDuplicate", "Input is empty.");
                 return input;
             }
-            Log.i("MHCheckDuplicate", "Input is " + Arrays.toString(input));
+            DebugHelper.log("MHCheckDuplicate", "Input is " + Arrays.toString(input));
             final LinkedHashSet<Integer> uniqueInput = new LinkedHashSet<>();
             for (int entry : input) {
                 uniqueInput.add(entry);
@@ -1449,7 +1448,7 @@ class MachineHelper {
                 toReturn[toReturnIndex] = entry;
                 toReturnIndex++;
             }
-            Log.i("MHCheckDuplicate", "Output is " + Arrays.toString(toReturn));
+            DebugHelper.log("MHCheckDuplicate", "Output is " + Arrays.toString(toReturn));
             return toReturn;
         } catch (Exception e) {
             e.printStackTrace();

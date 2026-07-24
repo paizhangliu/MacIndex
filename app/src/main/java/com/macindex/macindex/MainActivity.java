@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (savedInstanceState == null) {
                 // Creating activity due to user
-                Log.i("MacIndex", "Welcome to MacIndex.");
+                DebugHelper.log("MacIndex", "Welcome to MacIndex.");
 
                 // If MainActivity Usage is set to not be saved
                 if (!(PrefsHelper.getBooleanPrefs("isSaveMainUsage", this))) {
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 PrefsHelper.clearPrefs("isEnableVolWarningThisTime", this);
 
                 if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
-                    Log.i("MacIndex", "Initializing database.");
+                    DebugHelper.log("MacIndex", "Initializing database.");
                     if (!validateOperation(this)) {
                         return;
                     }
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 // Creating activity due to system
-                Log.i("MacIndex", "Reloading the main activity.");
+                DebugHelper.log("MacIndex", "Reloading the main activity.");
 
                 if (!validateOperation(this)) {
                     return;
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.menu_main, menu);
         // Debug items visibility
         if (!BuildConfig.DEBUG) {
-            Log.i("DebugMode", "Disabling debug menu items.");
+            DebugHelper.log("DebugMode", "Disabling debug menu items.");
             menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
             menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
             menu.findItem(R.id.mainDebugResetItem).setVisible(false);
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initMenu() {
         try {
-            Log.i("initMenu", "Initializing");
+            DebugHelper.log("initMenu", "Initializing");
             // Set the slide menu.
             // Set the edge size of drawer.
             mDrawerLayout = findViewById(R.id.mainContainer);
@@ -693,7 +693,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(final View view) {
                                 try {
                                     if (!isCategoryLoaded) {
-                                        Log.i("initCategory", "Loading category " + categoryID);
+                                        DebugHelper.log("initCategory", "Loading category " + categoryID);
                                         machineLoadedCount[categoryID] = SpecsIntentHelper
                                                 .initCategory(categoryChunkLayout, thisCategoryPositions,
                                                         false, MainActivity.this);
@@ -768,7 +768,7 @@ public class MainActivity extends AppCompatActivity {
             if (!PrefsHelper.getBooleanPrefs("isRandomAll", this)) {
                 // Random All mode.
                 machineID = new Random().nextInt(machineHelper.getMachineCount());
-                Log.i("RandomAccess", "Random All mode, get total " + machineHelper.getMachineCount() + " , ID " + machineID);
+                DebugHelper.log("RandomAccess", "Random All mode, get total " + machineHelper.getMachineCount() + " , ID " + machineID);
             } else {
                 // Limited Random mode.
                 int totalLoadad = 0;
@@ -779,7 +779,7 @@ public class MainActivity extends AppCompatActivity {
                     throw new IllegalStateException();
                 }
                 int randomCode = new Random().nextInt(totalLoadad);
-                Log.i("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
+                DebugHelper.log("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
                 for (int[] loadPosition : loadPositions) {
                     if (randomCode >= loadPosition.length) {
                         randomCode -= loadPosition.length;
@@ -789,7 +789,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            Log.i("RandomAccess", "Machine ID " + machineID);
+            DebugHelper.log("RandomAccess", "Machine ID " + machineID);
             SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
@@ -860,7 +860,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             final String machineName = ShareLinkHelper.decode(deepLink);
-            Log.i("DeepLinkDecode", "Got machine " + machineName);
+            DebugHelper.log("DeepLinkDecode", "Got machine " + machineName);
             int[] decodedID = decodeStartedParam(machineName);
             if (decodedID.length != 1) {
                 Log.w("DeepLinkDecode", "Unable to decode the requested link.");

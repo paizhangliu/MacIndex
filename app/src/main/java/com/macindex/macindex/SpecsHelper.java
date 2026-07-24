@@ -65,7 +65,7 @@ class SpecsHelper {
                     }
                     startupSound = MediaPlayer.create(thisContext, startupID);
                     deathSound = MediaPlayer.create(thisContext, deathID);
-                    Log.i("InitSound", "Startup and death sound loaded");
+                    DebugHelper.log("InitSound", "Startup and death sound loaded");
                 } else {
                     // Startup sound exists, death sound not exist
                     // Fix IllegalStateException
@@ -74,7 +74,7 @@ class SpecsHelper {
                     }
                     startupSound = MediaPlayer.create(thisContext, startupID);
                     deathSound = null;
-                    Log.i("InitSound", "Startup sound loaded");
+                    DebugHelper.log("InitSound", "Startup sound loaded");
                 }
                 // Should set a listener
                 image.setOnClickListener(unused -> {
@@ -91,13 +91,13 @@ class SpecsHelper {
                                 if (audioManager != null) {
                                     for (AudioDeviceInfo deviceInfo : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
                                         final int thisType = deviceInfo.getType();
-                                        Log.i("VolWarning", "Get type " + thisType);
+                                        DebugHelper.log("VolWarning", "Get type " + thisType);
                                         if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
                                                 || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
                                                 || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
                                                 || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
                                                 || thisType == AudioDeviceInfo.TYPE_HEARING_AID) {
-                                            Log.i("VolWarning", "Earphone detected");
+                                            DebugHelper.log("VolWarning", "Earphone detected");
                                             currentOutputDevice = true;
                                             break;
                                         }
@@ -105,10 +105,10 @@ class SpecsHelper {
                                     int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                                     int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                                     int currentVolumePercentage = 100 * currentVolume / maxVolume;
-                                    Log.i("VolWarning", "Enabled, current percentage " + currentVolumePercentage
+                                    DebugHelper.log("VolWarning", "Enabled, current percentage " + currentVolumePercentage
                                             + " current output device " + currentOutputDevice);
                                     if (currentVolumePercentage >= 60 && currentOutputDevice) {
-                                        Log.i("VolWarning", "Armed");
+                                        DebugHelper.log("VolWarning", "Armed");
                                         final AlertDialog.Builder volWarningDialog = new AlertDialog.Builder(thisContext);
                                         volWarningDialog.setMessage(R.string.information_specs_high_vol_warning);
                                         volWarningDialog.setPositiveButton(R.string.action_play_anyway, (dialogInterface, i) -> {
@@ -122,7 +122,7 @@ class SpecsHelper {
                                         volWarningDialog.show();
                                     } else {
                                         // Enabled, but should not popup a warning
-                                        Log.i("VolWarning", "Unarmed");
+                                        DebugHelper.log("VolWarning", "Unarmed");
                                         playSound();
                                     }
                                 } else {
@@ -134,7 +134,7 @@ class SpecsHelper {
                                 }
                             } else {
                                 // High Volume Warning Disabled
-                                Log.i("VolWarning", "Disabled");
+                                DebugHelper.log("VolWarning", "Disabled");
                                 playSound();
                             }
                         }
@@ -148,7 +148,7 @@ class SpecsHelper {
                 // Fix IllegalStateException
                 startupSound = null;
                 deathSound = null;
-                Log.i("InitSound", "Startup and death sound do not exist");
+                DebugHelper.log("InitSound", "Startup and death sound do not exist");
                 image.setOnClickListener(v -> {
                     vibrate();
                     Toast.makeText(thisContext, R.string.information_specs_no_sound,
@@ -328,19 +328,19 @@ class SpecsHelper {
         try {
             if (startupSound != null && startupSound.isPlaying()) {
                 startupSound.stop();
-                Log.i("releaseSound", "Startup sound stopped");
+                DebugHelper.log("releaseSound", "Startup sound stopped");
             }
             if (deathSound != null && deathSound.isPlaying()) {
                 deathSound.stop();
-                Log.i("releaseSound", "Death sound stopped");
+                DebugHelper.log("releaseSound", "Death sound stopped");
             }
             if (startupSound != null) {
                 startupSound.release();
-                Log.i("releaseSound", "Startup sound released");
+                DebugHelper.log("releaseSound", "Startup sound released");
             }
             if (deathSound != null) {
                 deathSound.release();
-                Log.i("releaseSound", "Death sound released");
+                DebugHelper.log("releaseSound", "Death sound released");
             }
         } catch (Exception e) {
             e.printStackTrace();
