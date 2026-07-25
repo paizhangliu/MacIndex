@@ -41,6 +41,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         final SwitchMaterial swSaveMainUsage = findViewById(R.id.switchSaveMainUsage);
         final SwitchMaterial swSaveSearchUsage = findViewById(R.id.switchSaveSearchUsage);
         final SwitchMaterial swSaveCompareUsage = findViewById(R.id.switchSaveCompareUsage);
+        final SwitchMaterial swAutoCheckUpdate = findViewById(R.id.switchAutoCheckUpdate);
         final SwitchMaterial swVolWarning = findViewById(R.id.switchVolWarning);
         final SwitchMaterial swOpenDirectly = findViewById(R.id.switchOpenDirectly);
 
@@ -54,6 +55,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         swSaveMainUsage.setChecked(PrefsHelper.getBooleanPrefs("isSaveMainUsage", this));
         swSaveSearchUsage.setChecked(PrefsHelper.getBooleanPrefs("isSaveSearchUsage", this));
         swSaveCompareUsage.setChecked(PrefsHelper.getBooleanPrefs("isSaveCompareUsage", this));
+        swAutoCheckUpdate.setChecked(PrefsHelper.getBooleanPrefs("isAutoCheckUpdate", this));
         swVolWarning.setChecked(PrefsHelper.getBooleanPrefs("isEnableVolWarning", this));
         swOpenDirectly.setChecked(PrefsHelper.getBooleanPrefs("isOpenDirectly", this));
 
@@ -65,6 +67,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
         swSaveMainUsage.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSaveMainUsage", isChecked, this));
         swSaveSearchUsage.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSaveSearchUsage", isChecked, this));
         swSaveCompareUsage.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSaveCompareUsage", isChecked, this));
+        swAutoCheckUpdate.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isAutoCheckUpdate", isChecked, this));
         swVolWarning.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isEnableVolWarning", isChecked, this));
         swOpenDirectly.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isOpenDirectly", isChecked, this));
 

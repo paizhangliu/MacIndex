@@ -35,6 +35,7 @@ class PrefsHelper {
         DEFAULT_VALUES.put("isSaveMainUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isSaveSearchUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isSaveCompareUsage", Boolean.TRUE);
+        DEFAULT_VALUES.put("isAutoCheckUpdate", Boolean.TRUE);
 
         /* User Record */
         DEFAULT_VALUES.put("userCompares", "");
@@ -42,6 +43,7 @@ class PrefsHelper {
         DEFAULT_VALUES.put("userComparesRight", "");
         DEFAULT_VALUES.put("userFavourites", "");
         DEFAULT_VALUES.put("userComments", "");
+        DEFAULT_VALUES.put("skippedUpdateVersion", "");
 
         /* Runtime Record */
         DEFAULT_VALUES.put("lastMainManufacturer", "all");

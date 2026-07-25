@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void completeCreation(final Bundle savedInstanceState) {
         try {
+            boolean shouldCheckForUpdates = true;
             if (savedInstanceState == null) {
                 // Creating activity due to user
                 DebugHelper.log("MacIndex", "Welcome to MacIndex.");
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri deepLink = getIntent().getData();
                 getIntent().setData(null);
                 if (deepLink != null) {
+                    shouldCheckForUpdates = false;
                     decodeDeepLink(deepLink.toString());
                 } else {
                     Log.w("onCreateDeepLinkEntry", "Got null data");
@@ -211,6 +213,9 @@ public class MainActivity extends AppCompatActivity {
                     resetDrawerTitle();
                     resetDrawerSelection();
                 }
+            }
+            if (shouldCheckForUpdates) {
+                UpdateHelper.checkAutomatically(this);
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
@@ -242,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             // Reload favourites
             SpecsIntentHelper.refreshFavourites(machineLoadedCount, this);
+            UpdateHelper.checkAutomatically(this);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "MainOnRestart", "Unable to resume normal activity.");
         }
@@ -308,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemID == R.id.mainDebugResetItem) {
             Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
             PrefsHelper.clearPrefs(this);
+        } else if (itemID == R.id.mainUpdateItem) {
+            UpdateHelper.checkManually(this);
         } else if (itemID == R.id.mainResetItem) {
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
