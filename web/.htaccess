@@ -1,4 +1,0 @@
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteRule ^share$ https://paizhang.info/macindex/share/ [R=301,L]
-</IfModule>

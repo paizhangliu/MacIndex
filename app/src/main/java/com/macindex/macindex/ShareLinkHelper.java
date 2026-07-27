@@ -7,15 +7,14 @@ import java.net.URLEncoder;
 
 /**
  * MacIndex Share Link Helper
- * Keeps support for the old underscore format.
  */
 class ShareLinkHelper {
 
-    private static final String SHARE_BASE = "https://paizhang.info/macindex/share?code=";
+    private static final String SHARE_BASE = "https://macindex.paizhang.info/share";
 
     public static String create(final String machineName) {
         try {
-            return SHARE_BASE + URLEncoder.encode(machineName, "UTF-8");
+            return SHARE_BASE + "?code=" + URLEncoder.encode(machineName, "UTF-8");
         } catch (UnsupportedEncodingException impossible) {
             throw new AssertionError("UTF-8 is unavailable", impossible);
         }
@@ -23,7 +22,7 @@ class ShareLinkHelper {
 
     public static String createComparison(final String leftName, final String rightName) {
         try {
-            return "https://paizhang.info/macindex/share?compare="
+            return SHARE_BASE + "?compare="
                     + URLEncoder.encode(leftName, "UTF-8") + "&with="
                     + URLEncoder.encode(rightName, "UTF-8");
         } catch (UnsupportedEncodingException impossible) {
@@ -48,11 +47,7 @@ class ShareLinkHelper {
     public static String decode(final String link) {
         final String decodedValue = getQueryValue(link, "code");
         if (decodedValue != null) {
-            String decoded = decodedValue;
-            if (decoded.endsWith("_")) {
-                decoded = decoded.substring(0, decoded.length() - 1).replace('_', ' ');
-            }
-            decoded = decoded.trim();
+            final String decoded = decodedValue.trim();
             if (!decoded.isEmpty()) {
                 return decoded;
             }

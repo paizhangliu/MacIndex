@@ -56,8 +56,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" />
                 <data android:scheme="https" />
-                <data android:host="paizhang.info" />
-                <data android:pathPrefix="/macindex/share" />
+                <data android:host="macindex.paizhang.info" />
+                <data android:pathPrefix="/share" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />

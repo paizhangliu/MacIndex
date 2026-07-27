@@ -11,13 +11,9 @@ public class ShareLinkHelperTest {
     @Test
     public void newLinksRoundTripNamesWithPunctuation() {
         final String name = "PowerBook G4 (15-inch/1.67 GHz)";
-        assertEquals(name, ShareLinkHelper.decode(ShareLinkHelper.create(name)));
-    }
-
-    @Test
-    public void oldUnderscoreLinksRemainSupported() {
-        assertEquals("Macintosh 128K", ShareLinkHelper.decode(
-                "https://paizhang.info/macindex/share?code=Macintosh_128K_"));
+        final String link = ShareLinkHelper.create(name);
+        assertTrue(link.startsWith("https://macindex.paizhang.info/share?code="));
+        assertEquals(name, ShareLinkHelper.decode(link));
     }
 
     @Test
@@ -25,6 +21,7 @@ public class ShareLinkHelperTest {
         final String leftName = "Macintosh LC 520";
         final String rightName = "PowerBook G4 (15-inch/1.67 GHz)";
         final String link = ShareLinkHelper.createComparison(leftName, rightName);
+        assertTrue(link.startsWith("https://macindex.paizhang.info/share?compare="));
         assertTrue(ShareLinkHelper.isComparison(link));
         assertArrayEquals(new String[]{leftName, rightName},
                 ShareLinkHelper.decodeComparison(link));
@@ -33,11 +30,11 @@ public class ShareLinkHelperTest {
     @Test(expected = IllegalArgumentException.class)
     public void incompleteComparisonLinksAreRejected() {
         ShareLinkHelper.decodeComparison(
-                "https://paizhang.info/macindex/share?compare=Macintosh+LC+520");
+                "https://macindex.paizhang.info/share?compare=Macintosh+LC+520");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void linksWithoutCodeAreRejected() {
-        ShareLinkHelper.decode("https://paizhang.info/macindex/share");
+        ShareLinkHelper.decode("https://macindex.paizhang.info/share");
     }
 }
