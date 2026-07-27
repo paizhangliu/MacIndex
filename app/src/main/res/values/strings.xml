@@ -57,9 +57,7 @@
     </plurals>
     <string name="search_prompt">Press Enter to search</string>
     <string name="search_illegal">Input contains invalid characters</string>
-    <string name="search_illegal_message">The input contains characters that are invalid for the current search option. Double-check it and try again.</string>
     <string name="search_overlength">Input is too long</string>
-    <string name="search_overlength_message">The input exceeds the maximum length allowed for the current search option. Double-check it and try again.</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
     <string name="menu_random_limited_label">I\'m Feeling Lucky (Limited)</string>

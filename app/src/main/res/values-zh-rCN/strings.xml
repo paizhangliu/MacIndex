@@ -55,9 +55,7 @@
     </plurals>
     <string name="search_prompt">按回车键开始搜索</string>
     <string name="search_illegal">搜索词包含无效字符</string>
-    <string name="search_illegal_message">搜索词包含当前搜索方式的无效字符，请检查输入（尤其是全/半角符号）后重试。</string>
     <string name="search_overlength">搜索词太长</string>
-    <string name="search_overlength_message">搜索词超过当前搜索方式的最大允许长度，请检查输入后重试。</string>
     <string name="menu_search">机型搜索</string>
     <string name="menu_random">试试手气</string>
     <string name="menu_random_limited_label">试试手气（限制范围）</string>

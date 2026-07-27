@@ -376,26 +376,6 @@ public class SearchActivity extends AppCompatActivity {
                     performSearch(searchInput, true);
                     return true;
                 } else {
-                    // Error dialog
-                    if (textResult.getText().equals(getString(R.string.search_overlength))) {
-                        final AlertDialog.Builder illegalInputDialog = new AlertDialog.Builder(SearchActivity.this);
-                        illegalInputDialog.setTitle(R.string.search_overlength);
-                        illegalInputDialog.setMessage(R.string.search_overlength_message);
-                        illegalInputDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                            // do nothing here
-                        });
-                        illegalInputDialog.show();
-                    } else if (textResult.getText().equals(getString(R.string.search_illegal))) {
-                        final AlertDialog.Builder illegalInputDialog = new AlertDialog.Builder(SearchActivity.this);
-                        illegalInputDialog.setTitle(R.string.search_illegal);
-                        illegalInputDialog.setMessage(R.string.search_illegal_message);
-                        illegalInputDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-                            // do nothing here
-                        });
-                        illegalInputDialog.show();
-                    } else {
-                        throw new IllegalStateException();
-                    }
                     return false;
                 }
             } else {
