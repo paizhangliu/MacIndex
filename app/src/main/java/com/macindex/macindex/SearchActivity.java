@@ -143,9 +143,9 @@ public class SearchActivity extends AppCompatActivity {
             searchText.clearFocus();
             changeTips();
         } else if (itemID == R.id.searchAppleSNItem) {
-            LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", "https://checkcoverage.apple.com/", this);
+            LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", this);
         } else if (itemID == R.id.searchEveryMacItem) {
-            LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", "https://everymac.com/ultimate-mac-lookup/", this);
+            LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", this);
         } else {
             return super.onOptionsItemSelected(item);
         }

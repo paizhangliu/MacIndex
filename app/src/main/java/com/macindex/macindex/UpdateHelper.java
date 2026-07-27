@@ -19,11 +19,11 @@ import java.nio.charset.StandardCharsets;
  */
 class UpdateHelper {
 
-    private static final String RELEASE_API =
-            "https://api.github.com/repos/paizhangliu/MacIndex/releases/latest";
+    private static final String WEBSITE_API =
+            "https://macindex.paizhang.info/api/latest.json";
 
-    private static final String DOWNLOAD_PAGE =
-            "https://macindex.paizhang.info/download-and-update-history";
+    private static final String GITHUB_API =
+            "https://api.github.com/repos/paizhangliu/MacIndex/releases/latest";
 
     private static boolean automaticallyChecked = false;
 
@@ -52,15 +52,15 @@ class UpdateHelper {
         }
 
         new Thread(() -> {
-            String latestVersion = null;
+            UpdateInformation latestUpdate = null;
             Exception updateError = null;
             try {
-                latestVersion = getLatestVersion();
+                latestUpdate = getLatestUpdate();
             } catch (Exception e) {
                 updateError = e;
             }
 
-            final String finalLatestVersion = latestVersion;
+            final UpdateInformation finalLatestUpdate = latestUpdate;
             final Exception finalUpdateError = updateError;
             thisActivity.runOnUiThread(() -> {
                 if (waitDialog != null && waitDialog.isShowing()) {
@@ -79,19 +79,19 @@ class UpdateHelper {
 
                 try {
                     final int comparison = compareVersions(
-                            finalLatestVersion, BuildConfig.VERSION_NAME);
+                            finalLatestUpdate.version, BuildConfig.VERSION_NAME);
                     if (comparison <= 0) {
                         if (isManual) {
                             showUpToDate(thisActivity);
                         }
                         return;
                     }
-                    if (!shouldNotifyUpdate(finalLatestVersion,
+                    if (!shouldNotifyUpdate(finalLatestUpdate.version,
                             PrefsHelper.getStringPrefs("skippedUpdateVersion", thisActivity),
                             isManual)) {
                         return;
                     }
-                    showUpdateAvailable(thisActivity, finalLatestVersion);
+                    showUpdateAvailable(thisActivity, finalLatestUpdate);
                 } catch (Exception e) {
                     Log.w("UpdateHelper", "Unable to compare update versions.", e);
                     if (isManual) {
@@ -102,16 +102,54 @@ class UpdateHelper {
         }, "MacIndex-UpdateCheck").start();
     }
 
-    private static String getLatestVersion() throws Exception {
+    private static UpdateInformation getLatestUpdate() throws Exception {
+        Exception websiteError;
+        try {
+            return getWebsiteUpdate();
+        } catch (Exception e) {
+            websiteError = e;
+            Log.w("UpdateHelper", "Website update API unavailable, trying GitHub.", e);
+        }
+
+        try {
+            return getGitHubUpdate();
+        } catch (Exception e) {
+            e.addSuppressed(websiteError);
+            throw e;
+        }
+    }
+
+    private static UpdateInformation getWebsiteUpdate() throws Exception {
+        final JSONObject response = getResponse(WEBSITE_API, false);
+        return new UpdateInformation(
+                normalizeVersion(response.getString("version")),
+                normalizeReleasePage(response.getString("releasePage"),
+                        "macindex.paizhang.info", "/"));
+    }
+
+    private static UpdateInformation getGitHubUpdate() throws Exception {
+        final JSONObject response = getResponse(GITHUB_API, true);
+        return new UpdateInformation(
+                normalizeVersion(response.getString("tag_name")),
+                normalizeReleasePage(response.getString("html_url"),
+                        "github.com", "/paizhangliu/MacIndex/releases"));
+    }
+
+    private static JSONObject getResponse(final String requestURL,
+                                          final boolean isGitHub) throws Exception {
         HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) new URL(RELEASE_API).openConnection();
+            connection = (HttpURLConnection) new URL(requestURL).openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(2000);
             connection.setReadTimeout(3000);
-            connection.setRequestProperty("Accept", "application/vnd.github+json");
-            connection.setRequestProperty("X-GitHub-Api-Version", "2026-03-10");
             connection.setRequestProperty("User-Agent", "MacIndex-Android");
+            if (isGitHub) {
+                connection.setRequestProperty("Accept", "application/vnd.github+json");
+                connection.setRequestProperty("X-GitHub-Api-Version", "2026-03-10");
+            } else {
+                connection.setRequestProperty("Accept", "application/json");
+            }
 
             final int responseCode = connection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -129,7 +167,7 @@ class UpdateHelper {
                     }
                 }
             }
-            return normalizeVersion(new JSONObject(response.toString()).getString("tag_name"));
+            return new JSONObject(response.toString());
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -160,6 +198,23 @@ class UpdateHelper {
         return version;
     }
 
+    static String normalizeReleasePage(final String rawPage,
+                                       final String expectedHost,
+                                       final String expectedPath) throws Exception {
+        if (rawPage == null) {
+            throw new IllegalArgumentException();
+        }
+        final String releasePage = rawPage.trim();
+        final URL parsedPage = new URL(releasePage);
+        if (!parsedPage.getProtocol().equals("https")
+                || !parsedPage.getHost().equalsIgnoreCase(expectedHost)
+                || !parsedPage.getPath().startsWith(expectedPath)
+                || parsedPage.getPort() != -1) {
+            throw new IllegalArgumentException();
+        }
+        return releasePage;
+    }
+
     static boolean shouldNotifyUpdate(final String latestVersion,
                                       final String skippedVersion,
                                       final boolean isManual) {
@@ -188,15 +243,15 @@ class UpdateHelper {
     }
 
     private static void showUpdateAvailable(final Activity thisActivity,
-                                            final String latestVersion) {
+                                            final UpdateInformation latestUpdate) {
         final AlertDialog.Builder updateDialog = new AlertDialog.Builder(thisActivity);
         updateDialog.setTitle(R.string.update_available);
         updateDialog.setMessage(thisActivity.getString(R.string.update_available_message,
-                latestVersion, BuildConfig.VERSION_NAME));
+                latestUpdate.version, BuildConfig.VERSION_NAME));
         updateDialog.setPositiveButton(R.string.update_download, (dialog, which) ->
-                LinkLoadingHelper.startBrowser(null, DOWNLOAD_PAGE, thisActivity));
+                LinkLoadingHelper.startBrowser(latestUpdate.releasePage, thisActivity));
         updateDialog.setNeutralButton(R.string.update_skip, (dialog, which) ->
-                PrefsHelper.editPrefs("skippedUpdateVersion", latestVersion, thisActivity));
+                PrefsHelper.editPrefs("skippedUpdateVersion", latestUpdate.version, thisActivity));
         updateDialog.setNegativeButton(R.string.update_not_now, (dialog, which) -> {
             // Cancelled, nothing to do.
         });
@@ -227,5 +282,17 @@ class UpdateHelper {
     private static boolean isActivityAvailable(final Activity thisActivity) {
         return !thisActivity.isFinishing()
                 && !thisActivity.isDestroyed();
+    }
+
+    private static class UpdateInformation {
+
+        private final String version;
+
+        private final String releasePage;
+
+        private UpdateInformation(final String version, final String releasePage) {
+            this.version = version;
+            this.releasePage = releasePage;
+        }
     }
 }

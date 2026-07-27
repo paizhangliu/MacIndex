@@ -19,7 +19,6 @@
             android:padding = "20pt">
 
             <ImageView
-                android:id="@+id/appLogo"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 app:srcCompat="@drawable/macindexlogo" />
@@ -29,7 +28,6 @@
                 android:layout_height="20dp" />
 
             <TextView
-                android:id="@+id/appNameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -79,11 +77,11 @@
                 android:text="@string/about_update" />
 
             <Button
-                android:id="@+id/feedbackButton"
+                android:id="@+id/releaseHistoryButton"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="120pt"
                 android:layout_height="wrap_content"
-                android:text="@string/about_feedback" />
+                android:text="@string/about_release_history" />
 
             <Space
                 android:layout_width="match_parent"

@@ -13,8 +13,6 @@ import android.widget.Toast;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
-import java.util.Locale;
-
 class LinkLoadingHelper {
 
     public static void loadLinks(final String[] machineNames, final String[] machineLinks,
@@ -171,51 +169,23 @@ class LinkLoadingHelper {
                 "http" + thisLink.split(",http")[1], thisContext);
     }
 
-    public static void startBrowser(final String urlEnglish, final String urlChinese, final Context thisContext) {
+    public static void startBrowser(final String url, final Context thisContext) {
         try {
-            if (urlEnglish == null && urlChinese == null) {
+            if (url == null) {
                 throw new IllegalArgumentException();
             }
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(ContextCompat.getColor(thisContext, R.color.colorPrimary));
             CustomTabsIntent customTabsIntent = builder.build();
-            if (Locale.getDefault().getDisplayLanguage().equals("中文")) {
-                if (urlChinese == null) {
-                    final AlertDialog.Builder langWarningDialog = new AlertDialog.Builder(thisContext);
-                    langWarningDialog.setMessage(R.string.link_only_available);
-                    langWarningDialog.setPositiveButton(R.string.action_open, (dialogInterface, i) -> {
-                        customTabsIntent.launchUrl(thisContext, Uri.parse(urlEnglish));
-                    });
-                    langWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                        // Cancelled, nothing to do.
-                    });
-                    langWarningDialog.show();
-                } else {
-                    customTabsIntent.launchUrl(thisContext, Uri.parse(urlChinese));
-                }
-            } else {
-                if (urlEnglish == null) {
-                    final AlertDialog.Builder langWarningDialog = new AlertDialog.Builder(thisContext);
-                    langWarningDialog.setMessage(R.string.link_only_available);
-                    langWarningDialog.setPositiveButton(R.string.action_open, (dialogInterface, i) -> {
-                        customTabsIntent.launchUrl(thisContext, Uri.parse(urlChinese));
-                    });
-                    langWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                        // Cancelled, nothing to do.
-                    });
-                    langWarningDialog.show();
-                } else {
-                    customTabsIntent.launchUrl(thisContext, Uri.parse(urlEnglish));
-                }
-            }
+            customTabsIntent.launchUrl(thisContext, Uri.parse(url));
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e,
-                    "startBrowserCustomTabs", "Failed to open " + urlEnglish + ", " + urlChinese);
+                    "startBrowserCustomTabs", "Failed to open " + url);
         }
     }
 
     public static void startEveryMac(final String thisName, final String url, final Context thisContext) {
-        startBrowser(url, url, thisContext);
+        startBrowser(url, thisContext);
         Toast.makeText(thisContext,
                 MainActivity.getRes().getString(R.string.link_opening, thisName),
                 Toast.LENGTH_LONG).show();

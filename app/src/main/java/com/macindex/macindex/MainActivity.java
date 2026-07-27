@@ -42,7 +42,7 @@ import java.util.Random;
  * MacIndex.
  * University of Illinois, CS125 FA19 Final Project
  * University of Illinois, CS199 Kotlin SP20 Final Project
- * https://MacIndex.paizhang.info/
+ * https://macindex.paizhang.info/
  * https://github.com/paizhangliu/MacIndex
  *
  * Basic functionality was finished on 16:12 CST, Dec 2, 2019.
@@ -314,8 +314,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemID == R.id.mainDebugResetItem) {
             Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
             PrefsHelper.clearPrefs(this);
-        } else if (itemID == R.id.mainUpdateItem) {
-            UpdateHelper.checkManually(this);
         } else if (itemID == R.id.mainResetItem) {
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);

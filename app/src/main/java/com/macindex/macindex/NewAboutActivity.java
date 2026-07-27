@@ -41,33 +41,22 @@ public class NewAboutActivity extends AppCompatActivity {
                     + "\n" + dateFormat.format(buildDate);
             ((TextView) findViewById(R.id.versionText)).setText(versionString);
 
-            findViewById(R.id.appNameText).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/v/english/",
-                        "https://macindex.paizhang.info/", this);
-            });
-            findViewById(R.id.appLogo).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/v/english/",
-                        "https://macindex.paizhang.info/", this);
-            });
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_opensource));
             findViewById(R.id.openSourceButton).setOnClickListener(v ->
                     startActivity(new Intent(NewAboutActivity.this, OssLicensesMenuActivity.class)));
-            findViewById(R.id.updateButton).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/download-and-update-history", this);
-            });
-            findViewById(R.id.feedbackButton).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/v/english/feedback",
-                        "https://macindex.paizhang.info/feedback-and-evaluation", this);
+            findViewById(R.id.updateButton).setOnClickListener(v ->
+                    UpdateHelper.checkManually(this));
+            findViewById(R.id.releaseHistoryButton).setOnClickListener(v -> {
+                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/#版本", this);
             });
             findViewById(R.id.githubLogo).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser("https://github.com/paizhangliu/MacIndex",
-                        "https://github.com/paizhangliu/MacIndex", this);
+                LinkLoadingHelper.startBrowser("https://github.com/paizhangliu/MacIndex", this);
             });
             findViewById(R.id.cs125Logo).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser(null, "https://macindex.paizhang.info/story-of-macindex", this);
+                LinkLoadingHelper.startBrowser("https://macindex.paizhang.info/#故事", this);
             });
             findViewById(R.id.paizhangLogo).setOnClickListener(v -> {
-                LinkLoadingHelper.startBrowser(null, "https://paizhang.info/", this);
+                LinkLoadingHelper.startBrowser("https://paizhang.info/", this);
             });
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "NewAboutActivity", "Failed to fetch information.");

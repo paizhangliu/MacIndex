@@ -37,4 +37,23 @@ public class UpdateHelperTest {
         assertTrue(UpdateHelper.shouldNotifyUpdate("4.9.1", "4.9.0", false));
         assertTrue(UpdateHelper.shouldNotifyUpdate("4.9.1", "4.9.1", true));
     }
+
+    @Test
+    public void updatePagesMustUseTheirExpectedHosts() throws Exception {
+        assertEquals("https://macindex.paizhang.info/#版本",
+                UpdateHelper.normalizeReleasePage(
+                        "https://macindex.paizhang.info/#版本",
+                        "macindex.paizhang.info", "/"));
+        assertEquals("https://github.com/paizhangliu/MacIndex/releases/tag/v4.9.0",
+                UpdateHelper.normalizeReleasePage(
+                        "https://github.com/paizhangliu/MacIndex/releases/tag/v4.9.0",
+                        "github.com", "/paizhangliu/MacIndex/releases"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updatePagesRejectUnexpectedHosts() throws Exception {
+        UpdateHelper.normalizeReleasePage(
+                "https://example.com/download",
+                "macindex.paizhang.info", "/");
+    }
 }
