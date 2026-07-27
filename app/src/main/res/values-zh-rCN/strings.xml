@@ -30,7 +30,7 @@
     <string name="setting_save_compare">记住比较页状态</string>
     <string name="setting_save_compare_description">记住上次比较的两个机型及左右顺序。</string>
     <string name="setting_auto_update">自动检查更新</string>
-    <string name="setting_auto_update_description">MacIndex 启动时静默检查 GitHub 上是否有新版本。</string>
+    <string name="setting_auto_update_description">启动 MacIndex 时静默检查是否有新版本。</string>
     <string name="setting_search_open_directly">自动打开唯一结果</string>
     <string name="setting_search_open_directly_description">搜索结果仅有一个机型时，自动将其打开。</string>
     <string name="search_searchBy">搜索方式</string>

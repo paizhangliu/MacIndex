@@ -31,7 +31,7 @@
     <string name="setting_save_compare">Remember Compare Page State</string>
     <string name="setting_save_compare_description">Remember the two machines selected for comparison and their left/right order.</string>
     <string name="setting_auto_update">Automatically Check for Updates</string>
-    <string name="setting_auto_update_description">Silently check GitHub for updates when MacIndex starts.</string>
+    <string name="setting_auto_update_description">Silently check for updates when MacIndex starts.</string>
     <string name="setting_search_open_directly">Open Single Search Result</string>
     <string name="setting_search_open_directly_description">Open the result automatically when a search returns exactly one machine.</string>
     <string name="search_searchBy">Search Options</string>
