@@ -38,7 +38,7 @@ public class NewAboutActivity extends AppCompatActivity {
 
             String versionString = getString(R.string.version_information_general,
                     BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-Debug" : ""))
-                    + "\n" + dateFormat.format(buildDate);
+                    + " · " + dateFormat.format(buildDate);
             ((TextView) findViewById(R.id.versionText)).setText(versionString);
 
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_opensource));
