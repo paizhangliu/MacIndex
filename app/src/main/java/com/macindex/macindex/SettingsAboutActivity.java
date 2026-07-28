@@ -61,7 +61,10 @@ public class SettingsAboutActivity extends AppCompatActivity {
 
         swSortComment.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSortComment", isChecked, this));
         swDeathSound.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isPlayDeathSound", isChecked, this));
-        swNavButtons.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isUseNavButtons", isChecked, this));
+        swNavButtons.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            PrefsHelper.editPrefs("isUseNavButtons", isChecked, this);
+            swQuickNav.setEnabled(isChecked && !swEveryMac.isChecked());
+        });
         swQuickNav.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isFixedNav", isChecked, this));
         swRandomAll.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isRandomAll", isChecked, this));
         swSaveMainUsage.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsHelper.editPrefs("isSaveMainUsage", isChecked, this));
@@ -84,7 +87,7 @@ public class SettingsAboutActivity extends AppCompatActivity {
             swSortComment.setEnabled(true);
             swDeathSound.setEnabled(true);
             swNavButtons.setEnabled(true);
-            swQuickNav.setEnabled(true);
+            swQuickNav.setEnabled(swNavButtons.isChecked());
             swRandomAll.setEnabled(true);
             swVolWarning.setEnabled(true);
             swSaveCompareUsage.setEnabled(true);

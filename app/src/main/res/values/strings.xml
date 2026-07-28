@@ -18,12 +18,12 @@
     <string name="setting_deathsound_deathsound_description">Alternate between the startup and death sounds on the Specifications page. When disabled, only the startup sound is played.</string>
     <string name="setting_high_vol_warning">High Volume Warning</string>
     <string name="setting_high_vol_warning_description">Warn when headphone volume is high while playing sounds on the Specifications page.</string>
-    <string name="setting_navbuttons">Enable Navigation Buttons</string>
-    <string name="setting_navbuttons_description">Enable buttons for navigating between adjacent machines on the Specifications page.</string>
-    <string name="setting_quicknav">Fixed Navigation Range</string>
-    <string name="setting_quicknav_description">Always limit previous/next navigation to the current category.</string>
-    <string name="setting_randomall">Limit Random Range</string>
-    <string name="setting_randomall_description">Pick a random machine only from the current group instead of all categories.</string>
+    <string name="setting_navbuttons">Enable Specifications Navigation</string>
+    <string name="setting_navbuttons_description">Show buttons for navigating to the previous and next machines on the Specifications page.</string>
+    <string name="setting_quicknav">Always Navigate Within Model Family</string>
+    <string name="setting_quicknav_description">Always navigate within the machine’s model family, regardless of whether you entered from search, bookmarks, or another group.</string>
+    <string name="setting_randomall">Randomize Within Current Main Page Range</string>
+    <string name="setting_randomall_description">Only pick from the 68K, PowerPC, Intel, Apple silicon, or all-machine group currently selected on the main page.</string>
     <string name="setting_save_main">Remember Main Page State</string>
     <string name="setting_save_main_description">Remember the last selected category filter and view.</string>
     <string name="setting_save_search">Remember Search Page State</string>
@@ -34,6 +34,11 @@
     <string name="setting_auto_update_description">Silently check for updates when MacIndex starts.</string>
     <string name="setting_search_open_directly">Open Single Search Result</string>
     <string name="setting_search_open_directly_description">Open the result automatically when a search returns exactly one machine.</string>
+    <string name="setting_section_general">General</string>
+    <string name="setting_section_browsing">Browsing</string>
+    <string name="setting_section_sound">Sound</string>
+    <string name="setting_section_data">Data &amp; State</string>
+    <string name="setting_section_advanced">Advanced</string>
     <string name="search_searchBy">Search Options</string>
     <string-array name="search_Filters">
         <item>All Categories</item>

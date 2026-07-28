@@ -17,12 +17,12 @@
     <string name="setting_deathsound_deathsound_description">在参数页交替播放开机音和宕机音；关闭后只播放开机音。</string>
     <string name="setting_high_vol_warning">高音量警告</string>
     <string name="setting_high_vol_warning_description">在参数页使用耳机播放声音时，启用高音量警告。</string>
-    <string name="setting_navbuttons">启用导航按钮</string>
-    <string name="setting_navbuttons_description">在参数页启用按钮，以便在相邻机型之间切换。</string>
-    <string name="setting_quicknav">固定导航范围</string>
-    <string name="setting_quicknav_description">始终将前后导航限制在当前分组内。</string>
-    <string name="setting_randomall">限制随机范围</string>
-    <string name="setting_randomall_description">只从当前分组中随机选择机型，而不是从所有分组中选择。</string>
+    <string name="setting_navbuttons">启用参数页导航</string>
+    <string name="setting_navbuttons_description">在参数页显示上一台和下一台按钮。</string>
+    <string name="setting_quicknav">始终按机型系列导航</string>
+    <string name="setting_quicknav_description">无论从搜索、收藏或其他分组进入，参数页的上一台和下一台始终在该机型所属系列内切换。</string>
+    <string name="setting_randomall">仅从当前主页范围随机</string>
+    <string name="setting_randomall_description">只从主页当前选择的 68K、PowerPC、Intel、Apple 芯片或全部机型范围内随机选择。</string>
     <string name="setting_save_main">记住主页状态</string>
     <string name="setting_save_main_description">记住上次选择的分组筛选和浏览方式。</string>
     <string name="setting_save_search">记住搜索页状态</string>
@@ -33,6 +33,11 @@
     <string name="setting_auto_update_description">启动 MacIndex 时静默检查是否有新版本。</string>
     <string name="setting_search_open_directly">自动打开唯一结果</string>
     <string name="setting_search_open_directly_description">搜索结果仅有一个机型时，自动将其打开。</string>
+    <string name="setting_section_general">常规</string>
+    <string name="setting_section_browsing">浏览</string>
+    <string name="setting_section_sound">声音</string>
+    <string name="setting_section_data">数据与状态</string>
+    <string name="setting_section_advanced">高级</string>
     <string name="search_searchBy">搜索方式</string>
     <string-array name="search_Filters">
         <item>所有分组</item>
