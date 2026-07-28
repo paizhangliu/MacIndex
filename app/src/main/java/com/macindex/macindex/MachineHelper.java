@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -27,6 +28,8 @@ import java.util.Locale;
  * Find by Config was removed since Ver. 4.5
  * Category Individual Cursor was removed since Ver. 4.5
  * Changed Cursor behavior since Ver. 4.5
+ * Individual getter and lazy cache removed since Ver. 4.9
+ * Picture decoupled from DB since Ver. 4.9
  */
 class MachineHelper {
 
@@ -123,6 +126,8 @@ class MachineHelper {
 
     private final String[] machineEMCIndex;
 
+    private final String[] machinePictureIndex;
+
     private final int[][] machineProcessorFormatIndex;
 
     private final int[][] machineGraphicsFormatIndex;
@@ -147,7 +152,8 @@ class MachineHelper {
         try (Cursor directoryCursor = database.query("machine_directory",
                 new String[]{"machine_id", "category_id", "database_id", "name", "sname",
                         "syear", "stype", "sprocessor", "smodel", "sident", "sgestalt",
-                        "sorder", "semc", "processor_format", "graphics_format"},
+                        "sorder", "semc", "picture_asset", "processor_format",
+                        "graphics_format"},
                 null, null, null, null, "machine_id")) {
             totalMachine = directoryCursor.getCount();
             if (totalMachine == 0) {
@@ -166,6 +172,7 @@ class MachineHelper {
             machineGestaltIndex = new String[totalMachine];
             machineOrderIndex = new String[totalMachine];
             machineEMCIndex = new String[totalMachine];
+            machinePictureIndex = new String[totalMachine];
             machineProcessorFormatIndex = new int[totalMachine][];
             machineGraphicsFormatIndex = new int[totalMachine][];
             int expectedMachineID = 0;
@@ -205,6 +212,8 @@ class MachineHelper {
                         directoryCursor.getColumnIndexOrThrow("sorder"));
                 machineEMCIndex[machineID] = directoryCursor.getString(
                         directoryCursor.getColumnIndexOrThrow("semc"));
+                machinePictureIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("picture_asset"));
                 machineProcessorFormatIndex[machineID] = parseFormatRanges(
                         directoryCursor.getString(
                                 directoryCursor.getColumnIndexOrThrow("processor_format")));
@@ -606,29 +615,20 @@ class MachineHelper {
     }
 
     public Bitmap getPicture(final int thisMachine) {
-        if (thisMachine < 0 || thisMachine >= totalMachine) {
-            throw new IllegalArgumentException("Machine ID is out of range: " + thisMachine);
-        }
-        for (int candidate = thisMachine; candidate >= 0; candidate--) {
-            final int[] position = getPosition(candidate);
-            final byte[] blob;
-            try (Cursor cursor = database.query(CATEGORIES_LIST[position[0]],
-                    new String[]{"pic"}, "id = ?", new String[]{String.valueOf(position[1])},
-                    null, null, null)) {
-                if (!cursor.moveToFirst()) {
-                    throw new IllegalStateException("Missing database row for machine " + candidate);
-                }
-                blob = cursor.getBlob(cursor.getColumnIndexOrThrow("pic"));
+        validateMachineID(thisMachine);
+        final String pictureAsset = machinePictureIndex[thisMachine];
+        try (InputStream inputStream = MainActivity.getRes().getAssets().open(
+                "machines/" + pictureAsset + ".webp")) {
+            final Bitmap picture = BitmapFactory.decodeStream(inputStream);
+            if (picture == null) {
+                throw new IllegalStateException(
+                        "Unable to decode image for machine " + thisMachine);
             }
-            if (blob != null) {
-                final Bitmap picture = BitmapFactory.decodeByteArray(blob, 0, blob.length);
-                if (picture == null) {
-                    throw new IllegalStateException("Unable to decode image for machine " + candidate);
-                }
-                return picture;
-            }
+            return picture;
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Unable to load image for machine " + thisMachine, e);
         }
-        return null;
     }
 
     // Should return "N" if EveryMac link is not available.

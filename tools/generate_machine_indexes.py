@@ -123,6 +123,8 @@ GRAPHICS_DETAIL = re.compile(
 
 GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 
+PICTURE_ID = re.compile(r"[a-z0-9_]+")
+
 DIRECTORY_VALUE_PATTERNS = {
     # The first compact Macs have genuine regional suffixes, such as M0001AP.
     "smodel": re.compile(r"(?:[AM]\d{4}|M0001[A-Z]{1,2})"),
@@ -236,11 +238,35 @@ def get_format_ranges(value, range_getter):
     return ";".join(ranges)
 
 
-def load_directory(connection):
+def load_picture_assets(database_path):
+    picture_directory = database_path.parent / "machines"
+    if not picture_directory.is_dir():
+        fail(f"Machine picture directory does not exist: {picture_directory}")
+    unexpected_files = [
+        picture.name
+        for picture in picture_directory.iterdir()
+        if picture.is_file() and picture.suffix.lower() != ".webp"
+    ]
+    if unexpected_files:
+        fail(f"Unexpected machine picture assets: {', '.join(unexpected_files)}")
+    picture_assets = {
+        picture.stem
+        for picture in picture_directory.glob("*.webp")
+    }
+    if not picture_assets:
+        fail("Machine picture assets are empty")
+    return picture_assets
+
+
+def load_directory(connection, picture_assets):
     directory = []
     machines = []
+    current_picture = None
+    used_picture_assets = set()
     for category_id, table_name in enumerate(CATEGORIES):
-        columns = ", ".join(("id",) + DIRECTORY_COLUMNS + FORMAT_SOURCE_COLUMNS)
+        columns = ", ".join(
+            ("id",) + DIRECTORY_COLUMNS + ("pic",) + FORMAT_SOURCE_COLUMNS
+        )
         rows = connection.execute(
             f'SELECT {columns} FROM "{table_name}" ORDER BY id'
         ).fetchall()
@@ -250,7 +276,23 @@ def load_directory(connection):
                 fail(f"Illegal database ID {database_id} in category {table_name}")
             machine_id = len(directory)
             directory_values = row[1:1 + len(DIRECTORY_COLUMNS)]
+            picture = row[1 + len(DIRECTORY_COLUMNS)]
             processor, graphics = row[-2:]
+            if picture is not None:
+                if PICTURE_ID.fullmatch(picture) is None:
+                    fail(
+                        f'Illegal picture ID "{picture}" for '
+                        f"{table_name}/{database_id}"
+                    )
+                if picture not in picture_assets:
+                    fail(
+                        f'Missing picture asset "{picture}" for '
+                        f"{table_name}/{database_id}"
+                    )
+                current_picture = picture
+                used_picture_assets.add(picture)
+            if current_picture is None:
+                fail(f"Missing picture for {table_name}/{database_id}")
             processor_format = get_format_ranges(
                 processor, get_processor_model_range
             )
@@ -260,7 +302,7 @@ def load_directory(connection):
             directory.append(
                 (machine_id, category_id, database_id)
                 + directory_values
-                + (processor_format, graphics_format)
+                + (current_picture, processor_format, graphics_format)
             )
             machine = {
                 "machine_id": machine_id,
@@ -271,6 +313,12 @@ def load_directory(connection):
             machines.append(machine)
     if not directory:
         fail("Machine directory is empty")
+    unused_picture_assets = picture_assets - used_picture_assets
+    if unused_picture_assets:
+        fail(
+            "Unused machine picture assets: "
+            + ", ".join(sorted(unused_picture_assets))
+        )
     return directory, machines
 
 
@@ -331,6 +379,7 @@ def write_indexes(connection, directory, cache):
                 sgestalt TEXT,
                 sorder TEXT,
                 semc TEXT,
+                picture_asset TEXT NOT NULL,
                 processor_format TEXT NOT NULL,
                 graphics_format TEXT NOT NULL,
                 UNIQUE (category_id, database_id)
@@ -363,8 +412,8 @@ def write_indexes(connection, directory, cache):
             INSERT INTO machine_directory (
                 machine_id, category_id, database_id, name, sname, syear, stype,
                 sprocessor, smodel, sident, sgestalt, sorder, semc,
-                processor_format, graphics_format
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                picture_asset, processor_format, graphics_format
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             directory,
         )
@@ -400,7 +449,7 @@ def verify_indexes(connection, directory, cache):
         """
         SELECT machine_id, category_id, database_id, name, sname, syear, stype,
                sprocessor, smodel, sident, sgestalt, sorder, semc,
-               processor_format, graphics_format
+               picture_asset, processor_format, graphics_format
         FROM machine_directory
         ORDER BY machine_id
         """
@@ -462,7 +511,8 @@ def main():
         connection = sqlite3.connect(database_path)
 
     try:
-        directory, machines = load_directory(connection)
+        picture_assets = load_picture_assets(database_path)
+        directory, machines = load_directory(connection, picture_assets)
         cache = build_main_cache(machines)
         if arguments.check:
             verify_indexes(connection, directory, cache)
