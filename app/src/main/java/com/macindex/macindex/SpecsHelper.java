@@ -5,12 +5,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -201,6 +205,29 @@ class SpecsHelper {
             }
             return true;
         });
+    }
+
+    CharSequence formatModels(final String thisInfo, final int[] modelRanges) {
+        if (thisInfo == null || modelRanges == null || modelRanges.length == 0) {
+            return thisInfo;
+        }
+        if (modelRanges.length % 2 != 0) {
+            throw new IllegalStateException("Illegal model format");
+        }
+        final SpannableString formattedInfo = new SpannableString(thisInfo);
+        int previousEnd = 0;
+        for (int i = 0; i < modelRanges.length; i += 2) {
+            final int rangeStart = modelRanges[i];
+            final int rangeEnd = modelRanges[i + 1];
+            if (rangeStart < previousEnd || rangeEnd <= rangeStart
+                    || rangeEnd > thisInfo.length()) {
+                throw new IllegalStateException("Illegal model range");
+            }
+            formattedInfo.setSpan(new StyleSpan(Typeface.BOLD), rangeStart, rangeEnd,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            previousEnd = rangeEnd;
+        }
+        return formattedInfo;
     }
 
     void setSupportColor(final TextView support, final String thisSupport) {

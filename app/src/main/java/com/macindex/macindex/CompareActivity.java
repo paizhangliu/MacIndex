@@ -356,8 +356,20 @@ public class CompareActivity extends AppCompatActivity {
             final TextView compareRight = row.findViewById(R.id.compareRight);
             final String leftInfo = leftSpecification[i];
             final String rightInfo = rightSpecification[i];
-            compareLeft.setText(leftInfo);
-            compareRight.setText(rightInfo);
+            if (labels[i] == R.string.processor) {
+                compareLeft.setText(specsHelperLeft.formatModels(leftInfo,
+                        helper.getProcessorModelRanges(leftID)));
+                compareRight.setText(specsHelperRight.formatModels(rightInfo,
+                        helper.getProcessorModelRanges(rightID)));
+            } else if (labels[i] == R.string.graphics) {
+                compareLeft.setText(specsHelperLeft.formatModels(leftInfo,
+                        helper.getGraphicsModelRanges(leftID)));
+                compareRight.setText(specsHelperRight.formatModels(rightInfo,
+                        helper.getGraphicsModelRanges(rightID)));
+            } else {
+                compareLeft.setText(leftInfo);
+                compareRight.setText(rightInfo);
+            }
             specsHelperLeft.initCompareCopy(compareLeft, leftName, leftInfo, rightName, rightInfo);
             specsHelperLeft.initCompareCopy(compareRight, leftName, leftInfo, rightName, rightInfo);
             if (i == labels.length - 1) {

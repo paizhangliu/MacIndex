@@ -251,7 +251,8 @@ public class SpecsActivity extends AppCompatActivity {
 
             type.setText(thisType);
             specsHelper.initCopy(type, thisType, "typeInfo");
-            processor.setText(thisProcessor);
+            processor.setText(specsHelper.formatModels(thisProcessor,
+                    MainActivity.getMachineHelper().getProcessorModelRanges(machineID)));
             specsHelper.initCopy(processor, thisProcessor, "processorInfo");
             maxram.setText(thisMaxram);
             specsHelper.initCopy(maxram, thisMaxram, "maxramInfo");
@@ -261,7 +262,8 @@ public class SpecsActivity extends AppCompatActivity {
             specsHelper.initCopy(model, thisModel, "modelInfo");
             id.setText(thisId);
             specsHelper.initCopy(id, thisId, "idInfo");
-            graphics.setText(thisGraphics);
+            graphics.setText(specsHelper.formatModels(thisGraphics,
+                    MainActivity.getMachineHelper().getGraphicsModelRanges(machineID)));
             specsHelper.initCopy(graphics, thisGraphics, "graphicsInfo");
             display.setText(thisDisplay);
             specsHelper.initCopy(display, thisDisplay, "displayInfo");
