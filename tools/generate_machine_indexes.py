@@ -47,13 +47,14 @@ FILTERS = {
             "mac_centris", "mac_server", "power_mac", "imac_normal", "emac", "xserve",
             "mac_mini", "nmac_pro", "imac_pro", "mac_studio", "powerbook_normal",
             "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air",
+            "macbook_neo",
         ),
         (
             "Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
             "Macintosh Performa", "Macintosh Centris", "Macintosh Server",
             "Power Macintosh", "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro",
             "iMac Pro", "Mac Studio", "Macintosh PowerBook", "Macintosh PowerBook Duo",
-            "iBook", "MacBook Pro", "MacBook", "MacBook Air",
+            "iBook", "MacBook Pro", "MacBook", "MacBook Air", "MacBook Neo",
         ),
     ),
     "processors": (
