@@ -45,15 +45,15 @@ FILTERS = {
         (
             "compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa",
             "mac_centris", "mac_server", "power_mac", "imac_normal", "emac", "xserve",
-            "mac_mini", "nmac_pro", "imac_pro", "powerbook_normal", "powerbook_duo",
-            "ibook", "macbook_pro", "macbook_normal", "macbook_air", "mac_studio",
+            "mac_mini", "nmac_pro", "imac_pro", "mac_studio", "powerbook_normal",
+            "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air",
         ),
         (
             "Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
             "Macintosh Performa", "Macintosh Centris", "Macintosh Server",
             "Power Macintosh", "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro",
-            "iMac Pro", "Macintosh PowerBook", "Macintosh PowerBook Duo", "iBook",
-            "MacBook Pro", "MacBook", "MacBook Air", "Mac Studio",
+            "iMac Pro", "Mac Studio", "Macintosh PowerBook", "Macintosh PowerBook Duo",
+            "iBook", "MacBook Pro", "MacBook", "MacBook Air",
         ),
     ),
     "processors": (
@@ -84,10 +84,43 @@ FILTERS = {
     ),
 }
 
+FILTER_SECTIONS = {
+    "names": ((0, "desktop"), (15, "laptop")),
+    "processors": (),
+    "years": (),
+}
+
 DIRECTORY_COLUMNS = (
     "name", "sname", "syear", "stype", "sprocessor", "smodel", "sident",
     "sgestalt", "sorder", "semc",
 )
+
+FORMAT_SOURCE_COLUMNS = ("processor", "graphics")
+
+PROCESSOR_SPEED = re.compile(r"\d+(?:\.\d+)?\s+(?:MHz|GHz)")
+
+PROCESSOR_MODEL_PREFIXES = (
+    "Motorola ", "PowerPC ", "Dual PowerPC ", "Intel Core ", "Intel Xeon ",
+    "Dual Intel Xeon ", "Quad Intel Xeon ", "Intel Pentium ", "Intel 486",
+    "Apple ", "Cyrix ", "AT&T ", "MOS Technology ",
+)
+
+APPLE_PROCESSOR_MODEL = re.compile(
+    r"Apple (?:A18 Pro|M[1-5](?: Pro| Max| Ultra)?|T[12])(?: \([^)]+\))?"
+)
+
+GRAPHICS_MODEL_PREFIXES = (
+    "ATI ", "AMD ", "Dual AMD ", "NVIDIA ", "Intel ", "Apple ",
+    "Chips and Technologies ", "IMS ", "Macintosh II Video Card",
+)
+
+GRAPHICS_DETAIL = re.compile(
+    r" (?:(?:up to )?\d+(?:\.\d+)?(?:–\d+(?:\.\d+)?)?"
+    r"(?: or \d+(?:\.\d+)?)? (?:KB|MB|GB)|Revision [A-Z]|"
+    r"unified memory architecture)"
+)
+
+GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 
 DIRECTORY_VALUE_PATTERNS = {
     # The first compact Macs have genuine regional suffixes, such as M0001AP.
@@ -117,11 +150,96 @@ def validate_directory_values(machine):
                 )
 
 
+def get_serialized_sections(filter_name):
+    sections = FILTER_SECTIONS[filter_name]
+    category_count = len(FILTERS[filter_name][1])
+    previous_position = -1
+    for position, section_name in sections:
+        if position <= previous_position or position < 0 or position >= category_count:
+            fail(f"Illegal section position for {filter_name}")
+        if re.fullmatch(r"[a-z0-9_]+", section_name) is None:
+            fail(f"Illegal section name for {filter_name}")
+        previous_position = position
+    return ";".join(f"{position}:{section_name}" for position, section_name in sections)
+
+
+def get_processor_model_range(line):
+    model_start = len("Optional ") if line.startswith("Optional ") else 0
+    quantity = re.match(r"\d+ - ", line[model_start:])
+    if quantity is not None:
+        model_start += quantity.end()
+    model_line = line[model_start:]
+    if not model_line.startswith(PROCESSOR_MODEL_PREFIXES):
+        return None
+
+    speed = PROCESSOR_SPEED.search(model_line)
+    if speed is not None:
+        model_prefix = model_line[:speed.start()]
+        if model_prefix.endswith((" at ", ", ")):
+            fail(f'Obsolete processor model separator in "{line}"')
+        model_end = len(model_prefix.rstrip())
+    elif model_line.startswith("Apple "):
+        apple_model = APPLE_PROCESSOR_MODEL.match(model_line)
+        if apple_model is None:
+            fail(f'Unknown Apple processor model "{line}"')
+        model_end = apple_model.end()
+    elif " FPU" in model_line:
+        model_end = model_line.index(" FPU") + len(" FPU")
+    elif model_line.startswith("MOS Technology "):
+        io_processor = re.match(r"MOS Technology \S+", model_line)
+        if io_processor is None:
+            fail(f'Unknown I/O processor model "{line}"')
+        model_end = io_processor.end()
+    else:
+        fail(f'Processor model has no detail boundary: "{line}"')
+
+    separator = model_line[model_end:]
+    if separator and (not separator.startswith(" ") or separator.startswith("  ")):
+        fail(f'Illegal processor model separator in "{line}"')
+    if separator.startswith((" at ", ", ", " and ")):
+        fail(f'Obsolete processor model separator in "{line}"')
+    return model_start, model_start + model_end
+
+
+def get_graphics_model_range(line):
+    if line.startswith("Optional "):
+        fail(f'Obsolete graphics qualifier in "{line}"')
+    model_line = line
+    if not model_line.startswith(GRAPHICS_MODEL_PREFIXES):
+        return None
+    detail = GRAPHICS_DETAIL.search(model_line)
+    if detail is not None:
+        model_end = detail.start()
+        model_prefix = model_line[:model_end]
+        if model_prefix.endswith((",", " and", " or", " at")):
+            fail(f'Obsolete graphics model separator in "{line}"')
+    elif model_line in GRAPHICS_MODEL_ONLY:
+        model_end = len(model_line)
+    else:
+        fail(f'Graphics model has no detail boundary: "{line}"')
+    return 0, model_end
+
+
+def get_format_ranges(value, range_getter):
+    if value is None:
+        return ""
+    ranges = []
+    line_start = 0
+    for line in value.split("\n"):
+        model_range = range_getter(line)
+        if model_range is not None:
+            ranges.append(
+                f"{line_start + model_range[0]}:{line_start + model_range[1]}"
+            )
+        line_start += len(line) + 1
+    return ";".join(ranges)
+
+
 def load_directory(connection):
     directory = []
     machines = []
     for category_id, table_name in enumerate(CATEGORIES):
-        columns = ", ".join(("id",) + DIRECTORY_COLUMNS)
+        columns = ", ".join(("id",) + DIRECTORY_COLUMNS + FORMAT_SOURCE_COLUMNS)
         rows = connection.execute(
             f'SELECT {columns} FROM "{table_name}" ORDER BY id'
         ).fetchall()
@@ -130,11 +248,23 @@ def load_directory(connection):
             if database_id != expected_database_id:
                 fail(f"Illegal database ID {database_id} in category {table_name}")
             machine_id = len(directory)
-            directory.append((machine_id, category_id, database_id) + row[1:])
+            directory_values = row[1:1 + len(DIRECTORY_COLUMNS)]
+            processor, graphics = row[-2:]
+            processor_format = get_format_ranges(
+                processor, get_processor_model_range
+            )
+            graphics_format = get_format_ranges(
+                graphics, get_graphics_model_range
+            )
+            directory.append(
+                (machine_id, category_id, database_id)
+                + directory_values
+                + (processor_format, graphics_format)
+            )
             machine = {
                 "machine_id": machine_id,
                 "category": table_name,
-                **dict(zip(DIRECTORY_COLUMNS, row[1:])),
+                **dict(zip(DIRECTORY_COLUMNS, directory_values)),
             }
             validate_directory_values(machine)
             machines.append(machine)
@@ -200,6 +330,8 @@ def write_indexes(connection, directory, cache):
                 sgestalt TEXT,
                 sorder TEXT,
                 semc TEXT,
+                processor_format TEXT NOT NULL,
+                graphics_format TEXT NOT NULL,
                 UNIQUE (category_id, database_id)
             )
             """
@@ -210,7 +342,8 @@ def write_indexes(connection, directory, cache):
                 filter TEXT PRIMARY KEY,
                 column_name TEXT NOT NULL,
                 keywords TEXT NOT NULL,
-                labels TEXT NOT NULL
+                labels TEXT NOT NULL,
+                sections TEXT NOT NULL
             )
             """
         )
@@ -228,18 +361,22 @@ def write_indexes(connection, directory, cache):
             """
             INSERT INTO machine_directory (
                 machine_id, category_id, database_id, name, sname, syear, stype,
-                sprocessor, smodel, sident, sgestalt, sorder, semc
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                sprocessor, smodel, sident, sgestalt, sorder, semc,
+                processor_format, graphics_format
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             directory,
         )
         connection.executemany(
             """
-            INSERT INTO main_filter (filter, column_name, keywords, labels)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO main_filter (filter, column_name, keywords, labels, sections)
+            VALUES (?, ?, ?, ?, ?)
             """,
             (
-                (filter_name, column_name, ",".join(keywords), "\n".join(labels))
+                (
+                    filter_name, column_name, ",".join(keywords), "\n".join(labels),
+                    get_serialized_sections(filter_name),
+                )
                 for filter_name, (column_name, keywords, labels) in FILTERS.items()
             ),
         )
@@ -261,7 +398,8 @@ def verify_indexes(connection, directory, cache):
     actual_directory = connection.execute(
         """
         SELECT machine_id, category_id, database_id, name, sname, syear, stype,
-               sprocessor, smodel, sident, sgestalt, sorder, semc
+               sprocessor, smodel, sident, sgestalt, sorder, semc,
+               processor_format, graphics_format
         FROM machine_directory
         ORDER BY machine_id
         """
@@ -277,6 +415,19 @@ def verify_indexes(connection, directory, cache):
     }
     if actual_filters != FILTERS:
         fail("Generated main filters are missing or outdated")
+
+    actual_sections = {
+        filter_name: sections
+        for filter_name, sections in connection.execute(
+            "SELECT filter, sections FROM main_filter"
+        )
+    }
+    expected_sections = {
+        filter_name: get_serialized_sections(filter_name)
+        for filter_name in FILTERS
+    }
+    if actual_sections != expected_sections:
+        fail("Generated main filter sections are missing or outdated")
 
     actual_cache = {
         (manufacturer, filter_name): positions

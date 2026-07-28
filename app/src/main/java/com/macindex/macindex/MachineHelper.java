@@ -123,7 +123,15 @@ class MachineHelper {
 
     private final String[] machineEMCIndex;
 
+    private final int[][] machineProcessorFormatIndex;
+
+    private final int[][] machineGraphicsFormatIndex;
+
     private final String[][][] mainFilters;
+
+    private final int[][] mainSectionPositions;
+
+    private final String[][] mainSectionNames;
 
     private final int[][][][] mainPositions;
 
@@ -139,7 +147,8 @@ class MachineHelper {
         try (Cursor directoryCursor = database.query("machine_directory",
                 new String[]{"machine_id", "category_id", "database_id", "name", "sname",
                         "syear", "stype", "sprocessor", "smodel", "sident", "sgestalt",
-                        "sorder", "semc"}, null, null, null, null, "machine_id")) {
+                        "sorder", "semc", "processor_format", "graphics_format"},
+                null, null, null, null, "machine_id")) {
             totalMachine = directoryCursor.getCount();
             if (totalMachine == 0) {
                 throw new IllegalStateException("Machine directory is empty");
@@ -157,6 +166,8 @@ class MachineHelper {
             machineGestaltIndex = new String[totalMachine];
             machineOrderIndex = new String[totalMachine];
             machineEMCIndex = new String[totalMachine];
+            machineProcessorFormatIndex = new int[totalMachine][];
+            machineGraphicsFormatIndex = new int[totalMachine][];
             int expectedMachineID = 0;
             while (directoryCursor.moveToNext()) {
                 final int machineID = directoryCursor.getInt(
@@ -194,6 +205,12 @@ class MachineHelper {
                         directoryCursor.getColumnIndexOrThrow("sorder"));
                 machineEMCIndex[machineID] = directoryCursor.getString(
                         directoryCursor.getColumnIndexOrThrow("semc"));
+                machineProcessorFormatIndex[machineID] = parseFormatRanges(
+                        directoryCursor.getString(
+                                directoryCursor.getColumnIndexOrThrow("processor_format")));
+                machineGraphicsFormatIndex[machineID] = parseFormatRanges(
+                        directoryCursor.getString(
+                                directoryCursor.getColumnIndexOrThrow("graphics_format")));
                 expectedMachineID++;
             }
         } catch (Exception e) {
@@ -201,8 +218,10 @@ class MachineHelper {
         }
 
         mainFilters = new String[3][][];
+        mainSectionPositions = new int[3][];
+        mainSectionNames = new String[3][];
         try (Cursor filterCursor = database.query("main_filter",
-                new String[]{"filter", "column_name", "keywords", "labels"},
+                new String[]{"filter", "column_name", "keywords", "labels", "sections"},
                 null, null, null, null, null)) {
             int filterCount = 0;
             while (filterCursor.moveToNext()) {
@@ -223,6 +242,32 @@ class MachineHelper {
                         {filterCursor.getString(
                                 filterCursor.getColumnIndexOrThrow("column_name"))},
                         keywords, labels};
+                final String rawSections = filterCursor.getString(
+                        filterCursor.getColumnIndexOrThrow("sections"));
+                if (rawSections.isEmpty()) {
+                    mainSectionPositions[filterID] = new int[0];
+                    mainSectionNames[filterID] = new String[0];
+                } else {
+                    final String[] sections = rawSections.split(";");
+                    mainSectionPositions[filterID] = new int[sections.length];
+                    mainSectionNames[filterID] = new String[sections.length];
+                    int previousPosition = -1;
+                    for (int i = 0; i < sections.length; i++) {
+                        final String[] thisSection = sections[i].split(":");
+                        if (thisSection.length != 2) {
+                            throw new IllegalStateException(
+                                    "Illegal main filter section " + thisFilter);
+                        }
+                        final int thisPosition = Integer.parseInt(thisSection[0]);
+                        if (thisPosition <= previousPosition || thisPosition >= keywords.length) {
+                            throw new IllegalStateException(
+                                    "Illegal main filter section position " + thisFilter);
+                        }
+                        mainSectionPositions[filterID][i] = thisPosition;
+                        mainSectionNames[filterID][i] = thisSection[1];
+                        previousPosition = thisPosition;
+                    }
+                }
                 filterCount++;
             }
             if (filterCount != 3) {
@@ -346,6 +391,30 @@ class MachineHelper {
         }
     }
 
+    private int[] parseFormatRanges(final String thisFormat) {
+        if (thisFormat == null || thisFormat.isEmpty()) {
+            return new int[0];
+        }
+        final String[] rawRanges = thisFormat.split(";");
+        final int[] formatRanges = new int[rawRanges.length * 2];
+        int previousEnd = 0;
+        for (int i = 0; i < rawRanges.length; i++) {
+            final String[] thisRange = rawRanges[i].split(":");
+            if (thisRange.length != 2) {
+                throw new IllegalStateException("Illegal model format " + thisFormat);
+            }
+            final int rangeStart = Integer.parseInt(thisRange[0]);
+            final int rangeEnd = Integer.parseInt(thisRange[1]);
+            if (rangeStart < previousEnd || rangeEnd <= rangeStart) {
+                throw new IllegalStateException("Illegal model range " + thisFormat);
+            }
+            formatRanges[i * 2] = rangeStart;
+            formatRanges[i * 2 + 1] = rangeEnd;
+            previousEnd = rangeEnd;
+        }
+        return formatRanges;
+    }
+
     // Convert Internal Database Category ID to MH Category ID
     private int convertToMHCategoryID(final String toConvert) {
         // Array out bound bug fix
@@ -362,6 +431,16 @@ class MachineHelper {
     public String getName(final int thisMachine) {
         validateMachineID(thisMachine);
         return checkApplicability(machineNameIndex[thisMachine]);
+    }
+
+    public int[] getProcessorModelRanges(final int thisMachine) {
+        validateMachineID(thisMachine);
+        return machineProcessorFormatIndex[thisMachine];
+    }
+
+    public int[] getGraphicsModelRanges(final int thisMachine) {
+        validateMachineID(thisMachine);
+        return machineGraphicsFormatIndex[thisMachine];
     }
 
     public String[] getSpecs(final int thisMachine) {
@@ -1097,6 +1176,14 @@ class MachineHelper {
     public String[][] getFilterString(final String thisFilter) {
         DebugHelper.log("MHGetFilter", "Get parameters " + thisFilter);
         return mainFilters[translateFilterID(thisFilter)];
+    }
+
+    public int[] getFilterSectionPositions(final String thisFilter) {
+        return mainSectionPositions[translateFilterID(thisFilter)];
+    }
+
+    public String[] getFilterSectionNames(final String thisFilter) {
+        return mainSectionNames[translateFilterID(thisFilter)];
     }
 
     // For search use. Return machine IDs. Adapted with category range.
