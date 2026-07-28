@@ -1,7 +1,5 @@
 package com.macindex.macindex;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -74,45 +72,19 @@ class SpecsIntentHelper {
         final Intent intent = new Intent(parentContext, SpecsActivity.class);
         intent.putExtra("machineID", thisMachineID);
 
-        ProgressDialog waitDialog = new ProgressDialog(parentContext);
         // Is fixed navigation?
         if (PrefsHelper.getBooleanPrefs("isFixedNav", parentContext)) {
-            waitDialog.setMessage(parentContext.getString(R.string.loading_fixed_nav));
-            waitDialog.setCancelable(false);
-            waitDialog.show();
-            new Thread() {
-                @Override
-                public void run() {
-                    final int[] newCategory = MainActivity.getMachineHelper()
-                            .getCategoryRangeIDs(thisMachineID);
-                    ((Activity) parentContext).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Activity parentActivity = (Activity) parentContext;
-                            if (parentActivity.isFinishing()
-                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                                    && parentActivity.isDestroyed())) {
-                                return;
-                            }
-                            try {
-                                waitDialog.dismiss();
-                                DebugHelper.log("sendIntent", "Fixed Navigation, Category IDs " + Arrays.toString(newCategory)
-                                        + ", thisMachineID " + thisMachineID);
-                                intent.putExtra("thisCategory", newCategory);
-                                parentContext.startActivity(intent);
-                            } catch (final Exception e) {
-                                ExceptionHelper.handleException(parentContext, e, null, null);
-                            }
-                        }
-                    });
-                }
-            }.start();
+            final int[] newCategory = MainActivity.getMachineHelper()
+                    .getCategoryRangeIDs(thisMachineID);
+            DebugHelper.log("sendIntent", "Fixed Navigation, Category IDs "
+                    + Arrays.toString(newCategory) + ", thisMachineID " + thisMachineID);
+            intent.putExtra("thisCategory", newCategory);
         } else {
             DebugHelper.log("sendIntent", "Normal Navigation, Category IDs " + Arrays.toString(thisCategory)
                     + ", thisMachineID " + thisMachineID);
             intent.putExtra("thisCategory", thisCategory);
-            parentContext.startActivity(intent);
         }
+        parentContext.startActivity(intent);
     }
 
     public static void refreshFavourites(final TextView[][] textViewGroup, final Context thisContext) {

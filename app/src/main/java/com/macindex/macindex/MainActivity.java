@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.w("MacIndex", "Database already initialized.");
                 }
 
-                initInterface(true);
+                initInterface();
 
                 // Deep Link Support, Activity Not Present
                 Uri deepLink = getIntent().getData();
@@ -196,17 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!validateOperation(this)) {
                     return;
                 }
-                if (savedInstanceState.getBoolean("loadComplete")) {
-                    // Restore the saved ID list
-                    final int loadPositionsCount = savedInstanceState.getInt("loadPositionsCount");
-                    loadPositions = new int[loadPositionsCount][];
-                    for (int i = 0; i < loadPositionsCount; i++) {
-                        loadPositions[i] = savedInstanceState.getIntArray("loadPositions" + i);
-                    }
-                    initInterface(false);
-                } else {
-                    initInterface(true);
-                }
+                initInterface();
 
                 // Finally, restore drawer.
                 if (savedInstanceState.getBoolean("drawerOpen")) {
@@ -256,18 +246,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Is still loading?
-        if (waitDialog != null && !waitDialog.isShowing() && machineHelper != null) {
-            // Save the currently received ID list
-            outState.putBoolean("loadComplete", true);
-            outState.putInt("loadPositionsCount", loadPositions.length);
-            for (int i = 0; i < loadPositions.length; i++) {
-                outState.putIntArray("loadPositions" + i, loadPositions[i]);
-            }
-        } else {
-            outState.putBoolean("loadComplete", false);
-        }
-
         // Is drawer opened?
         outState.putBoolean("drawerOpen", mDrawerLayout != null
                 && mDrawerLayout.isDrawerOpen(GravityCompat.START));
@@ -323,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
                 thisFilter = "names";
                 PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
                 PrefsHelper.editPrefs("lastMainFilter", "names", this);
-                initInterface(true);
+                initInterface();
             }
         } else {
             return super.onOptionsItemSelected(item);
@@ -424,31 +402,31 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.group0MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "all";
                 PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
-                initInterface(true);
+                initInterface();
             }));
             // Manufacturer 1: apple68k
             findViewById(R.id.group1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "apple68k";
                 PrefsHelper.editPrefs("lastMainManufacturer", "apple68k", this);
-                initInterface(true);
+                initInterface();
             }));
             // Manufacturer 2: appleppc
             findViewById(R.id.group2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "appleppc";
                 PrefsHelper.editPrefs("lastMainManufacturer", "appleppc", this);
-                initInterface(true);
+                initInterface();
             }));
             // Manufacturer 3: appleintel
             findViewById(R.id.group3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "appleintel";
                 PrefsHelper.editPrefs("lastMainManufacturer", "appleintel", this);
-                initInterface(true);
+                initInterface();
             }));
             // Manufacturer 4: applearm
             findViewById(R.id.group4MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisManufacturer = "applearm";
                 PrefsHelper.editPrefs("lastMainManufacturer", "applearm", this);
-                initInterface(true);
+                initInterface();
             }));
 
             // Filter Menu
@@ -456,19 +434,19 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.view1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "names";
                 PrefsHelper.editPrefs("lastMainFilter", "names", this);
-                initInterface(true);
+                initInterface();
             }));
             // Filter 2: processors
             findViewById(R.id.view2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "processors";
                 PrefsHelper.editPrefs("lastMainFilter", "processors", this);
-                initInterface(true);
+                initInterface();
             }));
             // Filter 3: years
             findViewById(R.id.view3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
                 thisFilter = "years";
                 PrefsHelper.editPrefs("lastMainFilter", "years", this);
-                initInterface(true);
+                initInterface();
             }));
 
             // Main Menu
@@ -653,7 +631,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initInterface(final boolean reloadPositions) {
+    private void initInterface() {
         try {
             // Set Activity title.
             setTitle(getString(translateTitleRes()));
@@ -665,9 +643,7 @@ public class MainActivity extends AppCompatActivity {
             // Get filter string and positions.
             final String[][] thisFilterString = machineHelper.getFilterString(thisFilter);
 
-            if (reloadPositions) {
-                loadPositions = machineHelper.getMainPositions(thisFilter, thisManufacturer);
-            }
+            loadPositions = machineHelper.getMainPositions(thisFilter, thisManufacturer);
 
             // Set up each category.
             categoryContainer.setLayoutTransition(null);

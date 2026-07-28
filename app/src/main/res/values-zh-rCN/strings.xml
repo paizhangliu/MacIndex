@@ -136,7 +136,6 @@
     <string name="first_one">已经是第一个机型</string>
     <string name="last_one">已经是最后一个机型</string>
     <string name="loading_category">正在加载数据库</string>
-    <string name="loading_fixed_nav">正在准备导航</string>
     <string name="loading_search">正在搜索</string>
     <string name="loading_comments">正在加载备注</string>
     <string name="loading_favourites">正在加载收藏</string>

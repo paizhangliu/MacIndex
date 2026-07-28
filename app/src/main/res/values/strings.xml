@@ -142,7 +142,6 @@
     <string name="first_one">Already the first machine</string>
     <string name="last_one">Already the last machine</string>
     <string name="loading_category">Loading Database</string>
-    <string name="loading_fixed_nav">Preparing Navigation</string>
     <string name="loading_search">Searching</string>
     <string name="loading_comments">Loading Comments</string>
     <string name="loading_favourites">Loading Bookmarks</string>

@@ -65,7 +65,7 @@ class MachineHelper {
             "macbook_arm", "mac_studio"};
 
     /*
-     * machine_directory and main_cache are generated from the tables above.
+     * machine_directory, main_filter and main_cache are generated from the tables above.
      * Run generateMachineIndexes after updating categories, filters, or database contents.
      */
 
@@ -97,9 +97,6 @@ class MachineHelper {
      */
 
     private final SQLiteDatabase database;
-
-    /* Machine ID starts from 0, ends total -1. */
-    private final int[] categoryIndividualCount;
 
     /* Directory index. */
     private final int[] machineCategoryIndex;
@@ -147,7 +144,7 @@ class MachineHelper {
             if (totalMachine == 0) {
                 throw new IllegalStateException("Machine directory is empty");
             }
-            categoryIndividualCount = new int[CATEGORIES_LIST.length];
+            final int[] categoryIndividualCount = new int[CATEGORIES_LIST.length];
             machineCategoryIndex = new int[totalMachine];
             machineDatabaseIndex = new int[totalMachine];
             machineNameIndex = new String[totalMachine];
@@ -311,21 +308,9 @@ class MachineHelper {
         return stopQuery || Thread.currentThread().isInterrupted();
     }
 
-    // Get the total count of categories
-    public int getCategoryTotalCount() {
-        return CATEGORIES_LIST.length;
-    }
-
     // Get total machines. For usage of random access.
     public int getMachineCount() {
         return totalMachine;
-    }
-
-
-
-    // Get total machines in a category.
-    public int getCategoryCount(final int thisCategory) {
-        return categoryIndividualCount[thisCategory];
     }
 
     // Get generated positions for the MainActivity.
@@ -335,8 +320,16 @@ class MachineHelper {
 
     // Get category range for fixed navigation
     public int[] getCategoryRangeIDs(final int thisMachine) {
-        return searchHelper("stype", getUndefined(thisMachine, "stype"),
-                "all", false, true);
+        validateMachineID(thisMachine);
+        final String thisCategory = machineTypeIndex[thisMachine];
+        final String[] categoryIDs = getFilterString("names")[1];
+        final int[][] categoryPositions = getMainPositions("names", "all");
+        for (int i = 0; i < categoryIDs.length; i++) {
+            if (categoryIDs[i].equals(thisCategory)) {
+                return categoryPositions[i];
+            }
+        }
+        throw new IllegalStateException("Unable to find category " + thisCategory);
     }
 
 
@@ -387,171 +380,6 @@ class MachineHelper {
         return tempResult;
     }
 
-    public String getProcessor(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"processor"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("processor"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getMaxRam(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"ram"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("ram"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getYear(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"year"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("year"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getModel(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"model"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("model"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getType(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"rom"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("rom"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getMid(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"ident"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("ident"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getGraphics(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"graphics"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("graphics"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getExpansion(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"expansion"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("expansion"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getStorage(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"storage"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("storage"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getGestalt(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"gestalt"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("gestalt"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getOrder(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"\"order\""}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("order"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getEMC(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"emc"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("emc"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getSoftware(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"software"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("software"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getDesign(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"design"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("design"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
-    public String getSupport(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"support"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("support"));
-        tempCursor.close();
-        return checkApplicability(tempResult);
-    }
-
     public String getSYear(final int thisMachine) {
         validateMachineID(thisMachine);
         return checkApplicability(machineYearIndex[thisMachine]);
@@ -564,21 +392,6 @@ class MachineHelper {
         } else {
             return thisSpec;
         }
-    }
-
-    private String getUndefined(final int thisMachine, final String thisColumn) {
-        if (isDirectoryColumn(thisColumn)) {
-            validateMachineID(thisMachine);
-            return getDirectoryValue(thisMachine, thisColumn);
-        }
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{thisColumn}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow(thisColumn));
-        tempCursor.close();
-        return tempResult;
     }
 
     private boolean isDirectoryColumn(final String thisColumn) {
@@ -753,13 +566,8 @@ class MachineHelper {
 
     // Refer to SpecsActivity for a documentation.
     public int getProcessorTypeImage(final int thisMachine, final Context thisContext) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"sprocessor"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("sprocessor"));
-        tempCursor.close();
+        validateMachineID(thisMachine);
+        final String thisProcessorImage = machineProcessorIndex[thisMachine];
         DebugHelper.log("MHGetProcessorImageType", "Get ID " + thisProcessorImage);
         // NullSafe
         if (thisProcessorImage == null) {
@@ -1370,32 +1178,17 @@ class MachineHelper {
     }
 
     // Get year parameter for sorting. Returns an integer in YYYYMM format.
-    private int getYearForSorting(final String columnName, final String searchInput, final int thisMachine) {
+    private int getYearForSorting(final int thisMachine) {
         try {
             String[] rawYear = getSYear(thisMachine).split(", ");
             // Terminate immediately.
             if (isQueryCancelled()) {
                 throw new IllegalAccessException();
             }
-            int targetIndex = 0;
-            if (columnName.equals("syear") && rawYear.length > 1) {
-                for (int i = 0; i < rawYear.length; i++) {
-                    String[] rawYearSplited = rawYear[i].split("\\.");
-                    if (rawYearSplited.length != 2) {
-                        Log.e("getYearForSorting", "Error, columnName " + columnName
-                                + ", searchInput " + searchInput + ", Machine Name " + getName(thisMachine) + ", Raw Year " + getSYear(thisMachine));
-                        throw new IllegalArgumentException();
-                    }
-                    if (rawYearSplited[0].equals(searchInput)) {
-                        targetIndex = i;
-                        break;
-                    }
-                }
-            }
-            String[] targetYearSplited = rawYear[targetIndex].split("\\.");
+            String[] targetYearSplited = rawYear[0].split("\\.");
             if (targetYearSplited.length != 2) {
-                Log.e("getYearForSorting", "Error, columnName " + columnName
-                        + ", searchInput " + searchInput + ", Machine Name " + getName(thisMachine) + ", Raw Year " + getSYear(thisMachine));
+                Log.e("getYearForSorting", "Error, Machine Name " + getName(thisMachine)
+                        + ", Raw Year " + getSYear(thisMachine));
                 throw new IllegalArgumentException();
             }
             int targetYearSplitedA = Integer.parseInt(targetYearSplited[0]);
@@ -1422,7 +1215,7 @@ class MachineHelper {
                     throw new IllegalAccessException();
                 }
                 // Keep the original position in the low bits for stable sorting.
-                sortValues[i] = ((long) getYearForSorting("", "", input[i]) << 32)
+                sortValues[i] = ((long) getYearForSorting(input[i]) << 32)
                         | (i & 0xffffffffL);
             }
             Arrays.sort(sortValues);
