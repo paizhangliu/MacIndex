@@ -70,6 +70,8 @@
     <string name="menu_view3">推出年份</string>
     <string name="menu_group">分组筛选</string>
     <string name="menu_group0">所有分组</string>
+    <string name="main_section_desktop">台式机</string>
+    <string name="main_section_laptop">笔记本电脑</string>
     <string name="menu">主菜单</string>
     <string name="submenu_main_reset">重置筛选器和浏览方式</string>
     <string name="submenu_specs_favourite">添加或移除收藏</string>

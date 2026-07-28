@@ -642,6 +642,11 @@ public class MainActivity extends AppCompatActivity {
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
             // Get filter string and positions.
             final String[][] thisFilterString = machineHelper.getFilterString(thisFilter);
+            final int[] sectionPositions = machineHelper.getFilterSectionPositions(thisFilter);
+            final String[] sectionNames = machineHelper.getFilterSectionNames(thisFilter);
+            if (sectionPositions.length != sectionNames.length) {
+                throw new IllegalStateException("Incomplete main sections");
+            }
 
             loadPositions = machineHelper.getMainPositions(thisFilter, thisManufacturer);
 
@@ -650,8 +655,25 @@ public class MainActivity extends AppCompatActivity {
             try {
                 categoryContainer.removeAllViews();
                 machineLoadedCount = new TextView[loadPositions.length][];
+                int currentSection = -1;
+                int displayedSection = -1;
                 for (int i = 0; i < loadPositions.length; i++) {
+                    while (currentSection + 1 < sectionPositions.length
+                            && sectionPositions[currentSection + 1] <= i) {
+                        currentSection++;
+                    }
                     if (loadPositions[i].length != 0) {
+                        if (currentSection != -1 && currentSection != displayedSection) {
+                            final View sectionChunk = getLayoutInflater()
+                                    .inflate(R.layout.chunk_main_section,
+                                            categoryContainer, false);
+                            final TextView sectionName = sectionChunk.findViewById(
+                                    R.id.mainSection);
+                            sectionName.setText(translateSectionRes(
+                                    sectionNames[currentSection]));
+                            categoryContainer.addView(sectionChunk);
+                            displayedSection = currentSection;
+                        }
                         final int categoryID = i;
                         final int[] thisCategoryPositions = loadPositions[i];
                         final View categoryChunk = getLayoutInflater()
@@ -795,6 +817,17 @@ public class MainActivity extends AppCompatActivity {
                         "translateTitleRes",
                         "Not a Valid Manufacturer Selection, This should NOT happen!!");
                 return R.string.menu_group0;
+        }
+    }
+
+    private int translateSectionRes(final String thisSection) {
+        switch (thisSection) {
+            case "desktop":
+                return R.string.main_section_desktop;
+            case "laptop":
+                return R.string.main_section_laptop;
+            default:
+                throw new IllegalArgumentException("Illegal main section " + thisSection);
         }
     }
 

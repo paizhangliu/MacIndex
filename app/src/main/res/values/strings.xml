@@ -76,6 +76,8 @@
     <string name="menu_group2" translatable="false">PowerPC Macintosh</string>
     <string name="menu_group3" translatable="false">Intel Macintosh</string>
     <string name="menu_group4" translatable="false">Apple Silicon Macintosh</string>
+    <string name="main_section_desktop">Desktop</string>
+    <string name="main_section_laptop">Laptop</string>
     <string name="menu">Main Menu</string>
     <string name="submenu_main_reset">Reset Filter and View</string>
     <string name="submenu_specs_favourite">Add/Remove Bookmark</string>
