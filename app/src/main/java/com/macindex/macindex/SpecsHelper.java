@@ -411,8 +411,9 @@ class SpecsHelper {
     private String[] getSpecificationLabels(final int entryCount) {
         final int[] labelIDs = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
                 R.string.order, R.string.emc, R.string.processor, R.string.graphics,
-                R.string.type, R.string.maxram, R.string.software, R.string.storage,
-                R.string.bus_expansion, R.string.design, R.string.support, R.string.comment};
+                R.string.display, R.string.maxram, R.string.type, R.string.software,
+                R.string.storage, R.string.features, R.string.expansion, R.string.design,
+                R.string.support, R.string.comment};
         if (entryCount <= 0 || entryCount > labelIDs.length) {
             throw new IllegalArgumentException();
         }

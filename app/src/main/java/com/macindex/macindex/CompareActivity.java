@@ -341,11 +341,11 @@ public class CompareActivity extends AppCompatActivity {
 
         final int[] labels = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
                 R.string.order, R.string.emc, R.string.processor, R.string.graphics,
-                R.string.maxram, R.string.type, R.string.software, R.string.storage,
-                R.string.bus_expansion, R.string.design, R.string.support};
+                R.string.display, R.string.maxram, R.string.type, R.string.software,
+                R.string.storage, R.string.features, R.string.expansion, R.string.design,
+                R.string.support};
         leftSpecification = helper.getSpecs(leftID);
         rightSpecification = helper.getSpecs(rightID);
-        final int[] displayEntries = {0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14};
 
         final LinearLayout specsContainer = findViewById(R.id.compareSpecsContainer);
         specsContainer.removeAllViews();
@@ -354,13 +354,13 @@ public class CompareActivity extends AppCompatActivity {
             ((TextView) row.findViewById(R.id.compareTitle)).setText(labels[i]);
             final TextView compareLeft = row.findViewById(R.id.compareLeft);
             final TextView compareRight = row.findViewById(R.id.compareRight);
-            final String leftInfo = leftSpecification[displayEntries[i]];
-            final String rightInfo = rightSpecification[displayEntries[i]];
+            final String leftInfo = leftSpecification[i];
+            final String rightInfo = rightSpecification[i];
             compareLeft.setText(leftInfo);
             compareRight.setText(rightInfo);
             specsHelperLeft.initCompareCopy(compareLeft, leftName, leftInfo, rightName, rightInfo);
             specsHelperLeft.initCompareCopy(compareRight, leftName, leftInfo, rightName, rightInfo);
-            if (displayEntries[i] == 14) {
+            if (i == labels.length - 1) {
                 specsHelperLeft.setSupportColor(compareLeft, leftInfo);
                 specsHelperLeft.setSupportColor(compareRight, rightInfo);
             }

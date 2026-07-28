@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 import sqlite3
 from pathlib import Path
 
@@ -13,7 +14,8 @@ CATEGORIES = (
     "mac_server_ppc", "xserve_ppc", "powerbook_ppc", "ibook", "mac_pro_intel",
     "imac_intel", "imac_pro_intel", "mac_mini_intel", "xserve_intel",
     "macbook_pro_intel", "macbook_intel", "macbook_air_intel", "mac_pro_arm",
-    "imac_arm", "mac_mini_arm", "macbook_pro_arm", "macbook_air_arm", "mac_studio",
+    "imac_arm", "mac_mini_arm", "macbook_pro_arm", "macbook_air_arm", "macbook_arm",
+    "mac_studio",
 )
 
 MANUFACTURERS = {
@@ -33,7 +35,7 @@ MANUFACTURERS = {
     ),
     "applearm": (
         "mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm",
-        "macbook_air_arm", "mac_studio",
+        "macbook_air_arm", "macbook_arm", "mac_studio",
     ),
 }
 
@@ -43,8 +45,8 @@ FILTERS = {
         (
             "compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa",
             "mac_centris", "mac_server", "power_mac", "imac_normal", "emac", "xserve",
-            "mac_mini", "nmac_pro", "imac_pro", "mac_studio", "powerbook_normal",
-            "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air",
+            "mac_mini", "nmac_pro", "imac_pro", "powerbook_normal", "powerbook_duo",
+            "ibook", "macbook_pro", "macbook_normal", "macbook_air", "mac_studio",
         ),
     ),
     "processors": (
@@ -53,12 +55,13 @@ FILTERS = {
             "68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
             "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb",
             "haswell", "broadwell", "skylake", "kabylake", "coffeelake", "amberlake",
-            "cascadelake", "cometlake", "icelake", "tigerlake", "a12", "m1",
+            "cascadelake", "cometlake", "icelake", "tigerlake", "a12", "a18", "m1",
+            "m2", "m3", "m4", "m5",
         ),
     ),
     "years": (
         "syear",
-        tuple(str(year) for year in range(1984, 2023)),
+        tuple(str(year) for year in range(1984, 2027)),
     ),
 }
 
@@ -67,9 +70,32 @@ DIRECTORY_COLUMNS = (
     "sgestalt", "sorder", "semc",
 )
 
+DIRECTORY_VALUE_PATTERNS = {
+    # The first compact Macs have genuine regional suffixes, such as M0001AP.
+    "smodel": re.compile(r"(?:[AM]\d{4}|M0001[A-Z]{1,2})"),
+    # The original iMac uses the genuine identifier iMac,1.
+    "sident": re.compile(r"[A-Za-z][A-Za-z0-9]*\d*,\d+"),
+    "sgestalt": re.compile(r"\d+"),
+    # Apple currently uses both four- and five-character parts before xx.
+    "sorder": re.compile(r"[A-Z0-9]{4,5}(?:xx/[A-Z])?"),
+}
+
 
 def fail(message):
     raise RuntimeError(message)
+
+
+def validate_directory_values(machine):
+    for column_name, pattern in DIRECTORY_VALUE_PATTERNS.items():
+        raw_value = machine[column_name]
+        if raw_value is None:
+            continue
+        for value in raw_value.split("~"):
+            if pattern.fullmatch(value) is None:
+                fail(
+                    f'Illegal {column_name} "{value}" for '
+                    f'{machine["category"]}/{machine["database_id"]}'
+                )
 
 
 def load_directory(connection):
@@ -86,11 +112,13 @@ def load_directory(connection):
                 fail(f"Illegal database ID {database_id} in category {table_name}")
             machine_id = len(directory)
             directory.append((machine_id, category_id, database_id) + row[1:])
-            machines.append({
+            machine = {
                 "machine_id": machine_id,
                 "category": table_name,
                 **dict(zip(DIRECTORY_COLUMNS, row[1:])),
-            })
+            }
+            validate_directory_values(machine)
+            machines.append(machine)
     if not directory:
         fail("Machine directory is empty")
     return directory, machines

@@ -105,12 +105,14 @@
     <string name="order">Part Number</string>
     <string name="emc">EMC Number</string>
     <string name="processor">Processor</string>
-    <string name="graphics">Graphics &amp; Display</string>
+    <string name="graphics">Graphics</string>
+    <string name="display">Display</string>
     <string name="type">ROM Information</string>
     <string name="maxram">RAM Information</string>
     <string name="software">Software Support</string>
     <string name="storage">Storage</string>
-    <string name="bus_expansion">Features &amp; Expansion</string>
+    <string name="features">Features</string>
+    <string name="expansion">Expansion</string>
     <string name="design">Design</string>
     <string name="support">Support Status</string>
     <string name="comment">Comment</string>
@@ -148,7 +150,7 @@
     <string name="comments_not_available_tips">No comments have been saved yet</string>
     <string name="comments_delete">Select the comments to delete. This cannot be undone.</string>
     <string name="comments_clear_warning">All comments will be deleted. This cannot be undone.</string>
-    <string name="favourites_no_folder_tips">No bookmark folders have been created yet.</string>
+    <string name="favourites_no_folder_tips">No bookmark folders have been created yet</string>
     <string name="favourites_tips">Select one or more folders. You can manage folders on the Bookmarks page.</string>
     <string name="favourites_delete">Select the folders to delete. This cannot be undone.</string>
     <string name="favourites_rename">Select the folder to rename.</string>

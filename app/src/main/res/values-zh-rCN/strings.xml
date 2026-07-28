@@ -99,12 +99,14 @@
     <string name="order">部件号</string>
     <string name="emc">EMC 号</string>
     <string name="processor">处理器</string>
-    <string name="graphics">显卡与显示</string>
+    <string name="graphics">显卡</string>
+    <string name="display">显示</string>
     <string name="type">固件信息</string>
     <string name="maxram">内存信息</string>
     <string name="software">软件支持</string>
     <string name="storage">存储</string>
-    <string name="bus_expansion">功能与扩展</string>
+    <string name="features">功能</string>
+    <string name="expansion">扩展</string>
     <string name="design">设计</string>
     <string name="support">售后状态</string>
     <string name="comment">备注</string>

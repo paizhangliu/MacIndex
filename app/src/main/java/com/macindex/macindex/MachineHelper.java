@@ -61,7 +61,8 @@ class MachineHelper {
             "powerbook_duo_ppc", "power_mac", "imac_ppc", "emac", "mac_mini_ppc", "mac_server_ppc",
             "xserve_ppc", "powerbook_ppc", "ibook", "mac_pro_intel", "imac_intel", "imac_pro_intel",
             "mac_mini_intel", "xserve_intel", "macbook_pro_intel", "macbook_intel", "macbook_air_intel",
-            "mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm", "macbook_air_arm", "mac_studio"};
+            "mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm", "macbook_air_arm",
+            "macbook_arm", "mac_studio"};
 
     /*
      * machine_directory and main_cache are generated from the tables above.
@@ -334,8 +335,8 @@ class MachineHelper {
     public String[] getSpecs(final int thisMachine) {
         int[] position = getPosition(thisMachine);
         final String[] columns = {"year", "model", "ident", "gestalt", "\"order\"", "emc",
-                "processor", "graphics", "rom", "ram", "software", "storage", "expansion",
-                "design", "support"};
+                "processor", "graphics", "display", "ram", "rom", "software", "storage",
+                "features", "expansion", "design", "support"};
         Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
                 columns, "id = " + position[1], null, null, null, null);
         tempCursor.moveToFirst();
@@ -761,7 +762,12 @@ class MachineHelper {
             case "tigerlake":
                 return R.drawable.intel;
             case "A12Z":
+            case "a18":
             case "m1":
+            case "m2":
+            case "m3":
+            case "m4":
+            case "m5":
                 return R.drawable.applelogo;
             default:
                 ExceptionHelper.handleException(thisContext, null,
@@ -1222,7 +1228,7 @@ class MachineHelper {
         final String[] appleintel = {"mac_pro_intel", "imac_intel", "imac_pro_intel",
                 "mac_mini_intel", "xserve_intel", "macbook_pro_intel", "macbook_intel", "macbook_air_intel"};
         final String[] applearm = {"mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm",
-                "macbook_air_arm", "mac_studio"};
+                "macbook_air_arm", "macbook_arm", "mac_studio"};
         switch (thisManufacturer) {
             case "all":
                 return CATEGORIES_LIST;
@@ -1245,32 +1251,35 @@ class MachineHelper {
         final String[][] names = {{"stype"},
                 {"compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa", "mac_centris",
                  "mac_server", "power_mac", "imac_normal", "emac", "xserve", "mac_mini", "nmac_pro", "imac_pro",
-                 "mac_studio", "powerbook_normal", "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air"},
+                 "powerbook_normal", "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air", "mac_studio"},
                 {"Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
                  "Macintosh Performa", "Macintosh Centris", "Macintosh Server", "Power Macintosh",
-                 "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro", "iMac Pro", "Mac Studio", "Macintosh PowerBook",
-                 "Macintosh PowerBook Duo", "iBook", "MacBook Pro", "MacBook", "MacBook Air"}};
+                 "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro", "iMac Pro", "Macintosh PowerBook",
+                 "Macintosh PowerBook Duo", "iBook", "MacBook Pro", "MacBook", "MacBook Air", "Mac Studio"}};
         final String[][] processors = {{"sprocessor"},
                 {"68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
                  "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb", "haswell",
                  "broadwell", "skylake", "kabylake", "coffeelake", "amberlake", "cascadelake", "cometlake", "icelake",
-                 "tigerlake", "a12", "m1"},
+                 "tigerlake", "a12", "m1", "m2", "m3", "m4", "m5", "a18"},
                 {"Motorola 68000", "Motorola 68020", "Motorola 68030", "Motorola 68040",
                  "PowerPC 601", "PowerPC 603", "PowerPC 604", "PowerPC G3", "PowerPC G4",
                  "PowerPC G5", "Intel NetBurst", "Intel P6 (Yonah)", "Intel Core", "Intel Penryn",
                  "Intel Nehalem", "Intel Westmere", "Intel Sandy Bridge", "Intel Ivy Bridge",
                  "Intel Haswell", "Intel Broadwell", "Intel Skylake", "Intel Kaby Lake",
                  "Intel Coffee Lake", "Intel Amber Lake", "Intel Cascade Lake", "Intel Comet Lake",
-                 "Intel Ice Lake", "Intel Tiger Lake", "Apple A12Z", "Apple M1"}};
+                 "Intel Ice Lake", "Intel Tiger Lake", "Apple A12Z", "Apple M1",
+                 "Apple M2", "Apple M3", "Apple M4", "Apple M5", "Apple A18 Pro"}};
         final String[][] years = {{"syear"},
                 {"1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993",
                  "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003",
                  "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013",
-                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"},
+                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022",
+                 "2023", "2024", "2025", "2026"},
                 {"1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993",
                  "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003",
                  "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013",
-                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"}};
+                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022",
+                 "2023", "2024", "2025", "2026"}};
         DebugHelper.log("MHGetFilter", "Get parameters " + thisFilter);
         switch (thisFilter) {
             case "names":

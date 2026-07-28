@@ -59,6 +59,10 @@ public class SpecsActivity extends AppCompatActivity {
 
     private String thisGraphics = null;
 
+    private String thisDisplay = null;
+
+    private String thisFeatures = null;
+
     private String thisExpansion = null;
 
     private String thisStorage = null;
@@ -211,13 +215,15 @@ public class SpecsActivity extends AppCompatActivity {
         thisEmc = thisSpecs[5];
         thisProcessor = thisSpecs[6];
         thisGraphics = thisSpecs[7];
-        thisType = thisSpecs[8];
+        thisDisplay = thisSpecs[8];
         thisMaxram = thisSpecs[9];
-        thisSoftware = thisSpecs[10];
-        thisStorage = thisSpecs[11];
-        thisExpansion = thisSpecs[12];
-        thisDesign = thisSpecs[13];
-        thisSupport = thisSpecs[14];
+        thisType = thisSpecs[10];
+        thisSoftware = thisSpecs[11];
+        thisStorage = thisSpecs[12];
+        thisFeatures = thisSpecs[13];
+        thisExpansion = thisSpecs[14];
+        thisDesign = thisSpecs[15];
+        thisSupport = thisSpecs[16];
     }
 
     private void initSpecs() {
@@ -229,6 +235,8 @@ public class SpecsActivity extends AppCompatActivity {
             final TextView model = findViewById(R.id.modelText);
             final TextView id = findViewById(R.id.idText);
             final TextView graphics = findViewById(R.id.graphicsText);
+            final TextView display = findViewById(R.id.displayText);
+            final TextView features = findViewById(R.id.featuresText);
             final TextView expansion = findViewById(R.id.expansionText);
             final TextView storage = findViewById(R.id.storageText);
             final TextView order = findViewById(R.id.orderText);
@@ -255,6 +263,10 @@ public class SpecsActivity extends AppCompatActivity {
             specsHelper.initCopy(id, thisId, "idInfo");
             graphics.setText(thisGraphics);
             specsHelper.initCopy(graphics, thisGraphics, "graphicsInfo");
+            display.setText(thisDisplay);
+            specsHelper.initCopy(display, thisDisplay, "displayInfo");
+            features.setText(thisFeatures);
+            specsHelper.initCopy(features, thisFeatures, "featuresInfo");
             expansion.setText(thisExpansion);
             specsHelper.initCopy(expansion, thisExpansion, "expansionInfo");
             storage.setText(thisStorage);
@@ -848,8 +860,8 @@ public class SpecsActivity extends AppCompatActivity {
 
     private String[] getSpecification() {
         return new String[]{thisYear, thisModel, thisId, thisGestalt, thisOrder, thisEmc,
-                thisProcessor, thisGraphics, thisType, thisMaxram, thisSoftware, thisStorage,
-                thisExpansion, thisDesign, thisSupport, thisComment};
+                thisProcessor, thisGraphics, thisDisplay, thisMaxram, thisType, thisSoftware,
+                thisStorage, thisFeatures, thisExpansion, thisDesign, thisSupport, thisComment};
     }
 
     private void navPrev() {

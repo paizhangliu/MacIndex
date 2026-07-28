@@ -463,16 +463,16 @@ public class SearchActivity extends AppCompatActivity {
 
                         // Search by translated columns
                         for (int i = 0; i < searchColumns.length; i++) {
-                            // For order number: clip country code.
+                            // For order number: use the part before the regional suffix.
                             if (searchColumns[i].equals("sorder")) {
-                                if (searchInput.length() < 5) {
+                                if (searchInput.length() < 4) {
                                     // omit this
                                     subPositions[i] = new int[0];
                                     continue;
                                 }
                                 // Overwrite input
-                                rawSearchInput = searchInput.substring(0, 5);
-                                rawSearchInput = rawSearchInput.concat("LL/");
+                                rawSearchInput = searchInput.substring(0,
+                                        Math.min(5, searchInput.length()));
                                 // Overwrite match param.
                                 rawMatchParam = false;
                             } else {
@@ -481,6 +481,14 @@ public class SearchActivity extends AppCompatActivity {
                             }
                             subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
                                     manufacturerForRequest, rawMatchParam, true);
+                            // A few current part numbers only have four characters before xx.
+                            if (searchColumns[i].equals("sorder")
+                                    && subPositions[i].length == 0
+                                    && rawSearchInput.length() > 4) {
+                                subPositions[i] = MainActivity.getMachineHelper().searchHelper(
+                                        searchColumns[i], rawSearchInput.substring(0, 4),
+                                        manufacturerForRequest, false, true);
+                            }
                             resultCount += subPositions[i].length;
                         }
 
