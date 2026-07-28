@@ -12,7 +12,7 @@ android {
         applicationId 'com.macindex.macindex'
         minSdk 23
         targetSdk 36
-        versionCode 28
+        versionCode 29
         versionName '4.9.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField 'long', 'TIMESTAMP', System.currentTimeMillis() + 'L'
