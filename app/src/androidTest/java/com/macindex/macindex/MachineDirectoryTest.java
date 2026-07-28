@@ -116,8 +116,9 @@ public class MachineDirectoryTest {
                                              final boolean isExactMatch) {
         final List<String> expectedNames = new ArrayList<>();
         try (Cursor tablesCursor = database.query("sqlite_master", new String[]{"name"},
-                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?)",
-                new String[]{"table", "android_%", "machine_directory", "main_cache"},
+                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?, ?)",
+                new String[]{"table", "android_%", "machine_directory", "main_filter",
+                        "main_cache"},
                 null, null, null)) {
             while (tablesCursor.moveToNext()) {
                 final String tableName = tablesCursor.getString(0);

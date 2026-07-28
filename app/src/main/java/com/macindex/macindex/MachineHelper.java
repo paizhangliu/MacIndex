@@ -126,6 +126,8 @@ class MachineHelper {
 
     private final String[] machineEMCIndex;
 
+    private final String[][][] mainFilters;
+
     private final int[][][][] mainPositions;
 
     /* starts from 0, actual total -1. */
@@ -199,6 +201,43 @@ class MachineHelper {
             }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load the machine directory", e);
+        }
+
+        mainFilters = new String[3][][];
+        try (Cursor filterCursor = database.query("main_filter",
+                new String[]{"filter", "column_name", "keywords", "labels"},
+                null, null, null, null, null)) {
+            int filterCount = 0;
+            while (filterCursor.moveToNext()) {
+                final String thisFilter = filterCursor.getString(
+                        filterCursor.getColumnIndexOrThrow("filter"));
+                final int filterID = translateFilterID(thisFilter);
+                if (mainFilters[filterID] != null) {
+                    throw new IllegalStateException("Duplicate main filter " + thisFilter);
+                }
+                final String[] keywords = filterCursor.getString(
+                        filterCursor.getColumnIndexOrThrow("keywords")).split(",", -1);
+                final String[] labels = filterCursor.getString(
+                        filterCursor.getColumnIndexOrThrow("labels")).split("\n", -1);
+                if (keywords.length != labels.length) {
+                    throw new IllegalStateException("Illegal main filter " + thisFilter);
+                }
+                mainFilters[filterID] = new String[][]{
+                        {filterCursor.getString(
+                                filterCursor.getColumnIndexOrThrow("column_name"))},
+                        keywords, labels};
+                filterCount++;
+            }
+            if (filterCount != 3) {
+                throw new IllegalStateException("Illegal main filter count " + filterCount);
+            }
+            for (String[][] mainFilter : mainFilters) {
+                if (mainFilter == null) {
+                    throw new IllegalStateException("Incomplete main filters");
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load the main filters", e);
         }
 
         mainPositions = new int[5][3][][];
@@ -1246,53 +1285,10 @@ class MachineHelper {
         }
     }
 
-    // Get filter string[type(Search column/Search keywords/Display string), ID]. Should be updated accordingly.
+    // Get generated filter string[type(Search column/Search keywords/Display string), ID].
     public String[][] getFilterString(final String thisFilter) {
-        final String[][] names = {{"stype"},
-                {"compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa", "mac_centris",
-                 "mac_server", "power_mac", "imac_normal", "emac", "xserve", "mac_mini", "nmac_pro", "imac_pro",
-                 "powerbook_normal", "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air", "mac_studio"},
-                {"Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
-                 "Macintosh Performa", "Macintosh Centris", "Macintosh Server", "Power Macintosh",
-                 "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro", "iMac Pro", "Macintosh PowerBook",
-                 "Macintosh PowerBook Duo", "iBook", "MacBook Pro", "MacBook", "MacBook Air", "Mac Studio"}};
-        final String[][] processors = {{"sprocessor"},
-                {"68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
-                 "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb", "haswell",
-                 "broadwell", "skylake", "kabylake", "coffeelake", "amberlake", "cascadelake", "cometlake", "icelake",
-                 "tigerlake", "a12", "m1", "m2", "m3", "m4", "m5", "a18"},
-                {"Motorola 68000", "Motorola 68020", "Motorola 68030", "Motorola 68040",
-                 "PowerPC 601", "PowerPC 603", "PowerPC 604", "PowerPC G3", "PowerPC G4",
-                 "PowerPC G5", "Intel NetBurst", "Intel P6 (Yonah)", "Intel Core", "Intel Penryn",
-                 "Intel Nehalem", "Intel Westmere", "Intel Sandy Bridge", "Intel Ivy Bridge",
-                 "Intel Haswell", "Intel Broadwell", "Intel Skylake", "Intel Kaby Lake",
-                 "Intel Coffee Lake", "Intel Amber Lake", "Intel Cascade Lake", "Intel Comet Lake",
-                 "Intel Ice Lake", "Intel Tiger Lake", "Apple A12Z", "Apple M1",
-                 "Apple M2", "Apple M3", "Apple M4", "Apple M5", "Apple A18 Pro"}};
-        final String[][] years = {{"syear"},
-                {"1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993",
-                 "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003",
-                 "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013",
-                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022",
-                 "2023", "2024", "2025", "2026"},
-                {"1984", "1985", "1986", "1987", "1988", "1989", "1990", "1991", "1992", "1993",
-                 "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003",
-                 "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013",
-                 "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022",
-                 "2023", "2024", "2025", "2026"}};
         DebugHelper.log("MHGetFilter", "Get parameters " + thisFilter);
-        switch (thisFilter) {
-            case "names":
-                return names;
-            case "processors":
-                return processors;
-            case "years":
-                return years;
-            default:
-                break;
-        }
-        Log.e("MHGetFilter", "Invalid parameters");
-        return names;
+        return mainFilters[translateFilterID(thisFilter)];
     }
 
     // For search use. Return machine IDs. Adapted with category range.

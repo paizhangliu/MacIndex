@@ -48,6 +48,13 @@ FILTERS = {
             "mac_mini", "nmac_pro", "imac_pro", "powerbook_normal", "powerbook_duo",
             "ibook", "macbook_pro", "macbook_normal", "macbook_air", "mac_studio",
         ),
+        (
+            "Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
+            "Macintosh Performa", "Macintosh Centris", "Macintosh Server",
+            "Power Macintosh", "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro",
+            "iMac Pro", "Macintosh PowerBook", "Macintosh PowerBook Duo", "iBook",
+            "MacBook Pro", "MacBook", "MacBook Air", "Mac Studio",
+        ),
     ),
     "processors": (
         "sprocessor",
@@ -55,12 +62,24 @@ FILTERS = {
             "68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
             "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb",
             "haswell", "broadwell", "skylake", "kabylake", "coffeelake", "amberlake",
-            "cascadelake", "cometlake", "icelake", "tigerlake", "a12", "a18", "m1",
-            "m2", "m3", "m4", "m5",
+            "cascadelake", "cometlake", "icelake", "tigerlake", "a12", "m1", "m2",
+            "m3", "m4", "m5", "a18",
+        ),
+        (
+            "Motorola 68000", "Motorola 68020", "Motorola 68030", "Motorola 68040",
+            "PowerPC 601", "PowerPC 603", "PowerPC 604", "PowerPC G3", "PowerPC G4",
+            "PowerPC G5", "Intel NetBurst", "Intel P6 (Yonah)", "Intel Core",
+            "Intel Penryn", "Intel Nehalem", "Intel Westmere", "Intel Sandy Bridge",
+            "Intel Ivy Bridge", "Intel Haswell", "Intel Broadwell", "Intel Skylake",
+            "Intel Kaby Lake", "Intel Coffee Lake", "Intel Amber Lake",
+            "Intel Cascade Lake", "Intel Comet Lake", "Intel Ice Lake",
+            "Intel Tiger Lake", "Apple A12Z", "Apple M1", "Apple M2", "Apple M3",
+            "Apple M4", "Apple M5", "Apple A18 Pro",
         ),
     ),
     "years": (
         "syear",
+        tuple(str(year) for year in range(1984, 2027)),
         tuple(str(year) for year in range(1984, 2027)),
     ),
 }
@@ -141,7 +160,9 @@ def build_main_cache(machines):
     cache = []
     for manufacturer, categories in MANUFACTURERS.items():
         included_categories = set(categories)
-        for filter_name, (column_name, keywords) in FILTERS.items():
+        for filter_name, (column_name, keywords, labels) in FILTERS.items():
+            if len(keywords) != len(labels):
+                fail(f"Filter label count does not match {filter_name}")
             positions = []
             for keyword in keywords:
                 matched = [
@@ -161,6 +182,7 @@ def write_indexes(connection, directory, cache):
     connection.execute("BEGIN IMMEDIATE")
     try:
         connection.execute("DROP TABLE IF EXISTS main_cache")
+        connection.execute("DROP TABLE IF EXISTS main_filter")
         connection.execute("DROP TABLE IF EXISTS machine_directory")
         connection.execute(
             """
@@ -184,6 +206,16 @@ def write_indexes(connection, directory, cache):
         )
         connection.execute(
             """
+            CREATE TABLE main_filter (
+                filter TEXT PRIMARY KEY,
+                column_name TEXT NOT NULL,
+                keywords TEXT NOT NULL,
+                labels TEXT NOT NULL
+            )
+            """
+        )
+        connection.execute(
+            """
             CREATE TABLE main_cache (
                 manufacturer TEXT NOT NULL,
                 filter TEXT NOT NULL,
@@ -200,6 +232,16 @@ def write_indexes(connection, directory, cache):
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             directory,
+        )
+        connection.executemany(
+            """
+            INSERT INTO main_filter (filter, column_name, keywords, labels)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                (filter_name, column_name, ",".join(keywords), "\n".join(labels))
+                for filter_name, (column_name, keywords, labels) in FILTERS.items()
+            ),
         )
         connection.executemany(
             "INSERT INTO main_cache (manufacturer, filter, positions) VALUES (?, ?, ?)",
@@ -226,6 +268,15 @@ def verify_indexes(connection, directory, cache):
     ).fetchall()
     if actual_directory != directory:
         fail("Generated machine directory is missing or outdated")
+
+    actual_filters = {
+        filter_name: (column_name, tuple(keywords.split(",")), tuple(labels.split("\n")))
+        for filter_name, column_name, keywords, labels in connection.execute(
+            "SELECT filter, column_name, keywords, labels FROM main_filter"
+        )
+    }
+    if actual_filters != FILTERS:
+        fail("Generated main filters are missing or outdated")
 
     actual_cache = {
         (manufacturer, filter_name): positions
