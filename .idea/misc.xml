@@ -5,25 +5,14 @@
       <map>
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.4317708333333333" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/drawable/ic_baseline_star_border_24.xml" value="0.4317708333333333" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_comment.xml" value="0.24003623188405798" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_compare.xml" value="0.24003623188405798" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_favourite.xml" value="0.40729166666666666" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_main.xml" value="0.3651041666666667" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_new_about.xml" value="0.4192708333333333" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_settings_about.xml" value="0.3651041666666667" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_specs.xml" value="0.32760416666666664" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/activity_view_image.xml" value="0.4005208333333333" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_category.xml" value="0.24003623188405798" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_comments.xml" value="0.16742654508611957" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_favourites_list.xml" value="0.3453125" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_favourites_new.xml" value="0.24003623188405798" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_favourites_select.xml" value="0.24003623188405798" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_links.xml" value="0.3453125" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_main.xml" value="0.3453125" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/layout/chunk_processor_image.xml" value="0.24003623188405798" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_comment.xml" value="0.4015625" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_compare.xml" value="0.4015625" />
-        <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_favourite.xml" value="0.4015625" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_main.xml" value="0.4192708333333333" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_search.xml" value="0.4192708333333333" />
         <entry key="..\:/Users/paizhang/StudioProjects/MacIndex/app/src/main/res/menu/menu_specs.xml" value="0.32760416666666664" />

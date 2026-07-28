@@ -423,11 +423,7 @@ public class CompareActivity extends AppCompatActivity {
     private void setMachineImage(final int viewID, final int machineID, final String name) {
         final ImageView image = findViewById(viewID);
         final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
-        if (picture != null) {
-            image.setImageBitmap(picture);
-        } else {
-            image.setImageDrawable(null);
-        }
+        image.setImageBitmap(picture);
         image.setContentDescription(name);
         // Set a long click listener
         image.setOnLongClickListener(v -> {
@@ -586,18 +582,6 @@ public class CompareActivity extends AppCompatActivity {
         }
         compareNames.add(machineName);
         saveCompareList(compareNames, thisContext);
-    }
-
-    public static void checkIsComparing(final String machineName, final Context thisContext) {
-        final String normalizedName = machineName.startsWith("[") && machineName.endsWith("]")
-                ? machineName.substring(1, machineName.length() - 1) : machineName;
-        DebugHelper.log("CompareActivity", "Checking for deletion");
-        if (normalizedName.equals(PrefsHelper.getStringPrefs("userComparesLeft", thisContext))
-                || normalizedName.equals(PrefsHelper.getStringPrefs("userComparesRight", thisContext))) {
-            clearComparing(thisContext);
-        } else {
-            ensureSelectionValid(thisContext);
-        }
     }
 
     private static void ensureSelectionValid(final Context thisContext) {

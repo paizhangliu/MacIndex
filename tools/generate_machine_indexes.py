@@ -63,7 +63,7 @@ FILTERS = {
             "68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
             "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb",
             "haswell", "broadwell", "skylake", "kabylake", "coffeelake", "amberlake",
-            "cascadelake", "cometlake", "icelake", "tigerlake", "a12", "m1", "m2",
+            "cascadelake", "cometlake", "icelake", "a12", "m1", "m2",
             "m3", "m4", "m5", "a18",
         ),
         (
@@ -74,7 +74,7 @@ FILTERS = {
             "Intel Ivy Bridge", "Intel Haswell", "Intel Broadwell", "Intel Skylake",
             "Intel Kaby Lake", "Intel Coffee Lake", "Intel Amber Lake",
             "Intel Cascade Lake", "Intel Comet Lake", "Intel Ice Lake",
-            "Intel Tiger Lake", "Apple A12Z", "Apple M1", "Apple M2", "Apple M3",
+            "Apple A12Z", "Apple M1", "Apple M2", "Apple M3",
             "Apple M4", "Apple M5", "Apple A18 Pro",
         ),
     ),

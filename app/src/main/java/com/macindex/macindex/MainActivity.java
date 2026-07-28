@@ -35,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             final boolean isNewVersion = PrefsHelper.registerNewVersion(this);
             if ((!databaseFile.exists() || isNewVersion)
                     && (database == null || !database.isOpen())) {
-                // The bundled database is large. Copy it off the UI thread on install and update.
+                // Copy the bundled database off the UI thread on install and update.
                 waitDialog.show();
                 final Context applicationContext = getApplicationContext();
                 new Thread(() -> {

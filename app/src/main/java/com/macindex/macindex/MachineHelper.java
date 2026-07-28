@@ -690,7 +690,6 @@ class MachineHelper {
             case "cascadelake":
             case "cometlake":
             case "icelake":
-            case "tigerlake":
                 return R.drawable.intel;
             case "A12Z":
             case "a18":

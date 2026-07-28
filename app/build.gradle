@@ -42,7 +42,6 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.core:core:1.19.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'com.google.android.material:material:1.14.0'
     implementation 'androidx.browser:browser:1.10.0'
     // 17.5.x requires API 24; retain 4.8.4's Android 6 (API 23) install base.

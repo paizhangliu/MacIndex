@@ -50,10 +50,8 @@ public class ViewImageActivity extends AppCompatActivity {
             setTitle(MainActivity.getMachineHelper().getName(machineID));
             final ImageView image = findViewById(R.id.pic);
             final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
-            if (picture != null) {
-                DebugHelper.log("SpecsAct", "Image exists");
-                image.setImageBitmap(picture);
-            }
+            DebugHelper.log("SpecsAct", "Image exists");
+            image.setImageBitmap(picture);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }

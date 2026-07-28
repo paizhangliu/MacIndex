@@ -7,7 +7,6 @@ import androidx.core.widget.TextViewCompat;
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -461,10 +460,8 @@ public class SpecsActivity extends AppCompatActivity {
             // Init image
             final ImageView image = findViewById(R.id.pic);
             final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
-            if (picture != null) {
-                DebugHelper.log("SpecsAct", "Image exists");
-                image.setImageBitmap(picture);
-            }
+            DebugHelper.log("SpecsAct", "Image exists");
+            image.setImageBitmap(picture);
 
             final TextView informationLabel = findViewById(R.id.information);
             specsHelper.initSound(machineID, image, informationLabel);
