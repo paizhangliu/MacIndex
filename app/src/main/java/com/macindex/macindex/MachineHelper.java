@@ -443,6 +443,11 @@ class MachineHelper {
         return machineGraphicsFormatIndex[thisMachine];
     }
 
+    public boolean isClassicMachine(final int thisMachine) {
+        validateMachineID(thisMachine);
+        return machineIdentifierIndex[thisMachine] == null;
+    }
+
     public String[] getSpecs(final int thisMachine) {
         int[] position = getPosition(thisMachine);
         final String[] columns = {"year", "model", "ident", "gestalt", "\"order\"", "emc",

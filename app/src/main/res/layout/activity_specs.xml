@@ -229,6 +229,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/idDivider"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -272,6 +273,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/gestaltDivider"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -315,6 +317,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/emcDivider"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

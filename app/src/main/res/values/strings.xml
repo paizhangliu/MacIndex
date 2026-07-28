@@ -105,6 +105,10 @@
     <string name="id">Model Identifier</string>
     <string name="gestalt">Gestalt ID</string>
     <string name="order">Part Number</string>
+    <plurals name="part_numbers_more">
+        <item quantity="one">… %d more</item>
+        <item quantity="other">… %d more</item>
+    </plurals>
     <string name="emc">EMC Number</string>
     <string name="processor">Processor</string>
     <string name="graphics">Graphics</string>

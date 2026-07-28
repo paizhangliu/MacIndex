@@ -207,6 +207,42 @@ class SpecsHelper {
         });
     }
 
+    void initPartNumbers(final TextView entry, final String thisInfo) {
+        entry.setOnClickListener(null);
+        entry.setText(thisInfo);
+        if (thisInfo == null) {
+            return;
+        }
+
+        final int previewSize = 3;
+        final String[] partNumbers = thisInfo.split("\n");
+        if (partNumbers.length <= previewSize) {
+            return;
+        }
+
+        final StringBuilder collapsedInfo = new StringBuilder();
+        for (int i = 0; i < previewSize; i++) {
+            if (i != 0) {
+                collapsedInfo.append("\n");
+            }
+            collapsedInfo.append(partNumbers[i]);
+        }
+        final int remainingSize = partNumbers.length - previewSize;
+        collapsedInfo.append("\n").append(thisContext.getResources().getQuantityString(
+                R.plurals.part_numbers_more, remainingSize, remainingSize));
+        final String thisCollapsedInfo = collapsedInfo.toString();
+        entry.setText(thisCollapsedInfo);
+        entry.setOnClickListener(new View.OnClickListener() {
+            private boolean isExpanded = false;
+
+            @Override
+            public void onClick(final View view) {
+                isExpanded = !isExpanded;
+                entry.setText(isExpanded ? thisInfo : thisCollapsedInfo);
+            }
+        });
+    }
+
     CharSequence formatModels(final String thisInfo, final int[] modelRanges) {
         if (thisInfo == null || modelRanges == null || modelRanges.length == 0) {
             return thisInfo;

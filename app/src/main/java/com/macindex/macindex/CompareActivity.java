@@ -346,10 +346,18 @@ public class CompareActivity extends AppCompatActivity {
                 R.string.support};
         leftSpecification = helper.getSpecs(leftID);
         rightSpecification = helper.getSpecs(rightID);
+        final boolean isLeftClassic = helper.isClassicMachine(leftID);
+        final boolean isRightClassic = helper.isClassicMachine(rightID);
 
         final LinearLayout specsContainer = findViewById(R.id.compareSpecsContainer);
         specsContainer.removeAllViews();
         for (int i = 0; i < labels.length; i++) {
+            if ((isLeftClassic && isRightClassic
+                    && (labels[i] == R.string.id || labels[i] == R.string.emc))
+                    || (!isLeftClassic && !isRightClassic
+                    && labels[i] == R.string.gestalt)) {
+                continue;
+            }
             final View row = getLayoutInflater().inflate(R.layout.chunk_compare_row, specsContainer, false);
             ((TextView) row.findViewById(R.id.compareTitle)).setText(labels[i]);
             final TextView compareLeft = row.findViewById(R.id.compareLeft);
@@ -366,6 +374,9 @@ public class CompareActivity extends AppCompatActivity {
                         helper.getGraphicsModelRanges(leftID)));
                 compareRight.setText(specsHelperRight.formatModels(rightInfo,
                         helper.getGraphicsModelRanges(rightID)));
+            } else if (labels[i] == R.string.order) {
+                specsHelperLeft.initPartNumbers(compareLeft, leftInfo);
+                specsHelperRight.initPartNumbers(compareRight, rightInfo);
             } else {
                 compareLeft.setText(leftInfo);
                 compareRight.setText(rightInfo);

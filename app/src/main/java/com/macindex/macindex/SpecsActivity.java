@@ -249,6 +249,16 @@ public class SpecsActivity extends AppCompatActivity {
             this.setTitle(thisName);
             reloadName();
 
+            final boolean isClassic = MainActivity.getMachineHelper()
+                    .isClassicMachine(machineID);
+            findViewById(R.id.idLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+            findViewById(R.id.idDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+            findViewById(R.id.gestaltLayout).setVisibility(isClassic ? View.VISIBLE : View.GONE);
+            findViewById(R.id.gestaltDivider).setVisibility(
+                    isClassic ? View.VISIBLE : View.GONE);
+            findViewById(R.id.emcLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+            findViewById(R.id.emcDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+
             type.setText(thisType);
             specsHelper.initCopy(type, thisType, "typeInfo");
             processor.setText(specsHelper.formatModels(thisProcessor,
@@ -273,7 +283,7 @@ public class SpecsActivity extends AppCompatActivity {
             specsHelper.initCopy(expansion, thisExpansion, "expansionInfo");
             storage.setText(thisStorage);
             specsHelper.initCopy(storage, thisStorage, "storageInfo");
-            order.setText(thisOrder);
+            specsHelper.initPartNumbers(order, thisOrder);
             specsHelper.initCopy(order, thisOrder, "orderInfo");
             gestalt.setText(thisGestalt);
             specsHelper.initCopy(gestalt, thisGestalt, "gestaltInfo");

@@ -99,6 +99,9 @@
     <string name="id">机型标识符</string>
     <string name="gestalt">Gestalt 标识符</string>
     <string name="order">部件号</string>
+    <plurals name="part_numbers_more">
+        <item quantity="other">……另有 %d 项</item>
+    </plurals>
     <string name="emc">EMC 号</string>
     <string name="processor">处理器</string>
     <string name="graphics">显卡</string>
