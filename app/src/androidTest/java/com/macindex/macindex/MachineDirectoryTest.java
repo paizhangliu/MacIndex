@@ -2,10 +2,13 @@ package com.macindex.macindex;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.SystemClock;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
@@ -18,6 +21,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 @RunWith(AndroidJUnit4.class)
 public class MachineDirectoryTest {
@@ -28,7 +32,20 @@ public class MachineDirectoryTest {
     public static void initDirectory() {
         final Context applicationContext = InstrumentationRegistry.getInstrumentation()
                 .getTargetContext();
-        MainActivity.validateOperation(applicationContext);
+        if (MainActivity.getMachineHelper() == null) {
+            final Intent launchIntent = applicationContext.getPackageManager()
+                    .getLaunchIntentForPackage(applicationContext.getPackageName());
+            assertNotNull(launchIntent);
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            applicationContext.startActivity(launchIntent);
+
+            final long timeout = SystemClock.elapsedRealtime() + 10000;
+            while (MainActivity.getMachineHelper() == null
+                    && SystemClock.elapsedRealtime() < timeout) {
+                SystemClock.sleep(50);
+            }
+        }
+        assertNotNull(MainActivity.getMachineHelper());
         database = SQLiteDatabase.openDatabase(
                 applicationContext.getDatabasePath("specs.db").getPath(), null,
                 SQLiteDatabase.OPEN_READONLY);
@@ -62,6 +79,11 @@ public class MachineDirectoryTest {
     }
 
     @Test
+    public void indexedCategorySearchDoesNotMatchPrefix() {
+        assertSearchMatchesDatabase("stype", "power_mac", false);
+    }
+
+    @Test
     public void indexedYearSearchMatchesDatabase() {
         assertSearchMatchesDatabase("syear", "2007", false);
     }
@@ -69,6 +91,11 @@ public class MachineDirectoryTest {
     @Test
     public void indexedProcessorSearchMatchesDatabase() {
         assertSearchMatchesDatabase("sprocessor", "68030", false);
+    }
+
+    @Test
+    public void indexedProcessorSearchDoesNotMatchPartialToken() {
+        assertSearchMatchesDatabase("sprocessor", "6803", false);
     }
 
     @Test
@@ -123,11 +150,11 @@ public class MachineDirectoryTest {
             while (tablesCursor.moveToNext()) {
                 final String tableName = tablesCursor.getString(0);
                 try (Cursor resultCursor = database.query(tableName,
-                        new String[]{"name", columnName}, columnName + " LIKE ?",
-                        new String[]{"%" + searchInput + "%"}, null, null, null)) {
+                        new String[]{"name", columnName}, columnName + " IS NOT NULL",
+                        null, null, null, null)) {
                     while (resultCursor.moveToNext()) {
                         final String rawValue = resultCursor.getString(1);
-                        if (!isExactMatch || isExactMatch(rawValue, searchInput)) {
+                        if (isDirectoryMatch(columnName, rawValue, searchInput, isExactMatch)) {
                             expectedNames.add(resultCursor.getString(0));
                         }
                     }
@@ -144,6 +171,20 @@ public class MachineDirectoryTest {
         Collections.sort(expectedNames);
         Collections.sort(indexedNames);
         assertEquals(expectedNames, indexedNames);
+    }
+
+    private boolean isDirectoryMatch(final String columnName, final String rawValue,
+                                     final String searchInput, final boolean isExactMatch) {
+        if (columnName.equals("stype")) {
+            return rawValue.equalsIgnoreCase(searchInput);
+        }
+        if (columnName.equals("sprocessor")) {
+            return isExactMatch(rawValue, searchInput);
+        }
+        return isExactMatch
+                ? isExactMatch(rawValue, searchInput)
+                : rawValue.toLowerCase(Locale.ROOT)
+                .contains(searchInput.toLowerCase(Locale.ROOT));
     }
 
     private boolean isExactMatch(final String rawValue, final String searchInput) {

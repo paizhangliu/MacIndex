@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -44,6 +46,7 @@ class PrefsHelper {
         DEFAULT_VALUES.put("userFavourites", "");
         DEFAULT_VALUES.put("userComments", "");
         DEFAULT_VALUES.put("skippedUpdateVersion", "");
+        DEFAULT_VALUES.put("pendingUpgradeReport", "");
 
         /* Runtime Record */
         DEFAULT_VALUES.put("lastMainManufacturer", "all");
@@ -185,13 +188,12 @@ class PrefsHelper {
         }
     }
 
-    public static boolean registerNewVersion(final Context thisContext) {
+    public static boolean isNewVersion(final Context thisContext) {
         try {
-            if (getIntPrefs("lastKnownVersion", thisContext) < BuildConfig.VERSION_CODE) {
-                Log.w("VersionControl", "Registering new known version");
-                editPrefs("lastKnownVersion", BuildConfig.VERSION_CODE, thisContext);
+            final int lastKnownVersion = getIntPrefs("lastKnownVersion", thisContext);
+            if (lastKnownVersion < BuildConfig.VERSION_CODE) {
                 return true;
-            } else if (getIntPrefs("lastKnownVersion", thisContext) == BuildConfig.VERSION_CODE) {
+            } else if (lastKnownVersion == BuildConfig.VERSION_CODE) {
                 DebugHelper.log("VersionControl", "No new known version");
                 return false;
             } else {
@@ -202,6 +204,120 @@ class PrefsHelper {
             ExceptionHelper.handleException(thisContext, e,
                     "VersionControl", "Downgrading is not allowed. Please clear the preference file.");
             return false;
+        }
+    }
+
+    public static boolean registerNewVersion(final Context thisContext) {
+        try {
+            final int lastKnownVersion = getIntPrefs("lastKnownVersion", thisContext);
+            if (lastKnownVersion < BuildConfig.VERSION_CODE) {
+                Log.w("VersionControl", "Registering new known version");
+                final SharedPreferences prefsFile = thisContext.getSharedPreferences(
+                        PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+                final SharedPreferences.Editor prefsEditor = prefsFile.edit();
+                final Map<String, String> validNames = getValidMachineNames();
+                final UserRecordUpgradeHelper.UpgradeResult comments =
+                        UserRecordUpgradeHelper.upgradeComments(
+                                prefsFile.getString("userComments", ""), validNames);
+                final UserRecordUpgradeHelper.UpgradeResult favourites =
+                        UserRecordUpgradeHelper.upgradeFavourites(
+                                prefsFile.getString("userFavourites", ""), validNames);
+                final UserRecordUpgradeHelper.CompareUpgradeResult compares =
+                        UserRecordUpgradeHelper.upgradeCompares(
+                                prefsFile.getString("userCompares", ""),
+                                prefsFile.getString("userComparesLeft", ""),
+                                prefsFile.getString("userComparesRight", ""), validNames);
+
+                prefsEditor.putString("userComments", comments.value);
+                prefsEditor.putString("userFavourites", favourites.value);
+                prefsEditor.putString("userCompares", compares.compares);
+                prefsEditor.putString("userComparesLeft", compares.left);
+                prefsEditor.putString("userComparesRight", compares.right);
+
+                final String upgradeReport = buildUpgradeReport(
+                        thisContext, comments.removed, favourites.removed, compares.removed);
+                if (!upgradeReport.isEmpty()) {
+                    final String pendingReport = prefsFile.getString("pendingUpgradeReport", "");
+                    prefsEditor.putString("pendingUpgradeReport", pendingReport.isEmpty()
+                            ? upgradeReport : pendingReport + "\n\n" + upgradeReport);
+                }
+                prefsEditor.putInt("lastKnownVersion", BuildConfig.VERSION_CODE);
+                if (!prefsEditor.commit()) {
+                    throw new IllegalStateException();
+                }
+                return true;
+            } else if (lastKnownVersion == BuildConfig.VERSION_CODE) {
+                DebugHelper.log("VersionControl", "No new known version");
+                return true;
+            } else {
+                Log.e("VersionControl", "Newer version was already registered.");
+                throw new IllegalStateException();
+            }
+        } catch (Exception e) {
+            ExceptionHelper.handleException(thisContext, e,
+                    "VersionControl", "Unable to register the current version.");
+            return false;
+        }
+    }
+
+    public static boolean showUpgradeReport(final Context thisContext) {
+        final String report = getStringPrefs("pendingUpgradeReport", thisContext);
+        if (!report.isEmpty()) {
+            clearPrefs("pendingUpgradeReport", thisContext);
+            ExceptionHelper.showUpgradeReport(thisContext, report);
+            return true;
+        }
+        return false;
+    }
+
+    private static Map<String, String> getValidMachineNames() {
+        final MachineHelper machineHelper = MainActivity.getMachineHelper();
+        if (machineHelper == null) {
+            throw new IllegalStateException("Machine helper is unavailable");
+        }
+        final Map<String, String> validNames = new HashMap<>();
+        for (int machineID = 0; machineID < machineHelper.getMachineCount(); machineID++) {
+            final String machineName = machineHelper.getName(machineID);
+            final String oldValue = validNames.put(
+                    machineName.toLowerCase(Locale.ROOT), machineName);
+            if (oldValue != null && !oldValue.equals(machineName)) {
+                throw new IllegalStateException("Duplicate machine name");
+            }
+        }
+        return validNames;
+    }
+
+    private static String buildUpgradeReport(final Context thisContext,
+                                             final List<String> comments,
+                                             final List<String> favourites,
+                                             final List<String> compares) {
+        final StringBuilder report = new StringBuilder();
+        appendUpgradeReport(report, thisContext.getString(R.string.menu_comment),
+                comments, thisContext);
+        appendUpgradeReport(report, thisContext.getString(R.string.menu_favourite),
+                favourites, thisContext);
+        appendUpgradeReport(report, thisContext.getString(R.string.menu_compare),
+                compares, thisContext);
+        if (report.length() == 0) {
+            return "";
+        }
+        return "MacIndex " + BuildConfig.VERSION_NAME + "\n\n" + report.toString().trim();
+    }
+
+    private static void appendUpgradeReport(final StringBuilder report, final String title,
+                                            final List<String> removed,
+                                            final Context thisContext) {
+        if (removed.isEmpty()) {
+            return;
+        }
+        if (report.length() != 0) {
+            report.append("\n\n");
+        }
+        report.append(title).append(":\n");
+        for (String entry : removed) {
+            report.append("- ").append(entry.isEmpty()
+                    ? thisContext.getString(R.string.upgrade_report_empty_entry) : entry)
+                    .append("\n");
         }
     }
 

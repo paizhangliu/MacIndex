@@ -391,7 +391,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private boolean characterCheck(final String validateInput, final boolean method) {
         // Check the length first
-        if ((method && validateInput.length() > 20) || (!method && validateInput.length() > 50)) {
+        if ((method && validateInput.length() > 20) || (!method && validateInput.length() > 60)) {
             DebugHelper.log("validate", "Overlength Detected!");
             // Set the overlength prompt here..
             textResult.setText(R.string.search_overlength);
@@ -404,8 +404,8 @@ public class SearchActivity extends AppCompatActivity {
             // Model Numbers: acceptable search input A~Z, a~z, 0~9, comma, -, /.
             legalCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxzy0123456789,-/";
         } else {
-            // Name: acceptable search input A~Z, a~z, 0~9, whitespace, /, (), dash, comma, plus, dot.
-            legalCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxzy0123456789 /()-,+.";
+            // Name: acceptable search input A~Z, a~z, 0~9, whitespace, /, (), dash, comma, plus, dot, ampersand.
+            legalCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxzy0123456789 /()-,+.&";
         }
 
         for (int i = 0; i < validateInput.length(); i++) {

@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static SQLiteDatabase database = null;
 
-    private static MachineHelper machineHelper = null;
+    private static volatile MachineHelper machineHelper = null;
 
     private static Resources resources = null;
 
@@ -116,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
 
             resources = getResources();
             final File databaseFile = getDatabasePath("specs.db");
-            final boolean isNewVersion = PrefsHelper.registerNewVersion(this);
+            final boolean isNewVersion = PrefsHelper.isNewVersion(this);
             if ((!databaseFile.exists() || isNewVersion)
-                    && (database == null || !database.isOpen())) {
+                    && (database == null || !database.isOpen() || machineHelper == null)) {
                 // Copy the bundled database off the UI thread on install and update.
                 waitDialog.show();
                 final Context applicationContext = getApplicationContext();
@@ -137,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         waitDialog.dismiss();
                         if (finalInitializationError == null) {
-                            completeCreation(savedInstanceState);
+                            if (!isNewVersion || PrefsHelper.registerNewVersion(this)) {
+                                completeCreation(savedInstanceState);
+                            }
                         } else {
                             ExceptionHelper.handleException(this, finalInitializationError,
                                     "MainCreation", "Unable to initialize the database.");
@@ -145,7 +147,9 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }, "MacIndex-DatabaseInit").start();
             } else {
-                completeCreation(savedInstanceState);
+                if (!isNewVersion || PrefsHelper.registerNewVersion(this)) {
+                    completeCreation(savedInstanceState);
+                }
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
@@ -178,16 +182,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 initInterface();
-
-                // Deep Link Support, Activity Not Present
-                Uri deepLink = getIntent().getData();
-                getIntent().setData(null);
-                if (deepLink != null) {
-                    shouldCheckForUpdates = false;
-                    decodeDeepLink(deepLink.toString());
-                } else {
-                    Log.w("onCreateDeepLinkEntry", "Got null data");
-                }
             } else {
                 // Creating activity due to system
                 DebugHelper.log("MacIndex", "Reloading the main activity.");
@@ -203,7 +197,20 @@ public class MainActivity extends AppCompatActivity {
                     resetDrawerSelection();
                 }
             }
-            if (shouldCheckForUpdates) {
+
+            // Deep Link Support, Activity Not Present
+            // Keep pending links across a system recreation.
+            Uri deepLink = getIntent().getData();
+            getIntent().setData(null);
+            if (deepLink != null) {
+                shouldCheckForUpdates = false;
+                decodeDeepLink(deepLink.toString());
+            } else {
+                Log.w("onCreateDeepLinkEntry", "Got null data");
+            }
+            final boolean upgradeReportShown = deepLink == null
+                    && PrefsHelper.showUpgradeReport(this);
+            if (shouldCheckForUpdates && !upgradeReportShown) {
                 UpdateHelper.checkAutomatically(this);
             }
         } catch (Exception e) {
@@ -215,14 +222,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         // Deep Link Support, Activity Present
-        // Override this function due to the special lunch mode
+        // Override this function due to the special launch mode
         Uri deepLink = intent.getData();
-        intent.setData(null);
-        setIntent(intent);
         if (PrefsHelper.getIntPrefs("lastKnownVersion", this) != BuildConfig.VERSION_CODE) {
             Log.w("onNewIntentDeepLinkEntry", "Version registration is required");
+            // completeCreation() will consume this after database registration.
+            if (deepLink != null) {
+                setIntent(intent);
+            }
+            if (waitDialog == null || !waitDialog.isShowing()) {
+                recreate();
+            }
             return;
         }
+        intent.setData(null);
+        setIntent(intent);
         if (deepLink != null) {
             decodeDeepLink(deepLink.toString());
         } else {
@@ -236,7 +250,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             // Reload favourites
             SpecsIntentHelper.refreshFavourites(machineLoadedCount, this);
-            UpdateHelper.checkAutomatically(this);
+            if (!PrefsHelper.showUpgradeReport(this)) {
+                UpdateHelper.checkAutomatically(this);
+            }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "MainOnRestart", "Unable to resume normal activity.");
         }
@@ -372,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static void closeDatabase() {
+    static synchronized void closeDatabase() {
         if (machineHelper != null) {
             machineHelper.setStopQuery();
         }
@@ -825,6 +841,8 @@ public class MainActivity extends AppCompatActivity {
                 return R.string.main_section_desktop;
             case "laptop":
                 return R.string.main_section_laptop;
+            case "server":
+                return R.string.main_section_server;
             default:
                 throw new IllegalArgumentException("Illegal main section " + thisSection);
         }
@@ -901,7 +919,8 @@ public class MainActivity extends AppCompatActivity {
         leftID = decodeStartedParam(machineNames[0]);
         rightID = decodeStartedParam(machineNames[1]);
         if (machineNames[0].equals(machineNames[1])
-                || leftID.length != 1 || rightID.length != 1) {
+                || leftID.length != 1 || rightID.length != 1
+                || leftID[0] == rightID[0]) {
             Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             return;

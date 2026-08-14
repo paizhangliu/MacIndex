@@ -9,7 +9,8 @@ from pathlib import Path
 CATEGORIES = (
     "compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa_68k", "mac_centris",
     "mac_server_68k", "powerbook_68k", "powerbook_duo_68k", "power_mac_classic",
-    "mac_performa_ppc", "mac_server_ppc_classic", "powerbook_ppc_classic",
+    "mac_performa_ppc", "mac_server_ppc_classic", "apple_network_server",
+    "powerbook_ppc_classic",
     "powerbook_duo_ppc", "power_mac", "imac_ppc", "emac", "mac_mini_ppc",
     "mac_server_ppc", "xserve_ppc", "powerbook_ppc", "ibook", "mac_pro_intel",
     "imac_intel", "imac_pro_intel", "mac_mini_intel", "xserve_intel",
@@ -25,7 +26,7 @@ MANUFACTURERS = {
         "mac_centris", "mac_server_68k", "powerbook_68k", "powerbook_duo_68k",
     ),
     "appleppc": (
-        "power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic",
+        "power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic", "apple_network_server",
         "powerbook_ppc_classic", "powerbook_duo_ppc", "power_mac", "imac_ppc", "emac",
         "mac_mini_ppc", "mac_server_ppc", "xserve_ppc", "powerbook_ppc", "ibook",
     ),
@@ -44,17 +45,20 @@ FILTERS = {
         "stype",
         (
             "compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa",
-            "mac_centris", "mac_server", "power_mac", "imac_normal", "emac", "xserve",
+            "mac_centris", "power_mac", "power_mac_g3_g4_g5", "imac_normal", "emac",
             "mac_mini", "nmac_pro", "imac_pro", "mac_studio", "powerbook_normal",
-            "powerbook_duo", "ibook", "macbook_pro", "macbook_normal", "macbook_air",
-            "macbook_neo",
+            "powerbook_duo", "powerbook_g3_g4_g5", "ibook", "macbook_pro",
+            "macbook_normal", "macbook_air", "macbook_neo",
+            "workgroup_server", "apple_network_server", "mac_server", "xserve",
         ),
         (
             "Compact Macintosh", "Macintosh II", "Macintosh LC", "Macintosh Quadra",
-            "Macintosh Performa", "Macintosh Centris", "Macintosh Server",
-            "Power Macintosh", "iMac", "eMac", "Xserve", "Mac mini", "Mac Pro",
-            "iMac Pro", "Mac Studio", "Macintosh PowerBook", "Macintosh PowerBook Duo",
-            "iBook", "MacBook Pro", "MacBook", "MacBook Air", "MacBook Neo",
+            "Macintosh Performa", "Macintosh Centris", "Power Macintosh",
+            "Power Mac G3/G4/G5", "iMac", "eMac", "Mac mini", "Mac Pro", "iMac Pro",
+            "Mac Studio", "Macintosh PowerBook", "Macintosh PowerBook Duo",
+            "PowerBook G3/G4/G5", "iBook", "MacBook Pro", "MacBook", "MacBook Air",
+            "MacBook Neo", "Workgroup Server", "Apple Network Server",
+            "Macintosh Server", "Xserve",
         ),
     ),
     "processors": (
@@ -63,7 +67,7 @@ FILTERS = {
             "68000", "68020", "68030", "68040", "601", "603", "604", "g3", "g4", "g5",
             "netburst", "p6", "core", "penryn", "nehalem", "westmere", "snb", "ivb",
             "haswell", "broadwell", "skylake", "kabylake", "coffeelake", "amberlake",
-            "cascadelake", "cometlake", "icelake", "a12", "m1", "m2",
+            "cascadelake", "cometlake", "icelake", "a12z", "m1", "m2",
             "m3", "m4", "m5", "a18",
         ),
         (
@@ -86,7 +90,7 @@ FILTERS = {
 }
 
 FILTER_SECTIONS = {
-    "names": ((0, "desktop"), (15, "laptop")),
+    "names": ((0, "desktop"), (14, "laptop"), (22, "server")),
     "processors": (),
     "years": (),
 }
@@ -98,12 +102,58 @@ DIRECTORY_COLUMNS = (
 
 FORMAT_SOURCE_COLUMNS = ("processor", "graphics")
 
+MACHINE_COLUMNS = (
+    "id", "stype", "sound", "pic", "name", "sname", "year", "syear",
+    "model", "smodel", "ident", "sident", "gestalt", "sgestalt", "order",
+    "sorder", "emc", "semc", "processor", "sprocessor", "processorid",
+    "graphics", "graphicsid", "display", "ram", "rom", "software",
+    "storage", "features", "expansion", "design", "support", "links",
+)
+
+REQUIRED_TEXT_COLUMNS = (
+    "stype", "pic", "name", "sname", "year", "syear", "design", "support",
+    "links",
+)
+
+SUPPORT_VALUES = ("Supported", "Vintage", "Obsolete", "N/A")
+
+SOUND_VALUES = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "PB", "T2", "N")
+
+# Keep these in sync with MachineHelper.getProcessorImage/getGraphicsImage.
+PROCESSOR_IMAGE_VALUES = (
+    "7400", "7410", "7440", "7445", "7447", "7450", "7455", "750", "750cx",
+    "750cxe", "750fx", "970", "970fx", "970mp", "A12Z", "core2duo", "core2ex", "coreduo",
+    "corei3_1", "corei3_2", "corei3_8", "corei3_10", "corei5", "corei5_1",
+    "corei5_2", "corei5_4", "corei5_5", "corei5_6", "corei5_7", "corei5_8",
+    "corei5_9", "corei5_10", "corei7", "corei7_1", "corei7_2", "corei7_4",
+    "corei7_5", "corei7_6", "corei7_7", "corei7_8", "corei7_9", "corei7_10",
+    "corei9_8", "corei9_9", "corei9_10", "corem", "corem3_6", "corem3_7",
+    "corem5_6", "corem7_6", "coresolo", "m1", "m1max", "m1pro", "m1ultra",
+    "p4ht", "t1", "t2", "xeon_1", "xeon_2", "xeon_6", "xeon_a", "xeon_b",
+)
+
+GRAPHICS_IMAGE_VALUES = (
+    "amdfirepro", "amdradeon", "amdradeon2013", "amdradeon2016", "amdradeonvega",
+    "ati", "atiradeon2000", "atiradeon2004", "atiradeon2007", "intelhd",
+    "inteliris", "inteliris2020", "nvgeforce2mx", "nvgeforce3", "nvgeforce4",
+    "nvgeforce6", "nvgeforce7", "nvgeforce2008", "nvgeforcefx", "nvgeforcegt2012",
+    "nvgeforcegtx2012", "nvquadro", "nvquadro2008",
+)
+
+DISPLAYED_SEARCH_COLUMNS = (
+    ("model", "smodel"), ("ident", "sident"), ("gestalt", "sgestalt"),
+    ("order", "sorder"), ("emc", "semc"),
+)
+
+DISPLAY_YEAR = re.compile(r"\d{4}\.(?:[1-9]|1[0-2])(?: \([^\n]+\))?")
+SORTING_YEAR = re.compile(r"\d{4}\.(?:[1-9]|1[0-2])")
+
 PROCESSOR_SPEED = re.compile(r"\d+(?:\.\d+)?\s+(?:MHz|GHz)")
 
 PROCESSOR_MODEL_PREFIXES = (
     "Motorola ", "PowerPC ", "Dual PowerPC ", "Intel Core ", "Intel Xeon ",
     "Dual Intel Xeon ", "Quad Intel Xeon ", "Intel Pentium ", "Intel 486",
-    "Apple ", "Cyrix ", "AT&T ", "MOS Technology ",
+    "Apple ", "Cyrix ", "AT&T ",
 )
 
 APPLE_PROCESSOR_MODEL = re.compile(
@@ -112,7 +162,8 @@ APPLE_PROCESSOR_MODEL = re.compile(
 
 GRAPHICS_MODEL_PREFIXES = (
     "ATI ", "AMD ", "Dual AMD ", "NVIDIA ", "Intel ", "Apple ",
-    "Chips and Technologies ", "IMS ", "Macintosh II Video Card",
+    "Chips and Technologies ", "Cirrus Logic ", "IMS ",
+    "Macintosh II Video Card",
 )
 
 GRAPHICS_DETAIL = re.compile(
@@ -124,6 +175,7 @@ GRAPHICS_DETAIL = re.compile(
 GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 
 PICTURE_ID = re.compile(r"[a-z0-9_]+")
+IMAGE_VALUE_ID = re.compile(r"[A-Za-z0-9_]+")
 
 DIRECTORY_VALUE_PATTERNS = {
     # The first compact Macs have genuine regional suffixes, such as M0001AP.
@@ -132,7 +184,9 @@ DIRECTORY_VALUE_PATTERNS = {
     "sident": re.compile(r"[A-Za-z][A-Za-z0-9]*\d*,\d+"),
     "sgestalt": re.compile(r"\d+"),
     # Apple currently uses both four- and five-character parts before xx.
-    "sorder": re.compile(r"[A-Z0-9]{4,5}(?:xx/[A-Z])?"),
+    "sorder": re.compile(r"[A-Z0-9]{4,5}xx/[A-Z]"),
+    # A handful of early EMC numbers use C or -1 revisions.
+    "semc": re.compile(r"\d{3,4}(?:C|-1)?"),
 }
 
 
@@ -140,17 +194,223 @@ def fail(message):
     raise RuntimeError(message)
 
 
+def validate_category_configuration(connection):
+    actual_categories = {
+        row[0] for row in connection.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type = 'table' AND sql LIKE '%processorid%'"
+        )
+    }
+    expected_categories = set(CATEGORIES)
+    if actual_categories != expected_categories:
+        missing = sorted(expected_categories - actual_categories)
+        unexpected = sorted(actual_categories - expected_categories)
+        fail(
+            "Machine category configuration differs from the database: "
+            f"missing={missing}, unexpected={unexpected}"
+        )
+
+    configured_categories = [
+        category
+        for manufacturer, categories in MANUFACTURERS.items()
+        if manufacturer != "all"
+        for category in categories
+    ]
+    if (set(configured_categories) != expected_categories
+            or len(configured_categories) != len(expected_categories)):
+        fail("Manufacturer groups do not cover every machine category exactly once")
+
+
 def validate_directory_values(machine):
     for column_name, pattern in DIRECTORY_VALUE_PATTERNS.items():
         raw_value = machine[column_name]
         if raw_value is None:
             continue
-        for value in raw_value.split("~"):
+        values = raw_value.split("~")
+        if len(values) != len(set(values)):
+            fail(
+                f'Duplicate {column_name} value for '
+                f'{machine["category"]}/{machine["database_id"]}'
+            )
+        for value in values:
             if pattern.fullmatch(value) is None:
                 fail(
                     f'Illegal {column_name} "{value}" for '
                     f'{machine["category"]}/{machine["database_id"]}'
                 )
+
+
+def get_displayed_search_values(value):
+    if value is None:
+        return set()
+    return {
+        re.sub(r"\s+\([^\n]*\)$", "", line.strip())
+        for line in value.splitlines()
+        if line.strip()
+    } - {"BTO/CTO"}
+
+
+def get_search_values(value):
+    if value is None:
+        return set()
+    return {item.strip() for item in value.split("~") if item.strip()}
+
+
+def validate_ram_information(value, machine_name):
+    if value is None:
+        return
+    lines = value.splitlines()
+    if "standard" not in lines[0]:
+        fail(f"RAM information does not begin with a standard capacity for {machine_name}")
+    maximum_index = next(
+        (index for index, line in enumerate(lines) if "maximum" in line),
+        len(lines),
+    )
+    for line in lines:
+        if "standard" in line and "configurable" in line:
+            fail(f'RAM line mixes standard and configurable capacities in "{line}"')
+        if "configurable maximum" in line:
+            fail(f'RAM line mixes configurable and maximum capacities in "{line}"')
+    if any("configurable" in line for line in lines[maximum_index + 1:]):
+        fail(f"RAM configurable capacity follows a maximum for {machine_name}")
+    if any("actual maximum" in line for line in lines) and not any(
+        marker in line
+        for line in lines
+        for marker in ("Apple-supported maximum", "Apple-tested maximum", "usable maximum")
+    ):
+        fail(f"RAM actual maximum lacks an official or usable ceiling for {machine_name}")
+    if any("can be installed" in line for line in lines):
+        fail(f"RAM information uses legacy installable-capacity wording for {machine_name}")
+
+
+def validate_machine_data(connection):
+    displayed_names = set()
+    searchable_names = {}
+    for table_name in CATEGORIES:
+        columns = tuple(
+            row[1] for row in connection.execute(
+                f'PRAGMA table_info("{table_name}")'
+            )
+        )
+        if columns != MACHINE_COLUMNS:
+            fail(f"Illegal machine table schema: {table_name}")
+
+        rows = connection.execute(
+            f'SELECT * FROM "{table_name}" ORDER BY id'
+        ).fetchall()
+        for expected_database_id, row in enumerate(rows):
+            machine = dict(zip(MACHINE_COLUMNS, row))
+            if machine["id"] != expected_database_id:
+                fail(f'Illegal database ID {machine["id"]} in category {table_name}')
+            machine_name = f'{table_name}/{machine["id"]}'
+
+            for column_name in REQUIRED_TEXT_COLUMNS:
+                if not machine[column_name]:
+                    fail(f"Missing {column_name} for {machine_name}")
+
+            if machine["name"] in displayed_names:
+                fail(f'Duplicate displayed machine name "{machine["name"]}"')
+            displayed_names.add(machine["name"])
+
+            for column_name in MACHINE_COLUMNS[1:]:
+                value = machine[column_name]
+                if value is None:
+                    continue
+                if not isinstance(value, str):
+                    fail(f"Non-text {column_name} for {machine_name}")
+                if value != value.strip() or not value:
+                    fail(f"Unnormalized {column_name} for {machine_name}")
+                if "\r" in value or "\t" in value or "\n\n" in value:
+                    fail(f"Illegal whitespace in {column_name} for {machine_name}")
+                if "Not Applicable/No Info" in value:
+                    fail(f"Obsolete placeholder in {column_name} for {machine_name}")
+                if column_name != "support" and value == "N/A":
+                    fail(f"Literal N/A in {column_name} for {machine_name}")
+
+            validate_ram_information(machine["ram"], machine_name)
+
+            for token_column in ("sname", "sprocessor"):
+                if machine[token_column] is None:
+                    continue
+                tokens = machine[token_column].split("~")
+                normalized_tokens = [token.casefold() for token in tokens]
+                if any(not token or token != token.strip() for token in tokens):
+                    fail(f"Illegal {token_column} token for {machine_name}")
+                if len(normalized_tokens) != len(set(normalized_tokens)):
+                    fail(f"Duplicate {token_column} token for {machine_name}")
+
+            search_names = get_search_values(machine["sname"])
+            if machine["name"] not in search_names:
+                fail(f"Displayed name is not searchable for {machine_name}")
+            for search_name in search_names:
+                normalized_name = search_name.casefold()
+                existing_machine = searchable_names.get(normalized_name)
+                if existing_machine is not None:
+                    fail(
+                        f'Duplicate searchable name "{search_name}" for '
+                        f"{existing_machine} and {machine_name}"
+                    )
+                searchable_names[normalized_name] = machine_name
+
+            if machine["support"] not in SUPPORT_VALUES:
+                fail(f'Unknown support value "{machine["support"]}" for {machine_name}')
+            if machine["sound"] is not None and machine["sound"] not in SOUND_VALUES:
+                fail(f'Unknown sound value "{machine["sound"]}" for {machine_name}')
+            for image_column in ("processorid", "graphicsid"):
+                image_values = machine[image_column]
+                if image_values is None:
+                    continue
+                image_values = image_values.split(",")
+                if len(image_values) != len(set(image_values)):
+                    fail(f"Duplicate {image_column} value for {machine_name}")
+                if any(IMAGE_VALUE_ID.fullmatch(value) is None for value in image_values):
+                    fail(f'Illegal {image_column} "{machine[image_column]}" for {machine_name}')
+                supported_values = (PROCESSOR_IMAGE_VALUES if image_column == "processorid"
+                                    else GRAPHICS_IMAGE_VALUES)
+                unknown_values = sorted(set(image_values) - set(supported_values))
+                if unknown_values:
+                    fail(
+                        f"Unknown {image_column} values for {machine_name}: "
+                        + ", ".join(unknown_values)
+                    )
+
+            display_years = machine["year"].split("\n")
+            if any(DISPLAY_YEAR.fullmatch(year) is None for year in display_years):
+                fail(f'Illegal display year "{machine["year"]}" for {machine_name}')
+            sorting_years = machine["syear"].split(", ")
+            if any(SORTING_YEAR.fullmatch(year) is None for year in sorting_years):
+                fail(f'Illegal sorting year "{machine["syear"]}" for {machine_name}')
+            display_year_values = {
+                re.match(r"\d{4}\.\d+", year).group() for year in display_years
+            }
+            if len(sorting_years) != len(set(sorting_years)):
+                fail(f"Duplicate sorting year for {machine_name}")
+            if sorting_years != sorted(
+                sorting_years,
+                key=lambda year: tuple(int(value) for value in year.split(".")),
+            ):
+                fail(f"Unsorted sorting year for {machine_name}")
+            if display_year_values != set(sorting_years):
+                fail(f"Display and sorting years differ for {machine_name}")
+
+            for display_column, search_column in DISPLAYED_SEARCH_COLUMNS:
+                displayed = get_displayed_search_values(machine[display_column])
+                searchable = get_search_values(machine[search_column])
+                if displayed != searchable:
+                    fail(
+                        f"Displayed and searchable {display_column} values differ for "
+                        f"{machine_name}"
+                    )
+
+            links = re.split(r"(?<=\.html);", machine["links"])
+            if links == ["N"]:
+                continue
+            if len(links) != len(set(links)):
+                fail(f"Duplicate links for {machine_name}")
+            for link in links:
+                label, separator, url_path = link.rpartition(",https://")
+                if not separator or not label or not url_path:
+                    fail(f'Illegal link "{link}" for {machine_name}')
 
 
 def get_serialized_sections(filter_name):
@@ -188,11 +448,6 @@ def get_processor_model_range(line):
         model_end = apple_model.end()
     elif " FPU" in model_line:
         model_end = model_line.index(" FPU") + len(" FPU")
-    elif model_line.startswith("MOS Technology "):
-        io_processor = re.match(r"MOS Technology \S+", model_line)
-        if io_processor is None:
-            fail(f'Unknown I/O processor model "{line}"')
-        model_end = io_processor.end()
     else:
         fail(f'Processor model has no detail boundary: "{line}"')
 
@@ -201,7 +456,9 @@ def get_processor_model_range(line):
         fail(f'Illegal processor model separator in "{line}"')
     if separator.startswith((" at ", ", ", " and ")):
         fail(f'Obsolete processor model separator in "{line}"')
-    return model_start, model_start + model_end
+    # Qualifiers and quantities belong to the model label visually.  Keeping
+    # the complete prefix bold avoids leaving a weak fragment at line start.
+    return 0, model_start + model_end
 
 
 def get_graphics_model_range(line):
@@ -261,7 +518,6 @@ def load_picture_assets(database_path):
 def load_directory(connection, picture_assets):
     directory = []
     machines = []
-    current_picture = None
     used_picture_assets = set()
     for category_id, table_name in enumerate(CATEGORIES):
         columns = ", ".join(
@@ -278,21 +534,19 @@ def load_directory(connection, picture_assets):
             directory_values = row[1:1 + len(DIRECTORY_COLUMNS)]
             picture = row[1 + len(DIRECTORY_COLUMNS)]
             processor, graphics = row[-2:]
-            if picture is not None:
-                if PICTURE_ID.fullmatch(picture) is None:
-                    fail(
-                        f'Illegal picture ID "{picture}" for '
-                        f"{table_name}/{database_id}"
-                    )
-                if picture not in picture_assets:
-                    fail(
-                        f'Missing picture asset "{picture}" for '
-                        f"{table_name}/{database_id}"
-                    )
-                current_picture = picture
-                used_picture_assets.add(picture)
-            if current_picture is None:
+            if picture is None:
                 fail(f"Missing picture for {table_name}/{database_id}")
+            if PICTURE_ID.fullmatch(picture) is None:
+                fail(
+                    f'Illegal picture ID "{picture}" for '
+                    f"{table_name}/{database_id}"
+                )
+            if picture not in picture_assets:
+                fail(
+                    f'Missing picture asset "{picture}" for '
+                    f"{table_name}/{database_id}"
+                )
+            used_picture_assets.add(picture)
             processor_format = get_format_ranges(
                 processor, get_processor_model_range
             )
@@ -302,11 +556,12 @@ def load_directory(connection, picture_assets):
             directory.append(
                 (machine_id, category_id, database_id)
                 + directory_values
-                + (current_picture, processor_format, graphics_format)
+                + (picture, processor_format, graphics_format)
             )
             machine = {
                 "machine_id": machine_id,
                 "category": table_name,
+                "database_id": database_id,
                 **dict(zip(DIRECTORY_COLUMNS, directory_values)),
             }
             validate_directory_values(machine)
@@ -335,7 +590,53 @@ def get_sorting_year(machine):
     return year * 100 + month
 
 
+def matches_filter_value(column_name, raw_value, keyword):
+    raw_value = raw_value.lower()
+    keyword = keyword.lower()
+    if column_name == "stype":
+        return raw_value == keyword
+    if column_name == "sprocessor":
+        return keyword in raw_value.split("~")
+    return keyword in raw_value
+
+
+def validate_filter_values(machines):
+    for filter_name in ("names", "processors"):
+        column_name, keywords, unused_labels = FILTERS[filter_name]
+        for machine in machines:
+            raw_value = machine[column_name]
+            if raw_value is None:
+                continue
+            if column_name == "sprocessor":
+                processor_values = {
+                    value.lower() for value in raw_value.split("~") if value
+                }
+                known_values = {keyword.lower() for keyword in keywords}
+                unknown_values = sorted(processor_values - known_values)
+                if unknown_values:
+                    fail(
+                        f"Unknown processor filter values for "
+                        f'{machine["category"]}/{machine["database_id"]}: '
+                        + ", ".join(unknown_values)
+                    )
+            matched = [
+                keyword for keyword in keywords
+                if matches_filter_value(column_name, raw_value, keyword)
+            ]
+            if not matched:
+                fail(
+                    f'Unknown {filter_name} filter value "{raw_value}" for '
+                    f'{machine["category"]}/{machine["database_id"]}'
+                )
+            if filter_name == "names" and len(matched) != 1:
+                fail(
+                    f'Ambiguous names filter value "{raw_value}" for '
+                    f'{machine["category"]}/{machine["database_id"]}'
+                )
+
+
 def build_main_cache(machines):
+    validate_filter_values(machines)
     cache = []
     for manufacturer, categories in MANUFACTURERS.items():
         included_categories = set(categories)
@@ -349,7 +650,9 @@ def build_main_cache(machines):
                     for machine in machines
                     if machine["category"] in included_categories
                     and machine[column_name] is not None
-                    and keyword.lower() in machine[column_name].lower()
+                    and matches_filter_value(
+                        column_name, machine[column_name], keyword
+                    )
                 ]
                 matched.sort(key=lambda machine_id: get_sorting_year(machines[machine_id]))
                 positions.append(",".join(str(machine_id) for machine_id in matched))
@@ -511,6 +814,8 @@ def main():
         connection = sqlite3.connect(database_path)
 
     try:
+        validate_category_configuration(connection)
+        validate_machine_data(connection)
         picture_assets = load_picture_assets(database_path)
         directory, machines = load_directory(connection, picture_assets)
         cache = build_main_cache(machines)

@@ -83,6 +83,7 @@
     <string name="menu_group4" translatable="false">Apple Silicon Macintosh</string>
     <string name="main_section_desktop">Desktop</string>
     <string name="main_section_laptop">Laptop</string>
+    <string name="main_section_server">Server</string>
     <string name="menu">Main Menu</string>
     <string name="submenu_main_reset">Reset Filter and View</string>
     <string name="submenu_specs_favourite">Add/Remove Bookmark</string>
@@ -149,6 +150,11 @@
     <string name="error_copy_information">Error details copied</string>
     <string name="copy_information_success">Information copied</string>
     <string name="error_copy_not_available">Nothing available to copy</string>
+    <string name="upgrade_report_title">Saved Data Updated</string>
+    <string name="upgrade_report_information">Some saved items no longer match the current database and were removed. You can copy the details below for your records.</string>
+    <string name="upgrade_report_copy_button">Copy Details</string>
+    <string name="upgrade_report_copy_information">Removed items copied</string>
+    <string name="upgrade_report_empty_entry">(Empty entry)</string>
     <string name="error_restart">Restart</string>
     <string name="first_one">Already the first machine</string>
     <string name="last_one">Already the last machine</string>

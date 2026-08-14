@@ -29,8 +29,9 @@
 
                 <ImageView
                     android:id="@+id/pic"
-                    android:layout_width="250dp"
-                    android:layout_height="150dp" />
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:scaleType="fitCenter" />
 
                 <Space
                     android:layout_width="wrap_content"

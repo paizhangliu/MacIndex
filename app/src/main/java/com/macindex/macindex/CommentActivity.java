@@ -197,7 +197,7 @@ public class CommentActivity extends AppCompatActivity {
                                             "all", true, false);
                                     if (thisID.length != 1) {
                                         Log.e("CommentSearchThread", "Error occurred on search string " + splitedThisString[0]);
-                                        continue;
+                                        throw new IllegalStateException("Invalid comment machine");
                                     }
                                     validMachineIDs.add(thisID[0]);
                                 }
@@ -214,7 +214,18 @@ public class CommentActivity extends AppCompatActivity {
                                 machineIDsForRequest = machineIDs == null ? new int[0] : machineIDs;
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            runOnUiThread(() -> {
+                                if (requestID != commentsRequestID || isFinishing()
+                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                        && isDestroyed())) {
+                                    return;
+                                }
+                                if (waitDialog != null && waitDialog.isShowing()) {
+                                    waitDialog.dismiss();
+                                }
+                                ExceptionHelper.handleException(CommentActivity.this, e,
+                                        "CommentSearchThread", "Illegal comment preference string.");
+                            });
                             return;
                         }
                         if (Thread.currentThread().isInterrupted() || requestID != commentsRequestID) {

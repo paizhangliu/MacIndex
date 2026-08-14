@@ -240,7 +240,7 @@ public class FavouriteActivity extends AppCompatActivity {
                                             "all", true, false);
                                     if (thisID.length != 1) {
                                         Log.e("FavouritesSearchThread", "Error occurred on search string " + thisFolder[j + 1]);
-                                        continue;
+                                        throw new IllegalStateException("Invalid favourite machine");
                                     }
                                     validMachineIDs.add(thisID[0]);
                                 }
@@ -376,7 +376,18 @@ public class FavouriteActivity extends AppCompatActivity {
                             }
                         });
                     } catch (final Exception e) {
-                        e.printStackTrace();
+                        runOnUiThread(() -> {
+                            if (requestID != favouritesRequestID || isFinishing()
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                    && isDestroyed())) {
+                                return;
+                            }
+                            if (waitDialog != null && waitDialog.isShowing()) {
+                                waitDialog.dismiss();
+                            }
+                            ExceptionHelper.handleException(FavouriteActivity.this, e,
+                                    "FavouritesSearchThread", "Illegal favourite preference string.");
+                        });
                     }
                 }
             };

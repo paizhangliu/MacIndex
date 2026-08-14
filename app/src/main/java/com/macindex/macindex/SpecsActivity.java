@@ -459,7 +459,9 @@ public class SpecsActivity extends AppCompatActivity {
         try {
             // Init image
             final ImageView image = findViewById(R.id.pic);
-            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
+            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID,
+                    getResources().getDisplayMetrics().widthPixels,
+                    Math.round(150 * getResources().getDisplayMetrics().density));
             DebugHelper.log("SpecsAct", "Image exists");
             image.setImageBitmap(picture);
 

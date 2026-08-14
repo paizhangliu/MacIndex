@@ -27,6 +27,10 @@ class ExceptionHelper {
                         .putInt("lastKnownVersion", 0).commit();
                 if (!versionInvalidated) {
                     Log.e("ExceptionHelper", "Unable to register the current version again.");
+                } else {
+                    // Do not allow a cached process to register the same open
+                    // database again after an exception.
+                    MainActivity.closeDatabase();
                 }
             } catch (Exception e) {
                 Log.e("ExceptionHelper", "Unable to register the current version again.", e);
@@ -59,40 +63,59 @@ class ExceptionHelper {
     }
 
     private static void handleExceptionDialog(final Context thisContext, final String exceptionInfo) {
+        showInformationDialog(thisContext, R.string.error, R.string.error_information,
+                R.string.error_restart, R.string.error_copy_button,
+                R.string.error_copy_information, exceptionInfo,
+                () -> PrefsHelper.triggerRebirth(thisContext));
+    }
+
+    public static void showUpgradeReport(final Context thisContext, final String report) {
+        showInformationDialog(thisContext, R.string.upgrade_report_title,
+                R.string.upgrade_report_information, R.string.link_confirm,
+                R.string.upgrade_report_copy_button, R.string.upgrade_report_copy_information,
+                report, () -> {
+                    // Confirmed.
+                });
+    }
+
+    private static void showInformationDialog(final Context thisContext, final int title,
+                                              final int message, final int positiveButton,
+                                              final int copyButton, final int copyToast,
+                                              final String information,
+                                              final Runnable positiveAction) {
         if (thisContext instanceof Activity) {
             final Activity activity = (Activity) thisContext;
             if (activity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
                     && activity.isDestroyed())) {
-                Log.e("ExceptionHelper", exceptionInfo);
+                Log.e("InformationDialog", information);
                 return;
             }
         }
-        final AlertDialog.Builder exceptionDialog = new AlertDialog.Builder(thisContext);
-        exceptionDialog.setTitle(R.string.error);
-        exceptionDialog.setMessage(R.string.error_information);
-        exceptionDialog.setCancelable(false);
-        exceptionDialog.setPositiveButton(R.string.error_restart, (dialogInterface, i) ->
-                PrefsHelper.triggerRebirth(thisContext));
-        exceptionDialog.setNeutralButton(R.string.error_copy_button, (dialogInterface, i) -> {
+        final AlertDialog.Builder informationDialog = new AlertDialog.Builder(thisContext);
+        informationDialog.setTitle(title);
+        informationDialog.setMessage(message);
+        informationDialog.setCancelable(false);
+        informationDialog.setPositiveButton(positiveButton, (dialogInterface, i) ->
+                positiveAction.run());
+        informationDialog.setNeutralButton(copyButton, (dialogInterface, i) -> {
             // To be override
         });
 
         final View infoChunk = ((LayoutInflater) thisContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.chunk_exception_dialog, null);
         final TextView exceptionInfoBox = infoChunk.findViewById(R.id.exceptionInfo);
 
-        exceptionInfoBox.setText(exceptionInfo);
-        exceptionDialog.setView(infoChunk);
+        exceptionInfoBox.setText(information);
+        informationDialog.setView(infoChunk);
 
-        final AlertDialog exceptionDialogCreated = exceptionDialog.create();
-        exceptionDialogCreated.show();
+        final AlertDialog informationDialogCreated = informationDialog.create();
+        informationDialogCreated.show();
 
         // Override the neutral button
-        exceptionDialogCreated.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> {
+        informationDialogCreated.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("ExceptionInfo", exceptionInfo);
+            ClipData clip = ClipData.newPlainText("ExceptionInfo", information);
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(thisContext,
-                    MainActivity.getRes().getString(R.string.error_copy_information), Toast.LENGTH_LONG).show();
+            Toast.makeText(thisContext, thisContext.getString(copyToast), Toast.LENGTH_LONG).show();
         });
     }
 

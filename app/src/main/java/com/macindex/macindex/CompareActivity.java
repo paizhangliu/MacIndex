@@ -422,7 +422,9 @@ public class CompareActivity extends AppCompatActivity {
 
     private void setMachineImage(final int viewID, final int machineID, final String name) {
         final ImageView image = findViewById(viewID);
-        final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID);
+        final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID,
+                getResources().getDisplayMetrics().widthPixels / 2,
+                Math.round(150 * getResources().getDisplayMetrics().density));
         image.setImageBitmap(picture);
         image.setContentDescription(name);
         // Set a long click listener

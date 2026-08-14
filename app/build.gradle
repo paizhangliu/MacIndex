@@ -63,7 +63,7 @@ def verifyMachineIndexes = tasks.register('verifyMachineIndexes', Exec) {
 }
 
 tasks.configureEach {
-    if (name == 'preReleaseBuild') {
+    if (name == 'preDebugBuild' || name == 'preReleaseBuild') {
         dependsOn verifyMachineIndexes
     }
 }

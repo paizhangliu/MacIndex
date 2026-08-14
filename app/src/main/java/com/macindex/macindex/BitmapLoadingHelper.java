@@ -1,8 +1,12 @@
 package com.macindex.macindex;
 
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class BitmapLoadingHelper {
     /* https://stackoverflow.com/questions/25719620/how-to-solve-java-lang-outofmemoryerror-trouble-in-android */
@@ -43,5 +47,40 @@ public class BitmapLoadingHelper {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    public static Bitmap decodeSampledBitmapFromAsset(final AssetManager assetManager,
+                                                      final String assetPath,
+                                                      final int reqWidth, final int reqHeight)
+            throws IOException {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        try (InputStream inputStream = assetManager.open(assetPath)) {
+            BitmapFactory.decodeStream(inputStream, null, options);
+        }
+        if (options.outWidth <= 0 || options.outHeight <= 0) {
+            return null;
+        }
+
+        // ImageViews use fitCenter. Calculate the pixels which can actually be
+        // displayed before choosing the sample size, rather than decoding the
+        // complete source image into memory.
+        if (reqWidth > 0 && reqHeight > 0) {
+            final float displayScale = Math.min((float) reqWidth / options.outWidth,
+                    (float) reqHeight / options.outHeight);
+            final int displayedWidth = displayScale < 1
+                    ? Math.max(1, Math.round(options.outWidth * displayScale))
+                    : options.outWidth;
+            final int displayedHeight = displayScale < 1
+                    ? Math.max(1, Math.round(options.outHeight * displayScale))
+                    : options.outHeight;
+            options.inSampleSize = calculateInSampleSize(options,
+                    displayedWidth, displayedHeight);
+        }
+
+        options.inJustDecodeBounds = false;
+        try (InputStream inputStream = assetManager.open(assetPath)) {
+            return BitmapFactory.decodeStream(inputStream, null, options);
+        }
     }
 }

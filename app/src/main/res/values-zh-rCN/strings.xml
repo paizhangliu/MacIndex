@@ -77,6 +77,7 @@
     <string name="menu_group0">所有分组</string>
     <string name="main_section_desktop">台式机</string>
     <string name="main_section_laptop">笔记本电脑</string>
+    <string name="main_section_server">服务器</string>
     <string name="menu">主菜单</string>
     <string name="submenu_main_reset">重置筛选器和浏览方式</string>
     <string name="submenu_specs_favourite">添加或移除收藏</string>
@@ -142,6 +143,11 @@
     <string name="error_copy_information">错误详情已复制</string>
     <string name="copy_information_success">信息已复制</string>
     <string name="error_copy_not_available">没有可复制的信息</string>
+    <string name="upgrade_report_title">已更新已存数据</string>
+    <string name="upgrade_report_information">以下已存内容已无法与当前数据库匹配，因此已被删除。你可以复制下面的详情留存。</string>
+    <string name="upgrade_report_copy_button">复制详情</string>
+    <string name="upgrade_report_copy_information">已删除内容已复制</string>
+    <string name="upgrade_report_empty_entry">（空条目）</string>
     <string name="error_restart">重新启动</string>
     <string name="first_one">已经是第一个机型</string>
     <string name="last_one">已经是最后一个机型</string>

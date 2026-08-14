@@ -10,9 +10,9 @@ import java.util.Collections;
 public class CompareListHelperTest {
 
     @Test
-    public void parseRetainsLegacyOrderAndDropsBadOrDuplicateItems() {
+    public void parseRetainsLegacyOrder() {
         assertEquals(Arrays.asList("Macintosh 128K", "Mac mini"),
-                CompareListHelper.parse("[Macintosh 128K]│bad│[Mac mini]│[Macintosh 128K]"));
+                CompareListHelper.parse("[Macintosh 128K]│[Mac mini]"));
     }
 
     @Test
@@ -24,5 +24,25 @@ public class CompareListHelperTest {
     public void serializeKeepsTheExistingPreferenceFormat() {
         assertEquals("[Macintosh 128K]│[Mac mini]",
                 CompareListHelper.serialize(Arrays.asList("Macintosh 128K", "Mac mini")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void parseRejectsBadItems() {
+        CompareListHelper.parse("[Macintosh 128K]│bad");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void parseRejectsDuplicateItems() {
+        CompareListHelper.parse("[Macintosh 128K]│[Macintosh 128K]");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void serializeRejectsBadItems() {
+        CompareListHelper.serialize(Arrays.asList("Macintosh 128K", ""));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void serializeRejectsDuplicateItems() {
+        CompareListHelper.serialize(Arrays.asList("Macintosh 128K", "Macintosh 128K"));
     }
 }

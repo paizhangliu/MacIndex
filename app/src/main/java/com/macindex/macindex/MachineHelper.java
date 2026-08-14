@@ -4,10 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -60,7 +58,8 @@ class MachineHelper {
 
     private static final String[] CATEGORIES_LIST = {"compact_mac", "mac_ii", "mac_lc", "mac_quadra",
             "mac_performa_68k", "mac_centris", "mac_server_68k", "powerbook_68k", "powerbook_duo_68k",
-            "power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic", "powerbook_ppc_classic",
+            "power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic", "apple_network_server",
+            "powerbook_ppc_classic",
             "powerbook_duo_ppc", "power_mac", "imac_ppc", "emac", "mac_mini_ppc", "mac_server_ppc",
             "xserve_ppc", "powerbook_ppc", "ibook", "mac_pro_intel", "imac_intel", "imac_pro_intel",
             "mac_mini_intel", "xserve_intel", "macbook_pro_intel", "macbook_intel", "macbook_air_intel",
@@ -454,7 +453,10 @@ class MachineHelper {
 
     public boolean isClassicMachine(final int thisMachine) {
         validateMachineID(thisMachine);
-        return machineIdentifierIndex[thisMachine] == null;
+        // Xserve RAID has no Model Identifier, but belongs to the modern
+        // identification system rather than the Gestalt ID era.
+        return machineIdentifierIndex[thisMachine] == null
+                && !"xserve".equals(machineTypeIndex[thisMachine]);
     }
 
     public String[] getSpecs(final int thisMachine) {
@@ -582,6 +584,8 @@ class MachineHelper {
             case "T2":
                 sound[0] = R.raw.bigsur;
                 break;
+            case "N":
+                break;
             default:
                 ExceptionHelper.handleException(thisContext, null,
                         "MachineHelperGetSound", "Illegal parameter " + thisSound);
@@ -614,12 +618,13 @@ class MachineHelper {
         return sound;
     }
 
-    public Bitmap getPicture(final int thisMachine) {
+    public Bitmap getPicture(final int thisMachine, final int reqWidth, final int reqHeight) {
         validateMachineID(thisMachine);
         final String pictureAsset = machinePictureIndex[thisMachine];
-        try (InputStream inputStream = MainActivity.getRes().getAssets().open(
-                "machines/" + pictureAsset + ".webp")) {
-            final Bitmap picture = BitmapFactory.decodeStream(inputStream);
+        try {
+            final Bitmap picture = BitmapLoadingHelper.decodeSampledBitmapFromAsset(
+                    MainActivity.getRes().getAssets(),
+                    "machines/" + pictureAsset + ".webp", reqWidth, reqHeight);
             if (picture == null) {
                 throw new IllegalStateException(
                         "Unable to decode image for machine " + thisMachine);
@@ -659,8 +664,6 @@ class MachineHelper {
         }
         String[] thisImages = thisProcessorImage.split("~");
         switch (thisImages[0]) {
-            // Duo dock exception
-            case "680X0":
             case "68000":
             case "68020":
             case "68030":
@@ -723,10 +726,6 @@ class MachineHelper {
         int[][] toReturn = new int[thisImages.length][];
         for (int i = 0; i < thisImages.length; i++) {
             switch (thisImages[i]) {
-                case "740":
-                    toReturn[i] = new int[1];
-                    toReturn[i][0] = R.drawable.ppc740;
-                    break;
                 case "750":
                     toReturn[i] = new int[2];
                     toReturn[i][0] = R.drawable.mpc750;
@@ -739,10 +738,6 @@ class MachineHelper {
                 case "750cxe":
                     toReturn[i] = new int[1];
                     toReturn[i][0] = R.drawable.ppc750cxe;
-                    break;
-                case "755":
-                    toReturn[i] = new int[1];
-                    toReturn[i][0] = R.drawable.mpc755;
                     break;
                 case "750fx":
                     toReturn[i] = new int[1];
@@ -1153,8 +1148,8 @@ class MachineHelper {
         final String[] apple68k = {"compact_mac", "mac_ii", "mac_lc", "mac_quadra",
                 "mac_performa_68k", "mac_centris", "mac_server_68k", "powerbook_68k", "powerbook_duo_68k"};
         final String[] appleppc = {"power_mac_classic", "mac_performa_ppc", "mac_server_ppc_classic",
-                "powerbook_ppc_classic", "powerbook_duo_ppc", "power_mac", "imac_ppc", "emac",
-                "mac_mini_ppc", "mac_server_ppc", "xserve_ppc", "powerbook_ppc", "ibook"};
+                "apple_network_server", "powerbook_ppc_classic", "powerbook_duo_ppc", "power_mac",
+                "imac_ppc", "emac", "mac_mini_ppc", "mac_server_ppc", "xserve_ppc", "powerbook_ppc", "ibook"};
         final String[] appleintel = {"mac_pro_intel", "imac_intel", "imac_pro_intel",
                 "mac_mini_intel", "xserve_intel", "macbook_pro_intel", "macbook_intel", "macbook_air_intel"};
         final String[] applearm = {"mac_pro_arm", "imac_arm", "mac_mini_arm", "macbook_pro_arm",
@@ -1217,8 +1212,8 @@ class MachineHelper {
                     continue;
                 }
                 final String directoryValue = getDirectoryValue(machineID, columnName);
-                if (directoryValue != null
-                        && directoryValue.toLowerCase(Locale.ROOT).contains(normalizedSearchInput)) {
+                if (directoryValue != null && isDirectoryMatch(
+                        columnName, directoryValue, normalizedSearchInput)) {
                     rawPositions.add(machineID);
                 }
             }
@@ -1266,6 +1261,19 @@ class MachineHelper {
             e.printStackTrace();
             return new int[0];
         }
+    }
+
+    private boolean isDirectoryMatch(final String columnName, final String directoryValue,
+                                     final String normalizedSearchInput) {
+        final String normalizedDirectoryValue = directoryValue.toLowerCase(Locale.ROOT);
+        if (columnName.equals("stype")) {
+            return normalizedDirectoryValue.equals(normalizedSearchInput);
+        }
+        if (columnName.equals("sprocessor")) {
+            return Arrays.asList(normalizedDirectoryValue.split("~"))
+                    .contains(normalizedSearchInput);
+        }
+        return normalizedDirectoryValue.contains(normalizedSearchInput);
     }
 
     // Get year parameter for sorting. Returns an integer in YYYYMM format.
