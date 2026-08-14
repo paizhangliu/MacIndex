@@ -31,7 +31,14 @@ import java.util.Map;
  * Individual getter and lazy cache removed since Ver. 4.9
  * Picture decoupled from DB since Ver. 4.9
  */
-class MachineHelper implements MachineIdentityResolver {
+class MachineHelper {
+
+    static class UnknownMachineUIDException extends IllegalArgumentException {
+
+        UnknownMachineUIDException(final String machineUID) {
+            super("Unknown machine UID " + machineUID);
+        }
+    }
 
     /*
      * Updating categories
@@ -111,12 +118,6 @@ class MachineHelper implements MachineIdentityResolver {
 
     private final Map<String, Integer> machineIDByUID;
 
-    private final Map<String, String> legacyUIDByName;
-
-    private final Map<String, String> replacementUIDByUID;
-
-    private final Map<String, String> retiredNameByUID;
-
     private final String[] machineNameIndex;
 
     private final String[] machineSearchNameIndex;
@@ -170,7 +171,6 @@ class MachineHelper implements MachineIdentityResolver {
             if (totalMachine == 0) {
                 throw new IllegalStateException("Machine directory is empty");
             }
-            final int[] categoryIndividualCount = new int[CATEGORIES_LIST.length];
             machineCategoryIndex = new int[totalMachine];
             machineDatabaseIndex = new int[totalMachine];
             machineUIDIndex = new String[totalMachine];
@@ -188,7 +188,6 @@ class MachineHelper implements MachineIdentityResolver {
             machinePictureIndex = new String[totalMachine];
             machineProcessorFormatIndex = new int[totalMachine][];
             machineGraphicsFormatIndex = new int[totalMachine][];
-            int expectedMachineID = 0;
             while (directoryCursor.moveToNext()) {
                 final int machineID = directoryCursor.getInt(
                         directoryCursor.getColumnIndexOrThrow("machine_id"));
@@ -196,22 +195,11 @@ class MachineHelper implements MachineIdentityResolver {
                         directoryCursor.getColumnIndexOrThrow("category_id"));
                 final int databaseID = directoryCursor.getInt(
                         directoryCursor.getColumnIndexOrThrow("database_id"));
-                if (machineID != expectedMachineID
-                        || categoryID < 0 || categoryID >= CATEGORIES_LIST.length
-                        || databaseID != categoryIndividualCount[categoryID]) {
-                    throw new IllegalStateException("Illegal machine directory position "
-                            + machineID + "/" + categoryID + "/" + databaseID);
-                }
-                categoryIndividualCount[categoryID]++;
                 machineCategoryIndex[machineID] = categoryID;
                 machineDatabaseIndex[machineID] = databaseID;
                 machineUIDIndex[machineID] = directoryCursor.getString(
                         directoryCursor.getColumnIndexOrThrow("uid"));
-                if (!UserRecordJsonHelper.isMachineUID(machineUIDIndex[machineID])
-                        || machineIDByUID.put(machineUIDIndex[machineID], machineID) != null) {
-                    throw new IllegalStateException("Illegal machine UID "
-                            + machineUIDIndex[machineID]);
-                }
+                machineIDByUID.put(machineUIDIndex[machineID], machineID);
                 machineNameIndex[machineID] = directoryCursor.getString(
                         directoryCursor.getColumnIndexOrThrow("name"));
                 machineSearchNameIndex[machineID] = directoryCursor.getString(
@@ -240,46 +228,9 @@ class MachineHelper implements MachineIdentityResolver {
                 machineGraphicsFormatIndex[machineID] = parseFormatRanges(
                         directoryCursor.getString(
                                 directoryCursor.getColumnIndexOrThrow("graphics_format")));
-                expectedMachineID++;
             }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load the machine directory", e);
-        }
-
-        legacyUIDByName = new HashMap<>();
-        replacementUIDByUID = new HashMap<>();
-        retiredNameByUID = new HashMap<>();
-        try (Cursor legacyCursor = database.query("machine_legacy_names",
-                new String[]{"name", "uid"}, null, null, null, null, null);
-             Cursor historyCursor = database.query("machine_uid_history",
-                     new String[]{"uid", "last_name", "replacement_uid"},
-                     null, null, null, null, null)) {
-            while (legacyCursor.moveToNext()) {
-                final String name = legacyCursor.getString(0);
-                final String uid = legacyCursor.getString(1);
-                if (name == null || !name.equals(name.trim()) || name.isEmpty()
-                        || !machineIDByUID.containsKey(uid)
-                        || legacyUIDByName.put(name.toLowerCase(Locale.ROOT), uid) != null) {
-                    throw new IllegalStateException("Illegal legacy machine identity " + name);
-                }
-            }
-            while (historyCursor.moveToNext()) {
-                final String uid = historyCursor.getString(0);
-                final String name = historyCursor.getString(1);
-                final String replacementUID = historyCursor.getString(2);
-                if (!UserRecordJsonHelper.isMachineUID(uid) || name == null
-                        || !name.equals(name.trim()) || name.isEmpty()
-                        || machineIDByUID.containsKey(uid)
-                        || retiredNameByUID.put(uid, name) != null
-                        || (replacementUID != null && !machineIDByUID.containsKey(replacementUID))) {
-                    throw new IllegalStateException("Illegal retired machine identity " + uid);
-                }
-                if (replacementUID != null) {
-                    replacementUIDByUID.put(uid, replacementUID);
-                }
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to load machine identities", e);
         }
 
         mainFilters = new String[3][][];
@@ -288,21 +239,14 @@ class MachineHelper implements MachineIdentityResolver {
         try (Cursor filterCursor = database.query("main_filter",
                 new String[]{"filter", "column_name", "keywords", "labels", "sections"},
                 null, null, null, null, null)) {
-            int filterCount = 0;
             while (filterCursor.moveToNext()) {
                 final String thisFilter = filterCursor.getString(
                         filterCursor.getColumnIndexOrThrow("filter"));
                 final int filterID = translateFilterID(thisFilter);
-                if (mainFilters[filterID] != null) {
-                    throw new IllegalStateException("Duplicate main filter " + thisFilter);
-                }
                 final String[] keywords = filterCursor.getString(
                         filterCursor.getColumnIndexOrThrow("keywords")).split(",", -1);
                 final String[] labels = filterCursor.getString(
                         filterCursor.getColumnIndexOrThrow("labels")).split("\n", -1);
-                if (keywords.length != labels.length) {
-                    throw new IllegalStateException("Illegal main filter " + thisFilter);
-                }
                 mainFilters[filterID] = new String[][]{
                         {filterCursor.getString(
                                 filterCursor.getColumnIndexOrThrow("column_name"))},
@@ -316,31 +260,12 @@ class MachineHelper implements MachineIdentityResolver {
                     final String[] sections = rawSections.split(";");
                     mainSectionPositions[filterID] = new int[sections.length];
                     mainSectionNames[filterID] = new String[sections.length];
-                    int previousPosition = -1;
                     for (int i = 0; i < sections.length; i++) {
                         final String[] thisSection = sections[i].split(":");
-                        if (thisSection.length != 2) {
-                            throw new IllegalStateException(
-                                    "Illegal main filter section " + thisFilter);
-                        }
                         final int thisPosition = Integer.parseInt(thisSection[0]);
-                        if (thisPosition <= previousPosition || thisPosition >= keywords.length) {
-                            throw new IllegalStateException(
-                                    "Illegal main filter section position " + thisFilter);
-                        }
                         mainSectionPositions[filterID][i] = thisPosition;
                         mainSectionNames[filterID][i] = thisSection[1];
-                        previousPosition = thisPosition;
                     }
-                }
-                filterCount++;
-            }
-            if (filterCount != 3) {
-                throw new IllegalStateException("Illegal main filter count " + filterCount);
-            }
-            for (String[][] mainFilter : mainFilters) {
-                if (mainFilter == null) {
-                    throw new IllegalStateException("Incomplete main filters");
                 }
             }
         } catch (Exception e) {
@@ -351,7 +276,6 @@ class MachineHelper implements MachineIdentityResolver {
         try (Cursor cacheCursor = database.query("main_cache",
                 new String[]{"manufacturer", "filter", "positions"},
                 null, null, null, null, null)) {
-            int cacheCount = 0;
             while (cacheCursor.moveToNext()) {
                 final String thisManufacturer = cacheCursor.getString(
                         cacheCursor.getColumnIndexOrThrow("manufacturer"));
@@ -359,17 +283,8 @@ class MachineHelper implements MachineIdentityResolver {
                         cacheCursor.getColumnIndexOrThrow("filter"));
                 final int manufacturerID = translateManufacturerID(thisManufacturer);
                 final int filterID = translateFilterID(thisFilter);
-                if (mainPositions[manufacturerID][filterID] != null) {
-                    throw new IllegalStateException("Duplicate main cache "
-                            + thisManufacturer + "/" + thisFilter);
-                }
-
                 final String[] rawCategories = cacheCursor.getString(
                         cacheCursor.getColumnIndexOrThrow("positions")).split(";", -1);
-                if (rawCategories.length != getFilterString(thisFilter)[1].length) {
-                    throw new IllegalStateException("Illegal main cache category count "
-                            + thisManufacturer + "/" + thisFilter);
-                }
                 final int[][] thisPositions = new int[rawCategories.length][];
                 for (int i = 0; i < rawCategories.length; i++) {
                     if (rawCategories[i].isEmpty()) {
@@ -377,31 +292,12 @@ class MachineHelper implements MachineIdentityResolver {
                         continue;
                     }
                     final String[] rawMachineIDs = rawCategories[i].split(",");
-                    final boolean[] matchedMachines = new boolean[totalMachine];
                     thisPositions[i] = new int[rawMachineIDs.length];
                     for (int j = 0; j < rawMachineIDs.length; j++) {
-                        final int machineID = Integer.parseInt(rawMachineIDs[j]);
-                        if (machineID < 0 || machineID >= totalMachine
-                                || matchedMachines[machineID]) {
-                            throw new IllegalStateException("Illegal cached machine ID "
-                                    + machineID + " in " + thisManufacturer + "/" + thisFilter);
-                        }
-                        matchedMachines[machineID] = true;
-                        thisPositions[i][j] = machineID;
+                        thisPositions[i][j] = Integer.parseInt(rawMachineIDs[j]);
                     }
                 }
                 mainPositions[manufacturerID][filterID] = thisPositions;
-                cacheCount++;
-            }
-            if (cacheCount != 15) {
-                throw new IllegalStateException("Illegal main cache count " + cacheCount);
-            }
-            for (int[][][] manufacturerPositions : mainPositions) {
-                for (int[][] filterPositions : manufacturerPositions) {
-                    if (filterPositions == null) {
-                        throw new IllegalStateException("Incomplete main cache");
-                    }
-                }
             }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load the main cache", e);
@@ -432,12 +328,11 @@ class MachineHelper implements MachineIdentityResolver {
         final String resolvedUID = resolveUID(thisUID);
         final Integer machineID = resolvedUID == null ? null : machineIDByUID.get(resolvedUID);
         if (machineID == null) {
-            throw new IllegalArgumentException("Unknown machine UID " + thisUID);
+            throw new UnknownMachineUIDException(thisUID);
         }
         return machineID;
     }
 
-    @Override
     public String resolveUID(final String thisUID) {
         if (thisUID == null) {
             return null;
@@ -446,25 +341,15 @@ class MachineHelper implements MachineIdentityResolver {
         if (machineIDByUID.containsKey(normalizedUID)) {
             return normalizedUID;
         }
-        return replacementUIDByUID.get(normalizedUID);
+        return null;
     }
 
-    @Override
-    public String resolveLegacyName(final String thisName) {
-        if (thisName == null) {
-            return null;
-        }
-        return legacyUIDByName.get(thisName.trim().toLowerCase(Locale.ROOT));
-    }
-
-    @Override
     public String getIdentityName(final String thisUID) {
         final String resolvedUID = resolveUID(thisUID);
         if (resolvedUID != null) {
             return getName(machineIDByUID.get(resolvedUID));
         }
-        return retiredNameByUID.get(thisUID == null ? null
-                : thisUID.trim().toUpperCase(Locale.ROOT));
+        return null;
     }
 
     // Get generated positions for the MainActivity.
@@ -506,20 +391,12 @@ class MachineHelper implements MachineIdentityResolver {
         }
         final String[] rawRanges = thisFormat.split(";");
         final int[] formatRanges = new int[rawRanges.length * 2];
-        int previousEnd = 0;
         for (int i = 0; i < rawRanges.length; i++) {
             final String[] thisRange = rawRanges[i].split(":");
-            if (thisRange.length != 2) {
-                throw new IllegalStateException("Illegal model format " + thisFormat);
-            }
             final int rangeStart = Integer.parseInt(thisRange[0]);
             final int rangeEnd = Integer.parseInt(thisRange[1]);
-            if (rangeStart < previousEnd || rangeEnd <= rangeStart) {
-                throw new IllegalStateException("Illegal model range " + thisFormat);
-            }
             formatRanges[i * 2] = rangeStart;
             formatRanges[i * 2 + 1] = rangeEnd;
-            previousEnd = rangeEnd;
         }
         return formatRanges;
     }
@@ -688,7 +565,7 @@ class MachineHelper implements MachineIdentityResolver {
             case "N":
                 break;
             default:
-                ExceptionHelper.handleException(thisContext, null,
+                ExceptionHelper.handleDatabaseException(thisContext, null,
                         "MachineHelperGetSound", "Illegal parameter " + thisSound);
         }
         switch (thisSound) {
@@ -804,7 +681,7 @@ class MachineHelper implements MachineIdentityResolver {
             case "m5":
                 return R.drawable.applelogo;
             default:
-                ExceptionHelper.handleException(thisContext, null,
+                ExceptionHelper.handleDatabaseException(thisContext, null,
                         "MHGetProcessorImageType", "Illegal parameter " + thisProcessorImage);
         }
         return 0;
@@ -1082,7 +959,7 @@ class MachineHelper implements MachineIdentityResolver {
                     toReturn[i][0] = R.drawable.applem1u;
                     break;
                 default:
-                    ExceptionHelper.handleException(thisContext, null,
+                    ExceptionHelper.handleDatabaseException(thisContext, null,
                             "MHGetProcessorImage", "Illegal parameter " + thisProcessorImage);
                     toReturn[i] = new int[1];
                     toReturn[i][0] = 0;
@@ -1202,7 +1079,7 @@ class MachineHelper implements MachineIdentityResolver {
                     toReturn[i][0] = R.drawable.inteliris2020;
                     break;
                 default:
-                    ExceptionHelper.handleException(thisContext, null,
+                    ExceptionHelper.handleDatabaseException(thisContext, null,
                             "MHGetGraphicsImage", "Illegal parameter " + thisGraphicsImage);
                     toReturn[i] = new int[1];
                     toReturn[i][0] = 0;

@@ -105,16 +105,11 @@ public class SpecsActivity extends AppCompatActivity {
             }
             machineID = MainActivity.getMachineHelper().getMachineID(thisUID);
 
-            // Is position already inherited?
-            if (intent.getBooleanExtra("machineIDPositionInherit", false)) {
-                machineIDPosition = intent.getIntExtra("machineIDPosition", -1);
-            } else {
-                // Find the current position.
-                for (int i = 0; i < navigationUIDs.length; i++) {
-                    if (navigationUIDs[i].equals(thisUID)) {
-                        machineIDPosition = i;
-                        break;
-                    }
+            // Find the current position.
+            for (int i = 0; i < navigationUIDs.length; i++) {
+                if (navigationUIDs[i].equals(thisUID)) {
+                    machineIDPosition = i;
+                    break;
                 }
             }
 
@@ -752,8 +747,6 @@ public class SpecsActivity extends AppCompatActivity {
         thisUID = navigationUIDs[machineIDPosition];
         final Intent newMachine = new Intent(SpecsActivity.this, SpecsActivity.class);
         newMachine.putExtra("machineUID", thisUID);
-        newMachine.putExtra("machineIDPositionInherit", true);
-        newMachine.putExtra("machineIDPosition", machineIDPosition);
         newMachine.putExtra("navigationUIDs", navigationUIDs);
         startActivity(newMachine);
         finish();

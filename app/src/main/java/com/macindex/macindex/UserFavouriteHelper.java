@@ -18,7 +18,10 @@ import java.util.Set;
  */
 class UserFavouriteHelper {
 
-    static final String EMPTY_JSON = "{\"schema\":1,\"folders\":[]}";
+    private static final int SCHEMA_VERSION = 1;
+
+    static final String EMPTY_JSON = "{\"schema\":" + SCHEMA_VERSION
+            + ",\"folders\":[]}";
 
     static class Folder {
         String name;
@@ -34,7 +37,7 @@ class UserFavouriteHelper {
         try {
             final JSONObject root = new JSONObject(raw);
             UserRecordJsonHelper.requireKeys(root, "schema", "folders");
-            if (root.getInt("schema") != UserRecordJsonHelper.SCHEMA_VERSION) {
+            if (root.getInt("schema") != SCHEMA_VERSION) {
                 throw new IllegalArgumentException("Unsupported favourite schema");
             }
             final JSONArray rawFolders = root.getJSONArray("folders");
@@ -67,7 +70,8 @@ class UserFavouriteHelper {
             }
             return folders;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal favourite JSON", e);
+            throw new UserRecordJsonHelper.InvalidUserRecordException(
+                    "Illegal favourite JSON", e);
         }
     }
 
@@ -99,7 +103,7 @@ class UserFavouriteHelper {
                 rawFolders.put(rawFolder);
             }
             final JSONObject root = new JSONObject();
-            root.put("schema", UserRecordJsonHelper.SCHEMA_VERSION);
+            root.put("schema", SCHEMA_VERSION);
             root.put("folders", rawFolders);
             return root.toString();
         } catch (Exception e) {
@@ -108,8 +112,14 @@ class UserFavouriteHelper {
     }
 
     static List<Folder> read(final Context thisContext) {
-        return parse(UserRecordJsonHelper.readStoredJSON(
+        final List<Folder> folders = parse(UserRecordJsonHelper.readStoredJSON(
                 thisContext, "userFavourites", EMPTY_JSON));
+        for (Folder folder : folders) {
+            for (String machineUID : folder.machineUIDs) {
+                UserRecordJsonHelper.requireKnownMachineUID(machineUID);
+            }
+        }
+        return folders;
     }
 
     static void write(final List<Folder> folders, final Context thisContext) {
@@ -133,6 +143,14 @@ class UserFavouriteHelper {
             }
         }
         return false;
+    }
+
+    static Set<String> getMachineUIDs(final List<Folder> folders) {
+        final Set<String> machineUIDs = new HashSet<>();
+        for (Folder folder : folders) {
+            machineUIDs.addAll(folder.machineUIDs);
+        }
+        return machineUIDs;
     }
 
     static boolean contains(final String machineUID, final Context thisContext) {

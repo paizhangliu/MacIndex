@@ -18,7 +18,10 @@ import java.util.Set;
  */
 class UserCompareHelper {
 
-    static final String EMPTY_JSON = "{\"schema\":1,\"machines\":[],\"left\":\"\",\"right\":\"\"}";
+    private static final int SCHEMA_VERSION = 1;
+
+    static final String EMPTY_JSON = "{\"schema\":" + SCHEMA_VERSION
+            + ",\"machines\":[],\"left\":\"\",\"right\":\"\"}";
 
     static class State {
         final List<String> machineUIDs;
@@ -37,7 +40,7 @@ class UserCompareHelper {
         try {
             final JSONObject root = new JSONObject(raw);
             UserRecordJsonHelper.requireKeys(root, "schema", "machines", "left", "right");
-            if (root.getInt("schema") != UserRecordJsonHelper.SCHEMA_VERSION) {
+            if (root.getInt("schema") != SCHEMA_VERSION) {
                 throw new IllegalArgumentException("Unsupported compare schema");
             }
             final JSONArray rawMachines = root.getJSONArray("machines");
@@ -66,7 +69,8 @@ class UserCompareHelper {
             }
             return new State(machineUIDs, leftUID, rightUID);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal compare JSON", e);
+            throw new UserRecordJsonHelper.InvalidUserRecordException(
+                    "Illegal compare JSON", e);
         }
     }
 
@@ -94,7 +98,7 @@ class UserCompareHelper {
                 throw new IllegalArgumentException("Illegal compare selection");
             }
             final JSONObject root = new JSONObject();
-            root.put("schema", UserRecordJsonHelper.SCHEMA_VERSION);
+            root.put("schema", SCHEMA_VERSION);
             root.put("machines", rawMachines);
             root.put("left", state.leftUID);
             root.put("right", state.rightUID);
@@ -105,8 +109,12 @@ class UserCompareHelper {
     }
 
     static State read(final Context thisContext) {
-        return parse(UserRecordJsonHelper.readStoredJSON(
+        final State state = parse(UserRecordJsonHelper.readStoredJSON(
                 thisContext, "userCompare", EMPTY_JSON));
+        for (String machineUID : state.machineUIDs) {
+            UserRecordJsonHelper.requireKnownMachineUID(machineUID);
+        }
+        return state;
     }
 
     static void write(final State state, final Context thisContext) {

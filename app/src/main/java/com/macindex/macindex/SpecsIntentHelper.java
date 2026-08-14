@@ -11,7 +11,7 @@ import android.widget.TextView;
 import androidx.core.widget.TextViewCompat;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 class SpecsIntentHelper {
 
@@ -97,13 +97,13 @@ class SpecsIntentHelper {
     public static void refreshFavourites(final TextView[][] textViewGroup, final Context thisContext) {
         // NullSafe
         if (textViewGroup != null) {
-            final List<UserFavouriteHelper.Folder> userFavourites =
-                    UserFavouriteHelper.read(thisContext);
+            final Set<String> userFavouriteUIDs = UserFavouriteHelper.getMachineUIDs(
+                    UserFavouriteHelper.read(thisContext));
             for (TextView[] thisViewGroup : textViewGroup) {
                 // NullSafe
                 if (thisViewGroup != null) {
                     for (TextView thisView : thisViewGroup) {
-                        refreshFavourite(thisView, userFavourites);
+                        refreshFavourite(thisView, userFavouriteUIDs);
                     }
                 }
             }
@@ -111,10 +111,9 @@ class SpecsIntentHelper {
     }
 
     public static void refreshFavourite(final TextView thisView,
-                                        final List<UserFavouriteHelper.Folder> userFavourites) {
+                                        final Set<String> userFavouriteUIDs) {
         final Object machineUID = thisView.getTag();
-        if (machineUID instanceof String && UserFavouriteHelper.contains(
-                (String) machineUID, userFavourites)) {
+        if (machineUID instanceof String && userFavouriteUIDs.contains(machineUID)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
             } else {

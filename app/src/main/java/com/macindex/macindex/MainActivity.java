@@ -35,6 +35,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -141,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                                 completeCreation(savedInstanceState);
                             }
                         } else {
-                            ExceptionHelper.handleException(this, finalInitializationError,
+                            ExceptionHelper.handleDatabaseException(this, finalInitializationError,
                                     "MainCreation", "Unable to initialize the database.");
                         }
                     });
@@ -886,12 +888,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void decodeDeepLink(final String deepLink) {
         try {
+            final Map<String, String> oldMachineNames = OldMachineNamesHelper.read(this);
             if (ShareLinkHelper.isComparison(deepLink)) {
-                openComparison(ShareLinkHelper.decodeComparison(deepLink));
+                final String[] sharedMachines = ShareLinkHelper.decodeComparison(deepLink);
+                openComparison(new String[]{
+                        resolveSharedMachine(sharedMachines[0], oldMachineNames),
+                        resolveSharedMachine(sharedMachines[1], oldMachineNames)
+                });
                 return;
             }
 
-            final String machineUID = ShareLinkHelper.decode(deepLink);
+            final String machineUID = resolveSharedMachine(
+                    ShareLinkHelper.decode(deepLink), oldMachineNames);
             DebugHelper.log("DeepLinkDecode", "Got machine " + machineUID);
             final int machineID = machineHelper.getMachineID(machineUID);
             SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
@@ -901,27 +909,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String resolveSharedMachine(final String machine,
+                                        final Map<String, String> oldMachineNames) {
+        String machineUID = machineHelper.resolveUID(machine);
+        if (machineUID == null) {
+            machineUID = oldMachineNames.get(machine.trim().toLowerCase(Locale.ROOT));
+        }
+        if (machineUID == null) {
+            throw new IllegalArgumentException("Unknown shared machine");
+        }
+        return machineUID;
+    }
+
     private void openComparison(final String[] machineUIDs) {
-        if (machineUIDs == null || machineUIDs.length != 2
-                || machineUIDs[0] == null || machineUIDs[1] == null) {
-            Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
-            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
-            return;
-        }
-        final int leftID;
-        final int rightID;
-        try {
-            leftID = machineHelper.getMachineID(machineUIDs[0]);
-            rightID = machineHelper.getMachineID(machineUIDs[1]);
-        } catch (Exception e) {
-            Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
-            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (leftID == rightID) {
-            Log.w("DeepLinkDecode", "Unable to compare one machine with itself.");
-            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
-            return;
+        if (machineUIDs[0].equals(machineUIDs[1])) {
+            throw new IllegalArgumentException("Unable to compare one machine with itself");
         }
 
         // Open shared comparison without editing user's compare list.
@@ -952,7 +954,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 initDatabase(context, false);
             } catch (Exception e) {
-                ExceptionHelper.handleException(context, e,
+                ExceptionHelper.handleDatabaseException(context, e,
                         "MainValidate", "Unable to initialize the database.");
                 return false;
             }

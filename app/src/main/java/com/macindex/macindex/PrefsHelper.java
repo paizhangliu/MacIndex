@@ -216,18 +216,25 @@ class PrefsHelper {
                 if (machineHelper == null) {
                     throw new IllegalStateException("Machine helper is unavailable");
                 }
+                final String rawComments = getStoredRecord(prefsFile, "userComments");
+                final String rawFavourites = getStoredRecord(prefsFile, "userFavourites");
+                final String rawCompareJSON = getStoredRecord(prefsFile, "userCompare");
+                final String rawCompareList = getStoredRecord(prefsFile, "userCompares");
+                final String rawCompareLeft = getStoredRecord(prefsFile, "userComparesLeft");
+                final String rawCompareRight = getStoredRecord(prefsFile, "userComparesRight");
+                final Map<String, String> oldMachineNames =
+                        OldMachineNamesHelper.read(thisContext);
                 final UserRecordUpgradeHelper.UpgradeResult comments =
                         UserRecordUpgradeHelper.upgradeComments(
-                                getStoredRecord(prefsFile, "userComments"), machineHelper);
+                                rawComments, machineHelper, oldMachineNames);
                 final UserRecordUpgradeHelper.UpgradeResult favourites =
                         UserRecordUpgradeHelper.upgradeFavourites(
-                                getStoredRecord(prefsFile, "userFavourites"), machineHelper);
+                                rawFavourites, machineHelper, oldMachineNames);
                 final UserRecordUpgradeHelper.UpgradeResult compares =
                         UserRecordUpgradeHelper.upgradeCompares(
-                                getStoredRecord(prefsFile, "userCompare"),
-                                getStoredRecord(prefsFile, "userCompares"),
-                                getStoredRecord(prefsFile, "userComparesLeft"),
-                                getStoredRecord(prefsFile, "userComparesRight"), machineHelper);
+                                rawCompareJSON, rawCompareList, rawCompareLeft,
+                                rawCompareRight, machineHelper,
+                                oldMachineNames);
 
                 prefsEditor.putString("userComments", comments.value);
                 prefsEditor.putString("userFavourites", favourites.value);

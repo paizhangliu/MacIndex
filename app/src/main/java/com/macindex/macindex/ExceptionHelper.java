@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,21 +20,27 @@ import java.util.Calendar;
 class ExceptionHelper {
 
     public static void handleException(final Context thisContext, final Exception thisException,
-                                                 final String exceptionModule, final String exceptionMessage) {
+                                       final String exceptionModule,
+                                       final String exceptionMessage) {
+        handleException(thisContext, thisException, exceptionModule, exceptionMessage,
+                requiresDataRecovery(thisException));
+    }
+
+    public static void handleDatabaseException(final Context thisContext,
+                                               final Exception thisException,
+                                               final String exceptionModule,
+                                               final String exceptionMessage) {
+        handleException(thisContext, thisException, exceptionModule, exceptionMessage, true);
+    }
+
+    private static void handleException(final Context thisContext,
+                                        final Exception thisException,
+                                        final String exceptionModule,
+                                        final String exceptionMessage,
+                                        final boolean requiresDataRecovery) {
         if (thisContext != null) {
-            try {
-                final boolean versionInvalidated = thisContext.getSharedPreferences(
-                                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE).edit()
-                        .putInt("lastKnownVersion", 0).commit();
-                if (!versionInvalidated) {
-                    Log.e("ExceptionHelper", "Unable to register the current version again.");
-                } else {
-                    // Do not allow a cached process to register the same open
-                    // database again after an exception.
-                    MainActivity.closeDatabase();
-                }
-            } catch (Exception e) {
-                Log.e("ExceptionHelper", "Unable to register the current version again.", e);
+            if (requiresDataRecovery) {
+                invalidateDataVersion(thisContext);
             }
 
             final String basicInfo = "Generated: " + Calendar.getInstance().getTime() + "\n"
@@ -59,6 +66,39 @@ class ExceptionHelper {
             }
 
             handleExceptionDialog(thisContext, basicInfo + exceptionLog + exceptionDetails);
+        }
+    }
+
+    static boolean requiresDataRecovery(final Throwable throwable) {
+        Throwable currentThrowable = throwable;
+        while (currentThrowable != null) {
+            if (currentThrowable instanceof UserRecordJsonHelper.InvalidUserRecordException
+                    || currentThrowable instanceof MachineHelper.UnknownMachineUIDException
+                    || currentThrowable instanceof SQLiteException) {
+                return true;
+            }
+            if (currentThrowable == currentThrowable.getCause()) {
+                break;
+            }
+            currentThrowable = currentThrowable.getCause();
+        }
+        return false;
+    }
+
+    private static void invalidateDataVersion(final Context thisContext) {
+        try {
+            final boolean versionInvalidated = thisContext.getSharedPreferences(
+                            PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE).edit()
+                    .putInt("lastKnownVersion", 0).commit();
+            if (!versionInvalidated) {
+                Log.e("ExceptionHelper", "Unable to register the current version again.");
+            } else {
+                // Do not allow a cached process to register the same open
+                // database again after a data error.
+                MainActivity.closeDatabase();
+            }
+        } catch (Exception e) {
+            Log.e("ExceptionHelper", "Unable to register the current version again.", e);
         }
     }
 

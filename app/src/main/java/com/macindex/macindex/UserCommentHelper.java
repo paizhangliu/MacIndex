@@ -18,7 +18,10 @@ import java.util.Set;
  */
 class UserCommentHelper {
 
-    static final String EMPTY_JSON = "{\"schema\":1,\"comments\":[]}";
+    private static final int SCHEMA_VERSION = 1;
+
+    static final String EMPTY_JSON = "{\"schema\":" + SCHEMA_VERSION
+            + ",\"comments\":[]}";
 
     static class Comment {
         final String machineUID;
@@ -34,7 +37,7 @@ class UserCommentHelper {
         try {
             final JSONObject root = new JSONObject(raw);
             UserRecordJsonHelper.requireKeys(root, "schema", "comments");
-            if (root.getInt("schema") != UserRecordJsonHelper.SCHEMA_VERSION) {
+            if (root.getInt("schema") != SCHEMA_VERSION) {
                 throw new IllegalArgumentException("Unsupported comment schema");
             }
             final JSONArray rawComments = root.getJSONArray("comments");
@@ -54,7 +57,8 @@ class UserCommentHelper {
             }
             return comments;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal comment JSON", e);
+            throw new UserRecordJsonHelper.InvalidUserRecordException(
+                    "Illegal comment JSON", e);
         }
     }
 
@@ -75,7 +79,7 @@ class UserCommentHelper {
                 rawComments.put(rawComment);
             }
             final JSONObject root = new JSONObject();
-            root.put("schema", UserRecordJsonHelper.SCHEMA_VERSION);
+            root.put("schema", SCHEMA_VERSION);
             root.put("comments", rawComments);
             return root.toString();
         } catch (Exception e) {
@@ -84,8 +88,12 @@ class UserCommentHelper {
     }
 
     static List<Comment> read(final Context thisContext) {
-        return parse(UserRecordJsonHelper.readStoredJSON(
+        final List<Comment> comments = parse(UserRecordJsonHelper.readStoredJSON(
                 thisContext, "userComments", EMPTY_JSON));
+        for (Comment comment : comments) {
+            UserRecordJsonHelper.requireKnownMachineUID(comment.machineUID);
+        }
+        return comments;
     }
 
     static void write(final List<Comment> comments, final Context thisContext) {

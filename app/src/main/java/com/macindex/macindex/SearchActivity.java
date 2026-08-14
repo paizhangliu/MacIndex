@@ -416,20 +416,9 @@ public class SearchActivity extends AppCompatActivity {
             return false;
         }
 
-        String legalCharacters;
-        if (method) {
-            // Model Numbers: acceptable search input A~Z, a~z, 0~9, comma, -, /.
-            legalCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxzy0123456789,-/";
-        } else {
-            // Name: acceptable search input A~Z, a~z, 0~9, whitespace, /, (), dash, comma, plus, dot, ampersand.
-            legalCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxzy0123456789 /()-,+.&";
-        }
-
         for (int i = 0; i < validateInput.length(); i++) {
-            // If it contains illegal character, it is not valid.
-            if (!legalCharacters.contains(String.valueOf(validateInput.charAt(i)))) {
+            if (Character.isISOControl(validateInput.charAt(i))) {
                 DebugHelper.log("validate", "Illegal Char Detected!");
-                // Set the illegal prompt here..
                 textResult.setText(R.string.search_illegal);
                 textResult.setTextColor(Color.RED);
                 return false;

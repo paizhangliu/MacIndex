@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import re
 import sqlite3
 from pathlib import Path
@@ -177,6 +178,8 @@ GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 PICTURE_ID = re.compile(r"[a-z0-9_]+")
 IMAGE_VALUE_ID = re.compile(r"[A-Za-z0-9_]+")
 MACHINE_UID = re.compile(r"MI\d{6}")
+UID_SEQUENCE_PATH = Path(__file__).with_name("machine_uid_sequence")
+OLD_MACHINE_NAMES = "old_machine_names.json"
 
 DIRECTORY_VALUE_PATTERNS = {
     # The first compact Macs have genuine regional suffixes, such as M0001AP.
@@ -284,7 +287,25 @@ def validate_ram_information(value, machine_name):
         fail(f"RAM information uses legacy installable-capacity wording for {machine_name}")
 
 
-def validate_machine_data(connection):
+def load_uid_sequence():
+    try:
+        sequence = int(UID_SEQUENCE_PATH.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError) as error:
+        fail(f"Unable to read machine UID sequence: {error}")
+    if sequence < 0 or sequence > 999999:
+        fail(f"Illegal machine UID sequence: {sequence}")
+    return sequence
+
+
+def allocate_machine_uid():
+    sequence = load_uid_sequence() + 1
+    if sequence > 999999:
+        fail("Machine UID sequence is exhausted")
+    UID_SEQUENCE_PATH.write_text(f"{sequence}\n", encoding="utf-8")
+    print(f"MI{sequence:06d}")
+
+
+def validate_machine_data(connection, uid_sequence):
     displayed_names = set()
     searchable_names = {}
     machine_uids = set()
@@ -308,6 +329,8 @@ def validate_machine_data(connection):
 
             if MACHINE_UID.fullmatch(machine["uid"] or "") is None:
                 fail(f'Illegal machine UID "{machine["uid"]}" for {machine_name}')
+            if int(machine["uid"][2:]) > uid_sequence:
+                fail(f'Machine UID exceeds the current sequence for {machine_name}')
             if machine["uid"] in machine_uids:
                 fail(f'Duplicate machine UID "{machine["uid"]}"')
             machine_uids.add(machine["uid"])
@@ -421,30 +444,32 @@ def validate_machine_data(connection):
                     fail(f'Illegal link "{link}" for {machine_name}')
 
 
-def validate_machine_identity(connection):
+def validate_old_machine_names(connection, database_path):
     active_uids = {
         row[0]
         for table_name in CATEGORIES
         for row in connection.execute(f'SELECT uid FROM "{table_name}"')
     }
-    legacy_names = connection.execute(
-        "SELECT name, uid FROM machine_legacy_names"
-    ).fetchall()
-    if not legacy_names:
-        fail("Legacy machine name index is empty")
-    for name, uid in legacy_names:
-        if not name or name != name.strip() or uid not in active_uids:
-            fail(f'Illegal legacy machine identity "{name}" -> "{uid}"')
-
-    history_uids = set()
-    for uid, last_name, replacement_uid in connection.execute(
-            "SELECT uid, last_name, replacement_uid FROM machine_uid_history"):
-        if (MACHINE_UID.fullmatch(uid or "") is None
-                or not last_name or last_name != last_name.strip()
-                or uid in active_uids or uid in history_uids
-                or (replacement_uid is not None and replacement_uid not in active_uids)):
-            fail(f'Illegal retired machine identity "{uid}"')
-        history_uids.add(uid)
+    old_names_path = database_path.parent / OLD_MACHINE_NAMES
+    try:
+        old_names = json.loads(old_names_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        fail(f"Unable to read old machine names: {error}")
+    if not isinstance(old_names, dict) \
+            or set(old_names) != {"schema", "names"} or old_names["schema"] != 1 \
+            or not isinstance(old_names["names"], list) or not old_names["names"]:
+        fail("Illegal old machine names document")
+    names = set()
+    for entry in old_names["names"]:
+        if not isinstance(entry, dict) or set(entry) != {"name", "uid"}:
+            fail("Illegal old machine name entry")
+        name = entry["name"]
+        uid = entry["uid"]
+        normalized_name = name.casefold() if isinstance(name, str) else None
+        if not name or name != name.strip() or normalized_name in names \
+                or uid not in active_uids:
+            fail(f'Illegal old machine identity "{name}" -> "{uid}"')
+        names.add(normalized_name)
 
 
 def get_serialized_sections(filter_name):
@@ -836,8 +861,17 @@ def verify_indexes(connection, directory, cache):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("database", type=Path)
+    parser.add_argument("--allocate-uid", action="store_true")
+    parser.add_argument("database", type=Path, nargs="?")
     arguments = parser.parse_args()
+
+    if arguments.allocate_uid:
+        if arguments.check or arguments.database is not None:
+            fail("UID allocation does not accept other arguments")
+        allocate_machine_uid()
+        return
+    if arguments.database is None:
+        fail("Database path is required")
 
     database_path = arguments.database.resolve()
     if not database_path.is_file():
@@ -851,9 +885,10 @@ def main():
         connection = sqlite3.connect(database_path)
 
     try:
+        uid_sequence = load_uid_sequence()
         validate_category_configuration(connection)
-        validate_machine_data(connection)
-        validate_machine_identity(connection)
+        validate_machine_data(connection, uid_sequence)
+        validate_old_machine_names(connection, database_path)
         picture_assets = load_picture_assets(database_path)
         directory, machines = load_directory(connection, picture_assets)
         cache = build_main_cache(machines)

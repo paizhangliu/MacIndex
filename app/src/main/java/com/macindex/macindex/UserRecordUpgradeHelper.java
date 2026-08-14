@@ -3,6 +3,8 @@ package com.macindex.macindex;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,7 +24,8 @@ class UserRecordUpgradeHelper {
     }
 
     static UpgradeResult upgradeComments(final String raw,
-                                         final MachineIdentityResolver machineHelper) {
+                                         final MachineHelper machineHelper,
+                                         final Map<String, String> oldMachineNames) {
         final List<UserCommentHelper.Comment> comments;
         final List<String> removed = new ArrayList<>();
         if (raw == null || raw.isEmpty()) {
@@ -36,7 +39,7 @@ class UserRecordUpgradeHelper {
                 return new UpgradeResult(UserCommentHelper.EMPTY_JSON, removed);
             }
         } else {
-            comments = importLegacyComments(raw, machineHelper, removed);
+            comments = importLegacyComments(raw, oldMachineNames, removed);
         }
 
         final List<UserCommentHelper.Comment> upgraded = new ArrayList<>();
@@ -54,7 +57,8 @@ class UserRecordUpgradeHelper {
     }
 
     static UpgradeResult upgradeFavourites(final String raw,
-                                           final MachineIdentityResolver machineHelper) {
+                                           final MachineHelper machineHelper,
+                                           final Map<String, String> oldMachineNames) {
         final List<UserFavouriteHelper.Folder> folders;
         final List<String> removed = new ArrayList<>();
         if (raw == null || raw.isEmpty()) {
@@ -68,7 +72,7 @@ class UserRecordUpgradeHelper {
                 return new UpgradeResult(UserFavouriteHelper.EMPTY_JSON, removed);
             }
         } else {
-            folders = importLegacyFavourites(raw, machineHelper, removed);
+            folders = importLegacyFavourites(raw, oldMachineNames, removed);
         }
 
         final List<UserFavouriteHelper.Folder> upgraded = new ArrayList<>();
@@ -91,7 +95,8 @@ class UserRecordUpgradeHelper {
 
     static UpgradeResult upgradeCompares(final String rawJSON, final String rawList,
                                          final String rawLeft, final String rawRight,
-                                         final MachineIdentityResolver machineHelper) {
+                                         final MachineHelper machineHelper,
+                                         final Map<String, String> oldMachineNames) {
         final UserCompareHelper.State state;
         final List<String> removed = new ArrayList<>();
         if (rawJSON != null && !rawJSON.isEmpty()) {
@@ -102,7 +107,7 @@ class UserRecordUpgradeHelper {
                 return new UpgradeResult(UserCompareHelper.EMPTY_JSON, removed);
             }
         } else {
-            state = importLegacyCompares(rawList, rawLeft, rawRight, machineHelper, removed);
+            state = importLegacyCompares(rawList, rawLeft, rawRight, oldMachineNames, removed);
         }
 
         final List<String> upgradedUIDs = new ArrayList<>();
@@ -134,7 +139,7 @@ class UserRecordUpgradeHelper {
     }
 
     private static List<UserCommentHelper.Comment> importLegacyComments(
-            final String raw, final MachineIdentityResolver machineHelper,
+            final String raw, final Map<String, String> oldMachineNames,
             final List<String> removed) {
         final List<UserCommentHelper.Comment> comments = new ArrayList<>();
         final Set<String> addedUIDs = new HashSet<>();
@@ -142,7 +147,7 @@ class UserRecordUpgradeHelper {
             final String[] parts = entry.split("│", -1);
             final String comment = parts.length == 2 ? parts[1].trim() : "";
             final String machineUID = parts.length == 2
-                    ? machineHelper.resolveLegacyName(parts[0]) : null;
+                    ? resolveOldMachineName(parts[0], oldMachineNames) : null;
             if (machineUID == null || comment.isEmpty() || comment.length() > 500
                     || !addedUIDs.add(machineUID)) {
                 removed.add(entry);
@@ -154,7 +159,7 @@ class UserRecordUpgradeHelper {
     }
 
     private static List<UserFavouriteHelper.Folder> importLegacyFavourites(
-            final String raw, final MachineIdentityResolver machineHelper,
+            final String raw, final Map<String, String> oldMachineNames,
             final List<String> removed) {
         final List<UserFavouriteHelper.Folder> folders = new ArrayList<>();
         final Set<String> addedFolders = new HashSet<>();
@@ -187,8 +192,8 @@ class UserRecordUpgradeHelper {
                 final String entry = entries[j];
                 final String machineUID = entry.length() >= 3 && entry.startsWith("[")
                         && entry.endsWith("]")
-                        ? machineHelper.resolveLegacyName(
-                        entry.substring(1, entry.length() - 1)) : null;
+                        ? resolveOldMachineName(
+                        entry.substring(1, entry.length() - 1), oldMachineNames) : null;
                 if (machineUID == null || !addedUIDs.add(machineUID)) {
                     removed.add(entries[0] + "│" + entry);
                     continue;
@@ -202,15 +207,15 @@ class UserRecordUpgradeHelper {
 
     private static UserCompareHelper.State importLegacyCompares(
             final String rawList, final String rawLeft, final String rawRight,
-            final MachineIdentityResolver machineHelper, final List<String> removed) {
+            final Map<String, String> oldMachineNames, final List<String> removed) {
         final List<String> machineUIDs = new ArrayList<>();
         final Set<String> addedUIDs = new HashSet<>();
         if (rawList != null && !rawList.isEmpty()) {
             for (String entry : rawList.split("│", -1)) {
                 final String machineUID = entry.length() >= 3 && entry.startsWith("[")
                         && entry.endsWith("]")
-                        ? machineHelper.resolveLegacyName(
-                        entry.substring(1, entry.length() - 1)) : null;
+                        ? resolveOldMachineName(
+                        entry.substring(1, entry.length() - 1), oldMachineNames) : null;
                 if (machineUID == null || !addedUIDs.add(machineUID)
                         || machineUIDs.size() >= 10) {
                     removed.add(entry);
@@ -219,8 +224,8 @@ class UserRecordUpgradeHelper {
                 machineUIDs.add(machineUID);
             }
         }
-        final String leftUID = machineHelper.resolveLegacyName(rawLeft);
-        final String rightUID = machineHelper.resolveLegacyName(rawRight);
+        final String leftUID = resolveOldMachineName(rawLeft, oldMachineNames);
+        final String rightUID = resolveOldMachineName(rawRight, oldMachineNames);
         final UserCompareHelper.State state = new UserCompareHelper.State(machineUIDs,
                 leftUID == null ? "" : leftUID, rightUID == null ? "" : rightUID);
         if (state.leftUID.equals(state.rightUID) || !machineUIDs.contains(state.leftUID)
@@ -235,8 +240,14 @@ class UserRecordUpgradeHelper {
         return state;
     }
 
+    private static String resolveOldMachineName(final String machineName,
+                                                final Map<String, String> oldMachineNames) {
+        return machineName == null ? null
+                : oldMachineNames.get(machineName.trim().toLowerCase(Locale.ROOT));
+    }
+
     private static String getIdentityName(final String machineUID,
-                                          final MachineIdentityResolver machineHelper) {
+                                          final MachineHelper machineHelper) {
         final String machineName = machineHelper.getIdentityName(machineUID);
         return machineName == null ? valueOrEmpty(machineUID) : machineName;
     }
@@ -244,4 +255,5 @@ class UserRecordUpgradeHelper {
     private static String valueOrEmpty(final String value) {
         return value == null ? "" : value;
     }
+
 }

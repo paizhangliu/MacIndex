@@ -1,0 +1,1613 @@
+{
+  "schema": 1,
+  "names": [
+    {
+      "name": "Developer Transition Kit (2005)",
+      "uid": "MI000253"
+    },
+    {
+      "name": "Developer Transition Kit (2020)",
+      "uid": "MI000408"
+    },
+    {
+      "name": "eMac",
+      "uid": "MI000190"
+    },
+    {
+      "name": "eMac (1.0 GHz G4)",
+      "uid": "MI000192"
+    },
+    {
+      "name": "eMac (2005)",
+      "uid": "MI000194"
+    },
+    {
+      "name": "eMac (ATI Graphics)",
+      "uid": "MI000191"
+    },
+    {
+      "name": "eMac (USB 2.0)",
+      "uid": "MI000193"
+    },
+    {
+      "name": "iBook",
+      "uid": "MI000237"
+    },
+    {
+      "name": "iBook (14.1 900 32 VRAM)",
+      "uid": "MI000248"
+    },
+    {
+      "name": "iBook (14.1 LCD 16 VRAM)",
+      "uid": "MI000243"
+    },
+    {
+      "name": "iBook (14.1 LCD 32 VRAM)",
+      "uid": "MI000246"
+    },
+    {
+      "name": "iBook (14.1 LCD)",
+      "uid": "MI000241"
+    },
+    {
+      "name": "iBook (16 VRAM)",
+      "uid": "MI000242"
+    },
+    {
+      "name": "iBook (32 VRAM)",
+      "uid": "MI000245"
+    },
+    {
+      "name": "iBook (800/900 32 VRAM)",
+      "uid": "MI000247"
+    },
+    {
+      "name": "iBook (Dual USB)",
+      "uid": "MI000239"
+    },
+    {
+      "name": "iBook (FireWire)",
+      "uid": "MI000238"
+    },
+    {
+      "name": "iBook (Late 2001)",
+      "uid": "MI000240"
+    },
+    {
+      "name": "iBook (Opaque 16 VRAM)",
+      "uid": "MI000244"
+    },
+    {
+      "name": "iBook G4",
+      "uid": "MI000249"
+    },
+    {
+      "name": "iBook G4 (Early 2004)",
+      "uid": "MI000250"
+    },
+    {
+      "name": "iBook G4 (Late 2004)",
+      "uid": "MI000251"
+    },
+    {
+      "name": "iBook G4 (Mid 2005)",
+      "uid": "MI000252"
+    },
+    {
+      "name": "iMac",
+      "uid": "MI000171"
+    },
+    {
+      "name": "iMac (15-inch Early 2003)",
+      "uid": "MI000179"
+    },
+    {
+      "name": "iMac (15-inch USB 2.0)",
+      "uid": "MI000181"
+    },
+    {
+      "name": "iMac (17-inch Flat Panel)",
+      "uid": "MI000178"
+    },
+    {
+      "name": "iMac (17-inch Flat Panel, 1GHz)",
+      "uid": "MI000180"
+    },
+    {
+      "name": "iMac (17-inch Late 2006 CD)",
+      "uid": "MI000267"
+    },
+    {
+      "name": "iMac (17-inch Late 2006)",
+      "uid": "MI000268"
+    },
+    {
+      "name": "iMac (17-inch USB 2.0)",
+      "uid": "MI000182"
+    },
+    {
+      "name": "iMac (20-inch Early 2008)",
+      "uid": "MI000273"
+    },
+    {
+      "name": "iMac (20-inch Late 2006)",
+      "uid": "MI000269"
+    },
+    {
+      "name": "iMac (20-inch Mid 2007)",
+      "uid": "MI000271"
+    },
+    {
+      "name": "iMac (20-inch USB 2.0)",
+      "uid": "MI000183"
+    },
+    {
+      "name": "iMac (20-inch, Early 2009)",
+      "uid": "MI000275"
+    },
+    {
+      "name": "iMac (20-inch, Mid 2009)",
+      "uid": "MI000277"
+    },
+    {
+      "name": "iMac (21.5-inch, 2017)",
+      "uid": "MI000296"
+    },
+    {
+      "name": "iMac (21.5-inch, Early 2013)",
+      "uid": "MI000287"
+    },
+    {
+      "name": "iMac (21.5-inch, Late 2009)",
+      "uid": "MI000278"
+    },
+    {
+      "name": "iMac (21.5-inch, Late 2011)",
+      "uid": "MI000284"
+    },
+    {
+      "name": "iMac (21.5-inch, Late 2012)",
+      "uid": "MI000285"
+    },
+    {
+      "name": "iMac (21.5-inch, Late 2013)",
+      "uid": "MI000288"
+    },
+    {
+      "name": "iMac (21.5-inch, Late 2015)",
+      "uid": "MI000293"
+    },
+    {
+      "name": "iMac (21.5-inch, Mid 2010)",
+      "uid": "MI000280"
+    },
+    {
+      "name": "iMac (21.5-inch, Mid 2011)",
+      "uid": "MI000282"
+    },
+    {
+      "name": "iMac (21.5-inch, Mid 2014)",
+      "uid": "MI000290"
+    },
+    {
+      "name": "iMac (24-inch Early 2008)",
+      "uid": "MI000274"
+    },
+    {
+      "name": "iMac (24-inch Mid 2007)",
+      "uid": "MI000272"
+    },
+    {
+      "name": "iMac (24-inch)",
+      "uid": "MI000270"
+    },
+    {
+      "name": "iMac (24-inch, 2023)",
+      "uid": "MI000406"
+    },
+    {
+      "name": "iMac (24-inch, 2024)",
+      "uid": "MI000407"
+    },
+    {
+      "name": "iMac (24-inch, Early 2009)",
+      "uid": "MI000276"
+    },
+    {
+      "name": "iMac (24-inch, M1, 2021)",
+      "uid": "MI000405"
+    },
+    {
+      "name": "iMac (27-inch, Late 2009)",
+      "uid": "MI000279"
+    },
+    {
+      "name": "iMac (27-inch, Late 2012)",
+      "uid": "MI000286"
+    },
+    {
+      "name": "iMac (27-inch, Late 2013)",
+      "uid": "MI000289"
+    },
+    {
+      "name": "iMac (27-inch, Mid 2010)",
+      "uid": "MI000281"
+    },
+    {
+      "name": "iMac (27-inch, Mid 2011)",
+      "uid": "MI000283"
+    },
+    {
+      "name": "iMac (5 Flavors)",
+      "uid": "MI000172"
+    },
+    {
+      "name": "iMac (Early 2001)",
+      "uid": "MI000175"
+    },
+    {
+      "name": "iMac (Early 2006 17-inch)",
+      "uid": "MI000264"
+    },
+    {
+      "name": "iMac (Early 2006 20-inch)",
+      "uid": "MI000265"
+    },
+    {
+      "name": "iMac (Flat Panel)",
+      "uid": "MI000177"
+    },
+    {
+      "name": "iMac (Mid 2006 17-inch)",
+      "uid": "MI000266"
+    },
+    {
+      "name": "iMac (Retina 4K, 21.5-inch, 2017)",
+      "uid": "MI000297"
+    },
+    {
+      "name": "iMac (Retina 4K, 21.5-inch, 2019)",
+      "uid": "MI000299"
+    },
+    {
+      "name": "iMac (Retina 4K, 21.5-inch, Late 2015)",
+      "uid": "MI000294"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, 2017)",
+      "uid": "MI000298"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, 2019)",
+      "uid": "MI000300"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, 2020)",
+      "uid": "MI000301"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, Late 2014)",
+      "uid": "MI000291"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, Late 2015)",
+      "uid": "MI000295"
+    },
+    {
+      "name": "iMac (Retina 5K, 27-inch, Mid 2015)",
+      "uid": "MI000292"
+    },
+    {
+      "name": "iMac (Slot Loading)",
+      "uid": "MI000173"
+    },
+    {
+      "name": "iMac (Summer 2000)",
+      "uid": "MI000174"
+    },
+    {
+      "name": "iMac (Summer 2001)",
+      "uid": "MI000176"
+    },
+    {
+      "name": "iMac G5 (17-inch iSight)",
+      "uid": "MI000188"
+    },
+    {
+      "name": "iMac G5 (17-inch)",
+      "uid": "MI000184"
+    },
+    {
+      "name": "iMac G5 (20-inch iSight)",
+      "uid": "MI000189"
+    },
+    {
+      "name": "iMac G5 (20-inch)",
+      "uid": "MI000185"
+    },
+    {
+      "name": "iMac G5 17-inch (ALS)",
+      "uid": "MI000186"
+    },
+    {
+      "name": "iMac G5 20-inch (ALS)",
+      "uid": "MI000187"
+    },
+    {
+      "name": "iMac Pro (2017)",
+      "uid": "MI000302"
+    },
+    {
+      "name": "Mac mini",
+      "uid": "MI000195"
+    },
+    {
+      "name": "Mac mini (2018)",
+      "uid": "MI000316"
+    },
+    {
+      "name": "Mac mini (2023)",
+      "uid": "MI000410"
+    },
+    {
+      "name": "Mac mini (2024)",
+      "uid": "MI000411"
+    },
+    {
+      "name": "Mac mini (Early 2006)",
+      "uid": "MI000303"
+    },
+    {
+      "name": "Mac mini (Early 2009)",
+      "uid": "MI000306"
+    },
+    {
+      "name": "Mac mini (Late 2005)",
+      "uid": "MI000196"
+    },
+    {
+      "name": "Mac mini (Late 2006)",
+      "uid": "MI000304"
+    },
+    {
+      "name": "Mac mini (Late 2009)",
+      "uid": "MI000307"
+    },
+    {
+      "name": "Mac mini (Late 2012)",
+      "uid": "MI000313"
+    },
+    {
+      "name": "Mac mini (Late 2014)",
+      "uid": "MI000315"
+    },
+    {
+      "name": "Mac mini (M1, 2020)",
+      "uid": "MI000409"
+    },
+    {
+      "name": "Mac mini (Mac OS X Server, Late 2009)",
+      "uid": "MI000308"
+    },
+    {
+      "name": "Mac mini (Mid 2007)",
+      "uid": "MI000305"
+    },
+    {
+      "name": "Mac mini (Mid 2010)",
+      "uid": "MI000309"
+    },
+    {
+      "name": "Mac mini (Mid 2011)",
+      "uid": "MI000311"
+    },
+    {
+      "name": "Mac mini Server (Late 2012)",
+      "uid": "MI000314"
+    },
+    {
+      "name": "Mac mini Server (Mid 2010)",
+      "uid": "MI000310"
+    },
+    {
+      "name": "Mac mini Server (Mid 2011)",
+      "uid": "MI000312"
+    },
+    {
+      "name": "Mac Pro",
+      "uid": "MI000254"
+    },
+    {
+      "name": "Mac Pro (2019)",
+      "uid": "MI000263"
+    },
+    {
+      "name": "Mac Pro (2023)",
+      "uid": "MI000404"
+    },
+    {
+      "name": "Mac Pro (8-core)",
+      "uid": "MI000255"
+    },
+    {
+      "name": "Mac Pro (Early 2008)",
+      "uid": "MI000256"
+    },
+    {
+      "name": "Mac Pro (Early 2009)",
+      "uid": "MI000257"
+    },
+    {
+      "name": "Mac Pro (Late 2013)",
+      "uid": "MI000262"
+    },
+    {
+      "name": "Mac Pro (Mid 2010)",
+      "uid": "MI000258"
+    },
+    {
+      "name": "Mac Pro (Mid 2012)",
+      "uid": "MI000260"
+    },
+    {
+      "name": "Mac Pro Server (Mid 2010)",
+      "uid": "MI000259"
+    },
+    {
+      "name": "Mac Pro Server (Mid 2012)",
+      "uid": "MI000261"
+    },
+    {
+      "name": "Mac Studio (2022)",
+      "uid": "MI000437"
+    },
+    {
+      "name": "Mac Studio (2023)",
+      "uid": "MI000438"
+    },
+    {
+      "name": "Mac Studio (2025)",
+      "uid": "MI000439"
+    },
+    {
+      "name": "MacBook (13-inch)",
+      "uid": "MI000371"
+    },
+    {
+      "name": "MacBook (13-inch, Aluminum, Late 2008)",
+      "uid": "MI000377"
+    },
+    {
+      "name": "MacBook (13-inch, Early 2008)",
+      "uid": "MI000375"
+    },
+    {
+      "name": "MacBook (13-inch, Early 2009)",
+      "uid": "MI000378"
+    },
+    {
+      "name": "MacBook (13-inch, Late 2006)",
+      "uid": "MI000372"
+    },
+    {
+      "name": "MacBook (13-inch, Late 2007)",
+      "uid": "MI000374"
+    },
+    {
+      "name": "MacBook (13-inch, Late 2008)",
+      "uid": "MI000376"
+    },
+    {
+      "name": "MacBook (13-inch, Late 2009)",
+      "uid": "MI000380"
+    },
+    {
+      "name": "MacBook (13-inch, Mid 2007)",
+      "uid": "MI000373"
+    },
+    {
+      "name": "MacBook (13-inch, Mid 2009)",
+      "uid": "MI000379"
+    },
+    {
+      "name": "MacBook (13-inch, Mid 2010)",
+      "uid": "MI000381"
+    },
+    {
+      "name": "MacBook (Retina, 12-inch, 2017)",
+      "uid": "MI000384"
+    },
+    {
+      "name": "MacBook (Retina, 12-inch, Early 2015)",
+      "uid": "MI000382"
+    },
+    {
+      "name": "MacBook (Retina, 12-inch, Early 2016)",
+      "uid": "MI000383"
+    },
+    {
+      "name": "MacBook Air",
+      "uid": "MI000385"
+    },
+    {
+      "name": "MacBook Air (11-inch, Early 2014)",
+      "uid": "MI000396"
+    },
+    {
+      "name": "MacBook Air (11-inch, Early 2015)",
+      "uid": "MI000398"
+    },
+    {
+      "name": "MacBook Air (11-inch, Late 2010)",
+      "uid": "MI000388"
+    },
+    {
+      "name": "MacBook Air (11-inch, Mid 2011)",
+      "uid": "MI000390"
+    },
+    {
+      "name": "MacBook Air (11-inch, Mid 2012)",
+      "uid": "MI000392"
+    },
+    {
+      "name": "MacBook Air (11-inch, Mid 2013)",
+      "uid": "MI000394"
+    },
+    {
+      "name": "MacBook Air (13-inch, 2017)",
+      "uid": "MI000400"
+    },
+    {
+      "name": "MacBook Air (13-inch, Early 2014)",
+      "uid": "MI000397"
+    },
+    {
+      "name": "MacBook Air (13-inch, Early 2015)",
+      "uid": "MI000399"
+    },
+    {
+      "name": "MacBook Air (13-inch, Late 2010)",
+      "uid": "MI000389"
+    },
+    {
+      "name": "MacBook Air (13-inch, M3, 2024)",
+      "uid": "MI000430"
+    },
+    {
+      "name": "MacBook Air (13-inch, M4, 2025)",
+      "uid": "MI000432"
+    },
+    {
+      "name": "MacBook Air (13-inch, M5)",
+      "uid": "MI000434"
+    },
+    {
+      "name": "MacBook Air (13-inch, Mid 2011)",
+      "uid": "MI000391"
+    },
+    {
+      "name": "MacBook Air (13-inch, Mid 2012)",
+      "uid": "MI000393"
+    },
+    {
+      "name": "MacBook Air (13-inch, Mid 2013)",
+      "uid": "MI000395"
+    },
+    {
+      "name": "MacBook Air (15-inch, M2, 2023)",
+      "uid": "MI000429"
+    },
+    {
+      "name": "MacBook Air (15-inch, M3, 2024)",
+      "uid": "MI000431"
+    },
+    {
+      "name": "MacBook Air (15-inch, M4, 2025)",
+      "uid": "MI000433"
+    },
+    {
+      "name": "MacBook Air (15-inch, M5)",
+      "uid": "MI000435"
+    },
+    {
+      "name": "MacBook Air (Late 2008)",
+      "uid": "MI000386"
+    },
+    {
+      "name": "MacBook Air (M1, 2020)",
+      "uid": "MI000427"
+    },
+    {
+      "name": "MacBook Air (M2, 2022)",
+      "uid": "MI000428"
+    },
+    {
+      "name": "MacBook Air (Mid 2009)",
+      "uid": "MI000387"
+    },
+    {
+      "name": "MacBook Air (Retina, 13-inch, 2018)",
+      "uid": "MI000401"
+    },
+    {
+      "name": "MacBook Air (Retina, 13-inch, 2019)",
+      "uid": "MI000402"
+    },
+    {
+      "name": "MacBook Air (Retina, 13-inch, 2020)",
+      "uid": "MI000403"
+    },
+    {
+      "name": "MacBook Neo (13-inch, A18 Pro)",
+      "uid": "MI000436"
+    },
+    {
+      "name": "MacBook Pro",
+      "uid": "MI000320"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2016, Four TB3 Ports)",
+      "uid": "MI000358"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2016, Two TB3 Ports)",
+      "uid": "MI000357"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2017, Four TB3 Ports)",
+      "uid": "MI000361"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2017, Two TB3 Ports)",
+      "uid": "MI000360"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2018, Four TB3 Ports)",
+      "uid": "MI000363"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2019, Four TB3 Ports)",
+      "uid": "MI000365"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2019, Two TB3 Ports)",
+      "uid": "MI000367"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2020, Four TB3 Ports)",
+      "uid": "MI000370"
+    },
+    {
+      "name": "MacBook Pro (13-inch, 2020, Two TB3 Ports)",
+      "uid": "MI000369"
+    },
+    {
+      "name": "MacBook Pro (13-inch, Early 2011)",
+      "uid": "MI000339"
+    },
+    {
+      "name": "MacBook Pro (13-inch, Late 2011)",
+      "uid": "MI000342"
+    },
+    {
+      "name": "MacBook Pro (13-inch, M1, 2020)",
+      "uid": "MI000412"
+    },
+    {
+      "name": "MacBook Pro (13-inch, M2, 2022)",
+      "uid": "MI000415"
+    },
+    {
+      "name": "MacBook Pro (13-inch, Mid 2009)",
+      "uid": "MI000332"
+    },
+    {
+      "name": "MacBook Pro (13-inch, Mid 2010)",
+      "uid": "MI000336"
+    },
+    {
+      "name": "MacBook Pro (13-inch, Mid 2012)",
+      "uid": "MI000345"
+    },
+    {
+      "name": "MacBook Pro (14-inch, 2021)",
+      "uid": "MI000413"
+    },
+    {
+      "name": "MacBook Pro (14-inch, 2023)",
+      "uid": "MI000416"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M3 Pro or M3 Max, Nov 2023)",
+      "uid": "MI000419"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M3, Nov 2023)",
+      "uid": "MI000418"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M4 Pro or M4 Max, 2024)",
+      "uid": "MI000422"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M4, 2024)",
+      "uid": "MI000421"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M5 Pro or M5 Max)",
+      "uid": "MI000425"
+    },
+    {
+      "name": "MacBook Pro (14-inch, M5)",
+      "uid": "MI000424"
+    },
+    {
+      "name": "MacBook Pro (15-inch Core 2 Duo)",
+      "uid": "MI000323"
+    },
+    {
+      "name": "MacBook Pro (15-inch Glossy)",
+      "uid": "MI000321"
+    },
+    {
+      "name": "MacBook Pro (15-inch Mid/Late 2007, 2.4/2.2 GHz)",
+      "uid": "MI000325"
+    },
+    {
+      "name": "MacBook Pro (15-inch, 2.53 GHz, Mid 2009)",
+      "uid": "MI000333"
+    },
+    {
+      "name": "MacBook Pro (15-inch, 2016)",
+      "uid": "MI000359"
+    },
+    {
+      "name": "MacBook Pro (15-inch, 2017)",
+      "uid": "MI000362"
+    },
+    {
+      "name": "MacBook Pro (15-inch, 2018)",
+      "uid": "MI000364"
+    },
+    {
+      "name": "MacBook Pro (15-inch, 2019)",
+      "uid": "MI000366"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Early 2008)",
+      "uid": "MI000327"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Early 2011)",
+      "uid": "MI000340"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Late 2008)",
+      "uid": "MI000329"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Late 2011)",
+      "uid": "MI000343"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Mid 2009)",
+      "uid": "MI000334"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Mid 2010)",
+      "uid": "MI000337"
+    },
+    {
+      "name": "MacBook Pro (15-inch, Mid 2012)",
+      "uid": "MI000346"
+    },
+    {
+      "name": "MacBook Pro (16-inch, 2019)",
+      "uid": "MI000368"
+    },
+    {
+      "name": "MacBook Pro (16-inch, 2021)",
+      "uid": "MI000414"
+    },
+    {
+      "name": "MacBook Pro (16-inch, 2023)",
+      "uid": "MI000417"
+    },
+    {
+      "name": "MacBook Pro (16-inch, 2024)",
+      "uid": "MI000423"
+    },
+    {
+      "name": "MacBook Pro (16-inch, M5 Pro or M5 Max)",
+      "uid": "MI000426"
+    },
+    {
+      "name": "MacBook Pro (16-inch, Nov 2023)",
+      "uid": "MI000420"
+    },
+    {
+      "name": "MacBook Pro (17-inch Core 2 Duo)",
+      "uid": "MI000324"
+    },
+    {
+      "name": "MacBook Pro (17-inch Early 2008)",
+      "uid": "MI000328"
+    },
+    {
+      "name": "MacBook Pro (17-inch Mid/Late 2007, 2.4 GHz)",
+      "uid": "MI000326"
+    },
+    {
+      "name": "MacBook Pro (17-inch)",
+      "uid": "MI000322"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Early 2009)",
+      "uid": "MI000331"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Early 2011)",
+      "uid": "MI000341"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Late 2008)",
+      "uid": "MI000330"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Late 2011)",
+      "uid": "MI000344"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Mid 2009)",
+      "uid": "MI000335"
+    },
+    {
+      "name": "MacBook Pro (17-inch, Mid 2010)",
+      "uid": "MI000338"
+    },
+    {
+      "name": "MacBook Pro (Retina, 13-inch, Early 2013)",
+      "uid": "MI000349"
+    },
+    {
+      "name": "MacBook Pro (Retina, 13-inch, Early 2015)",
+      "uid": "MI000355"
+    },
+    {
+      "name": "MacBook Pro (Retina, 13-inch, Late 2012)",
+      "uid": "MI000348"
+    },
+    {
+      "name": "MacBook Pro (Retina, 13-inch, Late 2013)",
+      "uid": "MI000351"
+    },
+    {
+      "name": "MacBook Pro (Retina, 13-inch, Mid 2014)",
+      "uid": "MI000353"
+    },
+    {
+      "name": "MacBook Pro (Retina, 15-inch, Early 2013)",
+      "uid": "MI000350"
+    },
+    {
+      "name": "MacBook Pro (Retina, 15-inch, Late 2013)",
+      "uid": "MI000352"
+    },
+    {
+      "name": "MacBook Pro (Retina, 15-inch, Mid 2012)",
+      "uid": "MI000347"
+    },
+    {
+      "name": "MacBook Pro (Retina, 15-inch, Mid 2014)",
+      "uid": "MI000354"
+    },
+    {
+      "name": "MacBook Pro (Retina, 15-inch, Mid 2015)",
+      "uid": "MI000356"
+    },
+    {
+      "name": "Macintosh 128K",
+      "uid": "MI000001"
+    },
+    {
+      "name": "Macintosh 512K, 512Ke",
+      "uid": "MI000002"
+    },
+    {
+      "name": "Macintosh Centris 610",
+      "uid": "MI000069"
+    },
+    {
+      "name": "Macintosh Centris 650",
+      "uid": "MI000070"
+    },
+    {
+      "name": "Macintosh Centris 660AV",
+      "uid": "MI000071"
+    },
+    {
+      "name": "Macintosh Classic",
+      "uid": "MI000007"
+    },
+    {
+      "name": "Macintosh Classic II",
+      "uid": "MI000008"
+    },
+    {
+      "name": "Macintosh Color Classic",
+      "uid": "MI000009"
+    },
+    {
+      "name": "Macintosh Color Classic II",
+      "uid": "MI000010"
+    },
+    {
+      "name": "Macintosh II",
+      "uid": "MI000012"
+    },
+    {
+      "name": "Macintosh IIci",
+      "uid": "MI000015"
+    },
+    {
+      "name": "Macintosh IIcx",
+      "uid": "MI000014"
+    },
+    {
+      "name": "Macintosh IIfx",
+      "uid": "MI000016"
+    },
+    {
+      "name": "Macintosh IIsi",
+      "uid": "MI000017"
+    },
+    {
+      "name": "Macintosh IIvi",
+      "uid": "MI000018"
+    },
+    {
+      "name": "Macintosh IIvx",
+      "uid": "MI000019"
+    },
+    {
+      "name": "Macintosh IIx",
+      "uid": "MI000013"
+    },
+    {
+      "name": "Macintosh LC",
+      "uid": "MI000020"
+    },
+    {
+      "name": "Macintosh LC 475",
+      "uid": "MI000025"
+    },
+    {
+      "name": "Macintosh LC 520",
+      "uid": "MI000023"
+    },
+    {
+      "name": "Macintosh LC 550",
+      "uid": "MI000026"
+    },
+    {
+      "name": "Macintosh LC 575",
+      "uid": "MI000027"
+    },
+    {
+      "name": "Macintosh LC 580",
+      "uid": "MI000029"
+    },
+    {
+      "name": "Macintosh LC 630",
+      "uid": "MI000028"
+    },
+    {
+      "name": "Macintosh LC II",
+      "uid": "MI000021"
+    },
+    {
+      "name": "Macintosh LC III",
+      "uid": "MI000022"
+    },
+    {
+      "name": "Macintosh LC III+",
+      "uid": "MI000024"
+    },
+    {
+      "name": "Macintosh Performa 200",
+      "uid": "MI000040"
+    },
+    {
+      "name": "Macintosh Performa 250",
+      "uid": "MI000043"
+    },
+    {
+      "name": "Macintosh Performa 275",
+      "uid": "MI000048"
+    },
+    {
+      "name": "Macintosh Performa 400",
+      "uid": "MI000041"
+    },
+    {
+      "name": "Macintosh Performa 405",
+      "uid": "MI000044"
+    },
+    {
+      "name": "Macintosh Performa 410",
+      "uid": "MI000049"
+    },
+    {
+      "name": "Macintosh Performa 430",
+      "uid": "MI000045"
+    },
+    {
+      "name": "Macintosh Performa 450",
+      "uid": "MI000046"
+    },
+    {
+      "name": "Macintosh Performa 460",
+      "uid": "MI000050"
+    },
+    {
+      "name": "Macintosh Performa 466",
+      "uid": "MI000051"
+    },
+    {
+      "name": "Macintosh Performa 467",
+      "uid": "MI000052"
+    },
+    {
+      "name": "Macintosh Performa 475",
+      "uid": "MI000053"
+    },
+    {
+      "name": "Macintosh Performa 476",
+      "uid": "MI000054"
+    },
+    {
+      "name": "Macintosh Performa 520",
+      "uid": "MI000047"
+    },
+    {
+      "name": "Macintosh Performa 5200CD",
+      "uid": "MI000123"
+    },
+    {
+      "name": "Macintosh Performa 5210CD",
+      "uid": "MI000124"
+    },
+    {
+      "name": "Macintosh Performa 5215CD",
+      "uid": "MI000127"
+    },
+    {
+      "name": "Macintosh Performa 5220CD",
+      "uid": "MI000125"
+    },
+    {
+      "name": "Macintosh Performa 5260CD",
+      "uid": "MI000131"
+    },
+    {
+      "name": "Macintosh Performa 5270CD",
+      "uid": "MI000132"
+    },
+    {
+      "name": "Macintosh Performa 5280",
+      "uid": "MI000136"
+    },
+    {
+      "name": "Macintosh Performa 5300CD",
+      "uid": "MI000128"
+    },
+    {
+      "name": "Macintosh Performa 5320CD",
+      "uid": "MI000130"
+    },
+    {
+      "name": "Macintosh Performa 5400 Series",
+      "uid": "MI000133"
+    },
+    {
+      "name": "Macintosh Performa 550",
+      "uid": "MI000055"
+    },
+    {
+      "name": "Macintosh Performa 560",
+      "uid": "MI000056"
+    },
+    {
+      "name": "Macintosh Performa 575",
+      "uid": "MI000057"
+    },
+    {
+      "name": "Macintosh Performa 577",
+      "uid": "MI000058"
+    },
+    {
+      "name": "Macintosh Performa 578",
+      "uid": "MI000059"
+    },
+    {
+      "name": "Macintosh Performa 580CD",
+      "uid": "MI000068"
+    },
+    {
+      "name": "Macintosh Performa 588CD",
+      "uid": "MI000067"
+    },
+    {
+      "name": "Macintosh Performa 600, 600CD",
+      "uid": "MI000042"
+    },
+    {
+      "name": "Macintosh Performa 6100 Series",
+      "uid": "MI000122"
+    },
+    {
+      "name": "Macintosh Performa 6200 Series",
+      "uid": "MI000126"
+    },
+    {
+      "name": "Macintosh Performa 630, 630CD",
+      "uid": "MI000060"
+    },
+    {
+      "name": "Macintosh Performa 6300 Series",
+      "uid": "MI000129"
+    },
+    {
+      "name": "Macintosh Performa 631, 631CD",
+      "uid": "MI000061"
+    },
+    {
+      "name": "Macintosh Performa 635, 635CD",
+      "uid": "MI000062"
+    },
+    {
+      "name": "Macintosh Performa 636, 636CD",
+      "uid": "MI000063"
+    },
+    {
+      "name": "Macintosh Performa 6360",
+      "uid": "MI000135"
+    },
+    {
+      "name": "Macintosh Performa 637CD",
+      "uid": "MI000064"
+    },
+    {
+      "name": "Macintosh Performa 638CD",
+      "uid": "MI000065"
+    },
+    {
+      "name": "Macintosh Performa 6400 Series",
+      "uid": "MI000134"
+    },
+    {
+      "name": "Macintosh Performa 640CD",
+      "uid": "MI000066"
+    },
+    {
+      "name": "Macintosh Plus",
+      "uid": "MI000004"
+    },
+    {
+      "name": "Macintosh Portable",
+      "uid": "MI000075"
+    },
+    {
+      "name": "Macintosh PowerBook 100",
+      "uid": "MI000076"
+    },
+    {
+      "name": "Macintosh PowerBook 140",
+      "uid": "MI000077"
+    },
+    {
+      "name": "Macintosh PowerBook 1400 Series",
+      "uid": "MI000147"
+    },
+    {
+      "name": "Macintosh PowerBook 145, 145B",
+      "uid": "MI000079"
+    },
+    {
+      "name": "Macintosh PowerBook 150",
+      "uid": "MI000085"
+    },
+    {
+      "name": "Macintosh PowerBook 160",
+      "uid": "MI000080"
+    },
+    {
+      "name": "Macintosh PowerBook 165, 165c",
+      "uid": "MI000082"
+    },
+    {
+      "name": "Macintosh PowerBook 170",
+      "uid": "MI000078"
+    },
+    {
+      "name": "Macintosh PowerBook 180, 180c",
+      "uid": "MI000081"
+    },
+    {
+      "name": "Macintosh PowerBook 190, 190cs",
+      "uid": "MI000087"
+    },
+    {
+      "name": "Macintosh PowerBook 2400c",
+      "uid": "MI000149"
+    },
+    {
+      "name": "Macintosh PowerBook 3400c",
+      "uid": "MI000148"
+    },
+    {
+      "name": "Macintosh PowerBook 520, 520c",
+      "uid": "MI000083"
+    },
+    {
+      "name": "Macintosh PowerBook 5300 Series",
+      "uid": "MI000146"
+    },
+    {
+      "name": "Macintosh PowerBook 540, 540c",
+      "uid": "MI000084"
+    },
+    {
+      "name": "Macintosh PowerBook 550c",
+      "uid": "MI000086"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 210",
+      "uid": "MI000089"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 230",
+      "uid": "MI000090"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 2300c",
+      "uid": "MI000150"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 250",
+      "uid": "MI000091"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 270c",
+      "uid": "MI000092"
+    },
+    {
+      "name": "Macintosh PowerBook Duo 280, 280c",
+      "uid": "MI000093"
+    },
+    {
+      "name": "Macintosh Quadra 605",
+      "uid": "MI000035"
+    },
+    {
+      "name": "Macintosh Quadra 610",
+      "uid": "MI000036"
+    },
+    {
+      "name": "Macintosh Quadra 630",
+      "uid": "MI000039"
+    },
+    {
+      "name": "Macintosh Quadra 650",
+      "uid": "MI000037"
+    },
+    {
+      "name": "Macintosh Quadra 660AV",
+      "uid": "MI000038"
+    },
+    {
+      "name": "Macintosh Quadra 700",
+      "uid": "MI000030"
+    },
+    {
+      "name": "Macintosh Quadra 800",
+      "uid": "MI000033"
+    },
+    {
+      "name": "Macintosh Quadra 840AV",
+      "uid": "MI000034"
+    },
+    {
+      "name": "Macintosh Quadra 900",
+      "uid": "MI000031"
+    },
+    {
+      "name": "Macintosh Quadra 950",
+      "uid": "MI000032"
+    },
+    {
+      "name": "Macintosh SE, SE FDHD",
+      "uid": "MI000005"
+    },
+    {
+      "name": "Macintosh SE/30",
+      "uid": "MI000006"
+    },
+    {
+      "name": "Macintosh TV",
+      "uid": "MI000011"
+    },
+    {
+      "name": "Macintosh XL",
+      "uid": "MI000003"
+    },
+    {
+      "name": "Power Mac G4 (AGP Graphics)",
+      "uid": "MI000156"
+    },
+    {
+      "name": "Power Mac G4 (Digital Audio)",
+      "uid": "MI000159"
+    },
+    {
+      "name": "Power Mac G4 (FW 800)",
+      "uid": "MI000164"
+    },
+    {
+      "name": "Power Mac G4 (Gigabit Ethernet)",
+      "uid": "MI000157"
+    },
+    {
+      "name": "Power Mac G4 (MDD 2003)",
+      "uid": "MI000165"
+    },
+    {
+      "name": "Power Mac G4 (Mirrored Drive Doors)",
+      "uid": "MI000163"
+    },
+    {
+      "name": "Power Mac G4 (PCI Graphics)",
+      "uid": "MI000155"
+    },
+    {
+      "name": "Power Mac G4 (QuickSilver 2002)",
+      "uid": "MI000161"
+    },
+    {
+      "name": "Power Mac G4 (QuickSilver 2002ED)",
+      "uid": "MI000162"
+    },
+    {
+      "name": "Power Mac G4 (QuickSilver)",
+      "uid": "MI000160"
+    },
+    {
+      "name": "Power Mac G4 Cube",
+      "uid": "MI000158"
+    },
+    {
+      "name": "Power Mac G5",
+      "uid": "MI000166"
+    },
+    {
+      "name": "Power Mac G5 (Early 2005)",
+      "uid": "MI000169"
+    },
+    {
+      "name": "Power Mac G5 (June 2004)",
+      "uid": "MI000167"
+    },
+    {
+      "name": "Power Mac G5 (Late 2004)",
+      "uid": "MI000168"
+    },
+    {
+      "name": "Power Mac G5 (Late 2005)",
+      "uid": "MI000170"
+    },
+    {
+      "name": "Power Macintosh 4400",
+      "uid": "MI000114"
+    },
+    {
+      "name": "Power Macintosh 5200/75LC",
+      "uid": "MI000100"
+    },
+    {
+      "name": "Power Macintosh 5260",
+      "uid": "MI000108"
+    },
+    {
+      "name": "Power Macintosh 5300/100LC",
+      "uid": "MI000103"
+    },
+    {
+      "name": "Power Macintosh 5400",
+      "uid": "MI000109"
+    },
+    {
+      "name": "Power Macintosh 5500",
+      "uid": "MI000115"
+    },
+    {
+      "name": "Power Macintosh 6100",
+      "uid": "MI000097"
+    },
+    {
+      "name": "Power Macintosh 6200",
+      "uid": "MI000101"
+    },
+    {
+      "name": "Power Macintosh 6300",
+      "uid": "MI000112"
+    },
+    {
+      "name": "Power Macintosh 6400",
+      "uid": "MI000113"
+    },
+    {
+      "name": "Power Macintosh 6500",
+      "uid": "MI000118"
+    },
+    {
+      "name": "Power Macintosh 7100",
+      "uid": "MI000098"
+    },
+    {
+      "name": "Power Macintosh 7200",
+      "uid": "MI000104"
+    },
+    {
+      "name": "Power Macintosh 7215",
+      "uid": "MI000107"
+    },
+    {
+      "name": "Power Macintosh 7220",
+      "uid": "MI000116"
+    },
+    {
+      "name": "Power Macintosh 7300",
+      "uid": "MI000117"
+    },
+    {
+      "name": "Power Macintosh 7500",
+      "uid": "MI000105"
+    },
+    {
+      "name": "Power Macintosh 7600",
+      "uid": "MI000110"
+    },
+    {
+      "name": "Power Macintosh 8100",
+      "uid": "MI000099"
+    },
+    {
+      "name": "Power Macintosh 8200",
+      "uid": "MI000111"
+    },
+    {
+      "name": "Power Macintosh 8500",
+      "uid": "MI000106"
+    },
+    {
+      "name": "Power Macintosh 8600",
+      "uid": "MI000119"
+    },
+    {
+      "name": "Power Macintosh 9500",
+      "uid": "MI000102"
+    },
+    {
+      "name": "Power Macintosh 9600",
+      "uid": "MI000120"
+    },
+    {
+      "name": "Power Macintosh G3 (All In One)",
+      "uid": "MI000153"
+    },
+    {
+      "name": "Power Macintosh G3 (B&W)",
+      "uid": "MI000154"
+    },
+    {
+      "name": "Power Macintosh G3 (Desktop)",
+      "uid": "MI000151"
+    },
+    {
+      "name": "Power Macintosh G3 (Minitower)",
+      "uid": "MI000152"
+    },
+    {
+      "name": "PowerBook G3",
+      "uid": "MI000215"
+    },
+    {
+      "name": "PowerBook G3 (Bronze Keyboard)",
+      "uid": "MI000218"
+    },
+    {
+      "name": "PowerBook G3 (FireWire)",
+      "uid": "MI000219"
+    },
+    {
+      "name": "PowerBook G3 Series",
+      "uid": "MI000216"
+    },
+    {
+      "name": "PowerBook G3 Series (September 1998)",
+      "uid": "MI000217"
+    },
+    {
+      "name": "PowerBook G4",
+      "uid": "MI000220"
+    },
+    {
+      "name": "PowerBook G4 (12-inch 1.33GHz)",
+      "uid": "MI000229"
+    },
+    {
+      "name": "PowerBook G4 (12-inch 1.5GHz)",
+      "uid": "MI000232"
+    },
+    {
+      "name": "PowerBook G4 (12-inch DVI)",
+      "uid": "MI000226"
+    },
+    {
+      "name": "PowerBook G4 (12-inch)",
+      "uid": "MI000224"
+    },
+    {
+      "name": "PowerBook G4 (15-inch 1.5/1.33GHz)",
+      "uid": "MI000230"
+    },
+    {
+      "name": "PowerBook G4 (15-inch 1.67/1.5GHz)",
+      "uid": "MI000233"
+    },
+    {
+      "name": "PowerBook G4 (15-inch DLSD)",
+      "uid": "MI000235"
+    },
+    {
+      "name": "PowerBook G4 (15-inch FW800)",
+      "uid": "MI000227"
+    },
+    {
+      "name": "PowerBook G4 (17-inch 1.33GHz)",
+      "uid": "MI000228"
+    },
+    {
+      "name": "PowerBook G4 (17-inch 1.5GHz)",
+      "uid": "MI000231"
+    },
+    {
+      "name": "PowerBook G4 (17-inch 1.67GHz)",
+      "uid": "MI000234"
+    },
+    {
+      "name": "PowerBook G4 (17-inch DLSD)",
+      "uid": "MI000236"
+    },
+    {
+      "name": "PowerBook G4 (17-inch)",
+      "uid": "MI000225"
+    },
+    {
+      "name": "PowerBook G4 (1GHz/867MHz)",
+      "uid": "MI000223"
+    },
+    {
+      "name": "PowerBook G4 (DVI)",
+      "uid": "MI000222"
+    },
+    {
+      "name": "PowerBook G4 (Gigabit Ethernet)",
+      "uid": "MI000221"
+    },
+    {
+      "name": "Twentieth Anniversary Macintosh",
+      "uid": "MI000121"
+    }
+  ]
+}

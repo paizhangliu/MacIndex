@@ -8,8 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /* List adapter for machine search results. */
 class MachineListAdapter extends BaseAdapter {
@@ -20,7 +20,7 @@ class MachineListAdapter extends BaseAdapter {
 
     private final int[] machineIDs;
 
-    private List<UserFavouriteHelper.Folder> userFavourites = new ArrayList<>();
+    private Set<String> userFavouriteUIDs = new HashSet<>();
 
     MachineListAdapter(final int[] thisMachineIDs, final Context parentContext) {
         machineIDs = thisMachineIDs;
@@ -34,7 +34,8 @@ class MachineListAdapter extends BaseAdapter {
     }
 
     private void refreshFavourites(final boolean notifyChange) {
-        userFavourites = UserFavouriteHelper.read(thisContext);
+        userFavouriteUIDs = UserFavouriteHelper.getMachineUIDs(
+                UserFavouriteHelper.read(thisContext));
         if (notifyChange) {
             notifyDataSetChanged();
         }
@@ -76,7 +77,7 @@ class MachineListAdapter extends BaseAdapter {
         machineHolder.machineName.setText(machineName);
         machineHolder.machineName.setTag(MainActivity.getMachineHelper().getUID(machineID));
         machineHolder.machineYear.setText(MainActivity.getMachineHelper().getSYear(machineID));
-        SpecsIntentHelper.refreshFavourite(machineHolder.machineName, userFavourites);
+        SpecsIntentHelper.refreshFavourite(machineHolder.machineName, userFavouriteUIDs);
 
         machineHolder.machineLayout.setOnClickListener(unused -> SpecsIntentHelper.openMachine(
                 machineIDs, machineID, thisContext));
