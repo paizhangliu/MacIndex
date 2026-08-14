@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 /**
  * MacIndex Favourite Activity
@@ -344,6 +345,8 @@ public class FavouriteActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                    } catch (CancellationException ignored) {
+                        // Replaced by a newer refresh or cancelled by the user.
                     } catch (final Exception e) {
                         runOnUiThread(() -> {
                             if (requestID != favouritesRequestID || isFinishing()

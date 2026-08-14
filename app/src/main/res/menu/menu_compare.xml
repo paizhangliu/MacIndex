@@ -17,6 +17,10 @@
         android:id="@+id/clearCompareItem"
         android:title="@string/submenu_compare_clear" />
     <item
+        android:id="@+id/highlightDifferencesCompareItem"
+        android:checkable="true"
+        android:title="@string/submenu_compare_highlight_differences" />
+    <item
         android:id="@+id/copyCompareItem"
         android:title="@string/submenu_specs_share" />
     <item

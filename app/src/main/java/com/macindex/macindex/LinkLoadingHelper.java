@@ -3,6 +3,7 @@ package com.macindex.macindex;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
@@ -169,25 +170,41 @@ class LinkLoadingHelper {
                 "http" + thisLink.split(",http")[1], thisContext);
     }
 
-    public static void startBrowser(final String url, final Context thisContext) {
+    public static boolean startBrowser(final String url, final Context thisContext) {
+        final Uri uri;
         try {
-            if (url == null) {
-                throw new IllegalArgumentException();
+            if (url == null || url.isEmpty()) {
+                throw new IllegalArgumentException("Link is empty");
             }
+            uri = Uri.parse(url);
+            if ((!"http".equals(uri.getScheme()) && !"https".equals(uri.getScheme()))
+                    || uri.getHost() == null) {
+                throw new IllegalArgumentException("Illegal link: " + url);
+            }
+        } catch (Exception e) {
+            ExceptionHelper.handleException(thisContext, e,
+                    "startBrowserCustomTabs", "Invalid link " + url);
+            return false;
+        }
+        try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(ContextCompat.getColor(thisContext, R.color.colorPrimary));
             CustomTabsIntent customTabsIntent = builder.build();
-            customTabsIntent.launchUrl(thisContext, Uri.parse(url));
+            customTabsIntent.launchUrl(thisContext, uri);
+            return true;
         } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e,
-                    "startBrowserCustomTabs", "Failed to open " + url);
+            Log.e("startBrowserCustomTabs", "Failed to open " + url, e);
+            ExceptionHelper.showMessageDialog(thisContext, R.string.link_open_failed_title,
+                    R.string.link_open_failed_message);
+            return false;
         }
     }
 
     public static void startEveryMac(final String thisName, final String url, final Context thisContext) {
-        startBrowser(url, thisContext);
-        Toast.makeText(thisContext,
-                MainActivity.getRes().getString(R.string.link_opening, thisName),
-                Toast.LENGTH_LONG).show();
+        if (startBrowser(url, thisContext)) {
+            Toast.makeText(thisContext,
+                    MainActivity.getRes().getString(R.string.link_opening, thisName),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

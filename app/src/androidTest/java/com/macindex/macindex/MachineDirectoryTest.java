@@ -162,6 +162,19 @@ public class MachineDirectoryTest {
     }
 
     @Test
+    public void processorTypeImagesResolveEveryMachine() {
+        try (Cursor cursor = database.query("machine_directory",
+                new String[]{"machine_id", "sprocessor"}, "sprocessor IS NOT NULL",
+                null, null, null, "machine_id")) {
+            while (cursor.moveToNext()) {
+                final int machineID = cursor.getInt(0);
+                assertTrue(cursor.getString(1), MainActivity.getMachineHelper()
+                        .getProcessorTypeImage(machineID, applicationContext) != 0);
+            }
+        }
+    }
+
+    @Test
     public void unknownMachineUIDRequiresDataRecovery() {
         try {
             MainActivity.getMachineHelper().getMachineID("MI999999");
@@ -351,6 +364,35 @@ public class MachineDirectoryTest {
         assertEquals(UserFavouriteHelper.EMPTY_JSON, result.value);
         assertEquals(1, result.removed.size());
         assertEquals("{broken", result.removed.get(0));
+    }
+
+    @Test
+    public void malformedLegacyRecordsAreDiscardedInsteadOfPartiallyRecovered() {
+        final MachineHelper machineHelper = MainActivity.getMachineHelper();
+        final Map<String, String> oldMachineNames =
+                OldMachineNamesHelper.read(applicationContext);
+        final String comments = "Macintosh 128K│Keep││broken";
+        final String favourites = "││{Keep}│[Macintosh 128K]│broken";
+        final String compares = "[Macintosh 128K]│broken";
+
+        final UserRecordUpgradeHelper.UpgradeResult upgradedComments =
+                UserRecordUpgradeHelper.upgradeComments(
+                        comments, machineHelper, oldMachineNames);
+        final UserRecordUpgradeHelper.UpgradeResult upgradedFavourites =
+                UserRecordUpgradeHelper.upgradeFavourites(
+                        favourites, machineHelper, oldMachineNames);
+        final UserRecordUpgradeHelper.UpgradeResult upgradedCompares =
+                UserRecordUpgradeHelper.upgradeCompares(
+                        "", compares, "Macintosh 128K", "Mac mini",
+                        machineHelper, oldMachineNames);
+
+        assertEquals(UserCommentHelper.EMPTY_JSON, upgradedComments.value);
+        assertEquals(Collections.singletonList(comments), upgradedComments.removed);
+        assertEquals(UserFavouriteHelper.EMPTY_JSON, upgradedFavourites.value);
+        assertEquals(Collections.singletonList(favourites), upgradedFavourites.removed);
+        assertEquals(UserCompareHelper.EMPTY_JSON, upgradedCompares.value);
+        assertEquals(1, upgradedCompares.removed.size());
+        assertTrue(upgradedCompares.removed.get(0).contains(compares));
     }
 
     private void assertDataRecoveryRequired(final Runnable action) {

@@ -75,7 +75,7 @@
         <item quantity="other">共找到 %d 个结果</item>
     </plurals>
     <string name="search_prompt">按回车键开始搜索</string>
-    <string name="search_illegal">搜索词包含无效字符</string>
+    <string name="search_control_character">搜索词不能包含控制字符</string>
     <string name="search_overlength">搜索词太长</string>
     <string name="menu_search">机型搜索</string>
     <string name="menu_random">试试手气</string>
@@ -115,6 +115,7 @@
     <string name="submenu_compare_exchange_columns">交换左右机型</string>
     <string name="submenu_compare_manage">管理比较列表</string>
     <string name="submenu_compare_clear">清除比较列表</string>
+    <string name="submenu_compare_highlight_differences">突出不同项</string>
     <string name="submenu_comments_delete">管理备注</string>
     <string name="submenu_comments_clear">清除备注</string>
     <string name="year">推出时间</string>
@@ -139,11 +140,12 @@
     <string name="support">售后状态</string>
     <string name="comment">备注</string>
     <string name="comment_null">暂无备注</string>
-    <string name="comment_illegal">字符“│”为 MacIndex 内部保留字符，不能用于备注。</string>
     <string name="comment_length">每个机型的备注最多可输入 500 个字符。</string>
     <string name="comment_tips">可在备注页查看所有已有备注。</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">确认</string>
+    <string name="link_open_failed_title">无法打开链接</string>
+    <string name="link_open_failed_message">MacIndex 无法打开此链接。请确认设备上有可用的浏览器，然后重试。</string>
     <string name="link_cancel">取消</string>
     <string name="action_delete">删除</string>
     <string name="action_clear">清除</string>
@@ -161,7 +163,7 @@
     <string name="copy_information_success">信息已复制</string>
     <string name="error_copy_not_available">没有可复制的信息</string>
     <string name="upgrade_report_title">已更新已存数据</string>
-    <string name="upgrade_report_information">以下已存内容已无法与当前数据库匹配，因此已被删除。你可以复制下面的详情留存。</string>
+    <string name="upgrade_report_information">部分已存数据格式无效，或已无法与当前数据库匹配，因此已被删除。你可以复制下面的详情留存。</string>
     <string name="upgrade_report_copy_button">复制详情</string>
     <string name="upgrade_report_copy_information">已删除内容已复制</string>
     <string name="upgrade_report_empty_entry">（空条目）</string>
@@ -183,7 +185,6 @@
     <string name="favourites_new_folder">输入收藏夹名称。</string>
     <string name="favourites_empty_folder">%1$s（空）</string>
     <string name="favourites_error_empty">收藏夹名称不能为空。</string>
-    <string name="favourites_error_illegal">字符“│”为 MacIndex 内部保留字符，不能用于收藏夹名称。</string>
     <string name="favourites_error_length">收藏夹名称限一行，最多 30 个字符。</string>
     <string name="favourites_error_conflict">已存在同名收藏夹。</string>
     <string name="favourites_error_limit">最多只能创建 15 个收藏夹。</string>

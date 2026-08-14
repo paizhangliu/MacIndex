@@ -2,12 +2,14 @@ package com.macindex.macindex;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * MacIndex Compare Activity
@@ -52,6 +55,8 @@ public class CompareActivity extends AppCompatActivity {
     private MenuItem manageListMenuItem = null;
 
     private MenuItem clearListMenuItem = null;
+
+    private MenuItem highlightDifferencesMenuItem = null;
 
     private SpecsHelper specsHelperLeft = null;
 
@@ -137,6 +142,9 @@ public class CompareActivity extends AppCompatActivity {
         shareLinkCompareMenuItem = menu.findItem(R.id.shareLinkCompareItem);
         manageListMenuItem = menu.findItem(R.id.manageCompareItem);
         clearListMenuItem = menu.findItem(R.id.clearCompareItem);
+        highlightDifferencesMenuItem = menu.findItem(R.id.highlightDifferencesCompareItem);
+        highlightDifferencesMenuItem.setChecked(PrefsHelper.getBooleanPrefs(
+                "isHighlightCompareDifferences", this));
         updateMenuState();
         return true;
     }
@@ -185,6 +193,11 @@ public class CompareActivity extends AppCompatActivity {
                 // Cancelled, nothing to do.
             });
             clearWarningDialog.show();
+        } else if (itemID == R.id.highlightDifferencesCompareItem) {
+            final boolean isChecked = !item.isChecked();
+            item.setChecked(isChecked);
+            PrefsHelper.editPrefs("isHighlightCompareDifferences", isChecked, this);
+            applyDifferenceHighlight();
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -366,6 +379,7 @@ public class CompareActivity extends AppCompatActivity {
             final TextView compareRight = row.findViewById(R.id.compareRight);
             final String leftInfo = leftSpecification[i];
             final String rightInfo = rightSpecification[i];
+            row.setTag(!Objects.equals(leftInfo, rightInfo));
             if (labels[i] == R.string.processor) {
                 compareLeft.setText(specsHelperLeft.formatModels(leftInfo,
                         helper.getProcessorModelRanges(leftID)));
@@ -380,8 +394,8 @@ public class CompareActivity extends AppCompatActivity {
                 specsHelperLeft.initPartNumbers(compareLeft, leftInfo);
                 specsHelperRight.initPartNumbers(compareRight, rightInfo);
             } else {
-                compareLeft.setText(leftInfo);
-                compareRight.setText(rightInfo);
+                compareLeft.setText(specsHelperLeft.getDisplayInfo(leftInfo));
+                compareRight.setText(specsHelperRight.getDisplayInfo(rightInfo));
             }
             specsHelperLeft.initCompareCopy(compareLeft, leftName, leftInfo, rightName, rightInfo);
             specsHelperLeft.initCompareCopy(compareRight, leftName, leftInfo, rightName, rightInfo);
@@ -390,6 +404,24 @@ public class CompareActivity extends AppCompatActivity {
                 specsHelperLeft.setSupportColor(compareRight, rightInfo);
             }
             specsContainer.addView(row);
+        }
+        applyDifferenceHighlight();
+    }
+
+    private void applyDifferenceHighlight() {
+        final LinearLayout specsContainer = findViewById(R.id.compareSpecsContainer);
+        if (specsContainer == null) {
+            return;
+        }
+        final boolean isEnabled = highlightDifferencesMenuItem != null
+                ? highlightDifferencesMenuItem.isChecked()
+                : PrefsHelper.getBooleanPrefs("isHighlightCompareDifferences", this);
+        final int backgroundColor = ContextCompat.getColor(this,
+                R.color.colorCompareDifferent);
+        for (int i = 0; i < specsContainer.getChildCount(); i++) {
+            final View row = specsContainer.getChildAt(i);
+            row.setBackgroundColor(isEnabled && Boolean.TRUE.equals(row.getTag())
+                    ? backgroundColor : Color.TRANSPARENT);
         }
     }
 
@@ -428,7 +460,7 @@ public class CompareActivity extends AppCompatActivity {
                 getResources().getDisplayMetrics().widthPixels / 2,
                 Math.round(150 * getResources().getDisplayMetrics().density));
         image.setImageBitmap(picture);
-        ThemeHelper.applyMachineImage(this, image);
+        ThemeHelper.applyMachineImagePreview(this, image);
         image.setContentDescription(name);
         // Set a long click listener
         image.setOnLongClickListener(v -> {
@@ -532,6 +564,9 @@ public class CompareActivity extends AppCompatActivity {
         }
         if (clearListMenuItem != null) {
             clearListMenuItem.setEnabled(isAbleToManage);
+        }
+        if (highlightDifferencesMenuItem != null) {
+            highlightDifferencesMenuItem.setEnabled(isInitialized);
         }
     }
 

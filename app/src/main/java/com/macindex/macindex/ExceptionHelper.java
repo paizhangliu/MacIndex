@@ -117,6 +117,25 @@ class ExceptionHelper {
                 report, confirmedAction);
     }
 
+    public static void showMessageDialog(final Context thisContext, final int title,
+                                         final int message) {
+        if (thisContext instanceof Activity) {
+            final Activity activity = (Activity) thisContext;
+            if (activity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                    && activity.isDestroyed())) {
+                Log.e("MessageDialog", thisContext.getString(message));
+                return;
+            }
+        }
+        final AlertDialog.Builder messageDialog = new AlertDialog.Builder(thisContext);
+        messageDialog.setTitle(title);
+        messageDialog.setMessage(message);
+        messageDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
+            // Confirmed, dismiss the dialog.
+        });
+        messageDialog.show();
+    }
+
     private static void showInformationDialog(final Context thisContext, final int title,
                                               final int message, final int positiveButton,
                                               final int copyButton, final int copyToast,

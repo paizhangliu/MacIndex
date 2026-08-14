@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 
 /*
  * MacIndex MachineHelper.
@@ -385,6 +386,19 @@ class MachineHelper {
         }
     }
 
+    private Cursor queryMachineRow(final int thisMachine, final String[] columns) {
+        final int[] position = getPosition(thisMachine);
+        return database.query(CATEGORIES_LIST[position[0]], columns, "id = ?",
+                new String[]{String.valueOf(position[1])}, null, null, null);
+    }
+
+    private String getMachineValue(final int thisMachine, final String column) {
+        try (Cursor cursor = queryMachineRow(thisMachine, new String[]{column})) {
+            cursor.moveToFirst();
+            return cursor.getString(0);
+        }
+    }
+
     private int[] parseFormatRanges(final String thisFormat) {
         if (thisFormat == null || thisFormat.isEmpty()) {
             return new int[0];
@@ -438,19 +452,17 @@ class MachineHelper {
     }
 
     public String[] getSpecs(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
         final String[] columns = {"year", "model", "ident", "gestalt", "\"order\"", "emc",
                 "processor", "graphics", "display", "ram", "rom", "software", "storage",
                 "features", "expansion", "design", "support"};
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                columns, "id = " + position[1], null, null, null, null);
-        tempCursor.moveToFirst();
-        final String[] tempResult = new String[columns.length];
-        for (int i = 0; i < columns.length; i++) {
-            tempResult[i] = checkApplicability(tempCursor.getString(i));
+        try (Cursor cursor = queryMachineRow(thisMachine, columns)) {
+            cursor.moveToFirst();
+            final String[] result = new String[columns.length];
+            for (int i = 0; i < columns.length; i++) {
+                result[i] = cursor.getString(i);
+            }
+            return result;
         }
-        tempCursor.close();
-        return tempResult;
     }
 
     public String getSYear(final int thisMachine) {
@@ -514,13 +526,7 @@ class MachineHelper {
 
     // Integrated with SoundHelper
     public int[] getSound(final int thisMachine, final Context thisContext) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"sound"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String thisSound = tempCursor.getString(tempCursor.getColumnIndexOrThrow("sound"));
-        tempCursor.close();
+        final String thisSound = getMachineValue(thisMachine, "sound");
         int[] sound = {0, 0};
         // NullSafe
         if (thisSound == null) {
@@ -616,13 +622,7 @@ class MachineHelper {
 
     // Should return "N" if EveryMac link is not available.
     public String getConfig(final int thisMachine) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"links"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String tempResult = tempCursor.getString(tempCursor.getColumnIndexOrThrow("links"));
-        tempCursor.close();
+        final String tempResult = getMachineValue(thisMachine, "links");
         // NullSafe
         if (tempResult == null) {
             return "null";
@@ -672,6 +672,7 @@ class MachineHelper {
             case "cometlake":
             case "icelake":
                 return R.drawable.intel;
+            case "a12z":
             case "a18":
             case "m1":
             case "m2":
@@ -687,13 +688,7 @@ class MachineHelper {
     }
 
     public int[][] getProcessorImage(final int thisMachine, final Context thisContext) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"processorid"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String thisProcessorImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("processorid"));
-        tempCursor.close();
+        final String thisProcessorImage = getMachineValue(thisMachine, "processorid");
         DebugHelper.log("MHGetProcessorImage", "Get ID " + thisProcessorImage);
         // NullSafe
         if (thisProcessorImage == null) {
@@ -1025,13 +1020,7 @@ class MachineHelper {
     }
 
     public int[][] getGraphicsImage(final int thisMachine, final Context thisContext) {
-        int[] position = getPosition(thisMachine);
-        Cursor tempCursor = database.query(CATEGORIES_LIST[position[0]],
-                new String[]{"graphicsid"}, "id = " + position[1], null, null, null,
-                null);
-        tempCursor.moveToFirst();
-        String thisGraphicsImage = tempCursor.getString(tempCursor.getColumnIndexOrThrow("graphicsid"));
-        tempCursor.close();
+        final String thisGraphicsImage = getMachineValue(thisMachine, "graphicsid");
         DebugHelper.log("MHGetGraphicsImage", "Get ID " + thisGraphicsImage);
         // NullSafe
         if (thisGraphicsImage == null) {
@@ -1221,79 +1210,73 @@ class MachineHelper {
     // For search use. Return machine IDs. Adapted with category range.
     public int[] searchHelper(final String columnName, final String searchInput, final String thisManufacturer,
                               final boolean isExactMatch, final boolean sortResults) {
-        try {
-            if (!isDirectoryColumn(columnName)) {
-                throw new IllegalArgumentException("Column is not indexed: " + columnName);
-            }
+        if (!isDirectoryColumn(columnName)) {
+            throw new IllegalArgumentException("Column is not indexed: " + columnName);
+        }
 
-            final String[] thisCategoryRange = getCategoryRange(thisManufacturer);
-            final boolean[] includedCategories = new boolean[CATEGORIES_LIST.length];
-            for (String thisCategory : thisCategoryRange) {
-                includedCategories[convertToMHCategoryID(thisCategory)] = true;
-            }
-            final List<Integer> rawPositions = new ArrayList<>();
-            final String normalizedSearchInput = searchInput.toLowerCase(Locale.ROOT);
+        final String[] thisCategoryRange = getCategoryRange(thisManufacturer);
+        final boolean[] includedCategories = new boolean[CATEGORIES_LIST.length];
+        for (String thisCategory : thisCategoryRange) {
+            includedCategories[convertToMHCategoryID(thisCategory)] = true;
+        }
+        final List<Integer> rawPositions = new ArrayList<>();
+        final String normalizedSearchInput = searchInput.toLowerCase(Locale.ROOT);
 
-            // Search the directory index.
-            for (int machineID = 0; machineID < totalMachine; machineID++) {
-                // Terminate immediately.
-                if (isQueryCancelled()) {
-                    throw new IllegalAccessException();
-                }
-                final int categoryID = machineCategoryIndex[machineID];
-                if (!includedCategories[categoryID]) {
+        // Search the directory index.
+        for (int machineID = 0; machineID < totalMachine; machineID++) {
+            // Terminate immediately.
+            if (isQueryCancelled()) {
+                throw new CancellationException();
+            }
+            final int categoryID = machineCategoryIndex[machineID];
+            if (!includedCategories[categoryID]) {
+                continue;
+            }
+            final String directoryValue = getDirectoryValue(machineID, columnName);
+            if (directoryValue != null && isDirectoryMatch(
+                    columnName, directoryValue, normalizedSearchInput)) {
+                rawPositions.add(machineID);
+            }
+        }
+        int[] finalPositions = new int[rawPositions.size()];
+        for (int i = 0; i < rawPositions.size(); i++) {
+            finalPositions[i] = rawPositions.get(i);
+        }
+        DebugHelper.log("MHSearchHelper", "Raw Matched: " + finalPositions.length + " result(s).");
+
+        // Verify Exact Match if required.
+        if (isExactMatch) {
+            final List<Integer> verifiedPositions = new ArrayList<>();
+            for (int machineToVerify : finalPositions) {
+                final String directoryValue = getDirectoryValue(machineToVerify, columnName);
+                if (directoryValue == null) {
                     continue;
                 }
-                final String directoryValue = getDirectoryValue(machineID, columnName);
-                if (directoryValue != null && isDirectoryMatch(
-                        columnName, directoryValue, normalizedSearchInput)) {
-                    rawPositions.add(machineID);
-                }
-            }
-            int[] finalPositions = new int[rawPositions.size()];
-            for (int i = 0; i < rawPositions.size(); i++) {
-                finalPositions[i] = rawPositions.get(i);
-            }
-            DebugHelper.log("MHSearchHelper", "Raw Matched: " + finalPositions.length + " result(s).");
-
-            // Verify Exact Match if required.
-            if (isExactMatch) {
-                final List<Integer> verifiedPositions = new ArrayList<>();
-                for (int machineToVerify : finalPositions) {
-                    final String directoryValue = getDirectoryValue(machineToVerify, columnName);
-                    if (directoryValue == null) {
-                        continue;
-                    }
-                    String[] rawUndefinedQuery = directoryValue.split("~");
-                    for (String resultToVerify : rawUndefinedQuery) {
-                        if (resultToVerify.equalsIgnoreCase(searchInput)) {
-                            verifiedPositions.add(machineToVerify);
-                            break;
-                        }
+                String[] rawUndefinedQuery = directoryValue.split("~");
+                for (String resultToVerify : rawUndefinedQuery) {
+                    if (resultToVerify.equalsIgnoreCase(searchInput)) {
+                        verifiedPositions.add(machineToVerify);
+                        break;
                     }
                 }
-                // Go over the list.
-                finalPositions = new int[verifiedPositions.size()];
-                for (int i = 0; i < verifiedPositions.size(); i++) {
-                    finalPositions[i] = verifiedPositions.get(i);
-                }
             }
-            DebugHelper.log("MHSearchHelper", "Exact Match is " + isExactMatch + ".");
-            DebugHelper.log("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
-
-            // Sort if required.
-            if (sortResults && finalPositions.length > 1) {
-                // Sort by introduction date.
-                finalPositions = directSortByYear(finalPositions);
+            // Go over the list.
+            finalPositions = new int[verifiedPositions.size()];
+            for (int i = 0; i < verifiedPositions.size(); i++) {
+                finalPositions[i] = verifiedPositions.get(i);
             }
-            DebugHelper.log("MHSearchHelper", "Sorting is " + sortResults + ".");
-            DebugHelper.log("MHSearchHelper", "Returning " + finalPositions.length + " result(s).");
-            return finalPositions;
-        } catch (Exception e) {
-            Log.e("MHSearchHelper", "Exception Occurred, returning empty array");
-            e.printStackTrace();
-            return new int[0];
         }
+        DebugHelper.log("MHSearchHelper", "Exact Match is " + isExactMatch + ".");
+        DebugHelper.log("MHSearchHelper", "Exact Matched: " + finalPositions.length + " result(s).");
+
+        // Sort if required.
+        if (sortResults && finalPositions.length > 1) {
+            // Sort by introduction date.
+            finalPositions = directSortByYear(finalPositions);
+        }
+        DebugHelper.log("MHSearchHelper", "Sorting is " + sortResults + ".");
+        DebugHelper.log("MHSearchHelper", "Returning " + finalPositions.length + " result(s).");
+        return finalPositions;
     }
 
     private boolean isDirectoryMatch(final String columnName, final String directoryValue,
@@ -1311,78 +1294,68 @@ class MachineHelper {
 
     // Get year parameter for sorting. Returns an integer in YYYYMM format.
     private int getYearForSorting(final int thisMachine) {
-        try {
-            String[] rawYear = getSYear(thisMachine).split(", ");
-            // Terminate immediately.
-            if (isQueryCancelled()) {
-                throw new IllegalAccessException();
-            }
-            String[] targetYearSplited = rawYear[0].split("\\.");
-            if (targetYearSplited.length != 2) {
-                Log.e("getYearForSorting", "Error, Machine Name " + getName(thisMachine)
-                        + ", Raw Year " + getSYear(thisMachine));
-                throw new IllegalArgumentException();
-            }
-            int targetYearSplitedA = Integer.parseInt(targetYearSplited[0]);
-            int targetYearSplitedB = Integer.parseInt(targetYearSplited[1]);
-            if (targetYearSplitedB < 1 || targetYearSplitedB > 12) {
-                throw new IllegalArgumentException();
-            }
-            return targetYearSplitedA * 100 + targetYearSplitedB;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+        validateMachineID(thisMachine);
+        final String machineYear = machineYearIndex[thisMachine];
+        if (machineYear == null) {
+            throw new IllegalStateException("Machine year is unavailable");
         }
+        String[] rawYear = machineYear.split(", ");
+        // Terminate immediately.
+        if (isQueryCancelled()) {
+            throw new CancellationException();
+        }
+        String[] targetYearSplited = rawYear[0].split("\\.");
+        if (targetYearSplited.length != 2) {
+            Log.e("getYearForSorting", "Error, Machine Name " + getName(thisMachine)
+                    + ", Raw Year " + machineYear);
+            throw new IllegalArgumentException();
+        }
+        int targetYearSplitedA = Integer.parseInt(targetYearSplited[0]);
+        int targetYearSplitedB = Integer.parseInt(targetYearSplited[1]);
+        if (targetYearSplitedB < 1 || targetYearSplitedB > 12) {
+            throw new IllegalArgumentException();
+        }
+        return targetYearSplitedA * 100 + targetYearSplitedB;
     }
 
     // Sorting used by ver. 4.9
     public int[] directSortByYear(final int[] input) {
-        try {
-            DebugHelper.log("MHDirectSort", "Starting Direct Sorting.");
-            final int[] originalInput = input.clone();
-            final long[] sortValues = new long[input.length];
-            for (int i = 0; i < input.length; i++) {
-                // Terminate immediately.
-                if (isQueryCancelled()) {
-                    throw new IllegalAccessException();
-                }
-                // Keep the original position in the low bits for stable sorting.
-                sortValues[i] = ((long) getYearForSorting(input[i]) << 32)
-                        | (i & 0xffffffffL);
+        DebugHelper.log("MHDirectSort", "Starting Direct Sorting.");
+        final int[] originalInput = input.clone();
+        final long[] sortValues = new long[input.length];
+        for (int i = 0; i < input.length; i++) {
+            // Terminate immediately.
+            if (isQueryCancelled()) {
+                throw new CancellationException();
             }
-            Arrays.sort(sortValues);
-            for (int i = 0; i < input.length; i++) {
-                input[i] = originalInput[(int) sortValues[i]];
-            }
-            return input;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return input;
+            // Keep the original position in the low bits for stable sorting.
+            sortValues[i] = ((long) getYearForSorting(input[i]) << 32)
+                    | (i & 0xffffffffL);
         }
+        Arrays.sort(sortValues);
+        for (int i = 0; i < input.length; i++) {
+            input[i] = originalInput[(int) sortValues[i]];
+        }
+        return input;
     }
 
     public int[] checkDuplicate(final int[] input) {
-        try {
-            if (input.length == 0) {
-                Log.w("MHCheckDuplicate", "Input is empty.");
-                return input;
-            }
-            DebugHelper.log("MHCheckDuplicate", "Input is " + Arrays.toString(input));
-            final LinkedHashSet<Integer> uniqueInput = new LinkedHashSet<>();
-            for (int entry : input) {
-                uniqueInput.add(entry);
-            }
-            int[] toReturn = new int[uniqueInput.size()];
-            int toReturnIndex = 0;
-            for (int entry : uniqueInput) {
-                toReturn[toReturnIndex] = entry;
-                toReturnIndex++;
-            }
-            DebugHelper.log("MHCheckDuplicate", "Output is " + Arrays.toString(toReturn));
-            return toReturn;
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (input.length == 0) {
+            Log.w("MHCheckDuplicate", "Input is empty.");
             return input;
         }
+        DebugHelper.log("MHCheckDuplicate", "Input is " + Arrays.toString(input));
+        final LinkedHashSet<Integer> uniqueInput = new LinkedHashSet<>();
+        for (int entry : input) {
+            uniqueInput.add(entry);
+        }
+        int[] toReturn = new int[uniqueInput.size()];
+        int toReturnIndex = 0;
+        for (int entry : uniqueInput) {
+            toReturn[toReturnIndex] = entry;
+            toReturnIndex++;
+        }
+        DebugHelper.log("MHCheckDuplicate", "Output is " + Arrays.toString(toReturn));
+        return toReturn;
     }
 }

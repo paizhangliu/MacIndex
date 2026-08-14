@@ -36,6 +36,7 @@ class PrefsHelper {
         DEFAULT_VALUES.put("isSaveMainUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isSaveSearchUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isSaveCompareUsage", Boolean.TRUE);
+        DEFAULT_VALUES.put("isHighlightCompareDifferences", Boolean.TRUE);
         DEFAULT_VALUES.put("isAutoCheckUpdate", Boolean.TRUE);
         DEFAULT_VALUES.put("appearanceMode", ThemeHelper.APPEARANCE_SYSTEM);
 
@@ -147,32 +148,34 @@ class PrefsHelper {
     public static void editPrefs(final String thisPrefsName, final Object thisPrefsValue, final Context thisContext) {
         try {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+            final SharedPreferences.Editor prefsEditor = prefsFile.edit();
             if (DEFAULT_VALUES.containsKey(thisPrefsName)) {
                 if (thisPrefsValue instanceof Integer) {
                     if (!(DEFAULT_VALUES.get(thisPrefsName) instanceof Integer)) {
                         throw new IllegalArgumentException();
                     }
-                    prefsFile.edit().putInt(thisPrefsName, (Integer) thisPrefsValue).commit();
-                    DebugHelper.log("Preference Helper", "Edited Int preference "
-                            + thisPrefsName + " with value " + thisPrefsValue);
+                    prefsEditor.putInt(thisPrefsName, (Integer) thisPrefsValue);
                 } else if (thisPrefsValue instanceof Boolean) {
                     if (!(DEFAULT_VALUES.get(thisPrefsName) instanceof Boolean)) {
                         throw new IllegalArgumentException();
                     }
-                    prefsFile.edit().putBoolean(thisPrefsName, (Boolean) thisPrefsValue).commit();
-                    DebugHelper.log("Preference Helper", "Edited Boolean preference "
-                            + thisPrefsName + " with value " + thisPrefsValue);
+                    prefsEditor.putBoolean(thisPrefsName, (Boolean) thisPrefsValue);
                 } else if (thisPrefsValue instanceof String) {
                     if (!(DEFAULT_VALUES.get(thisPrefsName) instanceof String)) {
                         throw new IllegalArgumentException();
                     }
-                    prefsFile.edit().putString(thisPrefsName, (String) thisPrefsValue).commit();
+                    prefsEditor.putString(thisPrefsName, (String) thisPrefsValue);
                 } else {
                     throw new IllegalArgumentException();
                 }
             } else {
                 throw new IllegalArgumentException();
             }
+            if (!prefsEditor.commit()) {
+                throw new IllegalStateException("Unable to write preference");
+            }
+            DebugHelper.log("Preference Helper", "Edited preference "
+                    + thisPrefsName + " with value " + thisPrefsValue);
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "Preference Helper",
                     "Unable to edit preference " + thisPrefsName);
@@ -195,7 +198,9 @@ class PrefsHelper {
     public static void clearPrefs(final Context thisContext) {
         try {
             final SharedPreferences prefsFile = thisContext.getSharedPreferences(PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
-            prefsFile.edit().clear().commit();
+            if (!prefsFile.edit().clear().commit()) {
+                throw new IllegalStateException("Unable to clear preference file");
+            }
             Log.w("Preference Helper", "Preference file cleared");
             triggerRebirth(thisContext);
         } catch (Exception e) {

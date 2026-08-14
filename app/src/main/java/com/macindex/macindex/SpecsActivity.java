@@ -31,6 +31,12 @@ import java.util.List;
 
 public class SpecsActivity extends AppCompatActivity {
 
+    private static final int IMAGE_BASE_SIZE = 80;
+
+    private static final int IMAGE_MAXIMUM_SIDE = 140;
+
+    private static final float IMAGE_MINIMUM_SCALE = 0.625f;
+
     private int machineID = -1;
 
     private String[] navigationUIDs = {};
@@ -254,41 +260,41 @@ public class SpecsActivity extends AppCompatActivity {
             findViewById(R.id.emcLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
             findViewById(R.id.emcDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
 
-            type.setText(thisType);
+            type.setText(specsHelper.getDisplayInfo(thisType));
             specsHelper.initCopy(type, thisType, "typeInfo");
             processor.setText(specsHelper.formatModels(thisProcessor,
                     MainActivity.getMachineHelper().getProcessorModelRanges(machineID)));
             specsHelper.initCopy(processor, thisProcessor, "processorInfo");
-            maxram.setText(thisMaxram);
+            maxram.setText(specsHelper.getDisplayInfo(thisMaxram));
             specsHelper.initCopy(maxram, thisMaxram, "maxramInfo");
-            year.setText(thisYear);
+            year.setText(specsHelper.getDisplayInfo(thisYear));
             specsHelper.initCopy(year, thisYear, "yearInfo");
-            model.setText(thisModel);
+            model.setText(specsHelper.getDisplayInfo(thisModel));
             specsHelper.initCopy(model, thisModel, "modelInfo");
-            id.setText(thisId);
+            id.setText(specsHelper.getDisplayInfo(thisId));
             specsHelper.initCopy(id, thisId, "idInfo");
             graphics.setText(specsHelper.formatModels(thisGraphics,
                     MainActivity.getMachineHelper().getGraphicsModelRanges(machineID)));
             specsHelper.initCopy(graphics, thisGraphics, "graphicsInfo");
-            display.setText(thisDisplay);
+            display.setText(specsHelper.getDisplayInfo(thisDisplay));
             specsHelper.initCopy(display, thisDisplay, "displayInfo");
-            features.setText(thisFeatures);
+            features.setText(specsHelper.getDisplayInfo(thisFeatures));
             specsHelper.initCopy(features, thisFeatures, "featuresInfo");
-            expansion.setText(thisExpansion);
+            expansion.setText(specsHelper.getDisplayInfo(thisExpansion));
             specsHelper.initCopy(expansion, thisExpansion, "expansionInfo");
-            storage.setText(thisStorage);
+            storage.setText(specsHelper.getDisplayInfo(thisStorage));
             specsHelper.initCopy(storage, thisStorage, "storageInfo");
             specsHelper.initPartNumbers(order, thisOrder);
             specsHelper.initCopy(order, thisOrder, "orderInfo");
-            gestalt.setText(thisGestalt);
+            gestalt.setText(specsHelper.getDisplayInfo(thisGestalt));
             specsHelper.initCopy(gestalt, thisGestalt, "gestaltInfo");
-            emc.setText(thisEmc);
+            emc.setText(specsHelper.getDisplayInfo(thisEmc));
             specsHelper.initCopy(emc, thisEmc, "emcInfo");
-            software.setText(thisSoftware);
+            software.setText(specsHelper.getDisplayInfo(thisSoftware));
             specsHelper.initCopy(software, thisSoftware, "softwareInfo");
-            design.setText(thisDesign);
+            design.setText(specsHelper.getDisplayInfo(thisDesign));
             specsHelper.initCopy(design, thisDesign, "designInfo");
-            support.setText(thisSupport);
+            support.setText(specsHelper.getDisplayInfo(thisSupport));
             specsHelper.initCopy(support, thisSupport, "supportInfo");
             specsHelper.setSupportColor(support, thisSupport);
 
@@ -381,35 +387,49 @@ public class SpecsActivity extends AppCompatActivity {
                                 final LinearLayout thisImageLayout, final int thisImageID) {
         thisScrollView.post(() -> {
             final float density = getResources().getDisplayMetrics().density;
-            final ImageView firstImage = thisImageLayout.getChildAt(0).findViewById(thisImageID);
-            final int maximumImageHeight = firstImage.getLayoutParams().height;
-            final int minimumImageHeight = Math.round(50 * density);
             final int allSpacesWidth = Math.round(5 * density)
                     * (thisImageLayout.getChildCount() - 1);
-            float allImagesRatio = 0;
+            final float[] imageWidths = new float[thisImageLayout.getChildCount()];
+            final float[] imageHeights = new float[thisImageLayout.getChildCount()];
+            final float baseSize = IMAGE_BASE_SIZE * density;
+            final float maximumSide = IMAGE_MAXIMUM_SIDE * density;
+            float allImagesWidth = 0;
 
             for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
                 final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
                 if (thisImage.getDrawable() != null
                         && thisImage.getDrawable().getIntrinsicHeight() != 0) {
-                    allImagesRatio += (float) thisImage.getDrawable().getIntrinsicWidth()
+                    final float imageRatio = (float) thisImage.getDrawable().getIntrinsicWidth()
                             / thisImage.getDrawable().getIntrinsicHeight();
+                    float imageWidth = (float) (baseSize * Math.sqrt(imageRatio));
+                    float imageHeight = (float) (baseSize / Math.sqrt(imageRatio));
+                    final float longestSide = Math.max(imageWidth, imageHeight);
+                    if (longestSide > maximumSide) {
+                        final float sideScale = maximumSide / longestSide;
+                        imageWidth *= sideScale;
+                        imageHeight *= sideScale;
+                    }
+                    imageWidths[i] = imageWidth;
+                    imageHeights[i] = imageHeight;
+                    allImagesWidth += imageWidth;
                 }
             }
 
-            if (allImagesRatio == 0) {
+            if (allImagesWidth == 0) {
                 return;
             }
 
             final int availableWidth = thisScrollView.getWidth()
                     - thisScrollView.getPaddingLeft() - thisScrollView.getPaddingRight();
-            int imageHeight = Math.round((availableWidth - allSpacesWidth) / allImagesRatio);
-            imageHeight = Math.max(minimumImageHeight, Math.min(maximumImageHeight, imageHeight));
+            final float availableImageWidth = Math.max(0, availableWidth - allSpacesWidth);
+            final float imageScale = Math.max(IMAGE_MINIMUM_SCALE,
+                    Math.min(1, availableImageWidth / allImagesWidth));
 
             for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
                 final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
                 final ViewGroup.LayoutParams imageParams = thisImage.getLayoutParams();
-                imageParams.height = imageHeight;
+                imageParams.width = Math.round(imageWidths[i] * imageScale);
+                imageParams.height = Math.round(imageHeights[i] * imageScale);
                 thisImage.setLayoutParams(imageParams);
             }
 
@@ -464,7 +484,7 @@ public class SpecsActivity extends AppCompatActivity {
                     Math.round(150 * getResources().getDisplayMetrics().density));
             DebugHelper.log("SpecsAct", "Image exists");
             image.setImageBitmap(picture);
-            ThemeHelper.applyMachineImage(this, image);
+            ThemeHelper.applyMachineImagePreview(this, image);
 
             final TextView informationLabel = findViewById(R.id.information);
             specsHelper.initSound(machineID, image, informationLabel);
@@ -548,8 +568,8 @@ public class SpecsActivity extends AppCompatActivity {
         try {
             final TextView comment = findViewById(R.id.commentText);
             final String savedComment = UserCommentHelper.getComment(thisUID, this);
-            thisComment = savedComment == null ? getString(R.string.comment_null) : savedComment;
-            comment.setText(thisComment);
+            thisComment = savedComment;
+            comment.setText(savedComment == null ? getString(R.string.comment_null) : savedComment);
             comment.setOnClickListener(view -> {
                 initCommentDialog();
             });

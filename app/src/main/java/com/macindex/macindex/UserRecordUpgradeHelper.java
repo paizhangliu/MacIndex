@@ -31,15 +31,14 @@ class UserRecordUpgradeHelper {
         if (raw == null || raw.isEmpty()) {
             return new UpgradeResult(UserCommentHelper.EMPTY_JSON, removed);
         }
-        if (raw.trim().startsWith("{")) {
-            try {
+        try {
+            if (raw.trim().startsWith("{")) {
                 comments = UserCommentHelper.parse(raw);
-            } catch (Exception e) {
-                removed.add(raw);
-                return new UpgradeResult(UserCommentHelper.EMPTY_JSON, removed);
+            } else {
+                comments = importLegacyComments(raw, oldMachineNames, removed);
             }
-        } else {
-            comments = importLegacyComments(raw, oldMachineNames, removed);
+        } catch (UserRecordJsonHelper.InvalidUserRecordException e) {
+            return discardRecord(raw, UserCommentHelper.EMPTY_JSON);
         }
 
         final List<UserCommentHelper.Comment> upgraded = new ArrayList<>();
@@ -64,15 +63,14 @@ class UserRecordUpgradeHelper {
         if (raw == null || raw.isEmpty()) {
             return new UpgradeResult(UserFavouriteHelper.EMPTY_JSON, removed);
         }
-        if (raw.trim().startsWith("{")) {
-            try {
+        try {
+            if (raw.trim().startsWith("{")) {
                 folders = UserFavouriteHelper.parse(raw);
-            } catch (Exception e) {
-                removed.add(raw);
-                return new UpgradeResult(UserFavouriteHelper.EMPTY_JSON, removed);
+            } else {
+                folders = importLegacyFavourites(raw, oldMachineNames, removed);
             }
-        } else {
-            folders = importLegacyFavourites(raw, oldMachineNames, removed);
+        } catch (UserRecordJsonHelper.InvalidUserRecordException e) {
+            return discardRecord(raw, UserFavouriteHelper.EMPTY_JSON);
         }
 
         final List<UserFavouriteHelper.Folder> upgraded = new ArrayList<>();
@@ -99,15 +97,17 @@ class UserRecordUpgradeHelper {
                                          final Map<String, String> oldMachineNames) {
         final UserCompareHelper.State state;
         final List<String> removed = new ArrayList<>();
-        if (rawJSON != null && !rawJSON.isEmpty()) {
-            try {
+        try {
+            if (rawJSON != null && !rawJSON.isEmpty()) {
                 state = UserCompareHelper.parse(rawJSON);
-            } catch (Exception e) {
-                removed.add(rawJSON);
-                return new UpgradeResult(UserCompareHelper.EMPTY_JSON, removed);
+            } else {
+                state = importLegacyCompares(
+                        rawList, rawLeft, rawRight, oldMachineNames, removed);
             }
-        } else {
-            state = importLegacyCompares(rawList, rawLeft, rawRight, oldMachineNames, removed);
+        } catch (UserRecordJsonHelper.InvalidUserRecordException e) {
+            final String discarded = rawJSON != null && !rawJSON.isEmpty()
+                    ? rawJSON : getLegacyCompareRecord(rawList, rawLeft, rawRight);
+            return discardRecord(discarded, UserCompareHelper.EMPTY_JSON);
         }
 
         final List<String> upgradedUIDs = new ArrayList<>();
@@ -142,14 +142,21 @@ class UserRecordUpgradeHelper {
             final String raw, final Map<String, String> oldMachineNames,
             final List<String> removed) {
         final List<UserCommentHelper.Comment> comments = new ArrayList<>();
+        final Set<String> addedNames = new HashSet<>();
         final Set<String> addedUIDs = new HashSet<>();
         for (String entry : raw.split("││", -1)) {
             final String[] parts = entry.split("│", -1);
-            final String comment = parts.length == 2 ? parts[1].trim() : "";
-            final String machineUID = parts.length == 2
-                    ? resolveOldMachineName(parts[0], oldMachineNames) : null;
-            if (machineUID == null || comment.isEmpty() || comment.length() > 500
-                    || !addedUIDs.add(machineUID)) {
+            if (parts.length != 2 || parts[0].isEmpty()
+                    || !parts[0].equals(parts[0].trim())
+                    || parts[1].isEmpty() || !parts[1].equals(parts[1].trim())
+                    || parts[1].length() > 500
+                    || !addedNames.add(parts[0].toLowerCase(Locale.ROOT))) {
+                throw new UserRecordJsonHelper.InvalidUserRecordException(
+                        "Illegal legacy comment record");
+            }
+            final String comment = parts[1];
+            final String machineUID = resolveOldMachineName(parts[0], oldMachineNames);
+            if (machineUID == null || !addedUIDs.add(machineUID)) {
                 removed.add(entry);
                 continue;
             }
@@ -164,36 +171,41 @@ class UserRecordUpgradeHelper {
         final List<UserFavouriteHelper.Folder> folders = new ArrayList<>();
         final Set<String> addedFolders = new HashSet<>();
         final String[] rawFolders = raw.split("││", -1);
-        if (!rawFolders[0].isEmpty()) {
-            removed.add(rawFolders[0]);
+        if (!rawFolders[0].isEmpty() || rawFolders.length > 16) {
+            throw new UserRecordJsonHelper.InvalidUserRecordException(
+                    "Illegal legacy favourite record");
         }
         for (int i = 1; i < rawFolders.length; i++) {
-            if (folders.size() >= 15) {
-                if (!rawFolders[i].isEmpty()) {
-                    removed.add(rawFolders[i]);
-                }
-                continue;
-            }
             final String[] entries = rawFolders[i].split("│", -1);
             if (entries.length == 0 || entries[0].length() < 2
                     || !entries[0].startsWith("{") || !entries[0].endsWith("}")) {
-                removed.add(rawFolders[i]);
-                continue;
+                throw new UserRecordJsonHelper.InvalidUserRecordException(
+                        "Illegal legacy favourite record");
             }
-            final String folderName = entries[0].substring(1, entries[0].length() - 1).trim();
-            if (folderName.isEmpty() || folderName.length() > 30 || folderName.contains("\n")
+            final String rawFolderName = entries[0].substring(1, entries[0].length() - 1);
+            final String folderName = rawFolderName.trim();
+            if (folderName.isEmpty() || !folderName.equals(rawFolderName)
+                    || folderName.length() > 30 || folderName.contains("\n")
                     || !addedFolders.add(folderName)) {
-                removed.add(rawFolders[i]);
-                continue;
+                throw new UserRecordJsonHelper.InvalidUserRecordException(
+                        "Illegal legacy favourite record");
             }
             final List<String> machineUIDs = new ArrayList<>();
+            final Set<String> addedNames = new HashSet<>();
             final Set<String> addedUIDs = new HashSet<>();
             for (int j = 1; j < entries.length; j++) {
                 final String entry = entries[j];
-                final String machineUID = entry.length() >= 3 && entry.startsWith("[")
-                        && entry.endsWith("]")
-                        ? resolveOldMachineName(
-                        entry.substring(1, entry.length() - 1), oldMachineNames) : null;
+                if (entry.length() < 3 || !entry.startsWith("[") || !entry.endsWith("]")) {
+                    throw new UserRecordJsonHelper.InvalidUserRecordException(
+                            "Illegal legacy favourite record");
+                }
+                final String machineName = entry.substring(1, entry.length() - 1);
+                if (machineName.isEmpty() || !machineName.equals(machineName.trim())
+                        || !addedNames.add(machineName.toLowerCase(Locale.ROOT))) {
+                    throw new UserRecordJsonHelper.InvalidUserRecordException(
+                            "Illegal legacy favourite record");
+                }
+                final String machineUID = resolveOldMachineName(machineName, oldMachineNames);
                 if (machineUID == null || !addedUIDs.add(machineUID)) {
                     removed.add(entries[0] + "│" + entry);
                     continue;
@@ -209,20 +221,44 @@ class UserRecordUpgradeHelper {
             final String rawList, final String rawLeft, final String rawRight,
             final Map<String, String> oldMachineNames, final List<String> removed) {
         final List<String> machineUIDs = new ArrayList<>();
+        final Set<String> machineNames = new HashSet<>();
         final Set<String> addedUIDs = new HashSet<>();
         if (rawList != null && !rawList.isEmpty()) {
-            for (String entry : rawList.split("│", -1)) {
-                final String machineUID = entry.length() >= 3 && entry.startsWith("[")
-                        && entry.endsWith("]")
-                        ? resolveOldMachineName(
-                        entry.substring(1, entry.length() - 1), oldMachineNames) : null;
-                if (machineUID == null || !addedUIDs.add(machineUID)
-                        || machineUIDs.size() >= 10) {
+            final String[] entries = rawList.split("│", -1);
+            if (entries.length > 10) {
+                throw new UserRecordJsonHelper.InvalidUserRecordException(
+                        "Illegal legacy compare record");
+            }
+            for (String entry : entries) {
+                if (entry.length() < 3 || !entry.startsWith("[") || !entry.endsWith("]")) {
+                    throw new UserRecordJsonHelper.InvalidUserRecordException(
+                            "Illegal legacy compare record");
+                }
+                final String machineName = entry.substring(1, entry.length() - 1);
+                final String normalizedName = machineName.toLowerCase(Locale.ROOT);
+                if (machineName.isEmpty() || !machineName.equals(machineName.trim())
+                        || !machineNames.add(normalizedName)) {
+                    throw new UserRecordJsonHelper.InvalidUserRecordException(
+                            "Illegal legacy compare record");
+                }
+                final String machineUID = resolveOldMachineName(machineName, oldMachineNames);
+                if (machineUID == null || !addedUIDs.add(machineUID)) {
                     removed.add(entry);
                     continue;
                 }
                 machineUIDs.add(machineUID);
             }
+        }
+        final String leftName = valueOrEmpty(rawLeft);
+        final String rightName = valueOrEmpty(rawRight);
+        final boolean emptySelection = leftName.isEmpty() && rightName.isEmpty();
+        if (!emptySelection && (leftName.isEmpty() || rightName.isEmpty()
+                || !leftName.equals(leftName.trim()) || !rightName.equals(rightName.trim())
+                || leftName.equalsIgnoreCase(rightName)
+                || !machineNames.contains(leftName.toLowerCase(Locale.ROOT))
+                || !machineNames.contains(rightName.toLowerCase(Locale.ROOT)))) {
+            throw new UserRecordJsonHelper.InvalidUserRecordException(
+                    "Illegal legacy compare record");
         }
         final String leftUID = resolveOldMachineName(rawLeft, oldMachineNames);
         final String rightUID = resolveOldMachineName(rawRight, oldMachineNames);
@@ -254,6 +290,19 @@ class UserRecordUpgradeHelper {
 
     private static String valueOrEmpty(final String value) {
         return value == null ? "" : value;
+    }
+
+    private static UpgradeResult discardRecord(final String raw, final String emptyValue) {
+        final List<String> removed = new ArrayList<>();
+        removed.add(valueOrEmpty(raw));
+        return new UpgradeResult(emptyValue, removed);
+    }
+
+    private static String getLegacyCompareRecord(final String rawList,
+                                                 final String rawLeft,
+                                                 final String rawRight) {
+        return valueOrEmpty(rawList) + "\n[" + valueOrEmpty(rawLeft) + "]│["
+                + valueOrEmpty(rawRight) + "]";
     }
 
 }

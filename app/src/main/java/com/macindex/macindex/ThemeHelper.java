@@ -110,6 +110,16 @@ class ThemeHelper {
         applyImageMask(context, image);
     }
 
+    static void applyMachineImagePreview(final Context context, final ImageView image) {
+        applyMachineImage(context, image);
+        image.post(() -> {
+            final int maximumWidth = Math.round(
+                    320 * context.getResources().getDisplayMetrics().density);
+            final int horizontalPadding = Math.max(0, (image.getWidth() - maximumWidth) / 2);
+            image.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+        });
+    }
+
     static void applyImageMask(final Context context, final ImageView image) {
         image.clearColorFilter();
         if (isNight(context)) {

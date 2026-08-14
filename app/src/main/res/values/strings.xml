@@ -77,7 +77,7 @@
         <item quantity="other">%d results</item>
     </plurals>
     <string name="search_prompt">Press Enter to search</string>
-    <string name="search_illegal">Input contains invalid characters</string>
+    <string name="search_control_character">Search terms cannot contain control characters</string>
     <string name="search_overlength">Input is too long</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
@@ -121,6 +121,7 @@
     <string name="submenu_compare_exchange_columns">Swap Machines</string>
     <string name="submenu_compare_manage">Manage Comparison List</string>
     <string name="submenu_compare_clear">Clear Compare List</string>
+    <string name="submenu_compare_highlight_differences">Highlight Differences</string>
     <string name="submenu_comments_delete">Manage Comments</string>
     <string name="submenu_comments_clear">Clear Comments</string>
     <string name="year">Introduction</string>
@@ -146,11 +147,12 @@
     <string name="support">Support Status</string>
     <string name="comment">Comment</string>
     <string name="comment_null">No Comment</string>
-    <string name="comment_illegal">The character \'│\' is reserved by MacIndex and cannot be used in comments.</string>
     <string name="comment_length">Comments are limited to 500 characters.</string>
     <string name="comment_tips">View all saved comments on the Comments page.</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">Confirm</string>
+    <string name="link_open_failed_title">Unable to Open Link</string>
+    <string name="link_open_failed_message">MacIndex could not open this link. Check that a web browser is available, then try again.</string>
     <string name="link_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_clear">Clear</string>
@@ -168,7 +170,7 @@
     <string name="copy_information_success">Information copied</string>
     <string name="error_copy_not_available">Nothing available to copy</string>
     <string name="upgrade_report_title">Saved Data Updated</string>
-    <string name="upgrade_report_information">Some saved items no longer match the current database and were removed. You can copy the details below for your records.</string>
+    <string name="upgrade_report_information">Some saved data was invalid or no longer matched the current database and was removed. You can copy the details below for your records.</string>
     <string name="upgrade_report_copy_button">Copy Details</string>
     <string name="upgrade_report_copy_information">Removed items copied</string>
     <string name="upgrade_report_empty_entry">(Empty entry)</string>
@@ -190,7 +192,6 @@
     <string name="favourites_new_folder">Enter a folder name.</string>
     <string name="favourites_empty_folder">%1$s (Empty)</string>
     <string name="favourites_error_empty">Folder name cannot be empty.</string>
-    <string name="favourites_error_illegal">The character \'│\' is reserved by MacIndex and cannot be used in folder names.</string>
     <string name="favourites_error_length">Folder names are limited to one line and 30 characters.</string>
     <string name="favourites_error_conflict">A folder with this name already exists.</string>
     <string name="favourites_error_limit">You can create up to 15 folders.</string>

@@ -369,6 +369,8 @@ def validate_machine_data(connection, uid_sequence):
                 normalized_tokens = [token.casefold() for token in tokens]
                 if any(not token or token != token.strip() for token in tokens):
                     fail(f"Illegal {token_column} token for {machine_name}")
+                if token_column == "sprocessor" and tokens != normalized_tokens:
+                    fail(f"Unnormalized {token_column} token for {machine_name}")
                 if len(normalized_tokens) != len(set(normalized_tokens)):
                     fail(f"Duplicate {token_column} token for {machine_name}")
 

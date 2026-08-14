@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.concurrent.CancellationException;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -100,7 +101,7 @@ public class SearchActivity extends AppCompatActivity {
         initSpinners();
 
         // Init Search Prompt at Here!!
-        resetIllegal();
+        resetSearchPrompt();
 
         if (savedInstanceState != null) {
             searchText.setQuery(savedInstanceState.getCharSequence("searchInput"), false);
@@ -120,7 +121,7 @@ public class SearchActivity extends AppCompatActivity {
                     || positions == null;
             performSearch(reloadPositions
                     ? savedInstanceState.getCharSequence("searchInput").toString() : null,
-                    reloadPositions);
+                    reloadPositions, false);
         }
 
     }
@@ -268,9 +269,9 @@ public class SearchActivity extends AppCompatActivity {
 
             final String currentSearch = searchText.getQuery().toString().trim();
             if (currentSearch.isEmpty()) {
-                resetIllegal();
+                resetSearchPrompt();
                 cancelSearch();
-            } else if (!startSearch(currentSearch)) {
+            } else if (!startSearch(currentSearch, false)) {
                 cancelSearch();
             }
         } catch (Exception e) {
@@ -341,7 +342,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 searchText.clearFocus();
-                return startSearch(query);
+                return startSearch(query, true);
             }
 
             @Override
@@ -349,9 +350,9 @@ public class SearchActivity extends AppCompatActivity {
                 // TRIM to get the correct validation result.
                 String searchInput = newText.trim();
                 // Initialize on-the-fly validation.
-                resetIllegal();
+                resetSearchPrompt();
                 if (!searchInput.equals("")) {
-                    characterCheck(searchInput, translateMatchParam());
+                    validateSearchInput(searchInput, translateMatchParam());
                 } else {
                     // No input
                     cancelSearch();
@@ -386,7 +387,7 @@ public class SearchActivity extends AppCompatActivity {
         clearSearch();
     }
 
-    private void resetIllegal() {
+    private void resetSearchPrompt() {
         textResult.setText(R.string.search_prompt);
         textResult.setTextColor(getColor(R.color.colorDefaultText));
     }
@@ -404,20 +405,20 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private boolean startSearch(final String s) {
+    private boolean startSearch(final String s, final boolean allowDirectOpen) {
         try {
             String searchInput = s.trim();
             if (!searchInput.equals("")) {
-                if (characterCheck(searchInput, translateMatchParam())) {
+                if (validateSearchInput(searchInput, translateMatchParam())) {
                     // Remove Results only before actual search starts.
-                    performSearch(searchInput, true);
+                    performSearch(searchInput, true, allowDirectOpen);
                     return true;
                 } else {
                     return false;
                 }
             } else {
                 // No input
-                resetIllegal();
+                resetSearchPrompt();
                 return false;
             }
         } catch (Exception e) {
@@ -426,9 +427,10 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private boolean characterCheck(final String validateInput, final boolean method) {
+    private boolean validateSearchInput(final String validateInput, final boolean exactMatch) {
         // Check the length first
-        if ((method && validateInput.length() > 20) || (!method && validateInput.length() > 60)) {
+        if ((exactMatch && validateInput.length() > 20)
+                || (!exactMatch && validateInput.length() > 60)) {
             DebugHelper.log("validate", "Overlength Detected!");
             // Set the overlength prompt here..
             textResult.setText(R.string.search_overlength);
@@ -438,8 +440,8 @@ public class SearchActivity extends AppCompatActivity {
 
         for (int i = 0; i < validateInput.length(); i++) {
             if (Character.isISOControl(validateInput.charAt(i))) {
-                DebugHelper.log("validate", "Illegal Char Detected!");
-                textResult.setText(R.string.search_illegal);
+                DebugHelper.log("validate", "Control Character Detected!");
+                textResult.setText(R.string.search_control_character);
                 textResult.setTextColor(ContextCompat.getColor(this, R.color.colorError));
                 return false;
             }
@@ -447,7 +449,8 @@ public class SearchActivity extends AppCompatActivity {
         return true;
     }
 
-    private void performSearch(final String searchInput, final boolean reloadPositions) {
+    private void performSearch(final String searchInput, final boolean reloadPositions,
+                               final boolean allowDirectOpen) {
         try {
             final int requestID = ++searchRequestID;
             if (searchThread != null) {
@@ -479,110 +482,129 @@ public class SearchActivity extends AppCompatActivity {
             searchThread = new Thread() {
                 @Override
                 public void run() {
-                    int[] positionsForRequest = positions;
-                    if (reloadPositions) {
-                        final String[] searchColumns = searchColumnsForRequest;
-                        int[][] subPositions = new int[searchColumns.length][];
-                        String rawSearchInput;
-                        boolean rawMatchParam;
-                        int resultCount = 0;
+                    try {
+                        int[] positionsForRequest = positions;
+                        if (reloadPositions) {
+                            final String[] searchColumns = searchColumnsForRequest;
+                            int[][] subPositions = new int[searchColumns.length][];
+                            String rawSearchInput;
+                            boolean rawMatchParam;
+                            int resultCount = 0;
 
-                        // Search by translated columns
-                        for (int i = 0; i < searchColumns.length; i++) {
-                            // For order number: use the part before the regional suffix.
-                            if (searchColumns[i].equals("sorder")) {
-                                if (searchInput.length() < 4) {
-                                    // omit this
-                                    subPositions[i] = new int[0];
-                                    continue;
+                            // Search by translated columns
+                            for (int i = 0; i < searchColumns.length; i++) {
+                                // For order number: use the part before the regional suffix.
+                                if (searchColumns[i].equals("sorder")) {
+                                    if (searchInput.length() < 4) {
+                                        // omit this
+                                        subPositions[i] = new int[0];
+                                        continue;
+                                    }
+                                    // Overwrite input
+                                    rawSearchInput = searchInput.substring(0,
+                                            Math.min(5, searchInput.length()));
+                                    // Overwrite match param.
+                                    rawMatchParam = false;
+                                } else {
+                                    rawSearchInput = searchInput;
+                                    rawMatchParam = exactMatchForRequest;
                                 }
-                                // Overwrite input
-                                rawSearchInput = searchInput.substring(0,
-                                        Math.min(5, searchInput.length()));
-                                // Overwrite match param.
-                                rawMatchParam = false;
-                            } else {
-                                rawSearchInput = searchInput;
-                                rawMatchParam = exactMatchForRequest;
+                                subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
+                                        manufacturerForRequest, rawMatchParam, true);
+                                // A few current part numbers only have four characters before xx.
+                                if (searchColumns[i].equals("sorder")
+                                        && subPositions[i].length == 0
+                                        && rawSearchInput.length() > 4) {
+                                    subPositions[i] = MainActivity.getMachineHelper().searchHelper(
+                                            searchColumns[i], rawSearchInput.substring(0, 4),
+                                            manufacturerForRequest, false, true);
+                                }
+                                resultCount += subPositions[i].length;
                             }
-                            subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
-                                    manufacturerForRequest, rawMatchParam, true);
-                            // A few current part numbers only have four characters before xx.
-                            if (searchColumns[i].equals("sorder")
-                                    && subPositions[i].length == 0
-                                    && rawSearchInput.length() > 4) {
-                                subPositions[i] = MainActivity.getMachineHelper().searchHelper(
-                                        searchColumns[i], rawSearchInput.substring(0, 4),
-                                        manufacturerForRequest, false, true);
-                            }
-                            resultCount += subPositions[i].length;
-                        }
 
-                        // Add raw results
-                        int[] newPositions = new int[resultCount];
-                        int previousCount = 0;
-                        for (int i = 0; i < searchColumns.length; i++) {
-                            for (int j = 0; j < subPositions[i].length; j++) {
-                                newPositions[previousCount] = subPositions[i][j];
-                                previousCount++;
+                            // Add raw results
+                            int[] newPositions = new int[resultCount];
+                            int previousCount = 0;
+                            for (int i = 0; i < searchColumns.length; i++) {
+                                for (int j = 0; j < subPositions[i].length; j++) {
+                                    newPositions[previousCount] = subPositions[i][j];
+                                    previousCount++;
+                                }
                             }
-                        }
-                        // A model-number search can match the same machine in multiple columns.
-                        newPositions = MainActivity.getMachineHelper().checkDuplicate(newPositions);
+                            // A model-number search can match the same machine in multiple columns.
+                            newPositions = MainActivity.getMachineHelper().checkDuplicate(newPositions);
 
-                        positionsForRequest = newPositions;
-                    }
-                    if (Thread.currentThread().isInterrupted() || requestID != searchRequestID) {
-                        return;
-                    }
-                    final int[] finalPositionsForRequest = positionsForRequest;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                            positionsForRequest = newPositions;
+                        }
+                        if (Thread.currentThread().isInterrupted() || requestID != searchRequestID) {
+                            return;
+                        }
+                        final int[] finalPositionsForRequest = positionsForRequest;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (requestID != searchRequestID || isFinishing()
+                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                    return;
+                                }
+                                try {
+                                    positions = finalPositionsForRequest;
+                                    if (reloadPositions) {
+                                        waitDialog.dismiss();
+                                    }
+                                    if (!userStopped) {
+                                        DebugHelper.log("Search", "Terminated normally.");
+                                        userStopped = true;
+                                        clearSearch();
+                                        // NullSafe
+                                        if (positions != null) {
+                                            DebugHelper.log("performSearchLoad", "Position Length: "
+                                                    + positions.length + ", Reload Flag: " + reloadPositions);
+                                            if (positions.length == 0) {
+                                                textResult.setText(R.string.search_noResult);
+                                                textResult.setTextColor(getColor(R.color.colorDefaultText));
+                                            } else {
+                                                textResult.setText(getResources().getQuantityString(
+                                                        R.plurals.search_results, positions.length,
+                                                        positions.length));
+                                                textResult.setTextColor(getColor(R.color.colorDefaultText));
+                                            }
+                                            resultListAdapter = new MachineListAdapter(positions, SearchActivity.this);
+                                            resultList.setAdapter(resultListAdapter);
+
+                                            // Open directly only after an explicit search submission.
+                                            if (allowDirectOpen && reloadPositions && positions.length == 1
+                                                    && PrefsHelper.getBooleanPrefs("isOpenDirectly", SearchActivity.this)) {
+                                                SpecsIntentHelper.openMachine(positions, positions[0],
+                                                        SearchActivity.this);
+                                            }
+                                        }
+                                    } else {
+                                        Log.w("Search", "Terminated Abnormally.");
+                                    }
+                                } catch (final Exception e) {
+                                    ExceptionHelper.handleException(SearchActivity.this, e, null, null);
+                                }
+                            }
+                        });
+                    } catch (CancellationException ignored) {
+                        // Replaced by a newer search or cancelled by the user.
+                    } catch (final Exception e) {
+                        runOnUiThread(() -> {
                             if (requestID != searchRequestID || isFinishing()
-                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                                    && isDestroyed())) {
                                 return;
                             }
-                            try {
-                                positions = finalPositionsForRequest;
-                                if (reloadPositions) {
-                                        waitDialog.dismiss();
-                                }
-                                if (!userStopped) {
-                                    DebugHelper.log("Search", "Terminated normally.");
-                                    userStopped = true;
-                                    clearSearch();
-                                    // NullSafe
-                                    if (positions != null) {
-                                        DebugHelper.log("performSearchLoad", "Position Length: "
-                                                + positions.length + ", Reload Flag: " + reloadPositions);
-                                        if (positions.length == 0) {
-                                            textResult.setText(R.string.search_noResult);
-                                            textResult.setTextColor(getColor(R.color.colorDefaultText));
-                                        } else {
-                                            textResult.setText(getResources().getQuantityString(
-                                                    R.plurals.search_results, positions.length,
-                                                    positions.length));
-                                            textResult.setTextColor(getColor(R.color.colorDefaultText));
-                                        }
-                                        resultListAdapter = new MachineListAdapter(positions, SearchActivity.this);
-                                        resultList.setAdapter(resultListAdapter);
-
-                                        // Open directly?
-                                        if (reloadPositions && positions.length == 1
-                                                && PrefsHelper.getBooleanPrefs("isOpenDirectly", SearchActivity.this)) {
-                                            SpecsIntentHelper.openMachine(positions, positions[0],
-                                                    SearchActivity.this);
-                                        }
-                                    }
-                                } else {
-                                    Log.w("Search", "Terminated Abnormally.");
-                                }
-                            } catch (final Exception e) {
-                                ExceptionHelper.handleException(SearchActivity.this, e, null, null);
+                            if (waitDialog != null && waitDialog.isShowing()) {
+                                waitDialog.dismiss();
                             }
-                        }
-                    });
+                            userStopped = true;
+                            clearSearch();
+                            ExceptionHelper.handleException(SearchActivity.this, e,
+                                    "SearchThread", "Unable to search the machine index.");
+                        });
+                    }
                 }
             };
             searchThread.start();

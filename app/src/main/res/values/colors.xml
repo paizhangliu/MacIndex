@@ -9,6 +9,7 @@
     <color name="colorDefaultText">#757575</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorSelectedBackground">#0D98BA</color>
+    <color name="colorCompareDifferent">#E7F6FA</color>
     <color name="colorDivider">#CDCDCD</color>
     <color name="colorError">#FF0000</color>
     <color name="colorSupportObsolete">#FF0000</color>

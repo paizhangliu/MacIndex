@@ -210,7 +210,7 @@ class SpecsHelper {
 
     void initPartNumbers(final TextView entry, final String thisInfo) {
         entry.setOnClickListener(null);
-        entry.setText(thisInfo);
+        entry.setText(getDisplayInfo(thisInfo));
         if (thisInfo == null) {
             return;
         }
@@ -245,7 +245,10 @@ class SpecsHelper {
     }
 
     CharSequence formatModels(final String thisInfo, final int[] modelRanges) {
-        if (thisInfo == null || modelRanges == null || modelRanges.length == 0) {
+        if (thisInfo == null) {
+            return getDisplayInfo(null);
+        }
+        if (modelRanges == null || modelRanges.length == 0) {
             return thisInfo;
         }
         if (modelRanges.length % 2 != 0) {
@@ -269,13 +272,13 @@ class SpecsHelper {
 
     void setSupportColor(final TextView support, final String thisSupport) {
         // Set Support Box Text Color.
-        if (thisSupport.equals("Obsolete")) {
+        if ("Obsolete".equals(thisSupport)) {
             support.setTextColor(ContextCompat.getColor(thisContext,
                     R.color.colorSupportObsolete));
-        } else if (thisSupport.equals("Vintage")) {
+        } else if ("Vintage".equals(thisSupport)) {
             support.setTextColor(ContextCompat.getColor(thisContext,
                     R.color.colorSupportVintage));
-        } else if (thisSupport.equals("Supported")) {
+        } else if ("Supported".equals(thisSupport)) {
             support.setTextColor(ContextCompat.getColor(thisContext,
                     R.color.colorSupportSupported));
         }
@@ -493,13 +496,16 @@ class SpecsHelper {
 
     private String generateCompareInfo(final String leftName, final String leftInfo,
                                        final String rightName, final String rightInfo) {
-        return leftName + ": " + leftInfo + "; " + rightName + ": " + rightInfo;
+        return leftName + ": " + getDisplayInfo(leftInfo) + "; "
+                + rightName + ": " + getDisplayInfo(rightInfo);
     }
 
     private boolean isAvailable(final String thisInfo) {
-        return thisInfo != null
-                && !thisInfo.equals(thisContext.getString(R.string.not_applicable))
-                && !thisInfo.equals(thisContext.getString(R.string.comment_null));
+        return thisInfo != null;
+    }
+
+    String getDisplayInfo(final String thisInfo) {
+        return thisInfo == null ? thisContext.getString(R.string.not_applicable) : thisInfo;
     }
 
     private boolean isAvailable(final String[][] machineSpecs, final int entry) {
