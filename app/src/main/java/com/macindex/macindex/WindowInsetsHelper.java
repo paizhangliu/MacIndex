@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,10 @@ class WindowInsetsHelper {
         WindowCompat.enableEdgeToEdge(activity.getWindow());
         final WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(
                 activity.getWindow(), activity.getWindow().getDecorView());
+        final boolean isNightMode = (activity.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         controller.setAppearanceLightStatusBars(false);
-        controller.setAppearanceLightNavigationBars(true);
+        controller.setAppearanceLightNavigationBars(!isNightMode);
 
         // Preserve horizontal and bottom padding. The framework content
         // container's top padding is owned by AppCompat and can already contain

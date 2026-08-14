@@ -3,6 +3,7 @@ package com.macindex.macindex;
 import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 
 import android.animation.LayoutTransition;
@@ -10,7 +11,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -435,7 +435,7 @@ public class SearchActivity extends AppCompatActivity {
             DebugHelper.log("validate", "Overlength Detected!");
             // Set the overlength prompt here..
             textResult.setText(R.string.search_overlength);
-            textResult.setTextColor(Color.RED);
+            textResult.setTextColor(ContextCompat.getColor(this, R.color.colorError));
             return false;
         }
 
@@ -443,7 +443,7 @@ public class SearchActivity extends AppCompatActivity {
             if (Character.isISOControl(validateInput.charAt(i))) {
                 DebugHelper.log("validate", "Illegal Char Detected!");
                 textResult.setText(R.string.search_illegal);
-                textResult.setTextColor(Color.RED);
+                textResult.setTextColor(ContextCompat.getColor(this, R.color.colorError));
                 return false;
             }
         }

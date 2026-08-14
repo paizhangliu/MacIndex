@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -23,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -269,11 +270,14 @@ class SpecsHelper {
     void setSupportColor(final TextView support, final String thisSupport) {
         // Set Support Box Text Color.
         if (thisSupport.equals("Obsolete")) {
-            support.setTextColor(Color.RED);
+            support.setTextColor(ContextCompat.getColor(thisContext,
+                    R.color.colorSupportObsolete));
         } else if (thisSupport.equals("Vintage")) {
-            support.setTextColor(Color.MAGENTA);
+            support.setTextColor(ContextCompat.getColor(thisContext,
+                    R.color.colorSupportVintage));
         } else if (thisSupport.equals("Supported")) {
-            support.setTextColor(Color.GREEN);
+            support.setTextColor(ContextCompat.getColor(thisContext,
+                    R.color.colorSupportSupported));
         }
     }
 

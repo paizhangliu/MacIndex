@@ -332,6 +332,7 @@ public class CompareActivity extends AppCompatActivity {
         final ImageView everymac = findViewById(R.id.everymac);
         specsHelperLeft.initLinks(new int[]{leftID, rightID},
                 new String[]{leftName, rightName}, everymac);
+        ThemeHelper.applyInvertedLogo(this, everymac);
 
         final TextView nameLeft = findViewById(R.id.nameTextLeft);
         final TextView nameRight = findViewById(R.id.nameTextRight);
@@ -427,6 +428,7 @@ public class CompareActivity extends AppCompatActivity {
                 getResources().getDisplayMetrics().widthPixels / 2,
                 Math.round(150 * getResources().getDisplayMetrics().density));
         image.setImageBitmap(picture);
+        ThemeHelper.applyMachineImage(this, image);
         image.setContentDescription(name);
         // Set a long click listener
         image.setOnLongClickListener(v -> {
@@ -447,6 +449,7 @@ public class CompareActivity extends AppCompatActivity {
         } else {
             layout.setVisibility(View.VISIBLE);
             image.setImageResource(drawableID);
+            ThemeHelper.applyProcessorTypeLogo(this, image, drawableID);
         }
     }
 

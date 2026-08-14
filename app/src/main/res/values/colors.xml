@@ -7,4 +7,19 @@
     <!-- <color name="colorAccent">#D81B60</color> -->
     <color name="colorAccent">#656565</color>
     <color name="colorDefaultText">#757575</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorSelectedBackground">#0D98BA</color>
+    <color name="colorDivider">#CDCDCD</color>
+    <color name="colorError">#FF0000</color>
+    <color name="colorSupportObsolete">#FF0000</color>
+    <color name="colorSupportVintage">#FF00FF</color>
+    <color name="colorSupportSupported">#00FF00</color>
+    <color name="colorMachineSurface">#00000000</color>
+    <color name="colorProcessorTypeSurface">#00000000</color>
+    <color name="colorMediaSurface">#00000000</color>
+    <color name="colorAboutTitle">#0D98BA</color>
+    <color name="colorAboutLogo">#212121</color>
+    <color name="colorLogoBackground">#00000000</color>
+    <color name="colorIconAccent">#0095B6</color>
+    <color name="colorFavouriteIcon">#F9D71C</color>
 </resources>

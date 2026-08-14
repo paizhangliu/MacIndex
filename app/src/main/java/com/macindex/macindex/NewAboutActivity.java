@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
@@ -40,6 +41,10 @@ public class NewAboutActivity extends AppCompatActivity {
                     BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-Debug" : ""))
                     + " · " + dateFormat.format(buildDate);
             ((TextView) findViewById(R.id.versionText)).setText(versionString);
+            ThemeHelper.applyDarkAppLogo(this,
+                    (ImageView) findViewById(R.id.appLogo));
+            ThemeHelper.applyMonochromeLogo(this,
+                    (ImageView) findViewById(R.id.cs125Logo));
 
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_opensource));
             findViewById(R.id.openSourceButton).setOnClickListener(v ->

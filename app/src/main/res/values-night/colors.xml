@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#242424</color>
+    <color name="colorPrimaryDark">#242424</color>
+    <color name="colorAccent">#D0D0D0</color>
+    <color name="colorDefaultText">#BDBDBD</color>
+    <color name="colorBackground">#121212</color>
+    <color name="colorSelectedBackground">#3A3A3A</color>
+    <color name="colorDivider">#3A3A3A</color>
+    <color name="colorError">#E0E0E0</color>
+    <color name="colorSupportObsolete">#9E9E9E</color>
+    <color name="colorSupportVintage">#BDBDBD</color>
+    <color name="colorSupportSupported">#E0E0E0</color>
+    <color name="colorMachineSurface">@color/colorBackground</color>
+    <color name="colorProcessorTypeSurface">#00000000</color>
+    <color name="colorMediaSurface">#00000000</color>
+    <color name="colorAboutTitle">#FFFFFF</color>
+    <color name="colorAboutLogo">#E6E6E6</color>
+    <color name="colorLogoBackground">#00000000</color>
+    <color name="colorIconAccent">#BDBDBD</color>
+    <color name="colorFavouriteIcon">#BDBDBD</color>
+</resources>

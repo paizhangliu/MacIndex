@@ -61,6 +61,47 @@
                 android:layout_height="1dp"
                 android:background="?android:attr/listDivider" />
 
+            <LinearLayout
+                android:id="@+id/appearanceButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/setting_appearance"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/appearanceSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:dropDownWidth="wrap_content"
+                    android:gravity="end|center_vertical"
+                    android:minWidth="100dp"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"

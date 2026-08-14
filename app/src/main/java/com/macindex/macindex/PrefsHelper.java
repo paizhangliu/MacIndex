@@ -37,6 +37,7 @@ class PrefsHelper {
         DEFAULT_VALUES.put("isSaveSearchUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isSaveCompareUsage", Boolean.TRUE);
         DEFAULT_VALUES.put("isAutoCheckUpdate", Boolean.TRUE);
+        DEFAULT_VALUES.put("appearanceMode", ThemeHelper.APPEARANCE_SYSTEM);
 
         /* User Record */
         DEFAULT_VALUES.put("userCompare", UserCompareHelper.EMPTY_JSON);
@@ -72,6 +73,23 @@ class PrefsHelper {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "Preference Helper", "Unable to get Int preference: " + thisPrefsName);
+            return 0;
+        }
+    }
+
+    public static int getIntPrefsSafe(final String thisPrefsName, final Context thisContext) {
+        try {
+            final SharedPreferences prefsFile = thisContext.getSharedPreferences(
+                    PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+            if (DEFAULT_VALUES.containsKey(thisPrefsName)
+                    && DEFAULT_VALUES.get(thisPrefsName) instanceof Integer) {
+                return prefsFile.getInt(thisPrefsName,
+                        (Integer) DEFAULT_VALUES.get(thisPrefsName));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } catch (Exception e) {
+            Log.e("Preference Helper", "Unable to get Int preference: " + thisPrefsName);
             return 0;
         }
     }

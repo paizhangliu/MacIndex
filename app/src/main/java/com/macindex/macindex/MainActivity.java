@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.customview.widget.ViewDragHelper;
@@ -17,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -593,14 +593,18 @@ public class MainActivity extends AppCompatActivity {
                 final TextView currentChild = (TextView) manufacturerLayout.getChildAt(i);
                 if (currentChild == findViewById(translateManufacturerMenuRes())) {
                     currentChild.setEnabled(false);
-                    currentChild.setTextColor(Color.WHITE);
-                    currentChild.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    currentChild.setTextColor(ContextCompat.getColor(this,
+                            android.R.color.white));
+                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
+                            R.color.colorSelectedBackground));
                     currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24_white, 0);
 
                 } else {
                     currentChild.setEnabled(true);
-                    currentChild.setTextColor(getResources().getColor(R.color.colorDefaultText));
-                    currentChild.setBackgroundColor(Color.WHITE);
+                    currentChild.setTextColor(ContextCompat.getColor(this,
+                            R.color.colorDefaultText));
+                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
+                            R.color.colorBackground));
                     currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
@@ -613,13 +617,17 @@ public class MainActivity extends AppCompatActivity {
                 final TextView currentChild = (TextView) filterLayout.getChildAt(i);
                 if (currentChild == findViewById(translateFilterMenuRes())) {
                     currentChild.setEnabled(false);
-                    currentChild.setTextColor(Color.WHITE);
-                    currentChild.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    currentChild.setTextColor(ContextCompat.getColor(this,
+                            android.R.color.white));
+                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
+                            R.color.colorSelectedBackground));
                     currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24_white, 0);
                 } else {
                     currentChild.setEnabled(true);
-                    currentChild.setTextColor(getResources().getColor(R.color.colorDefaultText));
-                    currentChild.setBackgroundColor(Color.WHITE);
+                    currentChild.setTextColor(ContextCompat.getColor(this,
+                            R.color.colorDefaultText));
+                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
+                            R.color.colorBackground));
                     currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }

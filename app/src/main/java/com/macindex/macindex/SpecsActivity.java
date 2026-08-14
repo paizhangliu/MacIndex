@@ -315,6 +315,8 @@ public class SpecsActivity extends AppCompatActivity {
                 // Got type image. Now loading.
                 processorTypeImageLayout.setVisibility(View.VISIBLE);
                 processorTypeImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), processorTypeImageRes, 200, 200));
+                ThemeHelper.applyProcessorTypeLogo(this, processorTypeImage,
+                        processorTypeImageRes);
             }
             if (processorImageRes[0][0] != 0) {
                 // Got specific images. Now loading.
@@ -327,6 +329,7 @@ public class SpecsActivity extends AppCompatActivity {
                         final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_processor_image, null);
                         final ImageView thisProcessorImage = imageChunk.findViewById(R.id.processorImage);
                         thisProcessorImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), thisProcessorImageRes, 200, 200));
+                        ThemeHelper.applyImageMask(this, thisProcessorImage);
                         processorImages.addView(imageChunk);
                     }
                 }
@@ -360,6 +363,7 @@ public class SpecsActivity extends AppCompatActivity {
                         final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_graphics_image, null);
                         final ImageView thisGraphicsImage = imageChunk.findViewById(R.id.graphicsImage);
                         thisGraphicsImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), thisGraphicsImageRes, 200, 200));
+                        ThemeHelper.applyImageMask(this, thisGraphicsImage);
                         graphicsImages.addView(imageChunk);
                     }
                 }
@@ -460,6 +464,7 @@ public class SpecsActivity extends AppCompatActivity {
                     Math.round(150 * getResources().getDisplayMetrics().density));
             DebugHelper.log("SpecsAct", "Image exists");
             image.setImageBitmap(picture);
+            ThemeHelper.applyMachineImage(this, image);
 
             final TextView informationLabel = findViewById(R.id.information);
             specsHelper.initSound(machineID, image, informationLabel);
@@ -480,6 +485,7 @@ public class SpecsActivity extends AppCompatActivity {
     private void initLinks() {
         final ImageView link = findViewById(R.id.everymac);
         specsHelper.initLinks(machineID, thisName, link);
+        ThemeHelper.applyInvertedLogo(this, link);
     }
 
     private void initButtons() {

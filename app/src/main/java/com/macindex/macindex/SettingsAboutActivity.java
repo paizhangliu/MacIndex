@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -65,8 +69,32 @@ public class SettingsAboutActivity extends AppCompatActivity {
         final SwitchMaterial swAutoCheckUpdate = findViewById(R.id.switchAutoCheckUpdate);
         final SwitchMaterial swVolWarning = findViewById(R.id.switchVolWarning);
         final SwitchMaterial swOpenDirectly = findViewById(R.id.switchOpenDirectly);
+        final Spinner appearanceSpinner = findViewById(R.id.appearanceSpinner);
 
         findViewById(R.id.userDataButton).setOnClickListener(view -> showUserDataOptions());
+        final String[] appearanceOptions = getAppearanceOptions();
+        final ArrayAdapter<String> appearanceAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, appearanceOptions);
+        appearanceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        appearanceSpinner.setAdapter(appearanceAdapter);
+        appearanceSpinner.setSelection(ThemeHelper.getAppearance(this));
+        appearanceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(final AdapterView<?> parent, final View view,
+                                       final int selection, final long id) {
+                if (selection != ThemeHelper.getAppearance(SettingsAboutActivity.this)) {
+                    PrefsHelper.editPrefs("appearanceMode", selection,
+                            SettingsAboutActivity.this);
+                    ThemeHelper.apply(selection);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(final AdapterView<?> parent) {
+            }
+        });
+        findViewById(R.id.appearanceButton).setOnClickListener(
+                view -> appearanceSpinner.performClick());
 
         swSortComment.setChecked(PrefsHelper.getBooleanPrefs("isSortComment", this));
         final Boolean everyMacSelection = PrefsHelper.getBooleanPrefs("isOpenEveryMac", this);
@@ -132,6 +160,14 @@ public class SettingsAboutActivity extends AppCompatActivity {
                 initSettings();
             }
         });
+    }
+
+    private String[] getAppearanceOptions() {
+        return new String[]{
+                getString(R.string.setting_appearance_system),
+                getString(R.string.setting_appearance_light),
+                getString(R.string.setting_appearance_dark)
+        };
     }
 
     private void showUserDataOptions() {

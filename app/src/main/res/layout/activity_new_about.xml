@@ -19,6 +19,7 @@
             android:padding = "20pt">
 
             <ImageView
+                android:id="@+id/appLogo"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 app:srcCompat="@drawable/macindexlogo" />
@@ -32,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/app_name"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorAboutTitle"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -91,6 +92,7 @@
                 android:id="@+id/githubLogo"
                 android:layout_width="match_parent"
                 android:layout_height="20pt"
+                app:tint="@color/colorAboutLogo"
                 app:srcCompat="@drawable/github" />
 
             <Space
@@ -101,6 +103,7 @@
                 android:id="@+id/cs125Logo"
                 android:layout_width="wrap_content"
                 android:layout_height="20pt"
+                android:background="@color/colorLogoBackground"
                 app:srcCompat="@drawable/cs125" />
 
             <Space

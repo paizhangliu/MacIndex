@@ -43,6 +43,10 @@
     <string name="setting_save_compare_description">Remember the two machines selected for comparison and their left/right order.</string>
     <string name="setting_auto_update">Automatically Check for Updates</string>
     <string name="setting_auto_update_description">Silently check for updates when MacIndex starts.</string>
+    <string name="setting_appearance">Appearance</string>
+    <string name="setting_appearance_system">Follow System</string>
+    <string name="setting_appearance_light">Light</string>
+    <string name="setting_appearance_dark">Dark</string>
     <string name="setting_search_open_directly">Open Single Search Result</string>
     <string name="setting_search_open_directly_description">Open the result automatically when a search returns exactly one machine.</string>
     <string name="setting_section_general">General</string>

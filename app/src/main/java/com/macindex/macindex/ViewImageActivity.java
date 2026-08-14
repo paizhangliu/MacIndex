@@ -55,6 +55,7 @@ public class ViewImageActivity extends AppCompatActivity {
                     getResources().getDisplayMetrics().heightPixels);
             DebugHelper.log("SpecsAct", "Image exists");
             image.setImageBitmap(picture);
+            ThemeHelper.applyMachineImage(this, image);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, null, null);
         }

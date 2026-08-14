@@ -80,13 +80,15 @@
                         android:id="@+id/picLeft"
                         android:layout_width="0dp"
                         android:layout_height="150dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="@color/colorMachineSurface" />
 
                     <ImageView
                         android:id="@+id/picRight"
                         android:layout_width="0dp"
                         android:layout_height="150dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="@color/colorMachineSurface" />
 
                 </LinearLayout>
 
@@ -147,7 +149,8 @@
                             android:id="@+id/processorTypeImageLeft"
                             android:layout_width="130dp"
                             android:layout_height="40dp"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:background="@color/colorProcessorTypeSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -161,7 +164,8 @@
                             android:id="@+id/processorTypeImageRight"
                             android:layout_width="130dp"
                             android:layout_height="40dp"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:background="@color/colorProcessorTypeSurface" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -245,6 +249,7 @@
                     android:layout_width="250dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center"
+                    android:background="@color/colorProcessorTypeSurface"
                     android:contentDescription="@string/app_name_everymac"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/everymac" />
