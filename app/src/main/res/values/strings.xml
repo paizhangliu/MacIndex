@@ -177,7 +177,7 @@
     <string name="comments_not_available_tips">No comments have been saved yet</string>
     <string name="comments_delete">Select the comments to delete. This cannot be undone.</string>
     <string name="comments_clear_warning">All comments will be deleted. This cannot be undone.</string>
-    <string name="favourites_no_folder_tips">No bookmark folders have been created yet</string>
+    <string name="favourites_no_folder_tips">No bookmark folders have been created yet\nTap here to create one</string>
     <string name="favourites_tips">Select one or more folders. You can manage folders on the Bookmarks page.</string>
     <string name="favourites_delete">Select the folders to delete. This cannot be undone.</string>
     <string name="favourites_rename">Select the folder to rename.</string>

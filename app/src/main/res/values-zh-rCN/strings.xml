@@ -170,7 +170,7 @@
     <string name="comments_not_available_tips">尚未保存任何备注</string>
     <string name="comments_delete">请选择要删除的备注。此操作不能撤销。</string>
     <string name="comments_clear_warning">所有备注将被清除，且无法撤销。</string>
-    <string name="favourites_no_folder_tips">尚未创建任何收藏夹</string>
+    <string name="favourites_no_folder_tips">尚未创建任何收藏夹\n点击此处新建收藏夹</string>
     <string name="favourites_tips">请选择一个或多个收藏夹。你可以在收藏页管理所有收藏夹。</string>
     <string name="favourites_delete">请选择要删除的收藏夹。此操作不能撤销。</string>
     <string name="favourites_rename">请选择要重命名的收藏夹。</string>

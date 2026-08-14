@@ -70,6 +70,8 @@ public class FavouriteActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.emptyText).setOnClickListener(view -> createFolder());
+
         waitDialog = new ProgressDialog(this);
         waitDialog.setMessage(getString(R.string.loading_favourites));
         waitDialog.setCancelable(false);
