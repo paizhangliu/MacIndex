@@ -1,13 +1,34 @@
 package com.macindex.macindex;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.io.IOException;
+
 public class SettingsAboutActivity extends AppCompatActivity {
+
+    private final ActivityResultLauncher<String> exportUserDataLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.CreateDocument("application/json"), uri -> {
+                        if (uri != null) {
+                            exportUserData(uri);
+                        }
+                    });
+
+    private final ActivityResultLauncher<String[]> importUserDataLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri != null) {
+                    importUserData(uri);
+                }
+            });
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -44,6 +65,8 @@ public class SettingsAboutActivity extends AppCompatActivity {
         final SwitchMaterial swAutoCheckUpdate = findViewById(R.id.switchAutoCheckUpdate);
         final SwitchMaterial swVolWarning = findViewById(R.id.switchVolWarning);
         final SwitchMaterial swOpenDirectly = findViewById(R.id.switchOpenDirectly);
+
+        findViewById(R.id.userDataButton).setOnClickListener(view -> showUserDataOptions());
 
         swSortComment.setChecked(PrefsHelper.getBooleanPrefs("isSortComment", this));
         final Boolean everyMacSelection = PrefsHelper.getBooleanPrefs("isOpenEveryMac", this);
@@ -109,5 +132,92 @@ public class SettingsAboutActivity extends AppCompatActivity {
                 initSettings();
             }
         });
+    }
+
+    private void showUserDataOptions() {
+        final String[] options = new String[]{
+                getString(R.string.user_data_export),
+                getString(R.string.user_data_import)
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.setting_user_data)
+                .setItems(options, (dialogInterface, selection) -> {
+                    if (selection == 0) {
+                        exportUserDataLauncher.launch(UserDataTransferHelper.DEFAULT_FILE_NAME);
+                    } else {
+                        importUserDataLauncher.launch(new String[]{
+                                "application/json", "text/json", "text/plain"
+                        });
+                    }
+                })
+                .setNegativeButton(R.string.link_cancel, null)
+                .show();
+    }
+
+    private void exportUserData(final Uri uri) {
+        final String userData;
+        try {
+            userData = UserDataTransferHelper.create(this);
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e,
+                    "exportUserData", "Unable to prepare user data for export.");
+            return;
+        }
+        try {
+            UserDataTransferHelper.write(this, uri, userData);
+            Toast.makeText(this, R.string.user_data_export_success,
+                    Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.user_data_export_failed,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void importUserData(final Uri uri) {
+        try {
+            final UserDataTransferHelper.ImportResult imported =
+                    UserDataTransferHelper.prepareImport(
+                            UserDataTransferHelper.read(this, uri),
+                            MainActivity.getMachineHelper());
+            showImportConfirmation(imported);
+        } catch (UserDataTransferHelper.InvalidTransferException e) {
+            Toast.makeText(this, R.string.user_data_import_invalid,
+                    Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.user_data_import_failed,
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e,
+                    "importUserData", "Unable to prepare imported user data.");
+        }
+    }
+
+    private void showImportConfirmation(final UserDataTransferHelper.ImportResult imported) {
+        String information = getString(R.string.user_data_import_information,
+                imported.commentCount, imported.favouriteCount,
+                imported.folderCount, imported.compareCount);
+        if (imported.getRemovedCount() != 0) {
+            information += "\n\n" + getString(R.string.user_data_import_removed,
+                    imported.getRemovedCount());
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.user_data_import)
+                .setMessage(information)
+                .setPositiveButton(R.string.link_confirm, (dialogInterface, selection) -> {
+                    try {
+                        UserDataTransferHelper.applyImport(imported, this);
+                        if (imported.getRemovedCount() != 0) {
+                            PrefsHelper.showUpgradeReport(this);
+                        } else {
+                            Toast.makeText(this, R.string.user_data_import_success,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        ExceptionHelper.handleException(this, e,
+                                "importUserData", "Unable to import user data.");
+                    }
+                })
+                .setNegativeButton(R.string.link_cancel, null)
+                .show();
     }
 }

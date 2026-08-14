@@ -11,6 +11,17 @@
     <string name="information_specs_high_vol_warning">The current volume is high. Continue playback?\nTap \"Play Anyway\" to dismiss this warning temporarily.\nYou can disable this warning in Preferences.</string>
     <string name="setting_sort_comment">Bookmark/Comment Sorting</string>
     <string name="setting_sort_comment_description">Sort bookmarks and comments by introduction date rather than by the order in which they were added.</string>
+    <string name="setting_user_data">Export or Import User Data</string>
+    <string name="setting_user_data_description">Back up or restore bookmarks, comments, and the compare list as a file.</string>
+    <string name="user_data_export">Export User Data</string>
+    <string name="user_data_import">Import User Data</string>
+    <string name="user_data_export_success">User data exported</string>
+    <string name="user_data_export_failed">Unable to export user data</string>
+    <string name="user_data_import_invalid">This is not a valid MacIndex user data file</string>
+    <string name="user_data_import_failed">Unable to read user data</string>
+    <string name="user_data_import_information">This file contains %1$d comments, %2$d bookmarks in %3$d folders, and %4$d machines in the compare list. Importing will replace the corresponding user data currently stored on this device.</string>
+    <string name="user_data_import_removed">%1$d items no longer match the current database. They will be removed during import and listed afterward.</string>
+    <string name="user_data_import_success">User data imported</string>
     <string name="setting_everymac">Open Directly on EveryMac</string>
     <string name="setting_everymac_description">Open this machine’s EveryMac page directly instead of the Specifications page. If multiple configurations are available, you will be asked to choose one.</string>
     <string name="setting_everymac_warning_content">This applies to both the main page and the search page. Some features will also be unavailable.</string>

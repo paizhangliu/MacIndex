@@ -56,6 +56,38 @@ public class UserRecordJsonHelperTest {
         assertEquals("MI000003", decoded.rightUID);
     }
 
+    @Test
+    public void exportedUserDataRoundTripsAllRecords() {
+        final List<UserCommentHelper.Comment> comments = Arrays.asList(
+                new UserCommentHelper.Comment("MI000001", "中文备注"));
+        final List<UserFavouriteHelper.Folder> folders = Arrays.asList(
+                new UserFavouriteHelper.Folder("Legacy Macs",
+                        new ArrayList<>(Arrays.asList("MI000001", "MI000002"))));
+        final UserCompareHelper.State compare = new UserCompareHelper.State(
+                new ArrayList<>(Arrays.asList("MI000001", "MI000002")),
+                "MI000001", "MI000002");
+
+        final UserDataTransferHelper.UserData decoded = UserDataTransferHelper.parse(
+                UserDataTransferHelper.serialize(
+                        new UserDataTransferHelper.UserData(comments, folders, compare)));
+
+        assertEquals("中文备注", decoded.comments.get(0).text);
+        assertEquals("Legacy Macs", decoded.favourites.get(0).name);
+        assertEquals(Arrays.asList("MI000001", "MI000002"),
+                decoded.compare.machineUIDs);
+        assertEquals("MI000001", decoded.compare.leftUID);
+        assertEquals("MI000002", decoded.compare.rightUID);
+    }
+
+    @Test(expected = UserDataTransferHelper.InvalidTransferException.class)
+    public void exportedUserDataRejectsUnexpectedKeys() {
+        UserDataTransferHelper.parse("{\"schema\":1,"
+                + "\"comments\":{" + UserCommentHelper.EMPTY_JSON.substring(1) + ","
+                + "\"favourites\":{" + UserFavouriteHelper.EMPTY_JSON.substring(1) + ","
+                + "\"compare\":{" + UserCompareHelper.EMPTY_JSON.substring(1) + ","
+                + "\"unexpected\":true}");
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void commentsRejectDuplicateMachineUIDs() {
         UserCommentHelper.parse("{\"schema\":1,\"comments\":["

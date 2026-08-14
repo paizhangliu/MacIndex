@@ -306,10 +306,10 @@ class PrefsHelper {
         return false;
     }
 
-    private static String buildUpgradeReport(final Context thisContext,
-                                             final List<String> comments,
-                                             final List<String> favourites,
-                                             final List<String> compares) {
+    static String buildUpgradeReport(final Context thisContext,
+                                     final List<String> comments,
+                                     final List<String> favourites,
+                                     final List<String> compares) {
         final StringBuilder report = new StringBuilder();
         appendUpgradeReport(report, thisContext.getString(R.string.menu_comment),
                 comments, thisContext);

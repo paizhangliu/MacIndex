@@ -284,6 +284,65 @@ public class MachineDirectoryTest {
     }
 
     @Test
+    public void importedUserDataIsAuditedAndAppliedTogether() {
+        final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
+                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        final String oldComments = prefsFile.getString(
+                "userComments", UserCommentHelper.EMPTY_JSON);
+        final String oldFavourites = prefsFile.getString(
+                "userFavourites", UserFavouriteHelper.EMPTY_JSON);
+        final String oldCompare = prefsFile.getString(
+                "userCompare", UserCompareHelper.EMPTY_JSON);
+        final String oldReport = prefsFile.getString("pendingUpgradeReport", "");
+        final boolean oldCommentsReload = prefsFile.getBoolean(
+                "isCommentsReloadNeeded", false);
+        final boolean oldFavouritesReload = prefsFile.getBoolean(
+                "isFavouritesReloadNeeded", false);
+        final boolean oldCompareReload = prefsFile.getBoolean(
+                "isCompareReloadNeeded", false);
+
+        final String importedJSON = "{\"schema\":1,"
+                + "\"comments\":{\"schema\":1,\"comments\":["
+                + "{\"machine\":\"MI999999\",\"text\":\"Keep\"}]},"
+                + "\"favourites\":{\"schema\":1,\"folders\":["
+                + "{\"name\":\"Keep\",\"machines\":["
+                + "\"MI000001\",\"MI999999\"]}]},"
+                + "\"compare\":{\"schema\":1,\"machines\":["
+                + "\"MI000001\",\"MI999999\"],\"left\":\"\",\"right\":\"\"}}";
+        try {
+            final UserDataTransferHelper.ImportResult imported =
+                    UserDataTransferHelper.prepareImport(
+                            importedJSON, MainActivity.getMachineHelper());
+            assertEquals(0, imported.commentCount);
+            assertEquals(1, imported.folderCount);
+            assertEquals(1, imported.favouriteCount);
+            assertEquals(1, imported.compareCount);
+            assertEquals(3, imported.getRemovedCount());
+
+            UserDataTransferHelper.applyImport(imported, applicationContext);
+            assertTrue(UserCommentHelper.read(applicationContext).isEmpty());
+            assertEquals(Collections.singletonList("MI000001"),
+                    UserFavouriteHelper.read(applicationContext).get(0).machineUIDs);
+            assertEquals(Collections.singletonList("MI000001"),
+                    UserCompareHelper.read(applicationContext).machineUIDs);
+            assertTrue(prefsFile.getBoolean("isCommentsReloadNeeded", false));
+            assertTrue(prefsFile.getBoolean("isFavouritesReloadNeeded", false));
+            assertTrue(prefsFile.getBoolean("isCompareReloadNeeded", false));
+            assertTrue(prefsFile.getString("pendingUpgradeReport", "")
+                    .contains("MI999999"));
+        } finally {
+            assertTrue(prefsFile.edit()
+                    .putString("userComments", oldComments)
+                    .putString("userFavourites", oldFavourites)
+                    .putString("userCompare", oldCompare)
+                    .putString("pendingUpgradeReport", oldReport)
+                    .putBoolean("isCommentsReloadNeeded", oldCommentsReload)
+                    .putBoolean("isFavouritesReloadNeeded", oldFavouritesReload)
+                    .putBoolean("isCompareReloadNeeded", oldCompareReload).commit());
+        }
+    }
+
+    @Test
     public void corruptUserRecordIsResetAndPreservedInReport() {
         final UserRecordUpgradeHelper.UpgradeResult result =
                 UserRecordUpgradeHelper.upgradeFavourites(

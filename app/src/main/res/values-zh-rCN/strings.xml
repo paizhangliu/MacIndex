@@ -10,6 +10,17 @@
     <string name="information_specs_high_vol_warning">当前音量较高，是否继续播放？\n选择“仍要播放”可暂时不再提示。\n你可以在偏好设置中关闭此警告。</string>
     <string name="setting_sort_comment">收藏与备注排序</string>
     <string name="setting_sort_comment_description">按照推出时间而非添加顺序排列收藏与备注。</string>
+    <string name="setting_user_data">导出或导入用户数据</string>
+    <string name="setting_user_data_description">将收藏、备注和比较列表导出为文件，或从文件恢复。</string>
+    <string name="user_data_export">导出用户数据</string>
+    <string name="user_data_import">导入用户数据</string>
+    <string name="user_data_export_success">用户数据已导出</string>
+    <string name="user_data_export_failed">无法导出用户数据</string>
+    <string name="user_data_import_invalid">这不是有效的 MacIndex 用户数据文件</string>
+    <string name="user_data_import_failed">无法读取用户数据</string>
+    <string name="user_data_import_information">此文件包含 %1$d 条备注、%2$d 项收藏（位于 %3$d 个收藏夹中），以及比较列表中的 %4$d 台机型。导入会替换当前设备中保存的这些用户数据。</string>
+    <string name="user_data_import_removed">其中 %1$d 项已无法与当前数据库匹配。导入时将删除这些内容，并在之后列出详情。</string>
+    <string name="user_data_import_success">用户数据已导入</string>
     <string name="setting_everymac">直接打开 EveryMac</string>
     <string name="setting_everymac_description">直接打开当前机型对应的 EveryMac 页面，不再进入参数页。若有多个配置，会先让你选择。</string>
     <string name="setting_everymac_warning_content">此设置同时影响主页和搜索页，并会停用部分功能。</string>
