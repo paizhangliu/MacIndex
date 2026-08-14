@@ -672,7 +672,6 @@ class MachineHelper {
             case "cometlake":
             case "icelake":
                 return R.drawable.intel;
-            case "A12Z":
             case "a18":
             case "m1":
             case "m2":
@@ -938,10 +937,6 @@ class MachineHelper {
                     toReturn[i] = new int[1];
                     toReturn[i][0] = R.drawable.applet2;
                     break;
-                case "A12Z":
-                    toReturn[i] = new int[1];
-                    toReturn[i][0] = R.drawable.applea12z;
-                    break;
                 case "m1":
                     toReturn[i] = new int[1];
                     toReturn[i][0] = R.drawable.applem1;
@@ -957,6 +952,66 @@ class MachineHelper {
                 case "m1ultra":
                     toReturn[i] = new int[1];
                     toReturn[i][0] = R.drawable.applem1u;
+                    break;
+                case "m2":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem2;
+                    break;
+                case "m2pro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem2pro;
+                    break;
+                case "m2max":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem2max;
+                    break;
+                case "m2ultra":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem2u;
+                    break;
+                case "m3":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem3;
+                    break;
+                case "m3pro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem3pro;
+                    break;
+                case "m3max":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem3max;
+                    break;
+                case "m3ultra":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem3u;
+                    break;
+                case "m4":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem4;
+                    break;
+                case "m4pro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem4pro;
+                    break;
+                case "m4max":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem4max;
+                    break;
+                case "m5":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem5;
+                    break;
+                case "m5pro":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem5pro;
+                    break;
+                case "m5max":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applem5max;
+                    break;
+                case "a18":
+                    toReturn[i] = new int[1];
+                    toReturn[i][0] = R.drawable.applea18p;
                     break;
                 default:
                     ExceptionHelper.handleDatabaseException(thisContext, null,

@@ -43,6 +43,7 @@
     <string name="setting_auto_update">自动检查更新</string>
     <string name="setting_auto_update_description">启动 MacIndex 时静默检查是否有新版本。</string>
     <string name="setting_appearance">外观</string>
+    <string name="setting_appearance_description">跟随系统外观，或始终使用日间或夜间模式。</string>
     <string name="setting_appearance_system">跟随系统</string>
     <string name="setting_appearance_light">日间</string>
     <string name="setting_appearance_dark">夜间</string>
@@ -94,13 +95,14 @@
     <string name="main_section_laptop">笔记本电脑</string>
     <string name="main_section_server">服务器</string>
     <string name="menu">主菜单</string>
+    <string name="submenu_main_expand_all">展开全部</string>
+    <string name="submenu_main_collapse_all">收起全部</string>
     <string name="submenu_main_reset">重置筛选器和浏览方式</string>
     <string name="submenu_specs_favourite">添加或移除收藏</string>
     <string name="submenu_specs_compare">添加到比较列表</string>
     <string name="submenu_specs_comment">编辑备注</string>
     <string name="submenu_specs_share">复制参数</string>
     <string name="submenu_specs_share_link">生成分享链接</string>
-    <string name="submenu_search_clear">清除搜索结果</string>
     <string name="submenu_search_reset">重置筛选器与搜索方式</string>
     <string name="submenu_search_SN">Apple 序列号查询</string>
     <string name="submenu_search_everymac">EveryMac 查询</string>

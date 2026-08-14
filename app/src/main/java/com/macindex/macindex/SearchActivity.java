@@ -135,10 +135,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         final int itemID = item.getItemId();
-        if (itemID == R.id.searchClearItem) {
-            resetIllegal();
-            cancelSearch();
-        } else if (itemID == R.id.searchResetItem) {
+        if (itemID == R.id.searchResetItem) {
             PrefsHelper.editPrefs("lastSearchFiltersSpinner", 0, SearchActivity.this);
             PrefsHelper.editPrefs("lastSearchOptionsSpinner", 0, SearchActivity.this);
             filtersSpinner.setSelection(0);
@@ -357,7 +354,7 @@ public class SearchActivity extends AppCompatActivity {
                     characterCheck(searchInput, translateMatchParam());
                 } else {
                     // No input
-                    resetIllegal();
+                    cancelSearch();
                 }
                 return false;
             }

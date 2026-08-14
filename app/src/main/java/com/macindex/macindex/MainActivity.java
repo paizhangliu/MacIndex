@@ -309,6 +309,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemID == R.id.mainDebugResetItem) {
             Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
             PrefsHelper.clearPrefs(this);
+        } else if (itemID == R.id.mainExpandAllItem) {
+            setAllCategoriesVisibility(true);
+        } else if (itemID == R.id.mainCollapseAllItem) {
+            setAllCategoriesVisibility(false);
         } else if (itemID == R.id.mainResetItem) {
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -715,7 +719,6 @@ public class MainActivity extends AppCompatActivity {
 
                         /* Remake my teammate's code */
                         categoryName.setOnClickListener(new View.OnClickListener() {
-                            private boolean thisVisibility = false;
                             private boolean isCategoryLoaded = false;
 
                             @Override
@@ -733,38 +736,36 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                     final View firstChild = categoryChunkLayout.getChildAt(1);
-                                    if (thisVisibility) {
+                                    if (categoryName.isActivated()) {
                                         // Make machines invisible.
                                         if (!(firstChild instanceof LinearLayout)) {
                                             // Have the divider
                                             for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
                                                 categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                thisVisibility = false;
                                             }
                                             firstChild.setVisibility(View.VISIBLE);
                                         } else {
                                             // Does not have the divider
                                             for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
                                                 categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                                thisVisibility = false;
                                             }
                                         }
+                                        categoryName.setActivated(false);
                                     } else {
                                         // Make machines visible.
                                         if (!(firstChild instanceof LinearLayout)) {
                                             // Have the divider
                                             for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
                                                 categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                thisVisibility = true;
                                             }
                                             firstChild.setVisibility(View.GONE);
                                         } else {
                                             // Does not have the divider
                                             for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
                                                 categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                                thisVisibility = true;
                                             }
                                         }
+                                        categoryName.setActivated(true);
                                     }
                                 } catch (Exception e) {
                                     ExceptionHelper.handleException(MainActivity.this, e, null, null);
@@ -785,6 +786,35 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e,
                     "initInterface", "Initialize failed!!");
+        }
+    }
+
+    private void setAllCategoriesVisibility(final boolean isVisible) {
+        try {
+            final LinearLayout categoryContainer = findViewById(R.id.categoryContainer);
+            final LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
+            categoryContainer.setLayoutTransition(null);
+            try {
+                for (int i = 0; i < categoryContainer.getChildCount(); i++) {
+                    final LinearLayout categoryChunk = categoryContainer.getChildAt(i)
+                            .findViewById(R.id.categoryInfoLayout);
+                    if (categoryChunk == null) {
+                        continue;
+                    }
+                    final TextView categoryName = categoryChunk.findViewById(R.id.category);
+                    if (categoryName.isActivated() != isVisible) {
+                        final LayoutTransition categoryTransition = categoryChunk.getLayoutTransition();
+                        categoryChunk.setLayoutTransition(null);
+                        categoryName.performClick();
+                        categoryChunk.setLayoutTransition(categoryTransition);
+                    }
+                }
+            } finally {
+                categoryContainer.setLayoutTransition(layoutTransition);
+            }
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e,
+                    "MainCategoryVisibility", "Unable to change category visibility.");
         }
     }
 

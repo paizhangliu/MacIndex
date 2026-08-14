@@ -44,6 +44,7 @@
     <string name="setting_auto_update">Automatically Check for Updates</string>
     <string name="setting_auto_update_description">Silently check for updates when MacIndex starts.</string>
     <string name="setting_appearance">Appearance</string>
+    <string name="setting_appearance_description">Follow the system appearance, or always use light or dark mode.</string>
     <string name="setting_appearance_system">Follow System</string>
     <string name="setting_appearance_light">Light</string>
     <string name="setting_appearance_dark">Dark</string>
@@ -100,13 +101,14 @@
     <string name="main_section_laptop">Laptop</string>
     <string name="main_section_server">Server</string>
     <string name="menu">Main Menu</string>
+    <string name="submenu_main_expand_all">Expand All</string>
+    <string name="submenu_main_collapse_all">Collapse All</string>
     <string name="submenu_main_reset">Reset Filter and View</string>
     <string name="submenu_specs_favourite">Add/Remove Bookmark</string>
     <string name="submenu_specs_compare">Add to Compare List</string>
     <string name="submenu_specs_comment">Edit Comment</string>
     <string name="submenu_specs_share">Copy Specification</string>
     <string name="submenu_specs_share_link">Generate Share Link</string>
-    <string name="submenu_search_clear">Clear Results</string>
     <string name="submenu_search_reset">Reset Filter and Search Options</string>
     <string name="submenu_search_SN">Apple Serial Number Lookup</string>
     <string name="submenu_search_everymac">EveryMac Lookup</string>

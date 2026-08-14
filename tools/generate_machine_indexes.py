@@ -123,14 +123,16 @@ SOUND_VALUES = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "PB", "T2", "N
 # Keep these in sync with MachineHelper.getProcessorImage/getGraphicsImage.
 PROCESSOR_IMAGE_VALUES = (
     "7400", "7410", "7440", "7445", "7447", "7450", "7455", "750", "750cx",
-    "750cxe", "750fx", "970", "970fx", "970mp", "A12Z", "core2duo", "core2ex", "coreduo",
+    "750cxe", "750fx", "970", "970fx", "970mp", "core2duo", "core2ex", "coreduo",
     "corei3_1", "corei3_2", "corei3_8", "corei3_10", "corei5", "corei5_1",
     "corei5_2", "corei5_4", "corei5_5", "corei5_6", "corei5_7", "corei5_8",
     "corei5_9", "corei5_10", "corei7", "corei7_1", "corei7_2", "corei7_4",
     "corei7_5", "corei7_6", "corei7_7", "corei7_8", "corei7_9", "corei7_10",
     "corei9_8", "corei9_9", "corei9_10", "corem", "corem3_6", "corem3_7",
-    "corem5_6", "corem7_6", "coresolo", "m1", "m1max", "m1pro", "m1ultra",
-    "p4ht", "t1", "t2", "xeon_1", "xeon_2", "xeon_6", "xeon_a", "xeon_b",
+    "corem5_6", "corem7_6", "coresolo", "m1", "m1pro", "m1max", "m1ultra",
+    "m2", "m2pro", "m2max", "m2ultra", "m3", "m3pro", "m3max", "m3ultra",
+    "m4", "m4pro", "m4max", "m5", "m5pro", "m5max", "a18", "p4ht", "t1",
+    "t2", "xeon_1", "xeon_2", "xeon_6", "xeon_a", "xeon_b",
 )
 
 GRAPHICS_IMAGE_VALUES = (

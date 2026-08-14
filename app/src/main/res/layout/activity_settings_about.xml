@@ -14,7 +14,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -92,6 +94,11 @@
                     android:spinnerMode="dropdown" />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_appearance_description" />
 
             <Space
                 android:layout_width="match_parent"
