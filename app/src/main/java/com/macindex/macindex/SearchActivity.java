@@ -52,12 +52,6 @@ public class SearchActivity extends AppCompatActivity {
 
     private volatile int searchRequestID = 0;
 
-    /**
-     * setOnItemSelectedListener() was called by system weirdly
-     * Patch for the weird system call
-     */
-    private int optionsSpinnerCallingPatch = 1;
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,14 +96,13 @@ public class SearchActivity extends AppCompatActivity {
             PrefsHelper.clearPrefs("lastSearchOptionsSpinner", this);
         }
 
-        initSpinners();
         initSearch();
+        initSpinners();
 
         // Init Search Prompt at Here!!
         resetIllegal();
 
         if (savedInstanceState != null) {
-            optionsSpinnerCallingPatch++;
             searchText.setQuery(savedInstanceState.getCharSequence("searchInput"), false);
             final String[] savedUIDs = savedInstanceState.getStringArray("machineUIDs");
             if (savedUIDs != null) {
@@ -144,7 +137,7 @@ public class SearchActivity extends AppCompatActivity {
         final int itemID = item.getItemId();
         if (itemID == R.id.searchClearItem) {
             resetIllegal();
-            clearSearch();
+            cancelSearch();
         } else if (itemID == R.id.searchResetItem) {
             PrefsHelper.editPrefs("lastSearchFiltersSpinner", 0, SearchActivity.this);
             PrefsHelper.editPrefs("lastSearchOptionsSpinner", 0, SearchActivity.this);
@@ -152,6 +145,7 @@ public class SearchActivity extends AppCompatActivity {
             optionsSpinner.setSelection(0);
             searchText.setQuery("", true);
             searchText.clearFocus();
+            cancelSearch();
             changeTips();
         } else if (itemID == R.id.searchAppleSNItem) {
             LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", this);
@@ -235,7 +229,7 @@ public class SearchActivity extends AppCompatActivity {
             filtersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    PrefsHelper.editPrefs("lastSearchFiltersSpinner", i, SearchActivity.this);
+                    updateSearchParameter("lastSearchFiltersSpinner", i, false);
                 }
 
                 @Override
@@ -247,19 +241,7 @@ public class SearchActivity extends AppCompatActivity {
             optionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    Log.w("ReloadSpinnerCallDebug", "Options Patch " + optionsSpinnerCallingPatch);
-                    if (optionsSpinnerCallingPatch <= 0) {
-                        Log.w("ReloadSpinnerCallDebug", "Options Executed");
-                        PrefsHelper.editPrefs("lastSearchOptionsSpinner", i, SearchActivity.this);
-                        searchText.setQuery("", true);
-                        searchText.clearFocus();
-                        changeTips();
-                    } else {
-                        if (searchText.getQuery().toString().equals("")) {
-                            changeTips();
-                        }
-                        optionsSpinnerCallingPatch--;
-                    }
+                    updateSearchParameter("lastSearchOptionsSpinner", i, true);
                 }
 
                 @Override
@@ -269,6 +251,34 @@ public class SearchActivity extends AppCompatActivity {
             });
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initSpinners", "Unable to initialize spinners.");
+        }
+    }
+
+    private void updateSearchParameter(final String preference, final int selection,
+                                       final boolean updateTips) {
+        try {
+            if (PrefsHelper.getIntPrefs(preference, this) == selection) {
+                if (updateTips && searchText.getQuery().length() == 0) {
+                    changeTips();
+                }
+                return;
+            }
+
+            PrefsHelper.editPrefs(preference, selection, this);
+            if (updateTips) {
+                changeTips();
+            }
+
+            final String currentSearch = searchText.getQuery().toString().trim();
+            if (currentSearch.isEmpty()) {
+                resetIllegal();
+                cancelSearch();
+            } else if (!startSearch(currentSearch)) {
+                cancelSearch();
+            }
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e,
+                    "updateSearchParameter", "Unable to update search parameters.");
         }
     }
 
@@ -364,6 +374,19 @@ public class SearchActivity extends AppCompatActivity {
     private void clearSearch() {
         resultListAdapter = null;
         resultList.setAdapter(null);
+    }
+
+    private void cancelSearch() {
+        userStopped = true;
+        searchRequestID++;
+        if (searchThread != null) {
+            searchThread.interrupt();
+            searchThread = null;
+        }
+        if (waitDialog != null && waitDialog.isShowing()) {
+            waitDialog.dismiss();
+        }
+        clearSearch();
     }
 
     private void resetIllegal() {
