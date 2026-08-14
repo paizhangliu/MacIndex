@@ -69,13 +69,12 @@ class ExceptionHelper {
                 () -> PrefsHelper.triggerRebirth(thisContext));
     }
 
-    public static void showUpgradeReport(final Context thisContext, final String report) {
+    public static void showUpgradeReport(final Context thisContext, final String report,
+                                         final Runnable confirmedAction) {
         showInformationDialog(thisContext, R.string.upgrade_report_title,
                 R.string.upgrade_report_information, R.string.link_confirm,
                 R.string.upgrade_report_copy_button, R.string.upgrade_report_copy_information,
-                report, () -> {
-                    // Confirmed.
-                });
+                report, confirmedAction);
     }
 
     private static void showInformationDialog(final Context thisContext, final int title,

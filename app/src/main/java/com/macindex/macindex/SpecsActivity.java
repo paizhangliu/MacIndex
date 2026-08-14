@@ -26,23 +26,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpecsActivity extends AppCompatActivity {
 
     private int machineID = -1;
 
-    private int[] categoryStartEnd = {};
+    private String[] navigationUIDs = {};
 
     private int machineIDPosition = -1;
 
     private SpecsHelper specsHelper = null;
 
-    private String[] allComments = null;
-
-    private int commentID = -1;
-
     private String thisName = null;
+
+    private String thisUID = null;
 
     private String thisType = null;
 
@@ -98,20 +97,21 @@ public class SpecsActivity extends AppCompatActivity {
 
         try {
             final Intent intent = getIntent();
-            categoryStartEnd = intent.getIntArrayExtra("thisCategory");
-            machineID = intent.getIntExtra("machineID", -1);
+            navigationUIDs = intent.getStringArrayExtra("navigationUIDs");
+            thisUID = intent.getStringExtra("machineUID");
 
-            if (categoryStartEnd == null || machineID == -1) {
+            if (navigationUIDs == null || thisUID == null) {
                 throw new IllegalArgumentException();
             }
+            machineID = MainActivity.getMachineHelper().getMachineID(thisUID);
 
             // Is position already inherited?
             if (intent.getBooleanExtra("machineIDPositionInherit", false)) {
                 machineIDPosition = intent.getIntExtra("machineIDPosition", -1);
             } else {
                 // Find the current position.
-                for (int i = 0; i < categoryStartEnd.length; i++) {
-                    if (categoryStartEnd[i] == machineID) {
+                for (int i = 0; i < navigationUIDs.length; i++) {
+                    if (navigationUIDs[i].equals(thisUID)) {
                         machineIDPosition = i;
                         break;
                     }
@@ -186,7 +186,7 @@ public class SpecsActivity extends AppCompatActivity {
 
     private void initialize() {
         DebugHelper.log("SpecsInitialize", "Machine ID " + machineID);
-        if (PrefsHelper.getBooleanPrefs("isUseNavButtons", this) && categoryStartEnd.length > 1) {
+        if (PrefsHelper.getBooleanPrefs("isUseNavButtons", this) && navigationUIDs.length > 1) {
             initButtons();
         }
         getSpecs();
@@ -206,6 +206,7 @@ public class SpecsActivity extends AppCompatActivity {
         final MachineHelper helper = MainActivity.getMachineHelper();
         final String[] thisSpecs = helper.getSpecs(machineID);
         thisName = helper.getName(machineID);
+        thisUID = helper.getUID(machineID);
         thisYear = thisSpecs[0];
         thisModel = thisSpecs[1];
         thisId = thisSpecs[2];
@@ -433,7 +434,7 @@ public class SpecsActivity extends AppCompatActivity {
         name.setTextSize(20);
 
         // Check if the star is needed.
-        if (FavouriteActivity.isFavourite(thisName, this)) {
+        if (UserFavouriteHelper.contains(thisUID, this)) {
             name.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_star_24, 0);
         } else {
             name.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
@@ -471,7 +472,7 @@ public class SpecsActivity extends AppCompatActivity {
             // Set a long click listener
             image.setOnLongClickListener(v -> {
                 Intent viewImageIntent = new Intent(SpecsActivity.this, ViewImageActivity.class);
-                viewImageIntent.putExtra("machineID", machineID);
+                viewImageIntent.putExtra("machineUID", thisUID);
                 startActivity(viewImageIntent);
                 return true;
             });
@@ -512,7 +513,8 @@ public class SpecsActivity extends AppCompatActivity {
                 previous.setText(getResources().getString(R.string.first_one));
             } else {
                 previous.setEnabled(true);
-                previous.setText(MainActivity.getMachineHelper().getName(categoryStartEnd[machineIDPosition - 1]));
+                previous.setText(MainActivity.getMachineHelper().getIdentityName(
+                        navigationUIDs[machineIDPosition - 1]));
                 previous.setOnClickListener(v -> {
                     previous.setEnabled(false);
                     navPrev();
@@ -520,13 +522,14 @@ public class SpecsActivity extends AppCompatActivity {
             }
 
             // Next button.
-            if (machineIDPosition == categoryStartEnd.length - 1) {
+            if (machineIDPosition == navigationUIDs.length - 1) {
                 // Last one, disable the next button
                 next.setEnabled(false);
                 next.setText(getResources().getString(R.string.last_one));
             } else {
                 next.setEnabled(true);
-                next.setText(MainActivity.getMachineHelper().getName(categoryStartEnd[machineIDPosition + 1]));
+                next.setText(MainActivity.getMachineHelper().getIdentityName(
+                        navigationUIDs[machineIDPosition + 1]));
                 next.setOnClickListener(v -> {
                     next.setEnabled(false);
                     navNext();
@@ -542,26 +545,9 @@ public class SpecsActivity extends AppCompatActivity {
     /* Comments Functions */
     private void initComment() {
         try {
-            allComments = PrefsHelper.getStringPrefs("userComments", this).split("││");
-            if (allComments.length == 0) {
-                commentID = -1;
-            }
-            for (int i = 0; i < allComments.length; i++) {
-                if (allComments[i].split("│")[0].equals(thisName)) {
-                    commentID = i;
-                    break;
-                }
-                if (i + 1 == allComments.length) {
-                    commentID = -1;
-                }
-            }
             final TextView comment = findViewById(R.id.commentText);
-            if (commentID != -1) {
-                thisComment = allComments[commentID].split("│")[1];
-
-            } else {
-                thisComment = getString(R.string.comment_null);
-            }
+            final String savedComment = UserCommentHelper.getComment(thisUID, this);
+            thisComment = savedComment == null ? getString(R.string.comment_null) : savedComment;
             comment.setText(thisComment);
             comment.setOnClickListener(view -> {
                 initCommentDialog();
@@ -569,15 +555,16 @@ public class SpecsActivity extends AppCompatActivity {
             specsHelper.initCopy(comment, thisComment, "userComment");
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initComment",
-                    "Illegal comment prefs string. Please reset the application.");
+                    "Unable to read comments.");
         }
     }
 
     private void initCommentDialog() {
         final View commentChunk = getLayoutInflater().inflate(R.layout.chunk_edit_comment, null);
         final EditText editComment = commentChunk.findViewById(R.id.editComment);
-        if (commentID != -1) {
-            editComment.setText(allComments[commentID].split("│")[1]);
+        final String savedComment = UserCommentHelper.getComment(thisUID, this);
+        if (savedComment != null) {
+            editComment.setText(savedComment);
         }
 
         final AlertDialog.Builder commentDialog = new AlertDialog.Builder(this);
@@ -597,72 +584,17 @@ public class SpecsActivity extends AppCompatActivity {
         commentDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
             try {
                 final String inputtedString = editComment.getText().toString().trim();
-                // Is "│" included?
-                if (inputtedString.contains("│")) {
-                    Log.w("commentDialog", "Illegal Character Detected.");
-                    Toast.makeText(this, R.string.comment_illegal, Toast.LENGTH_LONG).show();
-                } else if (inputtedString.length() > 500) {
+                if (inputtedString.length() > 500) {
                     Log.w("commentDialog", "Input is too long.");
                     Toast.makeText(this, R.string.comment_length, Toast.LENGTH_LONG).show();
                 } else {
-                    String originalString = PrefsHelper.getStringPrefs("userComments", this);
-                    String realOriginalString = PrefsHelper.getStringPrefs("userComments", this);
-                    // Is available before?
-                    if (commentID != -1) {
-                        // Is input legal?
-                        if (!inputtedString.isEmpty()) {
-                            String[] toConcat = originalString.split(Pattern.quote(thisName + "│" + allComments[commentID].split("│")[1]), -1);
-                            if (toConcat.length != 2) {
-                                Log.e("commentDialog", "Error length is " + toConcat.length);
-                                throw new IllegalStateException();
-                            }
-                            originalString = toConcat[0] + thisName + "│" + inputtedString + toConcat[1];
-                        } else {
-                            // Is this one is the first machine?
-                            if (commentID == 0) {
-                                // Is this one is the only machine?
-                                if (allComments.length == 1) {
-                                    originalString = "";
-                                } else {
-                                    String[] toConcat = originalString.split(Pattern.quote(thisName + "│" + allComments[commentID].split("│")[1] + "││"), -1);
-                                    if (toConcat.length != 2) {
-                                        Log.e("commentDialog", "Error length is " + toConcat.length);
-                                        throw new IllegalStateException();
-                                    }
-                                    originalString = toConcat[1];
-                                }
-                            } else {
-                                String[] toConcat = originalString.split(Pattern.quote("││" + thisName + "│" + allComments[commentID].split("│")[1]), -1);
-                                if (toConcat.length != 2) {
-                                    Log.e("commentDialog", "Error length is " + toConcat.length);
-                                    throw new IllegalStateException();
-                                }
-                                originalString = toConcat[0] + toConcat[1];
-                            }
-                        }
-                    } else {
-                        // Is input legal?
-                        if (!inputtedString.isEmpty()) {
-                            // Is original string not empty?
-                            if (originalString.length() != 0) {
-                                originalString = thisName + "│" + inputtedString + "││" + originalString;
-                            } else {
-                                originalString = originalString.concat(thisName + "│" + inputtedString);
-                            }
-                        }
-                    }
-                    PrefsHelper.editPrefs("userComments", originalString, this);
-                    if (!originalString.equals(realOriginalString)) {
-                        // Changed string, reload needed
-                        PrefsHelper.editPrefs("isCommentsReloadNeeded", true, this);
-                        PrefsHelper.editPrefs("isCompareReloadNeeded", true, this);
-                    }
+                    UserCommentHelper.setComment(thisUID, inputtedString, this);
                     initComment();
                     commentDialogCreated.dismiss();
                 }
             } catch (Exception e) {
                 ExceptionHelper.handleException(this, e, "commentDialog",
-                        "Unable to set positive button. Likely illegal comment prefs string. Please reset the application.");
+                        "Unable to save comment.");
             }
         });
     }
@@ -675,30 +607,17 @@ public class SpecsActivity extends AppCompatActivity {
             if (!isEmptyString()) {
                 final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
                 final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-                final String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", this).split("││");
-                final String[] allFolders = FavouriteActivity.getFolders(this, true);
-                final int[] currentSelections = new int[splitedString.length];
-                for (int i = 1; i < splitedString.length; i++) {
-                    // Is it in this folder?
-                    final String[] splitedFolderContent = splitedString[i].split("│");
-                    boolean isExistsAtHere = false;
-                    for (int j = 1; j < splitedFolderContent.length; j++) {
-                        if (splitedFolderContent[j].equals("[" + thisName + "]")) {
-                            isExistsAtHere = true;
-                            break;
-                        }
-                    }
-
-                    // Set the checkbox
+                final List<UserFavouriteHelper.Folder> folders = UserFavouriteHelper.read(this);
+                final boolean[] currentSelections = new boolean[folders.size()];
+                for (int i = 0; i < folders.size(); i++) {
+                    final boolean isExistsAtHere = folders.get(i).machineUIDs.contains(thisUID);
                     CheckBox thisCheckBox = new CheckBox(this);
-                    thisCheckBox.setText(allFolders[i - 1]);
+                    thisCheckBox.setText(folders.get(i).name);
                     thisCheckBox.setChecked(isExistsAtHere);
-                    // Fix the init bug
-                    currentSelections[i] = isExistsAtHere ? 1 : 0;
+                    currentSelections[i] = isExistsAtHere;
                     int finalI = i;
-                    thisCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-                        currentSelections[finalI] = thisCheckBox.isChecked() ? 1 : 0;
-                    });
+                    thisCheckBox.setOnCheckedChangeListener((compoundButton, b) ->
+                            currentSelections[finalI] = thisCheckBox.isChecked());
                     selectLayout.addView(thisCheckBox);
                 }
 
@@ -709,70 +628,12 @@ public class SpecsActivity extends AppCompatActivity {
                 deleteDialog.setView(selectChunk);
                 deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
                     try {
-                        String newString = "";
-                        for (int j = 1; j < splitedString.length; j++) {
-                            // Is it in this folder?
-                            final String[] splitedFolderContent = splitedString[j].split("│");
-                            boolean isExistsAtHere = false;
-                            for (int i = 1; i < splitedFolderContent.length; i++) {
-                                if (splitedFolderContent[i].equals("[" + thisName + "]")) {
-                                    isExistsAtHere = true;
-                                    break;
-                                }
-                            }
-
-                            // Add or remove
-                            if (currentSelections[j] == 0) {
-                                Log.w("Selection", String.valueOf(currentSelections[j]));
-                                // Is exists at here?
-                                if (isExistsAtHere) {
-                                    Log.w("selectFolder", "Exists, removing.");
-                                    String[] splitedAgain = splitedString[j].split(Pattern.quote("│[" + thisName + "]"), -1);
-                                    if (splitedAgain.length != 2) {
-                                        Log.e("selectFolder", "Error length is " + splitedAgain.length);
-                                        throw new IllegalStateException();
-                                    }
-                                    if (!splitedAgain[1].isEmpty()) {
-                                        // Have something in the trailing.
-                                        splitedAgain[0] = splitedAgain[0].concat(splitedAgain[1]);
-                                    }
-                                    newString = newString.concat("││" + splitedAgain[0]);
-                                } else {
-                                    Log.w("selectFolder", "Does not exist, keeping.");
-                                    newString = newString.concat("││" + splitedString[j]);
-                                }
-                            } else {
-                                Log.w("Selection", String.valueOf(currentSelections[j]));
-                                // Is exists at here?
-                                if (isExistsAtHere) {
-                                    Log.w("selectFolder", "Exists, keeping.");
-                                    newString = newString.concat("││" + splitedString[j]);
-                                } else {
-                                    Log.w("selectFolder", "Does not exist, adding.");
-                                    String folderName = splitedFolderContent[0];
-                                    String[] splitedAgain = splitedString[j].split(Pattern.quote(folderName), -1);
-                                    if (splitedAgain.length != 2) {
-                                        Log.e("selectFolder", "Error length is " + splitedAgain.length);
-                                        throw new IllegalStateException();
-                                    }
-                                    if (splitedAgain[1].isEmpty()) {
-                                        // Empty folder.
-                                        splitedAgain[0] = "[" + thisName + "]";
-                                    } else {
-                                        // Not Empty folder.
-                                        splitedAgain[0] = "[" + thisName + "]│" + splitedAgain[1].substring(1);
-                                    }
-                                    newString = newString.concat("││" + folderName + "│" + splitedAgain[0]);
-                                }
-                            }
-                        }
-                        PrefsHelper.editPrefs("userFavourites", newString, this);
-                        PrefsHelper.editPrefs("isFavouritesReloadNeeded", true, this);
-                        PrefsHelper.editPrefs("isCompareReloadNeeded", true, this);
+                        UserFavouriteHelper.setMembership(
+                                thisUID, currentSelections, this);
                         reloadName();
                     } catch (Exception e) {
                         ExceptionHelper.handleException(this, e, "selectFolder",
-                                "Illegal Favourites String. Please reset the application.");
+                                "Unable to save favourites.");
                     }
                 });
                 deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -782,13 +643,13 @@ public class SpecsActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "deleteFolder",
-                    "Illegal Favourites String. Please reset the application.");
+                    "Unable to read favourites.");
         }
     }
 
     // Modified from the original one from the FavouriteActivity
     private boolean isEmptyString() {
-        if (PrefsHelper.getStringPrefs("userFavourites", this).isEmpty()) {
+        if (UserFavouriteHelper.read(this).isEmpty()) {
             createFolder();
             return true;
         } else {
@@ -819,15 +680,17 @@ public class SpecsActivity extends AppCompatActivity {
                 final String inputtedName = folderName.getText().toString().trim();
                 // Check if the input is legal
                 if (FavouriteActivity.validateFolderName(inputtedName, new String[0], this)) {
-                    // Finally create the new folder.
-                    PrefsHelper.editPrefs("userFavourites", "││{"
-                            + inputtedName + "}" + PrefsHelper.getStringPrefs("userFavourites", this), this);
+                    final List<UserFavouriteHelper.Folder> folders =
+                            UserFavouriteHelper.read(this);
+                    folders.add(0, new UserFavouriteHelper.Folder(
+                            inputtedName, new ArrayList<>()));
+                    UserFavouriteHelper.write(folders, this);
                     newFolderDialogCreated.dismiss();
                     selectFolder();
                 }
             } catch (Exception e) {
                 ExceptionHelper.handleException(this, e, "newFolderDialog",
-                        "Illegal Favourites String. Please reset the application.");
+                        "Unable to save favourites.");
             }
         });
     }
@@ -835,18 +698,18 @@ public class SpecsActivity extends AppCompatActivity {
     /* Compare Functions */
     private void addToCompare() {
         try {
-            CompareActivity.toggleCompare(thisName, this);
+            CompareActivity.toggleCompare(thisUID, this);
             initCompareCheckBox();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "addToCompare",
-                    "Illegal Compare String. Please reset the application.");
+                    "Unable to save comparison list.");
         }
     }
 
     private void initCompareCheckBox() {
         try {
             final java.util.List<String> compareNames = CompareActivity.getCompareList(this);
-            final boolean containsCurrentMachine = compareNames.contains(thisName);
+            final boolean containsCurrentMachine = compareNames.contains(thisUID);
             compareItem.setChecked(containsCurrentMachine);
             compareItem.setEnabled(compareNames.size() < 10 || containsCurrentMachine);
             if (compareNames.size() == 10) {
@@ -856,7 +719,7 @@ public class SpecsActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initCompareCheckBox",
-                    "Illegal Compare String. Please reset the application.");
+                    "Unable to read comparison list.");
         }
     }
 
@@ -866,7 +729,7 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void generateShareLink() {
-        specsHelper.generateShareLink(thisName);
+        specsHelper.generateShareLink(thisUID);
     }
 
     private String[] getSpecification() {
@@ -886,12 +749,12 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        machineID = categoryStartEnd[machineIDPosition];
+        thisUID = navigationUIDs[machineIDPosition];
         final Intent newMachine = new Intent(SpecsActivity.this, SpecsActivity.class);
-        newMachine.putExtra("machineID", machineID);
+        newMachine.putExtra("machineUID", thisUID);
         newMachine.putExtra("machineIDPositionInherit", true);
         newMachine.putExtra("machineIDPosition", machineIDPosition);
-        newMachine.putExtra("thisCategory", categoryStartEnd);
+        newMachine.putExtra("navigationUIDs", navigationUIDs);
         startActivity(newMachine);
         finish();
     }

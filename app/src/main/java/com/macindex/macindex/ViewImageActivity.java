@@ -29,10 +29,11 @@ public class ViewImageActivity extends AppCompatActivity {
 
         try {
             final Intent intent = getIntent();
-            final int machineID = intent.getIntExtra("machineID", -1);
-            if (machineID == -1) {
+            final String machineUID = intent.getStringExtra("machineUID");
+            if (machineUID == null) {
                 throw new IllegalArgumentException();
             }
+            final int machineID = MainActivity.getMachineHelper().getMachineID(machineUID);
             init(machineID);
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "ViewImageActivity", "Illegal Machine ID.");

@@ -8,9 +8,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /*
  * MacIndex MachineHelper.
@@ -29,7 +31,7 @@ import java.util.Locale;
  * Individual getter and lazy cache removed since Ver. 4.9
  * Picture decoupled from DB since Ver. 4.9
  */
-class MachineHelper {
+class MachineHelper implements MachineIdentityResolver {
 
     /*
      * Updating categories
@@ -105,6 +107,16 @@ class MachineHelper {
 
     private final int[] machineDatabaseIndex;
 
+    private final String[] machineUIDIndex;
+
+    private final Map<String, Integer> machineIDByUID;
+
+    private final Map<String, String> legacyUIDByName;
+
+    private final Map<String, String> replacementUIDByUID;
+
+    private final Map<String, String> retiredNameByUID;
+
     private final String[] machineNameIndex;
 
     private final String[] machineSearchNameIndex;
@@ -149,7 +161,7 @@ class MachineHelper {
         database = thisDatabase;
 
         try (Cursor directoryCursor = database.query("machine_directory",
-                new String[]{"machine_id", "category_id", "database_id", "name", "sname",
+                new String[]{"machine_id", "uid", "category_id", "database_id", "name", "sname",
                         "syear", "stype", "sprocessor", "smodel", "sident", "sgestalt",
                         "sorder", "semc", "picture_asset", "processor_format",
                         "graphics_format"},
@@ -161,6 +173,8 @@ class MachineHelper {
             final int[] categoryIndividualCount = new int[CATEGORIES_LIST.length];
             machineCategoryIndex = new int[totalMachine];
             machineDatabaseIndex = new int[totalMachine];
+            machineUIDIndex = new String[totalMachine];
+            machineIDByUID = new HashMap<>();
             machineNameIndex = new String[totalMachine];
             machineSearchNameIndex = new String[totalMachine];
             machineYearIndex = new String[totalMachine];
@@ -191,6 +205,13 @@ class MachineHelper {
                 categoryIndividualCount[categoryID]++;
                 machineCategoryIndex[machineID] = categoryID;
                 machineDatabaseIndex[machineID] = databaseID;
+                machineUIDIndex[machineID] = directoryCursor.getString(
+                        directoryCursor.getColumnIndexOrThrow("uid"));
+                if (!UserRecordJsonHelper.isMachineUID(machineUIDIndex[machineID])
+                        || machineIDByUID.put(machineUIDIndex[machineID], machineID) != null) {
+                    throw new IllegalStateException("Illegal machine UID "
+                            + machineUIDIndex[machineID]);
+                }
                 machineNameIndex[machineID] = directoryCursor.getString(
                         directoryCursor.getColumnIndexOrThrow("name"));
                 machineSearchNameIndex[machineID] = directoryCursor.getString(
@@ -223,6 +244,42 @@ class MachineHelper {
             }
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load the machine directory", e);
+        }
+
+        legacyUIDByName = new HashMap<>();
+        replacementUIDByUID = new HashMap<>();
+        retiredNameByUID = new HashMap<>();
+        try (Cursor legacyCursor = database.query("machine_legacy_names",
+                new String[]{"name", "uid"}, null, null, null, null, null);
+             Cursor historyCursor = database.query("machine_uid_history",
+                     new String[]{"uid", "last_name", "replacement_uid"},
+                     null, null, null, null, null)) {
+            while (legacyCursor.moveToNext()) {
+                final String name = legacyCursor.getString(0);
+                final String uid = legacyCursor.getString(1);
+                if (name == null || !name.equals(name.trim()) || name.isEmpty()
+                        || !machineIDByUID.containsKey(uid)
+                        || legacyUIDByName.put(name.toLowerCase(Locale.ROOT), uid) != null) {
+                    throw new IllegalStateException("Illegal legacy machine identity " + name);
+                }
+            }
+            while (historyCursor.moveToNext()) {
+                final String uid = historyCursor.getString(0);
+                final String name = historyCursor.getString(1);
+                final String replacementUID = historyCursor.getString(2);
+                if (!UserRecordJsonHelper.isMachineUID(uid) || name == null
+                        || !name.equals(name.trim()) || name.isEmpty()
+                        || machineIDByUID.containsKey(uid)
+                        || retiredNameByUID.put(uid, name) != null
+                        || (replacementUID != null && !machineIDByUID.containsKey(replacementUID))) {
+                    throw new IllegalStateException("Illegal retired machine identity " + uid);
+                }
+                if (replacementUID != null) {
+                    replacementUIDByUID.put(uid, replacementUID);
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load machine identities", e);
         }
 
         mainFilters = new String[3][][];
@@ -364,6 +421,50 @@ class MachineHelper {
     // Get total machines. For usage of random access.
     public int getMachineCount() {
         return totalMachine;
+    }
+
+    public String getUID(final int thisMachine) {
+        validateMachineID(thisMachine);
+        return machineUIDIndex[thisMachine];
+    }
+
+    public int getMachineID(final String thisUID) {
+        final String resolvedUID = resolveUID(thisUID);
+        final Integer machineID = resolvedUID == null ? null : machineIDByUID.get(resolvedUID);
+        if (machineID == null) {
+            throw new IllegalArgumentException("Unknown machine UID " + thisUID);
+        }
+        return machineID;
+    }
+
+    @Override
+    public String resolveUID(final String thisUID) {
+        if (thisUID == null) {
+            return null;
+        }
+        final String normalizedUID = thisUID.trim().toUpperCase(Locale.ROOT);
+        if (machineIDByUID.containsKey(normalizedUID)) {
+            return normalizedUID;
+        }
+        return replacementUIDByUID.get(normalizedUID);
+    }
+
+    @Override
+    public String resolveLegacyName(final String thisName) {
+        if (thisName == null) {
+            return null;
+        }
+        return legacyUIDByName.get(thisName.trim().toLowerCase(Locale.ROOT));
+    }
+
+    @Override
+    public String getIdentityName(final String thisUID) {
+        final String resolvedUID = resolveUID(thisUID);
+        if (resolvedUID != null) {
+            return getName(machineIDByUID.get(resolvedUID));
+        }
+        return retiredNameByUID.get(thisUID == null ? null
+                : thisUID.trim().toUpperCase(Locale.ROOT));
     }
 
     // Get generated positions for the MainActivity.

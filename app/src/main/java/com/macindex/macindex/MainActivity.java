@@ -891,62 +891,44 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            final String machineName = ShareLinkHelper.decode(deepLink);
-            DebugHelper.log("DeepLinkDecode", "Got machine " + machineName);
-            int[] decodedID = decodeStartedParam(machineName);
-            if (decodedID.length != 1) {
-                Log.w("DeepLinkDecode", "Unable to decode the requested link.");
-                Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
-            } else {
-                // Decoded successfully, call intent parser
-                SpecsIntentHelper.sendIntent(decodedID, decodedID[0], this);
-            }
+            final String machineUID = ShareLinkHelper.decode(deepLink);
+            DebugHelper.log("DeepLinkDecode", "Got machine " + machineUID);
+            final int machineID = machineHelper.getMachineID(machineUID);
+            SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
         } catch (Exception e) {
             Log.w("DeepLinkDecode", "Unable to process the link due to illegal parameter.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
         }
     }
 
-    private void openComparison(final String[] machineNames) {
-        final int[] leftID;
-        final int[] rightID;
-        if (machineNames == null || machineNames.length != 2
-                || machineNames[0] == null || machineNames[1] == null) {
+    private void openComparison(final String[] machineUIDs) {
+        if (machineUIDs == null || machineUIDs.length != 2
+                || machineUIDs[0] == null || machineUIDs[1] == null) {
             Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             return;
         }
-        leftID = decodeStartedParam(machineNames[0]);
-        rightID = decodeStartedParam(machineNames[1]);
-        if (machineNames[0].equals(machineNames[1])
-                || leftID.length != 1 || rightID.length != 1
-                || leftID[0] == rightID[0]) {
+        final int leftID;
+        final int rightID;
+        try {
+            leftID = machineHelper.getMachineID(machineUIDs[0]);
+            rightID = machineHelper.getMachineID(machineUIDs[1]);
+        } catch (Exception e) {
             Log.w("DeepLinkDecode", "Unable to decode the requested comparison.");
+            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (leftID == rightID) {
+            Log.w("DeepLinkDecode", "Unable to compare one machine with itself.");
             Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
             return;
         }
 
         // Open shared comparison without editing user's compare list.
         final Intent compareIntent = new Intent(this, CompareActivity.class);
-        compareIntent.putExtra("compareLeft", machineNames[0]);
-        compareIntent.putExtra("compareRight", machineNames[1]);
+        compareIntent.putExtra("compareLeft", machineUIDs[0]);
+        compareIntent.putExtra("compareRight", machineUIDs[1]);
         startActivity(compareIntent);
-    }
-
-    // Return an ID array with matched name. Input: suspected machine name.
-    private int[] decodeStartedParam(final String param) {
-        try {
-            // Param must not be an empty string.
-            if (param == null || param.isEmpty()) {
-                throw new IllegalArgumentException();
-            }
-            return MainActivity.getMachineHelper().searchHelper("name", param.trim(),
-                    "all", true, false);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "MachineParamDecoder",
-                    "Unable to decode the parameter: " + String.valueOf(param));
-            return new int[0];
-        }
     }
 
     public static MachineHelper getMachineHelper() {

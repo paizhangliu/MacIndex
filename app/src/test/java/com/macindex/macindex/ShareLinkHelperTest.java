@@ -9,32 +9,38 @@ import org.junit.Test;
 public class ShareLinkHelperTest {
 
     @Test
-    public void newLinksRoundTripNamesWithPunctuation() {
-        final String name = "PowerBook G4 (15-inch/1.67 GHz)";
-        final String link = ShareLinkHelper.create(name);
+    public void newLinksRoundTripMachineUIDs() {
+        final String machineUID = "MI000123";
+        final String link = ShareLinkHelper.create(machineUID);
         assertTrue(link.startsWith("https://macindex.paizhang.info/share?code="));
-        assertEquals(name, ShareLinkHelper.decode(link));
+        assertEquals(machineUID, ShareLinkHelper.decode(link));
     }
 
     @Test
     public void comparisonLinksRoundTripBothNames() {
-        final String leftName = "Macintosh LC 520";
-        final String rightName = "PowerBook G4 (15-inch/1.67 GHz)";
-        final String link = ShareLinkHelper.createComparison(leftName, rightName);
+        final String leftUID = "MI000001";
+        final String rightUID = "MI000439";
+        final String link = ShareLinkHelper.createComparison(leftUID, rightUID);
         assertTrue(link.startsWith("https://macindex.paizhang.info/share?compare="));
         assertTrue(ShareLinkHelper.isComparison(link));
-        assertArrayEquals(new String[]{leftName, rightName},
+        assertArrayEquals(new String[]{leftUID, rightUID},
                 ShareLinkHelper.decodeComparison(link));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void incompleteComparisonLinksAreRejected() {
         ShareLinkHelper.decodeComparison(
-                "https://macindex.paizhang.info/share?compare=Macintosh+LC+520");
+                "https://macindex.paizhang.info/share?compare=MI000001");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void linksWithoutCodeAreRejected() {
         ShareLinkHelper.decode("https://macindex.paizhang.info/share");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void legacyNameLinksAreRejectedWithoutSpecialHandling() {
+        ShareLinkHelper.decode(
+                "https://macindex.paizhang.info/share?code=Macintosh+LC+520");
     }
 }

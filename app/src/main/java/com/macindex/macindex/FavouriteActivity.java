@@ -1,7 +1,7 @@
 package com.macindex.macindex;
 
-import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
@@ -74,17 +74,7 @@ public class FavouriteActivity extends AppCompatActivity {
         waitDialog.setMessage(getString(R.string.loading_favourites));
         waitDialog.setCancelable(false);
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean("loadComplete")) {
-            // Restore the saved ID list
-            final int loadPositionsCount = savedInstanceState.getInt("loadPositionsCount");
-            loadPositions = new int[loadPositionsCount][];
-            for (int i = 0; i < loadPositionsCount; i++) {
-                loadPositions[i] = savedInstanceState.getIntArray("loadPositions" + i);
-            }
-            initFavourites(false);
-        } else {
-            initFavourites(true);
-        }
+        initFavourites(true);
     }
 
     @Override
@@ -94,23 +84,6 @@ public class FavouriteActivity extends AppCompatActivity {
         // If reload is needed..
         if (PrefsHelper.getBooleanPrefs("isFavouritesReloadNeeded", this)) {
             initFavourites(true);
-        }
-    }
-
-    // Adapted from MainActivity
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // Is still loading?
-        if (waitDialog != null && !waitDialog.isShowing() && loadPositions != null) {
-            // Save the currently received ID list
-            outState.putBoolean("loadComplete", true);
-            outState.putInt("loadPositionsCount", loadPositions.length);
-            for (int i = 0; i < loadPositions.length; i++) {
-                outState.putIntArray("loadPositions" + i, loadPositions[i]);
-            }
-        } else {
-            outState.putBoolean("loadComplete", false);
         }
     }
 
@@ -155,7 +128,7 @@ public class FavouriteActivity extends AppCompatActivity {
             clearFoldersDialog.setTitle(R.string.submenu_favourite_clear);
             clearFoldersDialog.setMessage(R.string.favourites_clear_warning);
             clearFoldersDialog.setPositiveButton(R.string.action_clear, (dialogInterface, i) -> {
-                PrefsHelper.clearPrefs("userFavourites", this);
+                UserFavouriteHelper.clear(this);
                 initFavourites(true);
             });
             clearFoldersDialog.setNegativeButton(R.string.link_cancel, ((dialogInterface, i) -> {
@@ -201,8 +174,8 @@ public class FavouriteActivity extends AppCompatActivity {
             final LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
             layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
             // Get Folder Names
-            final String[] allFolders = getFolders(this, false);
-            final String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", FavouriteActivity.this).split("││");
+            final List<UserFavouriteHelper.Folder> folders = UserFavouriteHelper.read(this);
+            final String[] allFolders = getFolders(folders, false);
 
             final LinearLayout emptyLayout = findViewById(R.id.emptyLayout);
             final TextView emptyText = findViewById(R.id.emptyText);
@@ -233,16 +206,10 @@ public class FavouriteActivity extends AppCompatActivity {
                             // Get Load Positions
                             positionsForRequest = new int[allFolders.length][];
                             for (int i = 0; i < allFolders.length; i++) {
-                                final String[] thisFolder = splitedString[i + 1].split("│");
                                 final List<Integer> validMachineIDs = new ArrayList<>();
-                                for (int j = 0; j < thisFolder.length - 1; j++) {
-                                    int[] thisID = MainActivity.getMachineHelper().searchHelper("name", thisFolder[j + 1].substring(1, thisFolder[j + 1].length() - 1),
-                                            "all", true, false);
-                                    if (thisID.length != 1) {
-                                        Log.e("FavouritesSearchThread", "Error occurred on search string " + thisFolder[j + 1]);
-                                        throw new IllegalStateException("Invalid favourite machine");
-                                    }
-                                    validMachineIDs.add(thisID[0]);
+                                for (String machineUID : folders.get(i).machineUIDs) {
+                                    validMachineIDs.add(MainActivity.getMachineHelper()
+                                            .getMachineID(machineUID));
                                 }
                                 positionsForRequest[i] = new int[validMachineIDs.size()];
                                 for (int j = 0; j < validMachineIDs.size(); j++) {
@@ -348,7 +315,7 @@ public class FavouriteActivity extends AppCompatActivity {
                                                             }
                                                         } catch (Exception e) {
                                                             ExceptionHelper.handleException(FavouriteActivity.this, e,
-                                                                    "initFavourites", "Illegal Favourites String. Please reset the application.");
+                                                                    "initFavourites", "Unable to display favourites.");
                                                         }
                                                     }
                                                 });
@@ -371,7 +338,7 @@ public class FavouriteActivity extends AppCompatActivity {
                                     }
                                 } catch (Exception e) {
                                     ExceptionHelper.handleException(FavouriteActivity.this, e,
-                                            "initFavourites", "Illegal Favourites String. Please reset the application.");
+                                            "initFavourites", "Unable to display favourites.");
                                 }
                             }
                         });
@@ -394,38 +361,35 @@ public class FavouriteActivity extends AppCompatActivity {
             favouritesThread.start();
         } catch (final Exception e) {
             ExceptionHelper.handleException(FavouriteActivity.this, e,
-                    "initFavourites", "Illegal Favourites String. Please reset the application.");
+                    "initFavourites", "Unable to read favourites.");
         }
     }
 
     public static String[] getFolders(final Context thisContext, final Boolean isTailing) {
         try {
-            String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", thisContext).split("││");
-            String[] toReturn = new String[splitedString.length - 1];
-            for (int i = 1; i < splitedString.length; i++) {
-                if (splitedString[i].isEmpty()) {
-                    Log.e("getFolders", "Invalid non-trailing empty string");
-                    throw new IllegalStateException();
-                }
-                String[] tempSplit = splitedString[i].split("│");
-                toReturn[i - 1] = tempSplit[0].substring(1, tempSplit[0].length() - 1) + (isTailing ? (" (" + (tempSplit.length - 1) + ")") : "");
-            }
-            return toReturn;
+            return getFolders(UserFavouriteHelper.read(thisContext), isTailing);
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e, "getFolders",
-                    "Illegal Favourites String. Please reset the application.");
+                    "Unable to read favourite folders.");
             return new String[0];
         }
+    }
+
+    private static String[] getFolders(final List<UserFavouriteHelper.Folder> folders,
+                                       final boolean isTailing) {
+        final String[] folderNames = new String[folders.size()];
+        for (int i = 0; i < folders.size(); i++) {
+            final UserFavouriteHelper.Folder folder = folders.get(i);
+            folderNames[i] = folder.name + (isTailing
+                    ? " (" + folder.machineUIDs.size() + ")" : "");
+        }
+        return folderNames;
     }
 
     public static boolean validateFolderName(final String inputtedName, final String[] currentStrings, final Context thisContext) {
         if (inputtedName.isEmpty()) {
             Log.w("validateFolderName", "Empty input.");
             Toast.makeText(thisContext, R.string.favourites_error_empty, Toast.LENGTH_LONG).show();
-            return false;
-        } else if (inputtedName.contains("│")) {
-            Log.w("validateFolderName", "Illegal Character Detected.");
-            Toast.makeText(thisContext, R.string.favourites_error_illegal, Toast.LENGTH_LONG).show();
             return false;
         } else if (inputtedName.length() > 30 || inputtedName.contains("\n")) {
             Log.w("validateFolderName", "Input is too long.");
@@ -442,24 +406,6 @@ public class FavouriteActivity extends AppCompatActivity {
             }
         }
         return true;
-    }
-
-    public static boolean isFavourite(final String machineName, final Context thisContext) {
-        try {
-            if (machineName == null) {
-                throw new IllegalArgumentException();
-            }
-            return isFavourite(machineName,
-                    PrefsHelper.getStringPrefs("userFavourites", thisContext));
-        } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e, "isFavourite",
-                    "Illegal Favourites String. Please reset the application.");
-            return false;
-        }
-    }
-
-    static boolean isFavourite(final String machineName, final String userFavourites) {
-        return userFavourites.contains("[" + machineName + "]");
     }
 
     private void createFolder() {
@@ -495,15 +441,17 @@ public class FavouriteActivity extends AppCompatActivity {
                     final String inputtedName = folderName.getText().toString().trim();
                     // Check if the input is legal
                     if (validateFolderName(inputtedName, currentStrings, this)) {
-                        // Finally create the new folder.
-                        PrefsHelper.editPrefs("userFavourites", "││{"
-                                + inputtedName + "}" + PrefsHelper.getStringPrefs("userFavourites", this), this);
+                        final List<UserFavouriteHelper.Folder> folders =
+                                UserFavouriteHelper.read(this);
+                        folders.add(0, new UserFavouriteHelper.Folder(
+                                inputtedName, new ArrayList<>()));
+                        UserFavouriteHelper.write(folders, this);
                         newFolderDialogCreated.dismiss();
                         initFavourites(true);
                     }
                 } catch (Exception e) {
                     ExceptionHelper.handleException(FavouriteActivity.this, e,
-                            "newFolderDialog", "Illegal Favourites String. Please reset the application.");
+                            "newFolderDialog", "Unable to save favourite folder.");
                 }
             });
         }
@@ -533,19 +481,18 @@ public class FavouriteActivity extends AppCompatActivity {
             deleteDialog.setView(selectChunk);
             deleteDialog.setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 try {
-                    // Delete the folders.
-                    String[] splitedString = PrefsHelper.getStringPrefs("userFavourites", this).split("││");
-                    String newString = "";
-                    for (int j = 1; j < splitedString.length; j++) {
-                        if (currentSelections[j - 1] == 0) {
-                            newString = newString.concat("││" + splitedString[j]);
+                    final List<UserFavouriteHelper.Folder> folders =
+                            UserFavouriteHelper.read(this);
+                    for (int j = currentSelections.length - 1; j >= 0; j--) {
+                        if (currentSelections[j] != 0) {
+                            folders.remove(j);
                         }
                     }
-                    PrefsHelper.editPrefs("userFavourites", newString, this);
+                    UserFavouriteHelper.write(folders, this);
                     initFavourites(true);
                 } catch (Exception e) {
                     ExceptionHelper.handleException(this, e, "deleteFolderConfirm",
-                            "Illegal Favourites String. Please reset the application.");
+                            "Unable to delete favourite folder.");
                 }
             });
             deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
@@ -554,7 +501,7 @@ public class FavouriteActivity extends AppCompatActivity {
             deleteDialog.show();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "deleteFolder",
-                    "Illegal Favourites String. Please reset the application.");
+                    "Unable to read favourite folders.");
         }
     }
 
@@ -605,16 +552,17 @@ public class FavouriteActivity extends AppCompatActivity {
                                     final String inputtedName = folderName.getText().toString().trim();
                                     // Check if the input is legal
                                     if (validateFolderName(inputtedName, allFolders, this)) {
-                                        // Rename the folder.
-                                        PrefsHelper.editPrefs("userFavourites",
-                                                PrefsHelper.getStringPrefs("userFavourites", this)
-                                                        .replace("{" + allFolders[folderOptions.getCheckedRadioButtonId()] + "}", "{" + inputtedName + "}"), this);
+                                        final List<UserFavouriteHelper.Folder> folders =
+                                                UserFavouriteHelper.read(this);
+                                        folders.get(folderOptions.getCheckedRadioButtonId()).name =
+                                                inputtedName;
+                                        UserFavouriteHelper.write(folders, this);
                                         initFavourites(true);
                                         newFolderDialogCreated.dismiss();
                                     }
                                 } catch (Exception e) {
                                     ExceptionHelper.handleException(FavouriteActivity.this, e,
-                                            "newFolderDialog_Rename", "Illegal Favourites String. Please reset the application.");
+                                            "newFolderDialog_Rename", "Unable to rename favourite folder.");
                                 }
                             });
                         } catch (Exception e) {
@@ -628,7 +576,7 @@ public class FavouriteActivity extends AppCompatActivity {
             renameDialog.show();
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "renameFolder",
-                    "Illegal Favourites String. Please reset the application.");
+                    "Unable to read favourite folders.");
         }
     }
 

@@ -3,13 +3,11 @@ package com.macindex.macindex;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * MacIndex User Record Upgrade Helper
- * Audits the original SharedPreferences formats against the current database.
+ * Imports the original SharedPreferences formats and audits current JSON records.
  */
 class UserRecordUpgradeHelper {
 
@@ -23,162 +21,227 @@ class UserRecordUpgradeHelper {
         }
     }
 
-    static class CompareUpgradeResult {
-        final String compares;
-        final String left;
-        final String right;
-        final List<String> removed;
-
-        CompareUpgradeResult(final String upgradedCompares, final String upgradedLeft,
-                             final String upgradedRight, final List<String> removedValues) {
-            compares = upgradedCompares;
-            left = upgradedLeft;
-            right = upgradedRight;
-            removed = removedValues;
+    static UpgradeResult upgradeComments(final String raw,
+                                         final MachineIdentityResolver machineHelper) {
+        final List<UserCommentHelper.Comment> comments;
+        final List<String> removed = new ArrayList<>();
+        if (raw == null || raw.isEmpty()) {
+            return new UpgradeResult(UserCommentHelper.EMPTY_JSON, removed);
         }
+        if (raw.trim().startsWith("{")) {
+            try {
+                comments = UserCommentHelper.parse(raw);
+            } catch (Exception e) {
+                removed.add(raw);
+                return new UpgradeResult(UserCommentHelper.EMPTY_JSON, removed);
+            }
+        } else {
+            comments = importLegacyComments(raw, machineHelper, removed);
+        }
+
+        final List<UserCommentHelper.Comment> upgraded = new ArrayList<>();
+        final Set<String> addedUIDs = new HashSet<>();
+        for (UserCommentHelper.Comment comment : comments) {
+            final String resolvedUID = machineHelper.resolveUID(comment.machineUID);
+            if (resolvedUID == null || !addedUIDs.add(resolvedUID)) {
+                removed.add(getIdentityName(comment.machineUID, machineHelper)
+                        + "│" + comment.text);
+                continue;
+            }
+            upgraded.add(new UserCommentHelper.Comment(resolvedUID, comment.text));
+        }
+        return new UpgradeResult(UserCommentHelper.serialize(upgraded), removed);
     }
 
-    static UpgradeResult upgradeComments(final String raw, final Map<String, String> validNames) {
-        final List<String> upgraded = new ArrayList<>();
+    static UpgradeResult upgradeFavourites(final String raw,
+                                           final MachineIdentityResolver machineHelper) {
+        final List<UserFavouriteHelper.Folder> folders;
         final List<String> removed = new ArrayList<>();
-        final Set<String> addedNames = new HashSet<>();
         if (raw == null || raw.isEmpty()) {
-            return new UpgradeResult("", removed);
+            return new UpgradeResult(UserFavouriteHelper.EMPTY_JSON, removed);
+        }
+        if (raw.trim().startsWith("{")) {
+            try {
+                folders = UserFavouriteHelper.parse(raw);
+            } catch (Exception e) {
+                removed.add(raw);
+                return new UpgradeResult(UserFavouriteHelper.EMPTY_JSON, removed);
+            }
+        } else {
+            folders = importLegacyFavourites(raw, machineHelper, removed);
         }
 
+        final List<UserFavouriteHelper.Folder> upgraded = new ArrayList<>();
+        for (UserFavouriteHelper.Folder folder : folders) {
+            final List<String> machineUIDs = new ArrayList<>();
+            final Set<String> addedUIDs = new HashSet<>();
+            for (String machineUID : folder.machineUIDs) {
+                final String resolvedUID = machineHelper.resolveUID(machineUID);
+                if (resolvedUID == null || !addedUIDs.add(resolvedUID)) {
+                    removed.add("{" + folder.name + "}│["
+                            + getIdentityName(machineUID, machineHelper) + "]");
+                    continue;
+                }
+                machineUIDs.add(resolvedUID);
+            }
+            upgraded.add(new UserFavouriteHelper.Folder(folder.name, machineUIDs));
+        }
+        return new UpgradeResult(UserFavouriteHelper.serialize(upgraded), removed);
+    }
+
+    static UpgradeResult upgradeCompares(final String rawJSON, final String rawList,
+                                         final String rawLeft, final String rawRight,
+                                         final MachineIdentityResolver machineHelper) {
+        final UserCompareHelper.State state;
+        final List<String> removed = new ArrayList<>();
+        if (rawJSON != null && !rawJSON.isEmpty()) {
+            try {
+                state = UserCompareHelper.parse(rawJSON);
+            } catch (Exception e) {
+                removed.add(rawJSON);
+                return new UpgradeResult(UserCompareHelper.EMPTY_JSON, removed);
+            }
+        } else {
+            state = importLegacyCompares(rawList, rawLeft, rawRight, machineHelper, removed);
+        }
+
+        final List<String> upgradedUIDs = new ArrayList<>();
+        final Set<String> addedUIDs = new HashSet<>();
+        for (String machineUID : state.machineUIDs) {
+            final String resolvedUID = machineHelper.resolveUID(machineUID);
+            if (resolvedUID == null || !addedUIDs.add(resolvedUID)
+                    || upgradedUIDs.size() >= 10) {
+                removed.add("[" + getIdentityName(machineUID, machineHelper) + "]");
+                continue;
+            }
+            upgradedUIDs.add(resolvedUID);
+        }
+        final String leftUID = machineHelper.resolveUID(state.leftUID);
+        final String rightUID = machineHelper.resolveUID(state.rightUID);
+        final UserCompareHelper.State upgraded = new UserCompareHelper.State(
+                upgradedUIDs, leftUID == null ? "" : leftUID,
+                rightUID == null ? "" : rightUID);
+        if (upgraded.leftUID.equals(upgraded.rightUID)
+                || !upgraded.machineUIDs.contains(upgraded.leftUID)
+                || !upgraded.machineUIDs.contains(upgraded.rightUID)) {
+            if (!state.leftUID.isEmpty() || !state.rightUID.isEmpty()) {
+                removed.add("[" + getIdentityName(state.leftUID, machineHelper)
+                        + "]│[" + getIdentityName(state.rightUID, machineHelper) + "]");
+            }
+            UserCompareHelper.clearSelection(upgraded);
+        }
+        return new UpgradeResult(UserCompareHelper.serialize(upgraded), removed);
+    }
+
+    private static List<UserCommentHelper.Comment> importLegacyComments(
+            final String raw, final MachineIdentityResolver machineHelper,
+            final List<String> removed) {
+        final List<UserCommentHelper.Comment> comments = new ArrayList<>();
+        final Set<String> addedUIDs = new HashSet<>();
         for (String entry : raw.split("││", -1)) {
             final String[] parts = entry.split("│", -1);
             final String comment = parts.length == 2 ? parts[1].trim() : "";
-            if (parts.length != 2 || comment.isEmpty() || comment.length() > 500) {
+            final String machineUID = parts.length == 2
+                    ? machineHelper.resolveLegacyName(parts[0]) : null;
+            if (machineUID == null || comment.isEmpty() || comment.length() > 500
+                    || !addedUIDs.add(machineUID)) {
                 removed.add(entry);
                 continue;
             }
-            final String machineName = resolveName(parts[0], validNames);
-            if (machineName == null || !addedNames.add(machineName)) {
-                removed.add(entry);
-                continue;
-            }
-            upgraded.add(machineName + "│" + comment);
+            comments.add(new UserCommentHelper.Comment(machineUID, comment));
         }
-        return new UpgradeResult(join(upgraded, "││"), removed);
+        return comments;
     }
 
-    static UpgradeResult upgradeFavourites(final String raw, final Map<String, String> validNames) {
-        final StringBuilder upgraded = new StringBuilder();
-        final List<String> removed = new ArrayList<>();
+    private static List<UserFavouriteHelper.Folder> importLegacyFavourites(
+            final String raw, final MachineIdentityResolver machineHelper,
+            final List<String> removed) {
+        final List<UserFavouriteHelper.Folder> folders = new ArrayList<>();
         final Set<String> addedFolders = new HashSet<>();
-        if (raw == null || raw.isEmpty()) {
-            return new UpgradeResult("", removed);
+        final String[] rawFolders = raw.split("││", -1);
+        if (!rawFolders[0].isEmpty()) {
+            removed.add(rawFolders[0]);
         }
-
-        final String[] folders = raw.split("││", -1);
-        if (!folders[0].isEmpty()) {
-            removed.add(folders[0]);
-        }
-        int folderCount = 0;
-        for (int i = 1; i < folders.length; i++) {
-            final String folder = folders[i];
-            final String[] entries = folder.split("│", -1);
+        for (int i = 1; i < rawFolders.length; i++) {
+            if (folders.size() >= 15) {
+                if (!rawFolders[i].isEmpty()) {
+                    removed.add(rawFolders[i]);
+                }
+                continue;
+            }
+            final String[] entries = rawFolders[i].split("│", -1);
             if (entries.length == 0 || entries[0].length() < 2
                     || !entries[0].startsWith("{") || !entries[0].endsWith("}")) {
-                removed.add(folder);
+                removed.add(rawFolders[i]);
                 continue;
             }
-
             final String folderName = entries[0].substring(1, entries[0].length() - 1).trim();
-            if (folderName.isEmpty() || folderName.length() > 30
-                    || folderName.contains("\n") || folderName.contains("│")
-                    || !addedFolders.add(folderName) || folderCount >= 15) {
-                removed.add(folder);
+            if (folderName.isEmpty() || folderName.length() > 30 || folderName.contains("\n")
+                    || !addedFolders.add(folderName)) {
+                removed.add(rawFolders[i]);
                 continue;
             }
-
-            final List<String> machineNames = new ArrayList<>();
-            final Set<String> addedMachines = new HashSet<>();
+            final List<String> machineUIDs = new ArrayList<>();
+            final Set<String> addedUIDs = new HashSet<>();
             for (int j = 1; j < entries.length; j++) {
                 final String entry = entries[j];
-                if (entry.length() < 3 || !entry.startsWith("[") || !entry.endsWith("]")) {
+                final String machineUID = entry.length() >= 3 && entry.startsWith("[")
+                        && entry.endsWith("]")
+                        ? machineHelper.resolveLegacyName(
+                        entry.substring(1, entry.length() - 1)) : null;
+                if (machineUID == null || !addedUIDs.add(machineUID)) {
                     removed.add(entries[0] + "│" + entry);
                     continue;
                 }
-                final String machineName = resolveName(
-                        entry.substring(1, entry.length() - 1), validNames);
-                if (machineName == null || !addedMachines.add(machineName)) {
-                    removed.add(entries[0] + "│" + entry);
-                    continue;
-                }
-                machineNames.add(machineName);
+                machineUIDs.add(machineUID);
             }
-
-            upgraded.append("││{").append(folderName).append("}");
-            for (String machineName : machineNames) {
-                upgraded.append("│[").append(machineName).append("]");
-            }
-            folderCount++;
+            folders.add(new UserFavouriteHelper.Folder(folderName, machineUIDs));
         }
-        return new UpgradeResult(upgraded.toString(), removed);
+        return folders;
     }
 
-    static CompareUpgradeResult upgradeCompares(final String raw, final String rawLeft,
-                                                 final String rawRight,
-                                                 final Map<String, String> validNames) {
-        final List<String> upgraded = new ArrayList<>();
-        final List<String> removed = new ArrayList<>();
-        final Set<String> addedNames = new HashSet<>();
-        if (raw != null && !raw.isEmpty()) {
-            for (String entry : raw.split("│", -1)) {
-                if (entry.length() < 3 || !entry.startsWith("[") || !entry.endsWith("]")) {
+    private static UserCompareHelper.State importLegacyCompares(
+            final String rawList, final String rawLeft, final String rawRight,
+            final MachineIdentityResolver machineHelper, final List<String> removed) {
+        final List<String> machineUIDs = new ArrayList<>();
+        final Set<String> addedUIDs = new HashSet<>();
+        if (rawList != null && !rawList.isEmpty()) {
+            for (String entry : rawList.split("│", -1)) {
+                final String machineUID = entry.length() >= 3 && entry.startsWith("[")
+                        && entry.endsWith("]")
+                        ? machineHelper.resolveLegacyName(
+                        entry.substring(1, entry.length() - 1)) : null;
+                if (machineUID == null || !addedUIDs.add(machineUID)
+                        || machineUIDs.size() >= 10) {
                     removed.add(entry);
                     continue;
                 }
-                final String machineName = resolveName(
-                        entry.substring(1, entry.length() - 1), validNames);
-                if (machineName == null || addedNames.contains(machineName)
-                        || upgraded.size() >= 10) {
-                    removed.add(entry);
-                    continue;
-                }
-                addedNames.add(machineName);
-                upgraded.add(machineName);
+                machineUIDs.add(machineUID);
             }
         }
-
-        String left = resolveName(rawLeft, validNames);
-        String right = resolveName(rawRight, validNames);
-        if (left == null || right == null || left.equals(right)
-                || !upgraded.contains(left) || !upgraded.contains(right)) {
+        final String leftUID = machineHelper.resolveLegacyName(rawLeft);
+        final String rightUID = machineHelper.resolveLegacyName(rawRight);
+        final UserCompareHelper.State state = new UserCompareHelper.State(machineUIDs,
+                leftUID == null ? "" : leftUID, rightUID == null ? "" : rightUID);
+        if (state.leftUID.equals(state.rightUID) || !machineUIDs.contains(state.leftUID)
+                || !machineUIDs.contains(state.rightUID)) {
             if ((rawLeft != null && !rawLeft.isEmpty())
                     || (rawRight != null && !rawRight.isEmpty())) {
-                removed.add("[" + valueOrEmpty(rawLeft) + "]│[" + valueOrEmpty(rawRight) + "]");
+                removed.add("[" + valueOrEmpty(rawLeft) + "]│["
+                        + valueOrEmpty(rawRight) + "]");
             }
-            left = "";
-            right = "";
+            UserCompareHelper.clearSelection(state);
         }
-
-        return new CompareUpgradeResult(CompareListHelper.serialize(upgraded),
-                left, right, removed);
+        return state;
     }
 
-    private static String resolveName(final String storedName,
-                                      final Map<String, String> validNames) {
-        if (storedName == null || storedName.trim().isEmpty()) {
-            return null;
-        }
-        return validNames.get(storedName.trim().toLowerCase(Locale.ROOT));
+    private static String getIdentityName(final String machineUID,
+                                          final MachineIdentityResolver machineHelper) {
+        final String machineName = machineHelper.getIdentityName(machineUID);
+        return machineName == null ? valueOrEmpty(machineUID) : machineName;
     }
 
     private static String valueOrEmpty(final String value) {
         return value == null ? "" : value;
-    }
-
-    private static String join(final List<String> values, final String separator) {
-        final StringBuilder result = new StringBuilder();
-        for (String value : values) {
-            if (result.length() != 0) {
-                result.append(separator);
-            }
-            result.append(value);
-        }
-        return result.toString();
     }
 }

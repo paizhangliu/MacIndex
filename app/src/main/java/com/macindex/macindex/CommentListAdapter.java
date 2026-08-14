@@ -14,6 +14,10 @@ import android.widget.Toast;
 
 import androidx.core.widget.TextViewCompat;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /* List adapter for the original comment chunk. */
 class CommentListAdapter extends BaseAdapter {
 
@@ -27,22 +31,24 @@ class CommentListAdapter extends BaseAdapter {
 
     private final String[] machineComments;
 
-    CommentListAdapter(final int[] thisMachineIDs, final String[] thisCommentsStrings,
+    CommentListAdapter(final int[] thisMachineIDs,
+                       final List<UserCommentHelper.Comment> comments,
                        final Context parentContext) {
         machineIDs = thisMachineIDs;
         thisContext = parentContext;
         layoutInflater = (LayoutInflater) parentContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         machineNames = new String[machineIDs.length];
         machineComments = new String[machineIDs.length];
+        final Map<String, String> commentsByUID = new HashMap<>();
+        for (UserCommentHelper.Comment comment : comments) {
+            commentsByUID.put(comment.machineUID, comment.text);
+        }
         for (int i = 0; i < machineIDs.length; i++) {
             machineNames[i] = MainActivity.getMachineHelper().getName(machineIDs[i]);
-            machineComments[i] = "";
-            for (String thisString : thisCommentsStrings) {
-                final String[] commentParts = thisString.split("│", 2);
-                if (commentParts.length == 2 && commentParts[0].equals(machineNames[i])) {
-                    machineComments[i] = commentParts[1];
-                    break;
-                }
+            machineComments[i] = commentsByUID.get(
+                    MainActivity.getMachineHelper().getUID(machineIDs[i]));
+            if (machineComments[i] == null) {
+                throw new IllegalArgumentException("Missing comment for machine");
             }
         }
     }

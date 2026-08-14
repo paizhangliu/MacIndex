@@ -378,12 +378,12 @@ class SpecsHelper {
         }
     }
 
-    void generateShareLink(final String machineName) {
-        copy("MacIndexShareLink", ShareLinkHelper.create(machineName), R.string.share_link_generated);
+    void generateShareLink(final String machineUID) {
+        copy("MacIndexShareLink", ShareLinkHelper.create(machineUID), R.string.share_link_generated);
     }
 
-    void generateShareLink(final String leftName, final String rightName) {
-        copy("MacIndexCompareShareLink", ShareLinkHelper.createComparison(leftName, rightName),
+    void generateShareLink(final String leftUID, final String rightUID) {
+        copy("MacIndexCompareShareLink", ShareLinkHelper.createComparison(leftUID, rightUID),
                 R.string.share_link_generated);
     }
 

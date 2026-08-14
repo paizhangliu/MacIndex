@@ -107,7 +107,7 @@ MACHINE_COLUMNS = (
     "model", "smodel", "ident", "sident", "gestalt", "sgestalt", "order",
     "sorder", "emc", "semc", "processor", "sprocessor", "processorid",
     "graphics", "graphicsid", "display", "ram", "rom", "software",
-    "storage", "features", "expansion", "design", "support", "links",
+    "storage", "features", "expansion", "design", "support", "links", "uid",
 )
 
 REQUIRED_TEXT_COLUMNS = (
@@ -176,6 +176,7 @@ GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 
 PICTURE_ID = re.compile(r"[a-z0-9_]+")
 IMAGE_VALUE_ID = re.compile(r"[A-Za-z0-9_]+")
+MACHINE_UID = re.compile(r"MI\d{6}")
 
 DIRECTORY_VALUE_PATTERNS = {
     # The first compact Macs have genuine regional suffixes, such as M0001AP.
@@ -286,6 +287,7 @@ def validate_ram_information(value, machine_name):
 def validate_machine_data(connection):
     displayed_names = set()
     searchable_names = {}
+    machine_uids = set()
     for table_name in CATEGORIES:
         columns = tuple(
             row[1] for row in connection.execute(
@@ -303,6 +305,12 @@ def validate_machine_data(connection):
             if machine["id"] != expected_database_id:
                 fail(f'Illegal database ID {machine["id"]} in category {table_name}')
             machine_name = f'{table_name}/{machine["id"]}'
+
+            if MACHINE_UID.fullmatch(machine["uid"] or "") is None:
+                fail(f'Illegal machine UID "{machine["uid"]}" for {machine_name}')
+            if machine["uid"] in machine_uids:
+                fail(f'Duplicate machine UID "{machine["uid"]}"')
+            machine_uids.add(machine["uid"])
 
             for column_name in REQUIRED_TEXT_COLUMNS:
                 if not machine[column_name]:
@@ -413,6 +421,32 @@ def validate_machine_data(connection):
                     fail(f'Illegal link "{link}" for {machine_name}')
 
 
+def validate_machine_identity(connection):
+    active_uids = {
+        row[0]
+        for table_name in CATEGORIES
+        for row in connection.execute(f'SELECT uid FROM "{table_name}"')
+    }
+    legacy_names = connection.execute(
+        "SELECT name, uid FROM machine_legacy_names"
+    ).fetchall()
+    if not legacy_names:
+        fail("Legacy machine name index is empty")
+    for name, uid in legacy_names:
+        if not name or name != name.strip() or uid not in active_uids:
+            fail(f'Illegal legacy machine identity "{name}" -> "{uid}"')
+
+    history_uids = set()
+    for uid, last_name, replacement_uid in connection.execute(
+            "SELECT uid, last_name, replacement_uid FROM machine_uid_history"):
+        if (MACHINE_UID.fullmatch(uid or "") is None
+                or not last_name or last_name != last_name.strip()
+                or uid in active_uids or uid in history_uids
+                or (replacement_uid is not None and replacement_uid not in active_uids)):
+            fail(f'Illegal retired machine identity "{uid}"')
+        history_uids.add(uid)
+
+
 def get_serialized_sections(filter_name):
     sections = FILTER_SECTIONS[filter_name]
     category_count = len(FILTERS[filter_name][1])
@@ -521,18 +555,19 @@ def load_directory(connection, picture_assets):
     used_picture_assets = set()
     for category_id, table_name in enumerate(CATEGORIES):
         columns = ", ".join(
-            ("id",) + DIRECTORY_COLUMNS + ("pic",) + FORMAT_SOURCE_COLUMNS
+            ("id", "uid") + DIRECTORY_COLUMNS + ("pic",) + FORMAT_SOURCE_COLUMNS
         )
         rows = connection.execute(
             f'SELECT {columns} FROM "{table_name}" ORDER BY id'
         ).fetchall()
         for expected_database_id, row in enumerate(rows):
             database_id = row[0]
+            machine_uid = row[1]
             if database_id != expected_database_id:
                 fail(f"Illegal database ID {database_id} in category {table_name}")
             machine_id = len(directory)
-            directory_values = row[1:1 + len(DIRECTORY_COLUMNS)]
-            picture = row[1 + len(DIRECTORY_COLUMNS)]
+            directory_values = row[2:2 + len(DIRECTORY_COLUMNS)]
+            picture = row[2 + len(DIRECTORY_COLUMNS)]
             processor, graphics = row[-2:]
             if picture is None:
                 fail(f"Missing picture for {table_name}/{database_id}")
@@ -554,12 +589,13 @@ def load_directory(connection, picture_assets):
                 graphics, get_graphics_model_range
             )
             directory.append(
-                (machine_id, category_id, database_id)
+                (machine_id, machine_uid, category_id, database_id)
                 + directory_values
                 + (picture, processor_format, graphics_format)
             )
             machine = {
                 "machine_id": machine_id,
+                "uid": machine_uid,
                 "category": table_name,
                 "database_id": database_id,
                 **dict(zip(DIRECTORY_COLUMNS, directory_values)),
@@ -670,6 +706,7 @@ def write_indexes(connection, directory, cache):
             """
             CREATE TABLE machine_directory (
                 machine_id INTEGER PRIMARY KEY,
+                uid TEXT NOT NULL UNIQUE,
                 category_id INTEGER NOT NULL,
                 database_id INTEGER NOT NULL,
                 name TEXT,
@@ -713,10 +750,10 @@ def write_indexes(connection, directory, cache):
         connection.executemany(
             """
             INSERT INTO machine_directory (
-                machine_id, category_id, database_id, name, sname, syear, stype,
+                machine_id, uid, category_id, database_id, name, sname, syear, stype,
                 sprocessor, smodel, sident, sgestalt, sorder, semc,
                 picture_asset, processor_format, graphics_format
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             directory,
         )
@@ -750,7 +787,7 @@ def verify_indexes(connection, directory, cache):
 
     actual_directory = connection.execute(
         """
-        SELECT machine_id, category_id, database_id, name, sname, syear, stype,
+        SELECT machine_id, uid, category_id, database_id, name, sname, syear, stype,
                sprocessor, smodel, sident, sgestalt, sorder, semc,
                picture_asset, processor_format, graphics_format
         FROM machine_directory
@@ -816,6 +853,7 @@ def main():
     try:
         validate_category_configuration(connection)
         validate_machine_data(connection)
+        validate_machine_identity(connection)
         picture_assets = load_picture_assets(database_path)
         directory, machines = load_directory(connection, picture_assets)
         cache = build_main_cache(machines)

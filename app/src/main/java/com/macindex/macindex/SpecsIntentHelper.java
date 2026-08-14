@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.core.widget.TextViewCompat;
 
 import java.util.Arrays;
+import java.util.List;
 
 class SpecsIntentHelper {
 
@@ -31,6 +32,7 @@ class SpecsIntentHelper {
                 final String thisYear = MainActivity.getMachineHelper().getSYear(thisMachineID);
 
                 machineName.setText(thisName);
+                machineName.setTag(MainActivity.getMachineHelper().getUID(thisMachineID));
                 machineYear.setText(thisYear);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -70,27 +72,33 @@ class SpecsIntentHelper {
     public static void sendIntent(final int[] thisCategory, final int thisMachineID,
                                   final Context parentContext) {
         final Intent intent = new Intent(parentContext, SpecsActivity.class);
-        intent.putExtra("machineID", thisMachineID);
+        final MachineHelper machineHelper = MainActivity.getMachineHelper();
+        intent.putExtra("machineUID", machineHelper.getUID(thisMachineID));
 
         // Is fixed navigation?
+        final int[] navigationIDs;
         if (PrefsHelper.getBooleanPrefs("isFixedNav", parentContext)) {
-            final int[] newCategory = MainActivity.getMachineHelper()
-                    .getCategoryRangeIDs(thisMachineID);
+            navigationIDs = machineHelper.getCategoryRangeIDs(thisMachineID);
             DebugHelper.log("sendIntent", "Fixed Navigation, Category IDs "
-                    + Arrays.toString(newCategory) + ", thisMachineID " + thisMachineID);
-            intent.putExtra("thisCategory", newCategory);
+                    + Arrays.toString(navigationIDs) + ", thisMachineID " + thisMachineID);
         } else {
+            navigationIDs = thisCategory;
             DebugHelper.log("sendIntent", "Normal Navigation, Category IDs " + Arrays.toString(thisCategory)
                     + ", thisMachineID " + thisMachineID);
-            intent.putExtra("thisCategory", thisCategory);
         }
+        final String[] navigationUIDs = new String[navigationIDs.length];
+        for (int i = 0; i < navigationIDs.length; i++) {
+            navigationUIDs[i] = machineHelper.getUID(navigationIDs[i]);
+        }
+        intent.putExtra("navigationUIDs", navigationUIDs);
         parentContext.startActivity(intent);
     }
 
     public static void refreshFavourites(final TextView[][] textViewGroup, final Context thisContext) {
         // NullSafe
         if (textViewGroup != null) {
-            final String userFavourites = PrefsHelper.getStringPrefs("userFavourites", thisContext);
+            final List<UserFavouriteHelper.Folder> userFavourites =
+                    UserFavouriteHelper.read(thisContext);
             for (TextView[] thisViewGroup : textViewGroup) {
                 // NullSafe
                 if (thisViewGroup != null) {
@@ -103,8 +111,10 @@ class SpecsIntentHelper {
     }
 
     public static void refreshFavourite(final TextView thisView,
-                                        final String userFavourites) {
-        if (FavouriteActivity.isFavourite(thisView.getText().toString(), userFavourites)) {
+                                        final List<UserFavouriteHelper.Folder> userFavourites) {
+        final Object machineUID = thisView.getTag();
+        if (machineUID instanceof String && UserFavouriteHelper.contains(
+                (String) machineUID, userFavourites)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 thisView.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
             } else {

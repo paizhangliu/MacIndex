@@ -111,12 +111,23 @@ public class SearchActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             optionsSpinnerCallingPatch++;
             searchText.setQuery(savedInstanceState.getCharSequence("searchInput"), false);
-            positions = savedInstanceState.getIntArray("positions");
-            // Restore previous results
-            performSearch(null, false);
-            if (!savedInstanceState.getBoolean("loadComplete")) {
-                performSearch(savedInstanceState.getCharSequence("searchInput").toString(), true);
+            final String[] savedUIDs = savedInstanceState.getStringArray("machineUIDs");
+            if (savedUIDs != null) {
+                try {
+                    positions = new int[savedUIDs.length];
+                    for (int i = 0; i < savedUIDs.length; i++) {
+                        positions[i] = MainActivity.getMachineHelper().getMachineID(savedUIDs[i]);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // The saved search may belong to an older database revision.
+                    positions = null;
+                }
             }
+            final boolean reloadPositions = !savedInstanceState.getBoolean("loadComplete")
+                    || positions == null;
+            performSearch(reloadPositions
+                    ? savedInstanceState.getCharSequence("searchInput").toString() : null,
+                    reloadPositions);
         }
 
     }
@@ -163,7 +174,13 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putIntArray("positions", positions);
+        if (positions != null) {
+            final String[] machineUIDs = new String[positions.length];
+            for (int i = 0; i < positions.length; i++) {
+                machineUIDs[i] = MainActivity.getMachineHelper().getUID(positions[i]);
+            }
+            outState.putStringArray("machineUIDs", machineUIDs);
+        }
         outState.putCharSequence("searchInput", searchText.getQuery());
         if (waitDialog != null && !waitDialog.isShowing()) {
             outState.putBoolean("loadComplete", true);

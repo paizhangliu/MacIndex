@@ -61,6 +61,10 @@ public class CompareActivity extends AppCompatActivity {
 
     private String rightName = null;
 
+    private String leftUID = null;
+
+    private String rightUID = null;
+
     private String[] leftSpecification = null;
 
     private String[] rightSpecification = null;
@@ -152,9 +156,11 @@ public class CompareActivity extends AppCompatActivity {
         } else if (itemID == R.id.switchCompareItem) {
             final String[] sharedComparison = getSharedComparison();
             if (sharedComparison == null) {
-                final String oldLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
-                PrefsHelper.editPrefs("userComparesLeft", PrefsHelper.getStringPrefs("userComparesRight", this), this);
-                PrefsHelper.editPrefs("userComparesRight", oldLeft, this);
+                final UserCompareHelper.State state = UserCompareHelper.read(this);
+                final String oldLeft = state.leftUID;
+                state.leftUID = state.rightUID;
+                state.rightUID = oldLeft;
+                UserCompareHelper.write(state, this);
             } else {
                 getIntent().putExtra("compareLeft", sharedComparison[1]);
                 getIntent().putExtra("compareRight", sharedComparison[0]);
@@ -164,7 +170,7 @@ public class CompareActivity extends AppCompatActivity {
             specsHelperLeft.copySpecification(new String[]{leftName, rightName},
                     new String[][]{leftSpecification, rightSpecification});
         } else if (itemID == R.id.shareLinkCompareItem) {
-            specsHelperLeft.generateShareLink(leftName, rightName);
+            specsHelperLeft.generateShareLink(leftUID, rightUID);
         } else if (itemID == R.id.manageCompareItem) {
             manageList();
         } else if (itemID == R.id.clearCompareItem) {
@@ -172,8 +178,7 @@ public class CompareActivity extends AppCompatActivity {
             clearWarningDialog.setTitle(R.string.submenu_compare_clear);
             clearWarningDialog.setMessage(R.string.compare_clear_warning);
             clearWarningDialog.setPositiveButton(R.string.action_clear, (dialog, which) -> {
-                saveCompareList(new ArrayList<>(), this);
-                clearComparing(this);
+                UserCompareHelper.clear(this);
                 initCompare();
             });
             clearWarningDialog.setNegativeButton(R.string.link_cancel, (dialog, which) -> {
@@ -199,37 +204,30 @@ public class CompareActivity extends AppCompatActivity {
             if (sharedComparison == null) {
                 PrefsHelper.editPrefs("isCompareReloadNeeded", false, this);
             }
-            final List<String> compareNames = getCompareList(this);
+            final UserCompareHelper.State compareState = UserCompareHelper.read(this);
+            final List<String> compareUIDs = compareState.machineUIDs;
             final LinearLayout emptyLayout = findViewById(R.id.emptyLayout);
             final LinearLayout initialLayout = findViewById(R.id.initialLayout);
             final TextView emptyText = findViewById(R.id.emptyText);
             final TextView initialText = findViewById(R.id.initialText);
             final ScrollView compareScroll = findViewById(R.id.compareScroll);
 
-            if (sharedComparison != null || compareNames.size() >= 2) {
+            if (sharedComparison != null || compareUIDs.size() >= 2) {
                 final String compareLeft = sharedComparison == null
-                        ? PrefsHelper.getStringPrefs("userComparesLeft", this) : sharedComparison[0];
+                        ? compareState.leftUID : sharedComparison[0];
                 final String compareRight = sharedComparison == null
-                        ? PrefsHelper.getStringPrefs("userComparesRight", this) : sharedComparison[1];
+                        ? compareState.rightUID : sharedComparison[1];
                 if (sharedComparison != null || (!compareLeft.equals(compareRight)
-                        && compareNames.contains(compareLeft) && compareNames.contains(compareRight))) {
-                    int[] leftID = MainActivity.getMachineHelper().searchHelper("name", compareLeft,
-                            "all", true, false);
-                    int[] rightID = MainActivity.getMachineHelper().searchHelper("name", compareRight,
-                            "all", true, false);
-                    if (leftID.length != 1 || rightID.length != 1) {
-                        if (sharedComparison == null) {
-                            clearComparing(this);
-                        }
-                        throw new IllegalArgumentException("Invalid machine selection");
-                    }
+                        && compareUIDs.contains(compareLeft) && compareUIDs.contains(compareRight))) {
+                    final int leftID = MainActivity.getMachineHelper().getMachineID(compareLeft);
+                    final int rightID = MainActivity.getMachineHelper().getMachineID(compareRight);
                     initialLayout.setVisibility(View.GONE);
                     emptyLayout.setVisibility(View.GONE);
                     compareScroll.setVisibility(View.VISIBLE);
-                    setAbleToInitialize(compareNames.size() >= 2);
+                    setAbleToInitialize(compareUIDs.size() >= 2);
                     setInitialized(true);
-                    setAbleToManage(!compareNames.isEmpty());
-                    loadSpecs(leftID[0], rightID[0]);
+                    setAbleToManage(!compareUIDs.isEmpty());
+                    loadSpecs(leftID, rightID);
                 } else {
                     TextViewCompat.setAutoSizeTextTypeWithDefaults(initialText,
                             TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
@@ -242,7 +240,7 @@ public class CompareActivity extends AppCompatActivity {
                 }
             } else {
                 emptyText.setText(getResources().getStringArray(R.array.compare_insufficient_tips)
-                        [compareNames.isEmpty() ? 0 : 1]);
+                        [compareUIDs.isEmpty() ? 0 : 1]);
                 TextViewCompat.setAutoSizeTextTypeWithDefaults(emptyText,
                         TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                 initialLayout.setVisibility(View.GONE);
@@ -250,7 +248,7 @@ public class CompareActivity extends AppCompatActivity {
                 compareScroll.setVisibility(View.GONE);
                 setAbleToInitialize(false);
                 setInitialized(false);
-                setAbleToManage(!compareNames.isEmpty());
+                setAbleToManage(!compareUIDs.isEmpty());
                 clearComparing(this);
             }
         } catch (Exception e) {
@@ -261,14 +259,14 @@ public class CompareActivity extends AppCompatActivity {
 
     private void initCompareItem() {
         try {
-            final List<String> compareNames = getCompareList(this);
-            final String currentLeft = PrefsHelper.getStringPrefs("userComparesLeft", this);
-            final String currentRight = PrefsHelper.getStringPrefs("userComparesRight", this);
-            final CharSequence[] choices = compareNames.toArray(new CharSequence[0]);
-            final boolean[] checked = new boolean[choices.length];
-            for (int i = 0; i < compareNames.size(); i++) {
-                checked[i] = compareNames.get(i).equals(currentLeft)
-                        || compareNames.get(i).equals(currentRight);
+            final UserCompareHelper.State state = UserCompareHelper.read(this);
+            final CharSequence[] choices = new CharSequence[state.machineUIDs.size()];
+            final boolean[] checked = new boolean[state.machineUIDs.size()];
+            for (int i = 0; i < state.machineUIDs.size(); i++) {
+                choices[i] = MainActivity.getMachineHelper()
+                        .getIdentityName(state.machineUIDs.get(i));
+                checked[i] = state.machineUIDs.get(i).equals(state.leftUID)
+                        || state.machineUIDs.get(i).equals(state.rightUID);
             }
 
             final AlertDialog.Builder selectDialog = new AlertDialog.Builder(this);
@@ -290,15 +288,16 @@ public class CompareActivity extends AppCompatActivity {
                     final List<String> selected = new ArrayList<>();
                     for (int i = 0; i < checked.length; i++) {
                         if (checked[i]) {
-                            selected.add(compareNames.get(i));
+                            selected.add(state.machineUIDs.get(i));
                         }
                     }
                     if (selected.size() != 2) {
                         Toast.makeText(this, R.string.compare_select_exactly_two, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    PrefsHelper.editPrefs("userComparesLeft", selected.get(0), this);
-                    PrefsHelper.editPrefs("userComparesRight", selected.get(1), this);
+                    state.leftUID = selected.get(0);
+                    state.rightUID = selected.get(1);
+                    UserCompareHelper.write(state, this);
                     // Continue with user's compare list after manual selection.
                     clearSharedComparison();
                     selectDialogCreated.dismiss();
@@ -316,6 +315,8 @@ public class CompareActivity extends AppCompatActivity {
 
     private void loadSpecs(final int leftID, final int rightID) {
         final MachineHelper helper = MainActivity.getMachineHelper();
+        leftUID = helper.getUID(leftID);
+        rightUID = helper.getUID(rightID);
         leftName = helper.getName(leftID);
         rightName = helper.getName(rightID);
 
@@ -430,7 +431,8 @@ public class CompareActivity extends AppCompatActivity {
         // Set a long click listener
         image.setOnLongClickListener(v -> {
             Intent viewImageIntent = new Intent(CompareActivity.this, ViewImageActivity.class);
-            viewImageIntent.putExtra("machineID", machineID);
+            viewImageIntent.putExtra("machineUID",
+                    MainActivity.getMachineHelper().getUID(machineID));
             startActivity(viewImageIntent);
             return true;
         });
@@ -459,13 +461,15 @@ public class CompareActivity extends AppCompatActivity {
 
     private void manageList() {
         try {
-            final List<String> compareNames = getCompareList(this);
+            final UserCompareHelper.State state = UserCompareHelper.read(this);
+            final List<String> compareUIDs = state.machineUIDs;
             final View selectChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
             final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-            final boolean[] deleteSelections = new boolean[compareNames.size()];
-            for (int i = 0; i < compareNames.size(); i++) {
+            final boolean[] deleteSelections = new boolean[compareUIDs.size()];
+            for (int i = 0; i < compareUIDs.size(); i++) {
                 CheckBox thisCheckBox = new CheckBox(this);
-                thisCheckBox.setText(compareNames.get(i));
+                thisCheckBox.setText(MainActivity.getMachineHelper()
+                        .getIdentityName(compareUIDs.get(i)));
                 final int finalI = i;
                 thisCheckBox.setOnCheckedChangeListener((compoundButton, b) ->
                         deleteSelections[finalI] = thisCheckBox.isChecked());
@@ -479,13 +483,15 @@ public class CompareActivity extends AppCompatActivity {
             deleteDialog.setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 try {
                     final List<String> remaining = new ArrayList<>();
-                    for (int i = 0; i < compareNames.size(); i++) {
+                    for (int i = 0; i < compareUIDs.size(); i++) {
                         if (!deleteSelections[i]) {
-                            remaining.add(compareNames.get(i));
+                            remaining.add(compareUIDs.get(i));
                         }
                     }
-                    saveCompareList(remaining, this);
-                    ensureSelectionValid(this);
+                    state.machineUIDs.clear();
+                    state.machineUIDs.addAll(remaining);
+                    UserCompareHelper.ensureSelectionValid(state);
+                    UserCompareHelper.write(state, this);
                     initCompare();
                 } catch (Exception e) {
                     ExceptionHelper.handleException(this, e, "manageListConfirm",
@@ -563,42 +569,28 @@ public class CompareActivity extends AppCompatActivity {
     }
 
     static List<String> getCompareList(final Context thisContext) {
-        return CompareListHelper.parse(PrefsHelper.getStringPrefs("userCompares", thisContext));
+        return UserCompareHelper.read(thisContext).machineUIDs;
     }
 
-    static void saveCompareList(final List<String> compareNames, final Context thisContext) {
-        PrefsHelper.editPrefs("userCompares", CompareListHelper.serialize(compareNames), thisContext);
-        PrefsHelper.editPrefs("isCompareReloadNeeded", true, thisContext);
-    }
-
-    static void toggleCompare(final String machineName, final Context thisContext) {
-        final List<String> compareNames = getCompareList(thisContext);
-        if (compareNames.contains(machineName)) {
-            compareNames.remove(machineName);
-            saveCompareList(compareNames, thisContext);
-            ensureSelectionValid(thisContext);
+    static void toggleCompare(final String machineUID, final Context thisContext) {
+        final UserCompareHelper.State state = UserCompareHelper.read(thisContext);
+        if (state.machineUIDs.contains(machineUID)) {
+            state.machineUIDs.remove(machineUID);
+            UserCompareHelper.ensureSelectionValid(state);
+            UserCompareHelper.write(state, thisContext);
             return;
         }
-        if (compareNames.size() >= 10) {
+        if (state.machineUIDs.size() >= 10) {
             return;
         }
-        compareNames.add(machineName);
-        saveCompareList(compareNames, thisContext);
-    }
-
-    private static void ensureSelectionValid(final Context thisContext) {
-        final List<String> compareNames = getCompareList(thisContext);
-        final String left = PrefsHelper.getStringPrefs("userComparesLeft", thisContext);
-        final String right = PrefsHelper.getStringPrefs("userComparesRight", thisContext);
-        if (compareNames.size() < 2 || left.equals(right)
-                || !compareNames.contains(left) || !compareNames.contains(right)) {
-            clearComparing(thisContext);
-        }
+        state.machineUIDs.add(machineUID);
+        UserCompareHelper.write(state, thisContext);
     }
 
     private static void clearComparing(final Context thisContext) {
         Log.w("CompareActivity", "Clearing left/right parameters");
-        PrefsHelper.clearPrefs("userComparesLeft", thisContext);
-        PrefsHelper.clearPrefs("userComparesRight", thisContext);
+        final UserCompareHelper.State state = UserCompareHelper.read(thisContext);
+        UserCompareHelper.clearSelection(state);
+        UserCompareHelper.write(state, thisContext);
     }
 }

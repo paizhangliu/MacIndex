@@ -12,19 +12,25 @@ class ShareLinkHelper {
 
     private static final String SHARE_BASE = "https://macindex.paizhang.info/share";
 
-    public static String create(final String machineName) {
+    public static String create(final String machineUID) {
+        validateMachineUID(machineUID);
         try {
-            return SHARE_BASE + "?code=" + URLEncoder.encode(machineName, "UTF-8");
+            return SHARE_BASE + "?code=" + URLEncoder.encode(machineUID, "UTF-8");
         } catch (UnsupportedEncodingException impossible) {
             throw new AssertionError("UTF-8 is unavailable", impossible);
         }
     }
 
-    public static String createComparison(final String leftName, final String rightName) {
+    public static String createComparison(final String leftUID, final String rightUID) {
+        validateMachineUID(leftUID);
+        validateMachineUID(rightUID);
+        if (leftUID.equals(rightUID)) {
+            throw new IllegalArgumentException("Comparison requires two machines");
+        }
         try {
             return SHARE_BASE + "?compare="
-                    + URLEncoder.encode(leftName, "UTF-8") + "&with="
-                    + URLEncoder.encode(rightName, "UTF-8");
+                    + URLEncoder.encode(leftUID, "UTF-8") + "&with="
+                    + URLEncoder.encode(rightUID, "UTF-8");
         } catch (UnsupportedEncodingException impossible) {
             throw new AssertionError("UTF-8 is unavailable", impossible);
         }
@@ -35,13 +41,14 @@ class ShareLinkHelper {
     }
 
     public static String[] decodeComparison(final String link) {
-        final String leftName = getQueryValue(link, "compare");
-        final String rightName = getQueryValue(link, "with");
-        if (leftName == null || rightName == null
-                || leftName.trim().isEmpty() || rightName.trim().isEmpty()) {
+        final String leftUID = getQueryValue(link, "compare");
+        final String rightUID = getQueryValue(link, "with");
+        if (leftUID == null || rightUID == null) {
             throw new IllegalArgumentException("Comparison link has incomplete machine codes");
         }
-        return new String[]{leftName.trim(), rightName.trim()};
+        validateMachineUID(leftUID.trim());
+        validateMachineUID(rightUID.trim());
+        return new String[]{leftUID.trim(), rightUID.trim()};
     }
 
     public static String decode(final String link) {
@@ -49,10 +56,17 @@ class ShareLinkHelper {
         if (decodedValue != null) {
             final String decoded = decodedValue.trim();
             if (!decoded.isEmpty()) {
+                validateMachineUID(decoded);
                 return decoded;
             }
         }
         throw new IllegalArgumentException("Share link has no machine code");
+    }
+
+    private static void validateMachineUID(final String machineUID) {
+        if (!UserRecordJsonHelper.isMachineUID(machineUID)) {
+            throw new IllegalArgumentException("Illegal machine UID");
+        }
     }
 
     private static String getQueryValue(final String link, final String name) {

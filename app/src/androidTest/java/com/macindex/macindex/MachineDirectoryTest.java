@@ -2,10 +2,14 @@ package com.macindex.macindex;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
@@ -28,9 +32,11 @@ public class MachineDirectoryTest {
 
     private static SQLiteDatabase database;
 
+    private static Context applicationContext;
+
     @BeforeClass
     public static void initDirectory() {
-        final Context applicationContext = InstrumentationRegistry.getInstrumentation()
+        applicationContext = InstrumentationRegistry.getInstrumentation()
                 .getTargetContext();
         if (MainActivity.getMachineHelper() == null) {
             final Intent launchIntent = applicationContext.getPackageManager()
@@ -139,13 +145,66 @@ public class MachineDirectoryTest {
         }
     }
 
+    @Test
+    public void stableUIDsRoundTripEveryMachine() {
+        try (Cursor cursor = database.query("machine_directory",
+                new String[]{"machine_id", "uid"}, null, null,
+                null, null, "machine_id")) {
+            while (cursor.moveToNext()) {
+                final int machineID = cursor.getInt(0);
+                final String machineUID = cursor.getString(1);
+                assertEquals(machineUID, MainActivity.getMachineHelper().getUID(machineID));
+                assertEquals(machineID, MainActivity.getMachineHelper()
+                        .getMachineID(machineUID));
+            }
+        }
+    }
+
+    @Test
+    public void legacyUserRecordsUpgradeToUIDJsonTogether() {
+        final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
+                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        assertTrue(prefsFile.edit().clear()
+                .putString("userComments", "Macintosh 128K│Keep"
+                        + "││Macintosh PowerBook Duo Dock Series│Removed")
+                .putString("userFavourites", "││{Legacy}│[Macintosh 128K]"
+                        + "│[Macintosh PowerBook Duo Dock Series]")
+                .putString("userCompares", "[Macintosh 128K]│[Mac mini]")
+                .putString("userComparesLeft", "Macintosh 128K")
+                .putString("userComparesRight", "Mac mini")
+                .putInt("lastKnownVersion", 0).commit());
+
+        assertTrue(PrefsHelper.registerNewVersion(applicationContext));
+        final List<UserCommentHelper.Comment> comments =
+                UserCommentHelper.read(applicationContext);
+        final List<UserFavouriteHelper.Folder> favourites =
+                UserFavouriteHelper.read(applicationContext);
+        final UserCompareHelper.State compares = UserCompareHelper.read(applicationContext);
+        assertEquals(1, comments.size());
+        assertEquals("Macintosh 128K", MainActivity.getMachineHelper()
+                .getIdentityName(comments.get(0).machineUID));
+        assertEquals(1, favourites.size());
+        assertEquals(1, favourites.get(0).machineUIDs.size());
+        assertEquals(2, compares.machineUIDs.size());
+        assertFalse(compares.leftUID.isEmpty());
+        assertFalse(compares.rightUID.isEmpty());
+        assertTrue(prefsFile.getString("pendingUpgradeReport", "")
+                .contains("Macintosh PowerBook Duo Dock Series"));
+        assertFalse(prefsFile.contains("userCompares"));
+        assertFalse(prefsFile.contains("userComparesLeft"));
+        assertFalse(prefsFile.contains("userComparesRight"));
+
+        assertTrue(prefsFile.edit().clear()
+                .putInt("lastKnownVersion", BuildConfig.VERSION_CODE).commit());
+    }
+
     private void assertSearchMatchesDatabase(final String columnName, final String searchInput,
                                              final boolean isExactMatch) {
         final List<String> expectedNames = new ArrayList<>();
         try (Cursor tablesCursor = database.query("sqlite_master", new String[]{"name"},
-                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?, ?)",
+                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?, ?, ?, ?)",
                 new String[]{"table", "android_%", "machine_directory", "main_filter",
-                        "main_cache"},
+                        "main_cache", "machine_legacy_names", "machine_uid_history"},
                 null, null, null)) {
             while (tablesCursor.moveToNext()) {
                 final String tableName = tablesCursor.getString(0);

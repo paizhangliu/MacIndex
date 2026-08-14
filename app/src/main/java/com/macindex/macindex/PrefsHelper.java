@@ -10,7 +10,6 @@ import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -40,11 +39,9 @@ class PrefsHelper {
         DEFAULT_VALUES.put("isAutoCheckUpdate", Boolean.TRUE);
 
         /* User Record */
-        DEFAULT_VALUES.put("userCompares", "");
-        DEFAULT_VALUES.put("userComparesLeft", "");
-        DEFAULT_VALUES.put("userComparesRight", "");
-        DEFAULT_VALUES.put("userFavourites", "");
-        DEFAULT_VALUES.put("userComments", "");
+        DEFAULT_VALUES.put("userCompare", UserCompareHelper.EMPTY_JSON);
+        DEFAULT_VALUES.put("userFavourites", UserFavouriteHelper.EMPTY_JSON);
+        DEFAULT_VALUES.put("userComments", UserCommentHelper.EMPTY_JSON);
         DEFAULT_VALUES.put("skippedUpdateVersion", "");
         DEFAULT_VALUES.put("pendingUpgradeReport", "");
 
@@ -215,29 +212,61 @@ class PrefsHelper {
                 final SharedPreferences prefsFile = thisContext.getSharedPreferences(
                         PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
                 final SharedPreferences.Editor prefsEditor = prefsFile.edit();
-                final Map<String, String> validNames = getValidMachineNames();
+                final MachineHelper machineHelper = MainActivity.getMachineHelper();
+                if (machineHelper == null) {
+                    throw new IllegalStateException("Machine helper is unavailable");
+                }
                 final UserRecordUpgradeHelper.UpgradeResult comments =
                         UserRecordUpgradeHelper.upgradeComments(
-                                prefsFile.getString("userComments", ""), validNames);
+                                getStoredRecord(prefsFile, "userComments"), machineHelper);
                 final UserRecordUpgradeHelper.UpgradeResult favourites =
                         UserRecordUpgradeHelper.upgradeFavourites(
-                                prefsFile.getString("userFavourites", ""), validNames);
-                final UserRecordUpgradeHelper.CompareUpgradeResult compares =
+                                getStoredRecord(prefsFile, "userFavourites"), machineHelper);
+                final UserRecordUpgradeHelper.UpgradeResult compares =
                         UserRecordUpgradeHelper.upgradeCompares(
-                                prefsFile.getString("userCompares", ""),
-                                prefsFile.getString("userComparesLeft", ""),
-                                prefsFile.getString("userComparesRight", ""), validNames);
+                                getStoredRecord(prefsFile, "userCompare"),
+                                getStoredRecord(prefsFile, "userCompares"),
+                                getStoredRecord(prefsFile, "userComparesLeft"),
+                                getStoredRecord(prefsFile, "userComparesRight"), machineHelper);
 
                 prefsEditor.putString("userComments", comments.value);
                 prefsEditor.putString("userFavourites", favourites.value);
-                prefsEditor.putString("userCompares", compares.compares);
-                prefsEditor.putString("userComparesLeft", compares.left);
-                prefsEditor.putString("userComparesRight", compares.right);
+                prefsEditor.putString("userCompare", compares.value);
+
+                final String manufacturer = getStoredString(
+                        prefsFile, "lastMainManufacturer");
+                if (!manufacturer.equals("all") && !manufacturer.equals("apple68k")
+                        && !manufacturer.equals("appleppc")
+                        && !manufacturer.equals("appleintel")
+                        && !manufacturer.equals("applearm")) {
+                    prefsEditor.putString("lastMainManufacturer", "all");
+                }
+                final String filter = getStoredString(prefsFile, "lastMainFilter");
+                if (!filter.equals("names") && !filter.equals("processors")
+                        && !filter.equals("years")) {
+                    prefsEditor.putString("lastMainFilter", "names");
+                }
+                final int searchFilter = getStoredInt(
+                        prefsFile, "lastSearchFiltersSpinner", 0);
+                if (searchFilter < 0 || searchFilter > 4) {
+                    prefsEditor.putInt("lastSearchFiltersSpinner", 0);
+                }
+                final int searchOption = getStoredInt(
+                        prefsFile, "lastSearchOptionsSpinner", 0);
+                if (searchOption < 0 || searchOption > 1) {
+                    prefsEditor.putInt("lastSearchOptionsSpinner", 0);
+                }
+                for (String prefsName : prefsFile.getAll().keySet()) {
+                    if (!DEFAULT_VALUES.containsKey(prefsName)) {
+                        prefsEditor.remove(prefsName);
+                    }
+                }
 
                 final String upgradeReport = buildUpgradeReport(
                         thisContext, comments.removed, favourites.removed, compares.removed);
                 if (!upgradeReport.isEmpty()) {
-                    final String pendingReport = prefsFile.getString("pendingUpgradeReport", "");
+                    final String pendingReport = getStoredString(
+                            prefsFile, "pendingUpgradeReport");
                     prefsEditor.putString("pendingUpgradeReport", pendingReport.isEmpty()
                             ? upgradeReport : pendingReport + "\n\n" + upgradeReport);
                 }
@@ -263,28 +292,11 @@ class PrefsHelper {
     public static boolean showUpgradeReport(final Context thisContext) {
         final String report = getStringPrefs("pendingUpgradeReport", thisContext);
         if (!report.isEmpty()) {
-            clearPrefs("pendingUpgradeReport", thisContext);
-            ExceptionHelper.showUpgradeReport(thisContext, report);
+            ExceptionHelper.showUpgradeReport(thisContext, report,
+                    () -> clearPrefs("pendingUpgradeReport", thisContext));
             return true;
         }
         return false;
-    }
-
-    private static Map<String, String> getValidMachineNames() {
-        final MachineHelper machineHelper = MainActivity.getMachineHelper();
-        if (machineHelper == null) {
-            throw new IllegalStateException("Machine helper is unavailable");
-        }
-        final Map<String, String> validNames = new HashMap<>();
-        for (int machineID = 0; machineID < machineHelper.getMachineCount(); machineID++) {
-            final String machineName = machineHelper.getName(machineID);
-            final String oldValue = validNames.put(
-                    machineName.toLowerCase(Locale.ROOT), machineName);
-            if (oldValue != null && !oldValue.equals(machineName)) {
-                throw new IllegalStateException("Duplicate machine name");
-            }
-        }
-        return validNames;
     }
 
     private static String buildUpgradeReport(final Context thisContext,
@@ -319,6 +331,31 @@ class PrefsHelper {
                     ? thisContext.getString(R.string.upgrade_report_empty_entry) : entry)
                     .append("\n");
         }
+    }
+
+    private static String getStoredString(final SharedPreferences prefsFile,
+                                          final String prefsName) {
+        final Object storedValue = prefsFile.getAll().get(prefsName);
+        if (storedValue == null) {
+            return "";
+        }
+        return storedValue instanceof String ? (String) storedValue : "";
+    }
+
+    private static String getStoredRecord(final SharedPreferences prefsFile,
+                                          final String prefsName) {
+        final Object storedValue = prefsFile.getAll().get(prefsName);
+        if (storedValue == null) {
+            return "";
+        }
+        return storedValue instanceof String
+                ? (String) storedValue : String.valueOf(storedValue);
+    }
+
+    private static int getStoredInt(final SharedPreferences prefsFile,
+                                    final String prefsName, final int defaultValue) {
+        final Object storedValue = prefsFile.getAll().get(prefsName);
+        return storedValue instanceof Integer ? (Integer) storedValue : defaultValue;
     }
 
     // https://stackoverflow.com/questions/6609414/how-do-i-programmatically-restart-an-android-app
