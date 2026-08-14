@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
 public class MachineDirectoryTest {
@@ -161,6 +162,41 @@ public class MachineDirectoryTest {
     }
 
     @Test
+    public void unknownMachineUIDRequiresDataRecovery() {
+        try {
+            MainActivity.getMachineHelper().getMachineID("MI999999");
+        } catch (Exception e) {
+            assertTrue(e instanceof MachineHelper.UnknownMachineUIDException);
+            assertTrue(ExceptionHelper.requiresDataRecovery(e));
+            return;
+        }
+        throw new AssertionError("Unknown machine UID was accepted");
+    }
+
+    @Test
+    public void storedUnknownMachineUIDRequiresDataRecovery() {
+        final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
+                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        assertTrue(prefsFile.edit()
+                .putString("userComments", "{\"schema\":1,\"comments\":["
+                        + "{\"machine\":\"MI999999\",\"text\":\"Keep\"}]}")
+                .putString("userFavourites", "{\"schema\":1,\"folders\":["
+                        + "{\"name\":\"Keep\",\"machines\":[\"MI999999\"]}]}")
+                .putString("userCompare", "{\"schema\":1,\"machines\":[\"MI999999\"],"
+                        + "\"left\":\"\",\"right\":\"\"}").commit());
+        try {
+            assertDataRecoveryRequired(() -> UserCommentHelper.read(applicationContext));
+            assertDataRecoveryRequired(() -> UserFavouriteHelper.read(applicationContext));
+            assertDataRecoveryRequired(() -> UserCompareHelper.read(applicationContext));
+        } finally {
+            assertTrue(prefsFile.edit()
+                    .putString("userComments", UserCommentHelper.EMPTY_JSON)
+                    .putString("userFavourites", UserFavouriteHelper.EMPTY_JSON)
+                    .putString("userCompare", UserCompareHelper.EMPTY_JSON).commit());
+        }
+    }
+
+    @Test
     public void legacyUserRecordsUpgradeToUIDJsonTogether() {
         final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
                 PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
@@ -198,13 +234,84 @@ public class MachineDirectoryTest {
                 .putInt("lastKnownVersion", BuildConfig.VERSION_CODE).commit());
     }
 
+    @Test
+    public void legacyShareLinksResolveThroughPackagedOldNames() {
+        final Map<String, String> oldMachineNames =
+                OldMachineNamesHelper.read(applicationContext);
+        assertEquals("MI000023", oldMachineNames.get(ShareLinkHelper.decode(
+                "https://macindex.paizhang.info/share?code=Macintosh+LC+520")
+                .toLowerCase(Locale.ROOT)));
+        final String[] comparison = ShareLinkHelper.decodeComparison(
+                "https://macindex.paizhang.info/share"
+                        + "?compare=Macintosh+LC+520&with=eMac");
+        assertEquals("MI000023", oldMachineNames.get(
+                comparison[0].toLowerCase(Locale.ROOT)));
+        assertEquals("MI000190", oldMachineNames.get(
+                comparison[1].toLowerCase(Locale.ROOT)));
+    }
+
+    @Test
+    public void currentUserRecordsAreAuditedAgainstTheRealDirectory() {
+        final MachineHelper machineHelper = MainActivity.getMachineHelper();
+        final Map<String, String> oldMachineNames =
+                OldMachineNamesHelper.read(applicationContext);
+        final UserRecordUpgradeHelper.UpgradeResult comments =
+                UserRecordUpgradeHelper.upgradeComments(
+                        "{\"schema\":1,\"comments\":["
+                                + "{\"machine\":\"MI999999\",\"text\":\"Keep\"}]}",
+                        machineHelper, oldMachineNames);
+        final UserRecordUpgradeHelper.UpgradeResult favourites =
+                UserRecordUpgradeHelper.upgradeFavourites(
+                        "{\"schema\":1,\"folders\":["
+                                + "{\"name\":\"Keep\",\"machines\":["
+                                + "\"MI000001\",\"MI999999\"]}]}",
+                        machineHelper, oldMachineNames);
+        final UserRecordUpgradeHelper.UpgradeResult compares =
+                UserRecordUpgradeHelper.upgradeCompares(
+                        "{\"schema\":1,\"machines\":["
+                                + "\"MI000001\",\"MI000002\",\"MI999999\"],"
+                                + "\"left\":\"MI000001\",\"right\":\"MI999999\"}",
+                        "", "", "", machineHelper, oldMachineNames);
+
+        assertTrue(UserCommentHelper.parse(comments.value).isEmpty());
+        assertEquals(1, comments.removed.size());
+        assertEquals(1, UserFavouriteHelper.parse(favourites.value)
+                .get(0).machineUIDs.size());
+        assertEquals(1, favourites.removed.size());
+        assertEquals(2, UserCompareHelper.parse(compares.value).machineUIDs.size());
+        assertEquals("", UserCompareHelper.parse(compares.value).leftUID);
+        assertEquals(2, compares.removed.size());
+    }
+
+    @Test
+    public void corruptUserRecordIsResetAndPreservedInReport() {
+        final UserRecordUpgradeHelper.UpgradeResult result =
+                UserRecordUpgradeHelper.upgradeFavourites(
+                        "{broken", MainActivity.getMachineHelper(), Collections.emptyMap());
+
+        assertEquals(UserFavouriteHelper.EMPTY_JSON, result.value);
+        assertEquals(1, result.removed.size());
+        assertEquals("{broken", result.removed.get(0));
+    }
+
+    private void assertDataRecoveryRequired(final Runnable action) {
+        try {
+            action.run();
+        } catch (Exception e) {
+            assertTrue(e instanceof UserRecordJsonHelper.InvalidUserRecordException);
+            assertTrue(ExceptionHelper.requiresDataRecovery(e));
+            return;
+        }
+        throw new AssertionError("Unknown stored machine UID was accepted");
+    }
+
     private void assertSearchMatchesDatabase(final String columnName, final String searchInput,
                                              final boolean isExactMatch) {
         final List<String> expectedNames = new ArrayList<>();
         try (Cursor tablesCursor = database.query("sqlite_master", new String[]{"name"},
-                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?, ?, ?, ?)",
+                "type = ? AND name NOT LIKE ? AND name NOT IN (?, ?, ?)",
                 new String[]{"table", "android_%", "machine_directory", "main_filter",
-                        "main_cache", "machine_legacy_names", "machine_uid_history"},
+                        "main_cache"},
                 null, null, null)) {
             while (tablesCursor.moveToNext()) {
                 final String tableName = tablesCursor.getString(0);

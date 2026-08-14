@@ -1,6 +1,7 @@
 package com.macindex.macindex;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -73,5 +74,34 @@ public class UserRecordJsonHelperTest {
         assertTrue(UserCommentHelper.parse(UserCommentHelper.EMPTY_JSON).isEmpty());
         assertTrue(UserFavouriteHelper.parse(UserFavouriteHelper.EMPTY_JSON).isEmpty());
         assertTrue(UserCompareHelper.parse(UserCompareHelper.EMPTY_JSON).machineUIDs.isEmpty());
+    }
+
+    @Test
+    public void invalidStoredJsonRequiresDataRecovery() {
+        try {
+            UserCommentHelper.parse("{broken");
+        } catch (Exception e) {
+            assertTrue(e instanceof UserRecordJsonHelper.InvalidUserRecordException);
+            assertTrue(ExceptionHelper.requiresDataRecovery(e));
+            assertTrue(ExceptionHelper.requiresDataRecovery(
+                    new IllegalStateException("Wrapped", e)));
+            return;
+        }
+        throw new AssertionError("Invalid JSON was accepted");
+    }
+
+    @Test
+    public void ordinaryProgrammingErrorsDoNotRequireDataRecovery() {
+        assertFalse(ExceptionHelper.requiresDataRecovery(
+                new IllegalArgumentException("Ordinary error")));
+        try {
+            UserCommentHelper.serialize(Arrays.asList(
+                    new UserCommentHelper.Comment("MI000001", "A"),
+                    new UserCommentHelper.Comment("MI000001", "B")));
+        } catch (Exception e) {
+            assertFalse(ExceptionHelper.requiresDataRecovery(e));
+            return;
+        }
+        throw new AssertionError("Illegal record was serialized");
     }
 }

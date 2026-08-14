@@ -12,16 +12,17 @@ public class ShareLinkHelperTest {
     public void newLinksRoundTripMachineUIDs() {
         final String machineUID = "MI000123";
         final String link = ShareLinkHelper.create(machineUID);
-        assertTrue(link.startsWith("https://macindex.paizhang.info/share?code="));
+        assertEquals("https://macindex.paizhang.info/share?code=MI000123", link);
         assertEquals(machineUID, ShareLinkHelper.decode(link));
     }
 
     @Test
-    public void comparisonLinksRoundTripBothNames() {
+    public void comparisonLinksRoundTripBothUIDs() {
         final String leftUID = "MI000001";
         final String rightUID = "MI000439";
         final String link = ShareLinkHelper.createComparison(leftUID, rightUID);
-        assertTrue(link.startsWith("https://macindex.paizhang.info/share?compare="));
+        assertEquals("https://macindex.paizhang.info/share"
+                + "?compare=MI000001&with=MI000439", link);
         assertTrue(ShareLinkHelper.isComparison(link));
         assertArrayEquals(new String[]{leftUID, rightUID},
                 ShareLinkHelper.decodeComparison(link));
@@ -38,9 +39,17 @@ public class ShareLinkHelperTest {
         ShareLinkHelper.decode("https://macindex.paizhang.info/share");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void legacyNameLinksAreRejectedWithoutSpecialHandling() {
-        ShareLinkHelper.decode(
-                "https://macindex.paizhang.info/share?code=Macintosh+LC+520");
+    @Test
+    public void legacyNameLinksRemainReadable() {
+        final String link = "https://macindex.paizhang.info/share?code=Macintosh+LC+520";
+        assertEquals("Macintosh LC 520", ShareLinkHelper.decode(link));
+    }
+
+    @Test
+    public void comparisonLinksCanContainOldNamesAndUIDs() {
+        final String link = "https://macindex.paizhang.info/share"
+                + "?compare=Macintosh+LC+520&with=MI000439";
+        assertArrayEquals(new String[]{"Macintosh LC 520", "MI000439"},
+                ShareLinkHelper.decodeComparison(link));
     }
 }
