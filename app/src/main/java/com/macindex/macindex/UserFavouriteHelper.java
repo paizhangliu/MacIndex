@@ -126,8 +126,7 @@ class UserFavouriteHelper {
         final SharedPreferences prefsFile = thisContext.getSharedPreferences(
                 PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
         if (!prefsFile.edit().putString("userFavourites", serialize(folders))
-                .putBoolean("isFavouritesReloadNeeded", true)
-                .putBoolean("isCompareReloadNeeded", true).commit()) {
+                .putBoolean("isFavouritesReloadNeeded", true).commit()) {
             throw new IllegalStateException("Unable to save favourite record");
         }
     }

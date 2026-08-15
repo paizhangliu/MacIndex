@@ -210,16 +210,22 @@ class PrefsHelper {
 
     public static boolean isNewVersion(final Context thisContext) {
         try {
-            final int lastKnownVersion = getIntPrefs("lastKnownVersion", thisContext);
-            if (lastKnownVersion < BuildConfig.VERSION_CODE) {
-                return true;
-            } else if (lastKnownVersion == BuildConfig.VERSION_CODE) {
-                DebugHelper.log("VersionControl", "No new known version");
-                return false;
-            } else {
+            final SharedPreferences prefsFile = thisContext.getSharedPreferences(
+                    PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+            // A restored or damaged preference with the wrong type is treated as an
+            // unregistered version. registerNewVersion() will normalize it together
+            // with every other known preference in its single transaction.
+            final int lastKnownVersion = getStoredInt(prefsFile, "lastKnownVersion", 0);
+            if (lastKnownVersion > BuildConfig.VERSION_CODE) {
                 Log.e("VersionControl", "Newer version was already registered.");
                 throw new IllegalStateException();
             }
+            if (lastKnownVersion < BuildConfig.VERSION_CODE
+                    || hasKnownPreferenceTypeMismatch(prefsFile)) {
+                return true;
+            }
+            DebugHelper.log("VersionControl", "No new known version");
+            return false;
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e,
                     "VersionControl", "Downgrading is not allowed. Please clear the preference file.");
@@ -229,11 +235,16 @@ class PrefsHelper {
 
     public static boolean registerNewVersion(final Context thisContext) {
         try {
-            final int lastKnownVersion = getIntPrefs("lastKnownVersion", thisContext);
-            if (lastKnownVersion < BuildConfig.VERSION_CODE) {
+            final SharedPreferences prefsFile = thisContext.getSharedPreferences(
+                    PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+            final int lastKnownVersion = getStoredInt(prefsFile, "lastKnownVersion", 0);
+            if (lastKnownVersion > BuildConfig.VERSION_CODE) {
+                Log.e("VersionControl", "Newer version was already registered.");
+                throw new IllegalStateException();
+            }
+            if (lastKnownVersion < BuildConfig.VERSION_CODE
+                    || hasKnownPreferenceTypeMismatch(prefsFile)) {
                 Log.w("VersionControl", "Registering new known version");
-                final SharedPreferences prefsFile = thisContext.getSharedPreferences(
-                        PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
                 final SharedPreferences.Editor prefsEditor = prefsFile.edit();
                 final MachineHelper machineHelper = MainActivity.getMachineHelper();
                 if (machineHelper == null) {
@@ -262,6 +273,8 @@ class PrefsHelper {
                 prefsEditor.putString("userComments", comments.value);
                 prefsEditor.putString("userFavourites", favourites.value);
                 prefsEditor.putString("userCompare", compares.value);
+
+                normalizeKnownPreferenceTypes(prefsFile, prefsEditor);
 
                 final String manufacturer = getStoredString(
                         prefsFile, "lastMainManufacturer");
@@ -305,13 +318,9 @@ class PrefsHelper {
                     throw new IllegalStateException();
                 }
                 return true;
-            } else if (lastKnownVersion == BuildConfig.VERSION_CODE) {
-                DebugHelper.log("VersionControl", "No new known version");
-                return true;
-            } else {
-                Log.e("VersionControl", "Newer version was already registered.");
-                throw new IllegalStateException();
             }
+            DebugHelper.log("VersionControl", "No new known version");
+            return true;
         } catch (Exception e) {
             ExceptionHelper.handleException(thisContext, e,
                     "VersionControl", "Unable to register the current version.");
@@ -386,6 +395,56 @@ class PrefsHelper {
                                     final String prefsName, final int defaultValue) {
         final Object storedValue = prefsFile.getAll().get(prefsName);
         return storedValue instanceof Integer ? (Integer) storedValue : defaultValue;
+    }
+
+    private static void normalizeKnownPreferenceTypes(final SharedPreferences prefsFile,
+                                                      final SharedPreferences.Editor prefsEditor) {
+        final Map<String, ?> storedValues = prefsFile.getAll();
+        for (Map.Entry<String, Object> defaultEntry : DEFAULT_VALUES.entrySet()) {
+            final String prefsName = defaultEntry.getKey();
+            if (prefsName.equals("userComments") || prefsName.equals("userFavourites")
+                    || prefsName.equals("userCompare") || !storedValues.containsKey(prefsName)) {
+                continue;
+            }
+
+            final Object defaultValue = defaultEntry.getValue();
+            final Object storedValue = storedValues.get(prefsName);
+            if (storedValue != null && storedValue.getClass().equals(defaultValue.getClass())) {
+                continue;
+            }
+
+            if (defaultValue instanceof Boolean) {
+                prefsEditor.putBoolean(prefsName, (Boolean) defaultValue);
+            } else if (defaultValue instanceof Integer) {
+                prefsEditor.putInt(prefsName, (Integer) defaultValue);
+            } else if (defaultValue instanceof String) {
+                prefsEditor.putString(prefsName, (String) defaultValue);
+            } else {
+                throw new IllegalStateException("Unsupported preference type: " + prefsName);
+            }
+        }
+    }
+
+    private static boolean hasKnownPreferenceTypeMismatch(
+            final SharedPreferences prefsFile) {
+        final Map<String, ?> storedValues = prefsFile.getAll();
+        for (Map.Entry<String, Object> defaultEntry : DEFAULT_VALUES.entrySet()) {
+            if (!storedValues.containsKey(defaultEntry.getKey())) {
+                continue;
+            }
+            final Object storedValue = storedValues.get(defaultEntry.getKey());
+            if (storedValue == null
+                    || !storedValue.getClass().equals(defaultEntry.getValue().getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean hasKnownPreferenceTypeMismatch(final Context thisContext) {
+        final SharedPreferences prefsFile = thisContext.getSharedPreferences(
+                PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        return hasKnownPreferenceTypeMismatch(prefsFile);
     }
 
     // https://stackoverflow.com/questions/6609414/how-do-i-programmatically-restart-an-android-app

@@ -40,6 +40,7 @@ public class SpecsActivity extends AppCompatActivity {
     private int machineID = -1;
 
     private String[] navigationUIDs = {};
+    private boolean forceNavigationButtons = false;
 
     private int machineIDPosition = -1;
 
@@ -105,6 +106,7 @@ public class SpecsActivity extends AppCompatActivity {
             final Intent intent = getIntent();
             navigationUIDs = intent.getStringArrayExtra("navigationUIDs");
             thisUID = intent.getStringExtra("machineUID");
+            forceNavigationButtons = intent.getBooleanExtra("forceNavigationButtons", false);
 
             if (navigationUIDs == null || thisUID == null) {
                 throw new IllegalArgumentException();
@@ -187,7 +189,8 @@ public class SpecsActivity extends AppCompatActivity {
 
     private void initialize() {
         DebugHelper.log("SpecsInitialize", "Machine ID " + machineID);
-        if (PrefsHelper.getBooleanPrefs("isUseNavButtons", this) && navigationUIDs.length > 1) {
+        if ((forceNavigationButtons || PrefsHelper.getBooleanPrefs("isUseNavButtons", this))
+                && navigationUIDs.length > 1) {
             initButtons();
         }
         getSpecs();
@@ -774,6 +777,7 @@ public class SpecsActivity extends AppCompatActivity {
         final Intent newMachine = new Intent(SpecsActivity.this, SpecsActivity.class);
         newMachine.putExtra("machineUID", thisUID);
         newMachine.putExtra("navigationUIDs", navigationUIDs);
+        newMachine.putExtra("forceNavigationButtons", forceNavigationButtons);
         startActivity(newMachine);
         finish();
     }

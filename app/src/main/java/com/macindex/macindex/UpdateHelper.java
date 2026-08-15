@@ -3,12 +3,20 @@ package com.macindex.macindex;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.DefaultLifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +35,7 @@ class UpdateHelper {
 
     private static boolean automaticallyChecked = false;
 
-    public static synchronized void checkAutomatically(final Activity thisActivity) {
+    public static synchronized void checkAutomatically(final AppCompatActivity thisActivity) {
         if (automaticallyChecked
                 || !PrefsHelper.getBooleanPrefs("isAutoCheckUpdate", thisActivity)) {
             return;
@@ -36,19 +44,22 @@ class UpdateHelper {
         check(thisActivity, false);
     }
 
-    public static void checkManually(final Activity thisActivity) {
+    public static void checkManually(final AppCompatActivity thisActivity) {
         check(thisActivity, true);
     }
 
-    private static void check(final Activity thisActivity, final boolean isManual) {
-        final ProgressDialog waitDialog;
+    private static void check(final AppCompatActivity thisActivity, final boolean isManual) {
+        final WeakReference<AppCompatActivity> activityReference =
+                new WeakReference<>(thisActivity);
+        final WeakReference<UpdateProgressDialog> waitDialogReference;
         if (isManual) {
-            waitDialog = new ProgressDialog(thisActivity);
+            final UpdateProgressDialog waitDialog = new UpdateProgressDialog(thisActivity);
             waitDialog.setMessage(thisActivity.getString(R.string.loading_update));
             waitDialog.setCancelable(false);
             waitDialog.show();
+            waitDialogReference = new WeakReference<>(waitDialog);
         } else {
-            waitDialog = null;
+            waitDialogReference = null;
         }
 
         new Thread(() -> {
@@ -62,17 +73,21 @@ class UpdateHelper {
 
             final UpdateInformation finalLatestUpdate = latestUpdate;
             final Exception finalUpdateError = updateError;
-            thisActivity.runOnUiThread(() -> {
-                if (waitDialog != null && waitDialog.isShowing()) {
-                    waitDialog.dismiss();
-                }
-                if (!isActivityAvailable(thisActivity)) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                final AppCompatActivity currentActivity = activityReference.get();
+                if (currentActivity == null || !isActivityAvailable(currentActivity)) {
                     return;
+                }
+                if (waitDialogReference != null) {
+                    final UpdateProgressDialog waitDialog = waitDialogReference.get();
+                    if (waitDialog != null) {
+                        waitDialog.finish();
+                    }
                 }
                 if (finalUpdateError != null) {
                     Log.w("UpdateHelper", "Unable to check for updates.", finalUpdateError);
                     if (isManual) {
-                        showCheckFailed(thisActivity);
+                        showCheckFailed(currentActivity);
                     }
                     return;
                 }
@@ -82,20 +97,20 @@ class UpdateHelper {
                             finalLatestUpdate.version, BuildConfig.VERSION_NAME);
                     if (comparison <= 0) {
                         if (isManual) {
-                            showUpToDate(thisActivity);
+                            showUpToDate(currentActivity);
                         }
                         return;
                     }
                     if (!shouldNotifyUpdate(finalLatestUpdate.version,
-                            PrefsHelper.getStringPrefs("skippedUpdateVersion", thisActivity),
+                            PrefsHelper.getStringPrefs("skippedUpdateVersion", currentActivity),
                             isManual)) {
                         return;
                     }
-                    showUpdateAvailable(thisActivity, finalLatestUpdate);
+                    showUpdateAvailable(currentActivity, finalLatestUpdate);
                 } catch (Exception e) {
                     Log.w("UpdateHelper", "Unable to compare update versions.", e);
                     if (isManual) {
-                        showCheckFailed(thisActivity);
+                        showCheckFailed(currentActivity);
                     }
                 }
             });
@@ -282,6 +297,33 @@ class UpdateHelper {
     private static boolean isActivityAvailable(final Activity thisActivity) {
         return !thisActivity.isFinishing()
                 && !thisActivity.isDestroyed();
+    }
+
+    private static class UpdateProgressDialog extends ProgressDialog
+            implements DefaultLifecycleObserver {
+
+        private LifecycleOwner owner;
+
+        private UpdateProgressDialog(final AppCompatActivity activity) {
+            super(activity);
+            owner = activity;
+            owner.getLifecycle().addObserver(this);
+        }
+
+        @Override
+        public void onDestroy(@NonNull final LifecycleOwner lifecycleOwner) {
+            finish();
+        }
+
+        private void finish() {
+            if (isShowing()) {
+                dismiss();
+            }
+            if (owner != null) {
+                owner.getLifecycle().removeObserver(this);
+                owner = null;
+            }
+        }
     }
 
     private static class UpdateInformation {

@@ -100,8 +100,7 @@ class UserCommentHelper {
         final SharedPreferences prefsFile = thisContext.getSharedPreferences(
                 PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
         if (!prefsFile.edit().putString("userComments", serialize(comments))
-                .putBoolean("isCommentsReloadNeeded", true)
-                .putBoolean("isCompareReloadNeeded", true).commit()) {
+                .putBoolean("isCommentsReloadNeeded", true).commit()) {
             throw new IllegalStateException("Unable to save comment record");
         }
     }

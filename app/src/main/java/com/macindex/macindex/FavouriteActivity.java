@@ -555,12 +555,16 @@ public class FavouriteActivity extends AppCompatActivity {
                             newFolderDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
                                 try {
                                     final String inputtedName = folderName.getText().toString().trim();
+                                    final int folderIndex = folderOptions.getCheckedRadioButtonId();
+                                    if (inputtedName.equals(allFolders[folderIndex])) {
+                                        newFolderDialogCreated.dismiss();
+                                        return;
+                                    }
                                     // Check if the input is legal
                                     if (validateFolderName(inputtedName, allFolders, this)) {
                                         final List<UserFavouriteHelper.Folder> folders =
                                                 UserFavouriteHelper.read(this);
-                                        folders.get(folderOptions.getCheckedRadioButtonId()).name =
-                                                inputtedName;
+                                        folders.get(folderIndex).name = inputtedName;
                                         UserFavouriteHelper.write(folders, this);
                                         initFavourites(true);
                                         newFolderDialogCreated.dismiss();

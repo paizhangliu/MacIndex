@@ -427,7 +427,7 @@
                         android:id="@+id/processorImageLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                     </LinearLayout>
@@ -499,7 +499,7 @@
                         android:id="@+id/graphicsImageLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                     </LinearLayout>

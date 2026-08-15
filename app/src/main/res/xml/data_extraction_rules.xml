@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- The bundled database is reconstructed from the installed APK. -->
+        <exclude domain="database" path="specs.db" />
+        <exclude domain="database" path="specs.db-journal" />
+        <exclude domain="database" path="specs.db-shm" />
+        <exclude domain="database" path="specs.db-wal" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="specs.db" />
+        <exclude domain="database" path="specs.db-journal" />
+        <exclude domain="database" path="specs.db-shm" />
+        <exclude domain="database" path="specs.db-wal" />
+    </device-transfer>
+</data-extraction-rules>

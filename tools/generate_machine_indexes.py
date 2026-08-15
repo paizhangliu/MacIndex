@@ -48,7 +48,7 @@ FILTERS = {
             "compact_mac", "mac_ii", "mac_lc", "mac_quadra", "mac_performa",
             "mac_centris", "power_mac", "power_mac_g3_g4_g5", "imac_normal", "emac",
             "mac_mini", "nmac_pro", "imac_pro", "mac_studio", "powerbook_normal",
-            "powerbook_duo", "powerbook_g3_g4_g5", "ibook", "macbook_pro",
+            "powerbook_duo", "powerbook_g3_g4", "ibook", "macbook_pro",
             "macbook_normal", "macbook_air", "macbook_neo",
             "workgroup_server", "apple_network_server", "mac_server", "xserve",
         ),
@@ -57,7 +57,7 @@ FILTERS = {
             "Macintosh Performa", "Macintosh Centris", "Power Macintosh",
             "Power Mac G3/G4/G5", "iMac", "eMac", "Mac mini", "Mac Pro", "iMac Pro",
             "Mac Studio", "Macintosh PowerBook", "Macintosh PowerBook Duo",
-            "PowerBook G3/G4/G5", "iBook", "MacBook Pro", "MacBook", "MacBook Air",
+            "PowerBook G3/G4", "iBook", "MacBook Pro", "MacBook", "MacBook Air",
             "MacBook Neo", "Workgroup Server", "Apple Network Server",
             "Macintosh Server", "Xserve",
         ),
@@ -154,7 +154,7 @@ SORTING_YEAR = re.compile(r"\d{4}\.(?:[1-9]|1[0-2])")
 PROCESSOR_SPEED = re.compile(r"\d+(?:\.\d+)?\s+(?:MHz|GHz)")
 
 PROCESSOR_MODEL_PREFIXES = (
-    "Motorola ", "PowerPC ", "Dual PowerPC ", "Intel Core ", "Intel Xeon ",
+    "Motorola ", "PowerPC ", "Dual PowerPC ", "Dual Apple ", "Intel Core ", "Intel Xeon ",
     "Dual Intel Xeon ", "Quad Intel Xeon ", "Intel Pentium ", "Intel 486",
     "Apple ", "Cyrix ", "AT&T ",
 )
@@ -172,12 +172,11 @@ GRAPHICS_MODEL_PREFIXES = (
 GRAPHICS_DETAIL = re.compile(
     r" (?:(?:up to )?\d+(?:\.\d+)?(?:–\d+(?:\.\d+)?)?"
     r"(?: or \d+(?:\.\d+)?)? (?:KB|MB|GB)|Revision [A-Z]|"
-    r"unified memory architecture)"
+    r"up to \d+-bit|unified memory architecture)"
 )
 
 GRAPHICS_MODEL_ONLY = ("ATI Rage 128 Pro", "Apple 8-core GPU", "Intel GMA 900")
 
-PICTURE_ID = re.compile(r"[a-z0-9_]+")
 IMAGE_VALUE_ID = re.compile(r"[A-Za-z0-9_]+")
 MACHINE_UID = re.compile(r"MI\d{6}")
 UID_SEQUENCE_PATH = Path(__file__).with_name("machine_uid_sequence")
@@ -189,8 +188,8 @@ DIRECTORY_VALUE_PATTERNS = {
     # The original iMac uses the genuine identifier iMac,1.
     "sident": re.compile(r"[A-Za-z][A-Za-z0-9]*\d*,\d+"),
     "sgestalt": re.compile(r"\d+"),
-    # Apple currently uses both four- and five-character parts before xx.
-    "sorder": re.compile(r"[A-Z0-9]{4,5}xx/[A-Z]"),
+    # Apple order-number stems in this catalog contain exactly five characters.
+    "sorder": re.compile(r"[A-Z0-9]{5}xx/[A-Z]"),
     # A handful of early EMC numbers use C or -1 revisions.
     "semc": re.compile(r"\d{3,4}(?:C|-1)?"),
 }
@@ -600,9 +599,9 @@ def load_directory(connection, picture_assets):
             processor, graphics = row[-2:]
             if picture is None:
                 fail(f"Missing picture for {table_name}/{database_id}")
-            if PICTURE_ID.fullmatch(picture) is None:
+            if MACHINE_UID.fullmatch(picture) is None:
                 fail(
-                    f'Illegal picture ID "{picture}" for '
+                    f'Illegal picture UID "{picture}" for '
                     f"{table_name}/{database_id}"
                 )
             if picture not in picture_assets:
@@ -633,6 +632,13 @@ def load_directory(connection, picture_assets):
             machines.append(machine)
     if not directory:
         fail("Machine directory is empty")
+    machine_uids = {machine["uid"] for machine in machines}
+    unknown_picture_uids = picture_assets - machine_uids
+    if unknown_picture_uids:
+        fail(
+            "Machine picture assets do not belong to current machine UIDs: "
+            + ", ".join(sorted(unknown_picture_uids))
+        )
     unused_picture_assets = picture_assets - used_picture_assets
     if unused_picture_assets:
         fail(

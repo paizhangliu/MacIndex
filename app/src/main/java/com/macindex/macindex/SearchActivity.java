@@ -104,24 +104,28 @@ public class SearchActivity extends AppCompatActivity {
         resetSearchPrompt();
 
         if (savedInstanceState != null) {
-            searchText.setQuery(savedInstanceState.getCharSequence("searchInput"), false);
-            final String[] savedUIDs = savedInstanceState.getStringArray("machineUIDs");
-            if (savedUIDs != null) {
-                try {
-                    positions = new int[savedUIDs.length];
-                    for (int i = 0; i < savedUIDs.length; i++) {
-                        positions[i] = MainActivity.getMachineHelper().getMachineID(savedUIDs[i]);
+            final CharSequence savedSearchInput = savedInstanceState
+                    .getCharSequence("searchInput", "");
+            searchText.setQuery(savedSearchInput, false);
+            final String restoredSearchInput = savedSearchInput.toString().trim();
+            if (!restoredSearchInput.isEmpty()) {
+                final String[] savedUIDs = savedInstanceState.getStringArray("machineUIDs");
+                if (savedUIDs != null) {
+                    try {
+                        positions = new int[savedUIDs.length];
+                        for (int i = 0; i < savedUIDs.length; i++) {
+                            positions[i] = MainActivity.getMachineHelper().getMachineID(savedUIDs[i]);
+                        }
+                    } catch (IllegalArgumentException ignored) {
+                        // The saved search may belong to an older database revision.
+                        positions = null;
                     }
-                } catch (IllegalArgumentException ignored) {
-                    // The saved search may belong to an older database revision.
-                    positions = null;
                 }
+                final boolean reloadPositions = !savedInstanceState.getBoolean("loadComplete")
+                        || positions == null;
+                performSearch(reloadPositions ? restoredSearchInput : null,
+                        reloadPositions, false);
             }
-            final boolean reloadPositions = !savedInstanceState.getBoolean("loadComplete")
-                    || positions == null;
-            performSearch(reloadPositions
-                    ? savedInstanceState.getCharSequence("searchInput").toString() : null,
-                    reloadPositions, false);
         }
 
     }
@@ -384,6 +388,7 @@ public class SearchActivity extends AppCompatActivity {
         if (waitDialog != null && waitDialog.isShowing()) {
             waitDialog.dismiss();
         }
+        positions = null;
         clearSearch();
     }
 
@@ -495,7 +500,7 @@ public class SearchActivity extends AppCompatActivity {
                             for (int i = 0; i < searchColumns.length; i++) {
                                 // For order number: use the part before the regional suffix.
                                 if (searchColumns[i].equals("sorder")) {
-                                    if (searchInput.length() < 4) {
+                                    if (searchInput.length() < 5) {
                                         // omit this
                                         subPositions[i] = new int[0];
                                         continue;
@@ -511,14 +516,6 @@ public class SearchActivity extends AppCompatActivity {
                                 }
                                 subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
                                         manufacturerForRequest, rawMatchParam, true);
-                                // A few current part numbers only have four characters before xx.
-                                if (searchColumns[i].equals("sorder")
-                                        && subPositions[i].length == 0
-                                        && rawSearchInput.length() > 4) {
-                                    subPositions[i] = MainActivity.getMachineHelper().searchHelper(
-                                            searchColumns[i], rawSearchInput.substring(0, 4),
-                                            manufacturerForRequest, false, true);
-                                }
                                 resultCount += subPositions[i].length;
                             }
 

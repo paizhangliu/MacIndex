@@ -100,8 +100,11 @@ class SpecsHelper {
                                         if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
                                                 || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
                                                 || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
+                                                || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
                                                 || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                                                || thisType == AudioDeviceInfo.TYPE_HEARING_AID) {
+                                                || thisType == AudioDeviceInfo.TYPE_HEARING_AID
+                                                || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                                                && thisType == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
                                             DebugHelper.log("VolWarning", "Earphone detected");
                                             currentOutputDevice = true;
                                             break;

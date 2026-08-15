@@ -248,6 +248,64 @@ public class MachineDirectoryTest {
     }
 
     @Test
+    public void currentVersionWithWrongPreferenceTypesRegistersAgain() {
+        final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
+                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        assertTrue(prefsFile.edit().clear()
+                .putInt("lastKnownVersion", BuildConfig.VERSION_CODE)
+                .putString("isAutoCheckUpdate", "true")
+                .putBoolean("appearanceMode", true)
+                .putInt("pendingUpgradeReport", 7)
+                .putInt("lastMainManufacturer", 7)
+                .putString("lastSearchFiltersSpinner", "2")
+                .putString("isCompareReloadNeeded", "false")
+                .putString("userComments", "{\"schema\":1,\"comments\":["
+                        + "{\"machine\":\"MI000001\",\"text\":\"Keep\"}]}")
+                .putString("obsoletePreference", "remove")
+                .commit());
+
+        try {
+            assertTrue(PrefsHelper.isNewVersion(applicationContext));
+            assertTrue(PrefsHelper.hasKnownPreferenceTypeMismatch(applicationContext));
+            assertTrue(PrefsHelper.registerNewVersion(applicationContext));
+            assertFalse(PrefsHelper.hasKnownPreferenceTypeMismatch(applicationContext));
+
+            final Map<String, ?> upgraded = prefsFile.getAll();
+            assertEquals(BuildConfig.VERSION_CODE, upgraded.get("lastKnownVersion"));
+            assertEquals(true, upgraded.get("isAutoCheckUpdate"));
+            assertEquals(ThemeHelper.APPEARANCE_SYSTEM, upgraded.get("appearanceMode"));
+            assertEquals("", upgraded.get("pendingUpgradeReport"));
+            assertEquals("all", upgraded.get("lastMainManufacturer"));
+            assertEquals(0, upgraded.get("lastSearchFiltersSpinner"));
+            assertEquals(false, upgraded.get("isCompareReloadNeeded"));
+            assertFalse(upgraded.containsKey("obsoletePreference"));
+            assertEquals(1, UserCommentHelper.read(applicationContext).size());
+        } finally {
+            assertTrue(prefsFile.edit().clear()
+                    .putInt("lastKnownVersion", BuildConfig.VERSION_CODE).commit());
+        }
+    }
+
+    @Test
+    public void wrongTypeVersionMarkerIsReplacedDuringRegistration() {
+        final SharedPreferences prefsFile = applicationContext.getSharedPreferences(
+                PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE);
+        assertTrue(prefsFile.edit().clear()
+                .putString("lastKnownVersion", "29")
+                .commit());
+
+        try {
+            assertTrue(PrefsHelper.isNewVersion(applicationContext));
+            assertTrue(PrefsHelper.registerNewVersion(applicationContext));
+            assertEquals(BuildConfig.VERSION_CODE,
+                    prefsFile.getInt("lastKnownVersion", 0));
+        } finally {
+            assertTrue(prefsFile.edit().clear()
+                    .putInt("lastKnownVersion", BuildConfig.VERSION_CODE).commit());
+        }
+    }
+
+    @Test
     public void legacyShareLinksResolveThroughPackagedOldNames() {
         final Map<String, String> oldMachineNames =
                 OldMachineNamesHelper.read(applicationContext);
@@ -261,6 +319,22 @@ public class MachineDirectoryTest {
                 comparison[0].toLowerCase(Locale.ROOT)));
         assertEquals("MI000190", oldMachineNames.get(
                 comparison[1].toLowerCase(Locale.ROOT)));
+    }
+
+    @Test
+    public void currentUIDShareLinksDoNotNeedTheLegacyNameAsset() {
+        assertArrayEquals(new String[]{"MI000001", "MI000439"},
+                MainActivity.resolveSharedMachines(
+                        new String[]{"MI000001", "mi000439"},
+                        MainActivity.getMachineHelper(), null));
+    }
+
+    @Test
+    public void legacyAndCurrentShareLinksResolveTogether() {
+        assertArrayEquals(new String[]{"MI000023", "MI000439"},
+                MainActivity.resolveSharedMachines(
+                        new String[]{"Macintosh LC 520", "MI000439"},
+                        MainActivity.getMachineHelper(), applicationContext));
     }
 
     @Test

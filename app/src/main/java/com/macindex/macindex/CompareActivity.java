@@ -214,9 +214,6 @@ public class CompareActivity extends AppCompatActivity {
         release();
         try {
             final String[] sharedComparison = getSharedComparison();
-            if (sharedComparison == null) {
-                PrefsHelper.editPrefs("isCompareReloadNeeded", false, this);
-            }
             final UserCompareHelper.State compareState = UserCompareHelper.read(this);
             final List<String> compareUIDs = compareState.machineUIDs;
             final LinearLayout emptyLayout = findViewById(R.id.emptyLayout);
@@ -263,6 +260,9 @@ public class CompareActivity extends AppCompatActivity {
                 setInitialized(false);
                 setAbleToManage(!compareUIDs.isEmpty());
                 clearComparing(this);
+            }
+            if (sharedComparison == null) {
+                PrefsHelper.editPrefs("isCompareReloadNeeded", false, this);
             }
         } catch (Exception e) {
             ExceptionHelper.handleException(this, e, "initCompare",
@@ -626,8 +626,11 @@ public class CompareActivity extends AppCompatActivity {
     }
 
     private static void clearComparing(final Context thisContext) {
-        Log.w("CompareActivity", "Clearing left/right parameters");
         final UserCompareHelper.State state = UserCompareHelper.read(thisContext);
+        if (state.leftUID.isEmpty() && state.rightUID.isEmpty()) {
+            return;
+        }
+        Log.w("CompareActivity", "Clearing left/right parameters");
         UserCompareHelper.clearSelection(state);
         UserCompareHelper.write(state, thisContext);
     }

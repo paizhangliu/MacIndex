@@ -172,7 +172,6 @@
     <string name="last_one">已经是最后一个机型</string>
     <string name="loading_category">正在加载数据库</string>
     <string name="loading_search">正在搜索</string>
-    <string name="loading_comments">正在加载备注</string>
     <string name="loading_favourites">正在加载收藏</string>
     <string name="loading_update">正在检查更新</string>
     <string name="comments_not_available_tips">尚未保存任何备注</string>
@@ -223,5 +222,6 @@
     <string name="share_link_generated">分享链接已复制</string>
     <string name="share_menu_null">请至少选择一项以继续</string>
     <string name="share_menu_unavailable">%1$s（N/A）</string>
+    <string name="share_main_decode_failed_title">无法打开分享链接</string>
     <string name="share_main_decode_failed">无法读取该分享链接，或其中一个或多个机型在当前版本中不存在。</string>
 </resources>

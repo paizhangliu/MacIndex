@@ -179,7 +179,6 @@
     <string name="last_one">Already the last machine</string>
     <string name="loading_category">Loading Database</string>
     <string name="loading_search">Searching</string>
-    <string name="loading_comments">Loading Comments</string>
     <string name="loading_favourites">Loading Bookmarks</string>
     <string name="loading_update">Checking for Updates</string>
     <string name="comments_not_available_tips">No comments have been saved yet</string>
@@ -230,5 +229,6 @@
     <string name="share_link_generated">Share link copied</string>
     <string name="share_menu_null">Select at least one item to continue</string>
     <string name="share_menu_unavailable">%1$s (N/A)</string>
+    <string name="share_main_decode_failed_title">Unable to Open Shared Link</string>
     <string name="share_main_decode_failed">This share link cannot be read, or one or more machines are unavailable in this version.</string>
 </resources>

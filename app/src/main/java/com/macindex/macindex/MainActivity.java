@@ -62,9 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout = null;
 
-    private String thisManufacturer = null;
+    private String thisManufacturer = "all";
 
-    private String thisFilter = null;
+    private String thisFilter = "names";
 
     private int[][] loadPositions = {};
 
@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             isMainRunning = true;
-            thisManufacturer = PrefsHelper.getStringPrefs("lastMainManufacturer", this);
-            thisFilter = PrefsHelper.getStringPrefs("lastMainFilter", this);
             initMenu();
             waitDialog = new ProgressDialog(MainActivity.this);
             waitDialog.setMessage(getString(R.string.loading_category));
@@ -160,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void completeCreation(final Bundle savedInstanceState) {
         try {
+            // Version registration has already normalized all known preference
+            // types before normal getters are allowed to read them.
+            thisManufacturer = PrefsHelper.getStringPrefs("lastMainManufacturer", this);
+            thisFilter = PrefsHelper.getStringPrefs("lastMainFilter", this);
             boolean shouldCheckForUpdates = true;
             if (savedInstanceState == null) {
                 // Creating activity due to user
@@ -288,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
             menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
             menu.findItem(R.id.mainDebugResetItem).setVisible(false);
+            menu.findItem(R.id.mainDebugBrowseAllItem).setVisible(false);
         }
         return true;
     }
@@ -309,6 +312,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (itemID == R.id.mainDebugResetItem) {
             Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
             PrefsHelper.clearPrefs(this);
+        } else if (itemID == R.id.mainDebugBrowseAllItem) {
+            final String[] navigationUIDs = new String[machineHelper.getMachineCount()];
+            for (int i = 0; i < navigationUIDs.length; i++) {
+                navigationUIDs[i] = machineHelper.getUID(i);
+            }
+            final Intent intent = new Intent(this, SpecsActivity.class);
+            intent.putExtra("machineUID", navigationUIDs[0]);
+            intent.putExtra("navigationUIDs", navigationUIDs);
+            intent.putExtra("forceNavigationButtons", true);
+            startActivity(intent);
         } else if (itemID == R.id.mainExpandAllItem) {
             setAllCategoriesVisibility(true);
         } else if (itemID == R.id.mainCollapseAllItem) {
@@ -926,37 +939,62 @@ public class MainActivity extends AppCompatActivity {
 
     private void decodeDeepLink(final String deepLink) {
         try {
-            final Map<String, String> oldMachineNames = OldMachineNamesHelper.read(this);
             if (ShareLinkHelper.isComparison(deepLink)) {
-                final String[] sharedMachines = ShareLinkHelper.decodeComparison(deepLink);
-                openComparison(new String[]{
-                        resolveSharedMachine(sharedMachines[0], oldMachineNames),
-                        resolveSharedMachine(sharedMachines[1], oldMachineNames)
-                });
+                openComparison(resolveSharedMachines(
+                        ShareLinkHelper.decodeComparison(deepLink), machineHelper, this));
                 return;
             }
 
-            final String machineUID = resolveSharedMachine(
-                    ShareLinkHelper.decode(deepLink), oldMachineNames);
+            final String machineUID = resolveSharedMachines(
+                    new String[]{ShareLinkHelper.decode(deepLink)}, machineHelper, this)[0];
             DebugHelper.log("DeepLinkDecode", "Got machine " + machineUID);
             final int machineID = machineHelper.getMachineID(machineUID);
             SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
-        } catch (Exception e) {
+        } catch (MachineHelper.UnknownMachineUIDException e) {
+            ExceptionHelper.handleException(this, e,
+                    "DeepLinkDecode", "A trusted machine UID is unavailable.");
+        } catch (IllegalArgumentException e) {
             Log.w("DeepLinkDecode", "Unable to process the link due to illegal parameter.");
-            Toast.makeText(this, R.string.share_main_decode_failed, Toast.LENGTH_LONG).show();
+            ExceptionHelper.showMessageDialog(this, R.string.share_main_decode_failed_title,
+                    R.string.share_main_decode_failed);
+        } catch (Exception e) {
+            ExceptionHelper.handleException(this, e,
+                    "DeepLinkDecode", "Unable to process the share link.");
         }
     }
 
-    private String resolveSharedMachine(final String machine,
-                                        final Map<String, String> oldMachineNames) {
-        String machineUID = machineHelper.resolveUID(machine);
-        if (machineUID == null) {
-            machineUID = oldMachineNames.get(machine.trim().toLowerCase(Locale.ROOT));
+    static String[] resolveSharedMachines(final String[] machines,
+                                          final MachineHelper thisMachineHelper,
+                                          final Context thisContext) {
+        final String[] machineUIDs = new String[machines.length];
+        boolean needsLegacyNames = false;
+        for (int i = 0; i < machines.length; i++) {
+            machineUIDs[i] = thisMachineHelper.resolveUID(machines[i]);
+            needsLegacyNames |= machineUIDs[i] == null;
         }
-        if (machineUID == null) {
-            throw new IllegalArgumentException("Unknown shared machine");
+
+        if (!needsLegacyNames) {
+            return machineUIDs;
         }
-        return machineUID;
+
+        // The compatibility asset is irrelevant to current UID links. Load it
+        // only when at least one old name actually needs translating.
+        final Map<String, String> oldMachineNames = OldMachineNamesHelper.read(thisContext);
+        for (int i = 0; i < machines.length; i++) {
+            if (machineUIDs[i] != null) {
+                continue;
+            }
+            final String legacyUID = oldMachineNames.get(
+                    machines[i].trim().toLowerCase(Locale.ROOT));
+            if (legacyUID == null) {
+                throw new IllegalArgumentException("Unknown shared machine");
+            }
+            machineUIDs[i] = thisMachineHelper.resolveUID(legacyUID);
+            if (machineUIDs[i] == null) {
+                throw new MachineHelper.UnknownMachineUIDException(legacyUID);
+            }
+        }
+        return machineUIDs;
     }
 
     private void openComparison(final String[] machineUIDs) {
@@ -981,7 +1019,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Verify if the application was killed due to system's process termination.
     public static boolean validateOperation(final Context context) {
-        if (PrefsHelper.getIntPrefs("lastKnownVersion", context) != BuildConfig.VERSION_CODE) {
+        if (PrefsHelper.getIntPrefs("lastKnownVersion", context) != BuildConfig.VERSION_CODE
+                || PrefsHelper.hasKnownPreferenceTypeMismatch(context)) {
             Log.w("MainValidate", "Version registration is required.");
             PrefsHelper.triggerRebirth(context);
             return false;
