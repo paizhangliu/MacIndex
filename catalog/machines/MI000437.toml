@@ -1,0 +1,81 @@
+category = "mac_studio"
+picture_asset_key = "MI000437"
+name = "Mac Studio (2022)"
+introductions = [{ year = 2022, month = 3 }]
+
+model_numbers = [{ value = "A2615" }]
+identifiers = [
+  { value = "Mac13,1", qualifier = "M1 Max" },
+  { value = "Mac13,2", qualifier = "M1 Ultra" },
+]
+order_numbers = [
+  { value = "MJMV2", revisions = ["A"], qualifier = "M1 Max" },
+  { value = "MJMW3", revisions = ["A"], qualifier = "M1 Ultra" },
+]
+emc_numbers = [{ value = "3988" }]
+
+codenames = [{ value = "J375c", qualifier = "M1 Max" }, { value = "J375d", qualifier = "M1 Ultra" }]
+
+processor = '''
+**Apple M1 Max "Jade 1C"** TSMC N5 process, 64-bit, 10 cores (8 "Firestorm" P-cores, 2 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 400 GB/s memory bandwidth
+**Apple M1 Ultra "Jade 2C"** TSMC N5 process, 64-bit, 20 cores (16 "Firestorm" P-cores, 4 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 96 MB system-level cache, 32-core Neural Engine, Secure Enclave, 800 GB/s memory bandwidth'''
+processor_family_keys = ["m1"]
+processor_logo_keys = [
+  "m1max",
+  "m1ultra",
+]
+
+graphics = '''
+**Apple 24-core GPU** unified memory architecture (M1 Max)
+**Apple 32-core GPU** unified memory architecture (M1 Max)
+**Apple 48-core GPU** unified memory architecture (M1 Ultra)
+**Apple 64-core GPU** unified memory architecture (M1 Ultra)'''
+
+display = "M1 Max and M1 Ultra: up to five external displays simultaneously, comprising four 6K displays at 60 Hz via Thunderbolt and one 4K display at 60 Hz via HDMI"
+ram = '''
+32 GB standard (M1 Max)
+64 GB standard (M1 Ultra)
+64 GB configurable (M1 Max)
+128 GB configurable (M1 Ultra)
+64 GB maximum (M1 Max)
+128 GB maximum (M1 Ultra)
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 12.3
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M1 Max)
+1, 2, 4, or 8 TB SSD configurable (M1 Max)
+1 TB SSD standard (M1 Ultra)
+2, 4, or 8 TB SSD configurable (M1 Ultra)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.0
+1 - Built-in speaker'''
+expansion = '''
+1 - 10Gb Ethernet port (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+4 - Rear Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+2 - Front USB-C ports (up to 10 Gbps; no display output; M1 Max)
+2 - Front Thunderbolt 4 / USB 4 ports (up to 40 Gbps; M1 Ultra)
+1 - HDMI port (up to 4K at 60 Hz)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - Front SDXC card slot (UHS-II)'''
+design = '''
+Silver
+5.9 lbs. (M1 Max)
+7.9 lbs. (M1 Ultra)
+3.7" H x 7.7" W x 7.7" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac Studio \"M1 Max\" 10 CPU/24 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m1-max-10-core-cpu-24-core-gpu-2022-specs.html" },
+  { label = "Mac Studio \"M1 Max\" 10 CPU/32 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m1-max-10-core-cpu-32-core-gpu-2022-specs.html" },
+  { label = "Mac Studio \"M1 Ultra\" 20 CPU/48 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m1-ultra-20-core-cpu-48-core-gpu-2022-specs.html" },
+  { label = "Mac Studio \"M1 Ultra\" 20 CPU/64 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m1-ultra-20-core-cpu-64-core-gpu-2022-specs.html" },
+]

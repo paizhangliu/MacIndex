@@ -14,16 +14,22 @@
     <string name="setting_user_data_description">将收藏、备注和比较列表导出为文件，或从文件恢复。</string>
     <string name="user_data_export">导出用户数据</string>
     <string name="user_data_import">导入用户数据</string>
+    <string name="loading_user_data_export">正在导出用户数据</string>
+    <string name="loading_user_data_import">正在读取用户数据</string>
+    <string name="loading_user_data_apply">正在导入用户数据</string>
     <string name="user_data_export_success">用户数据已导出</string>
     <string name="user_data_export_failed">无法导出用户数据</string>
     <string name="user_data_import_invalid">这不是有效的 MacIndex 用户数据文件</string>
     <string name="user_data_import_failed">无法读取用户数据</string>
     <string name="user_data_import_information">此文件包含 %1$d 条备注、%2$d 项收藏（位于 %3$d 个收藏夹中），以及比较列表中的 %4$d 台机型。导入会替换当前设备中保存的这些用户数据。</string>
-    <string name="user_data_import_removed">其中 %1$d 项已无法与当前数据库匹配。导入时将删除这些内容，并在之后列出详情。</string>
+    <string name="user_data_import_removed">其中 %1$d 项已无法与当前机型目录匹配，导入时将删除这些内容。</string>
     <string name="user_data_import_success">用户数据已导入</string>
-    <string name="setting_everymac">直接打开 EveryMac</string>
-    <string name="setting_everymac_description">直接打开当前机型对应的 EveryMac 页面，不再进入参数页。若有多个配置，会先让你选择。</string>
-    <string name="setting_everymac_warning_content">此设置同时影响主页和搜索页，并会停用部分功能。</string>
+    <string name="user_data_choose_location">选择其他位置</string>
+    <string name="user_data_choose_file">选择其他文件</string>
+    <string name="user_data_export_picker_failed">MacIndex 无法打开系统文件选择器。请确认设备上有可用的文件管理器，然后重试。</string>
+    <string name="user_data_import_picker_failed">MacIndex 无法打开系统文件选择器。请确认设备上有可用的文件管理器，然后重试。</string>
+    <string name="user_data_export_prepare_failed">无法准备要导出的已存数据。请检查设备的可用存储空间，然后重试。</string>
+    <string name="user_data_import_apply_failed">无法保存导入的数据。请检查设备的可用存储空间，然后重试。</string>
     <string name="setting_deathsound">启用宕机音</string>
     <string name="setting_deathsound_deathsound_description">在参数页交替播放开机音和宕机音；关闭后只播放开机音。</string>
     <string name="setting_high_vol_warning">高音量警告</string>
@@ -36,8 +42,6 @@
     <string name="setting_randomall_description">只从主页当前选择的 68K、PowerPC、Intel、Apple 芯片或全部机型范围内随机选择。</string>
     <string name="setting_save_main">记住主页状态</string>
     <string name="setting_save_main_description">记住上次选择的分组筛选和浏览方式。</string>
-    <string name="setting_save_search">记住搜索页状态</string>
-    <string name="setting_save_search_description">记住上次选择的分组筛选和搜索方式。</string>
     <string name="setting_save_compare">记住比较页状态</string>
     <string name="setting_save_compare_description">记住上次比较的两个机型及左右顺序。</string>
     <string name="setting_auto_update">自动检查更新</string>
@@ -47,36 +51,30 @@
     <string name="setting_appearance_system">跟随系统</string>
     <string name="setting_appearance_light">日间</string>
     <string name="setting_appearance_dark">夜间</string>
-    <string name="setting_search_open_directly">自动打开唯一结果</string>
-    <string name="setting_search_open_directly_description">搜索结果仅有一个机型时，自动将其打开。</string>
     <string name="setting_section_general">常规</string>
     <string name="setting_section_browsing">浏览</string>
     <string name="setting_section_sound">声音</string>
     <string name="setting_section_data">数据与状态</string>
-    <string name="setting_section_advanced">高级</string>
-    <string name="search_searchBy">搜索方式</string>
-    <string-array name="search_Filters">
-        <item>所有分组</item>
-        <item>68K Macintosh</item>
-        <item>PowerPC Macintosh</item>
-        <item>Intel Macintosh</item>
-        <item>Apple Silicon Macintosh</item>
-    </string-array>
-    <string-array name="search_Options">
-        <item>按机型名称搜索</item>
-        <item>按机型标识符搜索</item>
-    </string-array>
-    <string-array name="search_Tips">
-        <item>机型名称</item>
-        <item>型号 / 部件号 / 机型标识符 / EMC / Gestalt</item>
-    </string-array>
-    <string name="search_noResult">无结果</string>
+    <string name="search_hint">机型名称、开发代号或标识符</string>
+    <string name="search_noResult">没有找到“%1$s”</string>
     <plurals name="search_results">
         <item quantity="other">共找到 %d 个结果</item>
     </plurals>
-    <string name="search_prompt">按回车键开始搜索</string>
-    <string name="search_control_character">搜索词不能包含控制字符</string>
-    <string name="search_overlength">搜索词太长</string>
+    <string name="search_field_name">机型名称</string>
+    <string name="search_field_alias">别名</string>
+    <string name="search_field_codename">开发代号</string>
+    <string name="search_field_model_number">型号</string>
+    <string name="search_field_model_identifier">机型标识符</string>
+    <string name="search_field_gestalt_id">Gestalt 标识符</string>
+    <string name="search_field_part_number">部件号</string>
+    <string name="search_field_emc_number">EMC 号</string>
+    <string name="search_result_field_prefix">%1$s：</string>
+    <string name="search_facet_all">全部</string>
+    <string name="search_facet_with_count">%1$s（%2$d）</string>
+    <string name="machine_row_accessibility">%1$s。%2$s</string>
+    <string name="machine_row_accessibility_favourite">%1$s。已收藏。%2$s</string>
+    <string name="search_prompt">点击键盘上的搜索键开始搜索</string>
+    <string name="search_loading">正在加载…</string>
     <string name="menu_search">机型搜索</string>
     <string name="menu_random">试试手气</string>
     <string name="menu_random_limited_label">试试手气（限制范围）</string>
@@ -103,7 +101,6 @@
     <string name="submenu_specs_comment">编辑备注</string>
     <string name="submenu_specs_share">复制参数</string>
     <string name="submenu_specs_share_link">生成分享链接</string>
-    <string name="submenu_search_reset">重置筛选器与搜索方式</string>
     <string name="submenu_search_SN">Apple 序列号查询</string>
     <string name="submenu_search_everymac">EveryMac 查询</string>
     <string name="submenu_favourite_add">新建收藏夹</string>
@@ -126,6 +123,7 @@
     <plurals name="part_numbers_more">
         <item quantity="other">……另有 %d 项</item>
     </plurals>
+    <string name="codename">开发代号</string>
     <string name="emc">EMC 号</string>
     <string name="processor">处理器</string>
     <string name="graphics">显卡</string>
@@ -140,13 +138,15 @@
     <string name="support">售后状态</string>
     <string name="comment">备注</string>
     <string name="comment_null">暂无备注</string>
-    <string name="comment_length">每个机型的备注最多可输入 500 个字符。</string>
+    <string name="comment_length">每个机型的备注最多可输入 %1$d 个字符。</string>
     <string name="comment_tips">可在备注页查看所有已有备注。</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">确认</string>
     <string name="link_open_failed_title">无法打开链接</string>
     <string name="link_open_failed_message">MacIndex 无法打开此链接。请确认设备上有可用的浏览器，然后重试。</string>
     <string name="link_cancel">取消</string>
+    <string name="action_close">关闭</string>
+    <string name="action_try_again">重试</string>
     <string name="action_delete">删除</string>
     <string name="action_clear">清除</string>
     <string name="action_play_anyway">仍要播放</string>
@@ -156,47 +156,63 @@
     <string name="link_opening">正在打开 EveryMac：%1$s</string>
     <string name="link_message">该机型有多个配置，请选择一个以继续。</string>
     <string name="link_not_available">EveryMac 中没有该机型的对应页面，可能因为它是地区限定或定制型号。</string>
-    <string name="error">内部错误</string>
-    <string name="error_information">请向开发者报告此问题，然后重新启动 MacIndex 以继续。</string>
-    <string name="error_copy_button">复制详情</string>
-    <string name="error_copy_information">错误详情已复制</string>
+    <string name="startup_failure_title">MacIndex 无法启动</string>
+    <string name="startup_catalog_failure_information">内置机型目录无法载入。请更新或重新安装 MacIndex。你的已存数据没有被更改。</string>
+    <string name="startup_user_state_failure_information">你的已存数据暂时无法读取，但并未被删除。请重新启动 MacIndex；如果问题持续，请检查设备的可用存储空间。</string>
+    <string name="user_state_unavailable_title">已存数据暂时不可用</string>
+    <string name="user_state_read_failure_information">MacIndex 已无法继续访问你的已存数据。请先重新启动 MacIndex，再进行其他更改。</string>
     <string name="copy_information_success">信息已复制</string>
-    <string name="error_copy_not_available">没有可复制的信息</string>
+    <string name="copy_failed_information">无法将文本复制到剪贴板，请重试。</string>
+    <string name="copy_not_available">没有可复制的信息</string>
     <string name="upgrade_report_title">已更新已存数据</string>
-    <string name="upgrade_report_information">部分已存数据格式无效，或已无法与当前数据库匹配，因此已被删除。你可以复制下面的详情留存。</string>
+    <string name="upgrade_report_information">部分已存数据格式无效，或已无法与当前机型目录匹配，因此已被删除。你可以复制下面的详情留存。</string>
     <string name="upgrade_report_copy_button">复制详情</string>
     <string name="upgrade_report_copy_information">已删除内容已复制</string>
     <string name="upgrade_report_empty_entry">（空条目）</string>
-    <string name="error_restart">重新启动</string>
+    <string name="upgrade_report_reset_entry">你的已存用户资料无法读取，已被重置。</string>
+    <string name="upgrade_report_acknowledge_failed">MacIndex 无法完成此通知的确认。请检查设备的可用存储空间，然后重试。</string>
+    <string name="crash_report_title">MacIndex 上次意外关闭</string>
+    <string name="crash_report_information">MacIndex 上次打开时遇到了意外错误。如需报告问题，请复制技术详情；你也可以继续使用 MacIndex。</string>
+    <string name="crash_report_continue">继续</string>
+    <string name="crash_report_copy_button">复制详情</string>
+    <string name="crash_report_copy_information">崩溃详情已复制</string>
+    <string name="action_restart">重新启动</string>
     <string name="first_one">已经是第一个机型</string>
     <string name="last_one">已经是最后一个机型</string>
-    <string name="loading_category">正在加载数据库</string>
-    <string name="loading_search">正在搜索</string>
-    <string name="loading_favourites">正在加载收藏</string>
     <string name="loading_update">正在检查更新</string>
-    <string name="comments_not_available_tips">尚未保存任何备注</string>
+    <string name="comments_not_available_tips">尚未保存任何备注\n可在任意机型页面添加备注</string>
     <string name="comments_delete">请选择要删除的备注。此操作不能撤销。</string>
     <string name="comments_clear_warning">所有备注将被清除，且无法撤销。</string>
-    <string name="favourites_no_folder_tips">尚未创建任何收藏夹\n点击此处新建收藏夹</string>
+    <string name="comments_clear_failed">MacIndex 无法清除备注。请检查设备的可用存储空间，然后重试。</string>
+    <string name="comments_delete_failed">MacIndex 无法删除所选备注。请检查设备的可用存储空间，然后重试。</string>
+    <string name="favourites_no_folder_tips">尚未创建任何收藏夹\n点击本页新建收藏夹</string>
     <string name="favourites_tips">请选择一个或多个收藏夹。你可以在收藏页管理所有收藏夹。</string>
     <string name="favourites_delete">请选择要删除的收藏夹。此操作不能撤销。</string>
     <string name="favourites_rename">请选择要重命名的收藏夹。</string>
     <string name="favourites_new_folder">输入收藏夹名称。</string>
     <string name="favourites_empty_folder">%1$s（空）</string>
     <string name="favourites_error_empty">收藏夹名称不能为空。</string>
-    <string name="favourites_error_length">收藏夹名称限一行，最多 30 个字符。</string>
+    <string name="favourites_error_length">收藏夹名称限一行，最多 %1$d 个字符。</string>
     <string name="favourites_error_conflict">已存在同名收藏夹。</string>
-    <string name="favourites_error_limit">最多只能创建 15 个收藏夹。</string>
+    <string name="favourites_error_limit">最多只能创建 %1$d 个收藏夹。</string>
     <string name="favourites_clear_warning">所有收藏夹将被删除，且无法撤销。</string>
+    <string name="favourites_save_failed">MacIndex 无法保存此收藏夹。请检查设备的可用存储空间，然后重试。</string>
+    <string name="favourites_delete_failed">MacIndex 无法删除所选收藏夹。请检查设备的可用存储空间，然后重试。</string>
+    <string name="favourites_rename_failed">MacIndex 无法重命名此收藏夹。请检查设备的可用存储空间，然后重试。</string>
+    <string name="favourites_clear_failed">MacIndex 无法清除收藏夹。请检查设备的可用存储空间，然后重试。</string>
+    <string name="favourite_membership_save_failed">MacIndex 无法更新此机型的收藏状态。请检查设备的可用存储空间，然后重试。</string>
     <string name="compare_limit">（已满）</string>
     <string-array name="compare_insufficient_tips">
-        <item>比较列表中至少需要两个机型\n当前列表为空</item>
-        <item>比较列表中至少需要两个机型\n当前只有一个机型</item>
+        <item>比较至少需要两个机型\n可在任意机型页面添加要比较的机型</item>
+        <item>还需要一个机型\n可在任意机型页面再添加一个机型</item>
     </string-array>
     <string name="compare_not_initialized">请从右上角菜单选择两个机型开始比较</string>
     <string name="compare_clear_warning">比较列表中的所有机型将被移除，且无法撤销。</string>
     <string name="compare_manage">请选择要从比较列表删除的机型。此操作不能撤销。</string>
     <string name="compare_select_exactly_two">请选择且仅选择两个要比较的机型。</string>
+    <string name="compare_highlight_save_failed">MacIndex 无法保存突出显示设置。请检查设备的可用存储空间，然后重试。</string>
+    <string name="compare_selection_save_failed">MacIndex 无法保存当前比较。请检查设备的可用存储空间，然后重试。</string>
+    <string name="compare_list_save_failed">MacIndex 无法更新比较列表。请检查设备的可用存储空间，然后重试。</string>
     <string name="version_information_general">版本 %1$s</string>
     <string name="update_available">发现新版本</string>
     <string name="update_available_message">MacIndex %1$s 已发布。当前版本为 %2$s。</string>
@@ -208,6 +224,13 @@
     <string name="about_update">检查更新</string>
     <string name="about_opensource">第三方开源许可证</string>
     <string name="about_release_history">版本历史</string>
+    <string name="open_source_licenses_failed">MacIndex 无法打开第三方许可证页面，请重试。</string>
+    <string name="machine_image_unavailable">无法载入此机型的图片</string>
+    <string name="sound_play_failed">无法播放此声音</string>
+    <string name="comment_save_failed">MacIndex 无法保存此备注。请检查设备的可用存储空间，然后重试。</string>
+    <string name="main_browse_save_failed">MacIndex 无法保存主页状态。请检查设备的可用存储空间，然后重试。</string>
+    <string name="setting_appearance_save_failed">MacIndex 无法保存外观设置。请检查设备的可用存储空间，然后重试。</string>
+    <string name="setting_save_failed">MacIndex 无法保存此设置。请检查设备的可用存储空间，然后重试。</string>
     <string name="viewimage_rotate">图片仅供参考\n旋转设备可切换显示方向</string>
     <string-array name="share_menu">
         <item>复制机型标识信息</item>

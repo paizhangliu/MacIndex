@@ -1,0 +1,66 @@
+category = "macbook_air_arm"
+picture_asset_key = "MI000429"
+name = "MacBook Air (15-inch, M2, 2023)"
+introductions = [{ year = 2023, month = 6 }]
+
+model_numbers = [{ value = "A2941" }]
+identifiers = [{ value = "Mac14,15" }]
+order_numbers = [
+  { value = "MQKP3", revisions = ["A"] },
+  { value = "MQKQ3", revisions = ["A"] },
+  { value = "MQKR3", revisions = ["A"] },
+  { value = "MQKT3", revisions = ["A"] },
+  { value = "MQKU3", revisions = ["A"] },
+  { value = "MQKV3", revisions = ["A"] },
+  { value = "MQKW3", revisions = ["A"] },
+  { value = "MQKX3", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8301" }]
+
+codenames = [{ value = "J415" }]
+
+processor = '''
+**Apple M2 "Staten"** TSMC N5P process, 64-bit, 8 cores (4 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 100 GB/s memory bandwidth'''
+processor_family_keys = ["m2"]
+processor_logo_keys = ["m2"]
+
+graphics = "**Apple 10-core GPU** unified memory architecture"
+
+display = '''
+15.3-inch (diagonal) Liquid Retina display, 2880x1864, 224 ppi, 500 nits, wide color gamut (P3)
+One external display up to 6K at 60 Hz
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+8 GB standard
+16 or 24 GB configurable
+24 GB maximum
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 13.4
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard
+512 GB, 1 TB, or 2 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.3
+3 - Built-in microphones with directional beamforming
+6 - Built-in speakers with force-cancelling woofers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+2 - Thunderbolt 3 / USB 4 ports (up to 40 Gbps)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver, Starlight, Space Gray, or Midnight
+Precision aluminum unibody
+3.3 lbs.
+0.45" H x 13.40" W x 9.35" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Air \"M2\" 8 CPU/10 GPU 15\"", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-m2-8-core-cpu-10-core-gpu-15-2023-specs.html" }]

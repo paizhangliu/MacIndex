@@ -1,0 +1,65 @@
+category = "macbook_arm"
+picture_asset_key = "MI000436"
+name = "MacBook Neo (13-inch, A18 Pro)"
+introductions = [{ year = 2026, month = 3 }]
+
+model_numbers = [{ value = "A3404" }]
+identifiers = [{ value = "Mac17,5" }]
+order_numbers = [
+  { value = "MHFA4", revisions = ["A"] },
+  { value = "MHFH4", revisions = ["A"] },
+  { value = "MHFD4", revisions = ["A"] },
+  { value = "MHFF4", revisions = ["A"] },
+  { value = "MHFC4", revisions = ["A"] },
+  { value = "MHFJ4", revisions = ["A"] },
+  { value = "MHFE4", revisions = ["A"] },
+  { value = "MHFG4", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8984" }]
+
+codenames = [{ value = "J700" }]
+
+processor = '''
+**Apple A18 Pro "Tahiti"** TSMC N3E process, 64-bit, 6 cores (2 P-cores, 4 E-cores), 16-core Neural Engine, Secure Enclave, 60 GB/s memory bandwidth'''
+processor_family_keys = ["a18"]
+processor_logo_keys = ["a18"]
+
+graphics = "**Apple 5-core GPU** unified memory architecture"
+
+display = '''
+13.0-inch (diagonal) Liquid Retina display, 2408x1506, 219 ppi, 500 nits, sRGB color
+A18 Pro: one external display up to a native resolution of 4K at 60 Hz via the USB 3 (USB-C) port
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+8 GB standard
+8 GB maximum
+Unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 26.3.2
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard (MHFA4, MHFD4, MHFF4, or MHFH4)
+512 GB SSD standard (MHFC4, MHFE4, MHFG4, or MHFJ4)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 6
+2 - Built-in microphones with directional beamforming
+2 - Built-in speakers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+1 - USB 3 (USB-C) port (up to 10 Gbps; DisplayPort 1.4 up to HBR3)
+1 - USB 2 (USB-C) port (up to 480 Mbps; no display output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver, Blush, Citrus, or Indigo
+Precision aluminum unibody
+2.7 lbs.
+0.50" H x 11.71" W x 8.12" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Neo \"A18 Pro\" 6 CPU/5 GPU 13\"", url = "https://everymac.com/systems/apple/macbook-neo/specs/macbook-neo-a18-pro-6-core-cpu-5-core-gpu-13-2026-specs.html" }]

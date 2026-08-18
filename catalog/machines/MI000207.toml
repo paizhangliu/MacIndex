@@ -1,0 +1,40 @@
+category = "xserve_ppc"
+picture_asset_key = "MI000207"
+name = "Xserve RAID"
+introductions = [{ year = 2003, month = 2 }]
+
+model_numbers = [{ value = "A1004" }]
+order_numbers = [
+  { value = "M8668", revisions = ["A"], qualifier = "4 drives" },
+  { value = "M8669", revisions = ["A"], qualifier = "7 drives" },
+  { value = "M8670", revisions = ["A"], qualifier = "14 drives" },
+]
+
+ram = '''
+256 MB controller cache standard (128 MB per controller)
+1 GB maximum (512 MB per controller)'''
+rom = "Xserve RAID firmware"
+software = "RAID Admin"
+storage = '''
+4, 7, or 14 - 180 GB 7200-rpm Ultra ATA/100 Apple Drive Modules
+2.52 TB maximum RAID 0 capacity
+14 - Independent Ultra ATA/100 drive channels'''
+features = '''
+Dual independent RAID controllers
+RAID 0, 1, 3, 5, and 0+1
+RAID 10, 30, and 50 (host-based software RAID)
+Redundant hot-swappable 450 W power supplies
+Redundant hot-swappable cooling modules'''
+expansion = '''
+2 - 2 Gb Fibre Channel ports (HSSDC2; 200 MB/s per channel)
+2 - 10/100BASE-T Ethernet ports for remote management
+2 - DB-9 serial ports for UPS systems
+14 - Hot-plug 3.5-inch Ultra ATA drive bays'''
+design = '''
+3U rack-mountable
+60-100 lbs.
+5.25" H x 17" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [{ label = "Xserve RAID", url = "https://everymac.com/systems/apple/xserve/specs/xserve_raid.html" }]

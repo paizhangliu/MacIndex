@@ -1,0 +1,59 @@
+category = "mac_server_ppc_classic"
+picture_asset_key = "MI000104"
+name = "Workgroup Server 7350"
+introductions = [{ year = 1997, month = 4 }]
+
+model_numbers = [{ value = "M3979" }]
+gestalt_ids = [{ value = "109" }]
+order_numbers = [
+  { value = "M5639", revisions = ["A"], qualifier = "Applications Server" },
+  { value = "M5641", revisions = ["A"], qualifier = "AppleShare Server" },
+  { value = "M5642", revisions = ["A"], qualifier = "Internet Server" },
+]
+
+codenames = [{ value = "Montana" }, { value = "TNT", qualifier = "logic board" }]
+
+processor = "**PowerPC 604e (PID9v)** 180 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB L2 cache, 45 MHz system bus"
+processor_family_keys = ["604"]
+
+graphics = "**Apple Chaos/Control video subsystem with RaDACal DAC** 2 MB VRAM standard, 4 MB maximum"
+
+display = '''
+External display support via DB-15
+2 MB VRAM: up to 832x624 at 24-bit color; up to 1152x870 at 16-bit color; up to 1280x1024 at 8-bit color
+4 MB VRAM: up to 1152x870 at 24-bit color; up to 1280x1024 at 16-bit color'''
+ram = '''
+48 MB standard
+512 MB Apple-supported maximum
+1 GB actual maximum
+8 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+Mac OS 7.6.1
+AppleShare IP 5.0 (selected configurations)
+Mac OS 9.1 Maximum'''
+storage = '''
+4 GB SCSI hard drive
+12x CD-ROM drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - External DB-25 asynchronous SCSI port
+1 - Internal Fast SCSI channel (up to 10 MB/s; hard-drive array support)
+1 - DB-15 video port
+1 - 3.5-mm stereo analog input jack
+1 - 3.5-mm stereo analog output jack
+3 - PCI slots
+1 - Additional 3.5-inch hard-drive bay'''
+design = '''
+Platinum
+22 lbs.
+6.15" H x 14.37" W x 16.93" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [{ label = "Workgroup Server 7350/180", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_7350_180.html" }]

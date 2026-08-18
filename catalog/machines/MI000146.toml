@@ -1,0 +1,82 @@
+category = "powerbook_ppc_classic"
+picture_asset_key = "MI000146"
+name = "Macintosh PowerBook 5300 Series"
+aliases = [
+  "Macintosh PowerBook 5300",
+  "Macintosh PowerBook 5300c",
+  "Macintosh PowerBook 5300cs",
+  "Macintosh PowerBook 5300ce",
+]
+introductions = [{ year = 1995, month = 8 }]
+
+model_numbers = [{ value = "M2785" }]
+gestalt_ids = [{ value = "128" }]
+order_numbers = [
+  { value = "M3135", revisions = ["A"], qualifier = "5300" },
+  { value = "M3824", revisions = ["A"], qualifier = "5300cs" },
+  { value = "M3133", revisions = ["A"], qualifier = "5300c" },
+  { value = "M3828", revisions = ["A"], qualifier = "5300ce" },
+]
+
+codenames = [{ value = "M2" }, { value = "Mustang" }]
+
+processor = '''
+**PowerPC 603e** 100 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 33.3 MHz system bus (5300, 5300cs, or 5300c)
+**PowerPC 603e** 117 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 33.3 MHz system bus (5300ce)'''
+processor_family_keys = ["603"]
+
+graphics = '''
+**Apple ECSC internal display controller** 512 KB VRAM (5300, 5300cs, and 8 MB 5300c configurations)
+**Apple ECSC internal display controller** 1 MB VRAM (16 MB 5300c and 5300ce configurations)
+**Apple Keystone video controller with Ariel DAC** 512 KB VRAM for optional external video'''
+
+display = '''
+9.5-inch passive-matrix grayscale LCD, 640x480 at 4-bit grayscale (5300)
+10.4-inch passive-matrix color LCD, 640x480 at 8-bit color (5300cs)
+10.4-inch active-matrix color LCD, 640x480 at 8-bit color with 512 KB internal VRAM or 16-bit color with 1 MB internal VRAM (5300c)
+10.4-inch active-matrix color LCD, 800x600 at 16-bit color (5300ce)
+Optional external display support via VID-14 (DB-15 adapter required), up to 832x624 at 8-bit color'''
+ram = '''
+8 MB standard (5300)
+8 or 16 MB standard (5300cs/5300c)
+32 MB standard (5300ce)
+64 MB maximum
+8 or 16 MB built-in
+1 - PB53xx memory slot, 70 ns'''
+rom = "4 MB Old World ROM"
+software = '''
+System 7.5.2 (PowerBook 5300 Enabler)
+Mac OS 9.1 Maximum'''
+storage = '''
+500 MB hard drive (5300)
+500 or 750 MB hard drive (5300cs or 5300c)
+1.1 GB hard drive (5300ce)
+1.44 MB floppy drive
+IDE hard drive interface'''
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker
+Infrared, up to 230.4 Kbps'''
+expansion = '''
+1 - ADB port
+1 - RS-422 serial port
+1 - HDI-30 SCSI port
+1 - Optional VID-14 video port (via video-output card; DB-15 adapter required)
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - Type II PC Card slots or 1 - Type III PC Card slot
+1 - PowerBook 5300 expansion bay'''
+design = '''
+5.9 lbs. (5300)
+2.0" H x 11.5" W x 8.5" D (5300)
+6.2 lbs. (5300cs, 5300c, or 5300ce)
+2.2" H x 11.5" W x 8.5" D (5300cs, 5300c, or 5300ce)'''
+
+support_status = "Obsolete"
+sound_profile = "POWERBOOK"
+links = [
+  { label = "PowerBook 5300/100", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook5300_100.html" },
+  { label = "PowerBook 5300cs/100", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook5300cs_100.html" },
+  { label = "PowerBook 5300c/100", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook5300c_100.html" },
+  { label = "PowerBook 5300ce/117", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook5300ce_117.html" },
+]

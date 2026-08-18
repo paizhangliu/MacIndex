@@ -1,0 +1,60 @@
+category = "xserve_ppc"
+picture_asset_key = "MI000210"
+name = "Xserve G5"
+introductions = [{ year = 2004, month = 1 }]
+
+model_numbers = [{ value = "A1068" }]
+identifiers = [{ value = "RackMac3,1" }]
+order_numbers = [
+  { value = "M9216", revisions = ["A"], qualifier = "2 GHz" },
+  { value = "M9217", revisions = ["A"], qualifier = "dual 2 GHz" },
+]
+emc_numbers = [{ value = "1994" }]
+
+codenames = [{ value = "Q42" }, { value = "Chrysalis" }]
+
+processor = '''
+**PowerPC 970FX (G5)** 2 GHz, 90 nm process, 64-bit, 64 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 1 GHz system bus
+**Dual PowerPC 970FX (G5)** 2 GHz, 90 nm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, 1 GHz system bus per processor'''
+processor_family_keys = ["g5"]
+processor_logo_keys = ["970fx"]
+
+graphics = "Build-to-order ATI RV100 (Radeon 7000) 64 MB RAM"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = "External display support via VGA with optional PCI video card"
+ram = '''
+512 MB standard (single 2 GHz)
+1 GB standard (dual 2 GHz)
+8 GB maximum
+8 - PC3200 184-pin DDR ECC SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X Server 10.3
+Mac OS X Server 10.5.8 Maximum'''
+storage = '''
+80 GB 7200-rpm SATA hard drive
+Up to 750 GB across 3 hot-plug Apple Drive Modules
+24x CD-ROM or optional Combo drive'''
+features = '''
+Remote monitoring
+Front-panel system identifier button'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; RJ-45)
+2 - USB 2.0 ports
+1 - FireWire 400 port
+2 - FireWire 800 ports
+1 - DB-9 serial port
+2 - 64-bit, 133 MHz PCI-X slots
+3 - Hot-plug 3.5-inch SATA drive bays'''
+design = '''
+1U rack-mountable
+33-37 lbs.
+1.73" H x 17.6" W x 28" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [
+  { label = "Xserve G5/2.0", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g5_2.0.html" },
+  { label = "Xserve G5/2.0 DP", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g5_2.0_dp.html" },
+]

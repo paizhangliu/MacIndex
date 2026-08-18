@@ -1,0 +1,63 @@
+category = "ibook"
+picture_asset_key = "MI000238"
+name = "iBook (FireWire)"
+introductions = [{ year = 2000, month = 9 }]
+
+model_numbers = [{ value = "M6411" }]
+identifiers = [{ value = "PowerBook2,2" }]
+order_numbers = [
+  { value = "M7721", revisions = ["A"], qualifier = "Indigo" },
+  { value = "M7720", revisions = ["A"], qualifier = "Graphite" },
+]
+
+codenames = [{ value = "Midway" }, { value = "P1.5" }]
+
+processor = '''
+**PowerPC 750CX (G3)** 366 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 66 MHz system bus
+**PowerPC 750CX (G3)** 466 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 66 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750cx"]
+
+graphics = "**ATI Rage Mobility 128** 8 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = '''
+12.1-inch active-matrix color LCD, 800x600
+Video mirroring via composite output'''
+ram = '''
+64 MB standard and built-in
+320 MB Apple-supported maximum
+576 MB actual maximum
+1 - PC66 144-pin SO-DIMM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.0.4
+Mac OS X 10.4.11 Maximum
+AHT (iBook) 1.0, 1.1, 1.2, 1.2.1, 1.2.2, 1.2.3, 1.2.4'''
+storage = '''
+10 GB ATA hard drive standard
+20 GB ATA hard drive configurable
+Tray-loading CD-ROM drive (366 MHz)
+Tray-loading DVD-ROM drive (466 MHz)'''
+features = '''
+Optional AirPort (802.11b)
+1 - Built-in speaker
+50 Wh lithium-ion battery'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.90 modem
+1 - USB 1.1 port
+1 - FireWire 400 port
+Composite video and audio output via AV port'''
+design = '''
+Indigo, Key Lime, or Graphite
+6.6 lbs. (iBook)
+6.8 lbs. (Special Edition)
+1.8" H x 13.5" W x 11.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iBook G3/366 (Firewire/Clamshell)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_366-firewire-specs.html" },
+  { label = "iBook G3/466 SE (Firewire/Clamshell)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_se_466.html" },
+]

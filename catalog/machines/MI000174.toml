@@ -1,0 +1,82 @@
+category = "imac_ppc"
+picture_asset_key = "MI000174"
+name = "iMac (Summer 2000)"
+introductions = [{ year = 2000, month = 7 }]
+
+model_numbers = [{ value = "M5521" }]
+identifiers = [{ value = "PowerMac2,2" }]
+order_numbers = [
+  { value = "M7667", revisions = ["A"], qualifier = "iMac - Indigo" },
+  { value = "M7639", revisions = ["A"], qualifier = "iMac DV - Indigo" },
+  { value = "M7706", revisions = ["A"], qualifier = "iMac DV - Ruby" },
+  { value = "M7647", revisions = ["A"], qualifier = "iMac DV+ - Indigo" },
+  { value = "M7652", revisions = ["A"], qualifier = "iMac DV+ - Ruby" },
+  { value = "M7676", revisions = ["A"], qualifier = "iMac DV+ - Sage" },
+  { value = "M7651", revisions = ["A"], qualifier = "iMac DV SE - Graphite" },
+  { value = "M7709", revisions = ["A"], qualifier = "iMac DV SE - Snow" },
+]
+emc_numbers = [{ value = "1857" }]
+
+codenames = [{ value = "Perigee" }, { value = "P51" }]
+
+processor = '''
+**PowerPC 750 (G3)** 350 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 400 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 450 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 500 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage 128 Pro 4XL** 8 MB SDRAM"
+graphics_logo_keys = ["ati"]
+
+display = '''
+15-inch shadow-mask CRT, 13.8-inch viewable, 1024x768 at 75 Hz
+Video mirroring via VGA on 400 MHz and faster configurations'''
+ram = '''
+64 MB standard (350, 400, and 450 MHz)
+128 MB standard (500 MHz)
+1 GB maximum
+2 - PC100 168-pin SDRAM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.0.4
+Mac OS X 10.3.9 Maximum (350 MHz)
+Mac OS X 10.4.11 Maximum (400 MHz and faster)
+AHT (iMac) 1.0, 1.0.1, 1.1, 1.2
+AHT (iMac/eMac) 1.2.1, 1.2.2'''
+storage = '''
+7 GB Ultra ATA hard drive (350 MHz)
+10 GB Ultra ATA hard drive (400 MHz)
+20 GB Ultra ATA hard drive (450 MHz)
+30 GB Ultra ATA hard drive (500 MHz)
+Slot-loading CD-ROM drive (350 and 400 MHz)
+Slot-loading DVD-ROM drive (450 and 500 MHz)
+Ultra ATA (shared with optical drive) hard drive interface
+Ultra ATA (shared with hard drive) optical drive interface'''
+features = '''
+1 - Optional AirPort card on 400 MHz and faster configurations (802.11b; adapter required)
+1 - Built-in microphone (16-bit, 44.1 kHz sample rate)
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (400 MHz and faster)
+1 - VGA port (400 MHz and faster)
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - 3.5-mm headphone output jacks'''
+design = '''
+Indigo, Ruby, Sage, Graphite, or Snow
+34.7 lbs.
+15.0" H x 15.0" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac G3/350 (Summer 2000 - Indigo)", url = "https://everymac.com/systems/apple/imac/specs/imac_350_indigo.html" },
+  { label = "iMac G3/400 DV (Summer 2000 - I/R)", url = "https://everymac.com/systems/apple/imac/specs/imac_dv_400_indigo.html" },
+  { label = "iMac G3/450 DV+ (Summer 2000)", url = "https://everymac.com/systems/apple/imac/specs/imac_dv_plus_450.html" },
+  { label = "iMac G3/500 DV SE (Summer 2000)", url = "https://everymac.com/systems/apple/imac/specs/imac_dv_se_500.html" },
+]

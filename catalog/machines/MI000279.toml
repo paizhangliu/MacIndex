@@ -1,0 +1,91 @@
+category = "imac_intel"
+picture_asset_key = "MI000279"
+name = "iMac (27-inch, Late 2009)"
+introductions = [{ year = 2009, month = 10 }]
+
+codenames = [{ value = "K23" }]
+
+model_numbers = [{ value = "A1312" }]
+identifiers = [
+  { value = "iMac10,1", qualifier = "Core 2 Duo" },
+  { value = "iMac11,1", qualifier = "Core i5 or Core i7" },
+]
+order_numbers = [
+  { value = "MB952", revisions = ["A"], qualifier = "3.06 GHz" },
+  { value = "MB953", revisions = ["A"], qualifier = "2.66 GHz" },
+]
+emc_numbers = [
+  { value = "2309", qualifier = "Core 2 Duo" },
+  { value = "2374", qualifier = "Core i5 or Core i7" },
+]
+
+processor = '''
+**Intel Core 2 Duo (E7600) ("Wolfdale")** 3.06 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus
+**Intel Core 2 Duo (E8600) ("Wolfdale")** 3.33 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache, 1333 MHz system bus
+**Intel Core i5 (750) ("Lynnfield")** 2.66 GHz, up to 3.2 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache, Intel Direct Media Interface (DMI) at 2.5 GT/s
+**Intel Core i7 (860) ("Lynnfield")** 2.8 GHz, up to 3.46 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache, Intel Direct Media Interface (DMI) at 2.5 GT/s'''
+processor_family_keys = [
+  "penryn",
+  "nehalem",
+]
+processor_logo_keys = [
+  "core2duo",
+  "corei5",
+  "corei7",
+]
+
+graphics = '''
+**ATI Radeon HD 4670** 256 MB GDDR3 (Core 2 Duo configurations)
+**ATI Radeon HD 4850** 512 MB GDDR3 (Core 2 Duo, Core i5, or Core i7 configurations)'''
+graphics_logo_keys = ["atiradeon2007"]
+
+display = '''
+27-inch (viewable) LED-backlit glossy widescreen TFT LCD with IPS technology, 2560x1440, 375 nits
+One external display up to 2560x1600
+Dual display extended, video mirroring, and Target Display'''
+ram = '''
+4 GB standard
+16 GB Apple-supported maximum
+32 GB (Core i5 or Core i7) actual maximum
+4 - 204-pin PC3-8500 (1066 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.6.1 (10A2155)
+Mac OS X 10.6.2 (10C2234)
+macOS 10.13.6 Maximum
+AirDrop Supported
+AHT 3A202'''
+storage = '''
+1 TB 7200-rpm SATA hard drive standard
+2 TB 7200-rpm SATA hard drive configurable
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+3.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote
+2 - Internal 17-watt amplifiers'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 2.0 ports
+1 - FireWire 800 port
+1 - Mini DisplayPort connector
+1 - 3.5-mm analog/optical combo input jack
+1 - 3.5-mm analog/optical combo output jack
+1 - Secure Digital (SD) card slot'''
+design = '''
+Silver
+30.5 lbs.
+20.4" H x 25.6" W x 8.15" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac 27-Inch \"Core 2 Duo\" 3.06 (Late 2009)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-2-duo-3.06-27-inch-aluminum-late-2009-specs.html" },
+  { label = "iMac 27-Inch \"Core 2 Duo\" 3.33 (Late 2009)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-2-duo-3.33-27-inch-aluminum-late-2009-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 2.66 (Late 2009)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-2.66-27-inch-aluminum-late-2009-specs.html" },
+  { label = "iMac 27-Inch \"Core i7\" 2.8 (Late 2009)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-2.8-27-inch-aluminum-late-2009-specs.html" },
+]

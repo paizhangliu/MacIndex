@@ -1,0 +1,57 @@
+category = "mac_quadra"
+picture_asset_key = "MI000030"
+name = "Macintosh Quadra 700"
+introductions = [{ year = 1991, month = 10 }]
+
+model_numbers = [{ value = "M5920" }]
+gestalt_ids = [{ value = "22" }]
+order_numbers = [
+  { value = "M5921", revisions = ["A"], qualifier = "no hard drive" },
+  { value = "M5922", revisions = ["A"], qualifier = "80 MB hard drive" },
+  { value = "M5923", revisions = ["A"], qualifier = "160 MB hard drive" },
+]
+
+codenames = [{ value = "Shadow" }, { value = "Spike" }, { value = "IIce" }, { value = "Evo 200" }]
+
+processor = "**Motorola 68040** 25 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, integrated FPU, 25 MHz system bus"
+processor_family_keys = ["68040"]
+
+graphics = "**Apple DAFB video controller** 512 KB VRAM standard, expandable to 1 or 2 MB"
+
+display = '''
+External display required
+512x384 at 8-bit color with 512 KB VRAM; at 24-bit color with 1 or 2 MB VRAM
+640x480 or 832x624 at 8-bit color with 512 KB or 1 MB VRAM; at 24-bit color with 2 MB VRAM
+1152x870 at 4-bit color with 512 KB VRAM; at 8-bit color with 1 or 2 MB VRAM
+Second display support with additional video card'''
+ram = '''
+4 MB standard and built-in
+20 MB Apple-supported maximum
+68 MB actual maximum
+4 - 30-pin SIMM slots (groups of 4), 80 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.0.1
+Mac OS 8.1 Maximum'''
+storage = '''
+80 MB, 160 MB, or 400 MB SCSI hard drive
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+2 - ADB ports
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm stereo audio output jack
+2 - NuBus slots
+1 - 040 PDS slot'''
+design = '''
+Platinum
+13.6 lbs.
+5.5" H x 11.9" W x 14.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "Macintosh Quadra 700", url = "https://everymac.com/systems/apple/mac_quadra/specs/mac_quadra_700.html" }]

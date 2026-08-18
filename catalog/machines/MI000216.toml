@@ -1,0 +1,81 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000216"
+name = "PowerBook G3 Series"
+introductions = [{ year = 1998, month = 5 }]
+
+model_numbers = [{ value = "M4753" }]
+gestalt_ids = [
+  { value = "314", qualifier = "12.1-inch" },
+  { value = "312", qualifier = "13.3-inch/14.1-inch" },
+]
+order_numbers = [
+  { value = "M6359", revisions = ["A"], qualifier = "233 MHz, 12.1-inch" },
+  { value = "M6481", revisions = ["A"], qualifier = "233 MHz, 13.3-inch" },
+  { value = "M6357", revisions = ["A"], qualifier = "250 MHz, 13.3-inch" },
+  { value = "M6541", revisions = ["A"], qualifier = "292 MHz, 14.1-inch" },
+]
+codenames = [{ value = "Wallstreet" }, { value = "Main Street", qualifier = "233 MHz, no L2 cache" }]
+
+processor = '''
+**PowerPC 750 (G3)** 233 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, no L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 250 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 83 MHz system bus
+**PowerPC 750 (G3)** 292 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 83 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage LT** 2 or 4 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = '''
+12.1-inch passive-matrix color LCD, 800x600
+13.3-inch active-matrix color LCD, 1024x768
+14.1-inch active-matrix color LCD, 1024x768
+External display mirroring up to 1024x768'''
+ram = '''
+32 MB standard (233/250 MHz)
+64 MB standard (292 MHz)
+192 MB Apple-supported maximum
+512 MB actual maximum
+2 - SO-DIMM slots, 10 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+Mac OS 8.1 (PowerBook G3 Series Enabler 1.0 or 1.1)
+Mac OS X 10.2.8 Maximum'''
+storage = '''
+2 GB ATA-2 hard drive (233 MHz)
+4 GB ATA-2 hard drive (250 MHz)
+8 GB ATA-2 hard drive (292 MHz)
+1.44 MB floppy drive
+20x CD-ROM drive standard
+DVD-ROM expansion-bay drive configurable'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers
+Infrared, up to 4 Mbps'''
+expansion = '''
+1 - Ethernet port (10BASE-T)
+1 - Optional or standard 56 Kbps modem
+1 - ADB port
+1 - GeoPort serial port
+1 - HDI-30 SCSI port
+1 - VGA port
+1 - S-video output (13.3/14.1-inch)
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+2 - Type II CardBus slots or 1 - Type III CardBus slot
+1 - 3.5-inch media bay
+1 - 5.25-inch media bay'''
+design = '''
+7.2 lbs. (12.1-inch)
+7.6 lbs. (13.3-inch)
+7.8 lbs. (14.1-inch)
+2" H x 12.7" W x 10.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G3 233 (Wallstreet)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_233.html" },
+  { label = "PowerBook G3 250 (Wallstreet)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_250.html" },
+  { label = "PowerBook G3 292 (Wallstreet)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_292.html" },
+]

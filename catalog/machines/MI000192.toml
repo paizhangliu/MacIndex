@@ -1,0 +1,65 @@
+category = "emac"
+picture_asset_key = "MI000190"
+name = "eMac (1.0 GHz G4)"
+introductions = [{ year = 2003, month = 10 }]
+
+model_numbers = [{ value = "A1002" }]
+identifiers = [{ value = "PowerMac4,4" }]
+order_numbers = [
+  { value = "M9252", revisions = ["A"], qualifier = "Combo drive" },
+  { value = "M8951", revisions = ["B"], qualifier = "SuperDrive" },
+]
+emc_numbers = [{ value = "1955" }]
+
+codenames = [{ value = "P86A" }]
+
+processor = "**PowerPC 7445 (G4)** 1.0 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 133 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7445",
+  "7455",
+]
+
+graphics = "**ATI Radeon 7500** 32 MB DDR VRAM"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+17-inch CRT, 16-inch viewable, 1280x960 at 72 Hz
+Video mirroring via Mini-VGA'''
+ram = '''
+128 MB standard (Combo drive configuration)
+256 MB standard (SuperDrive configuration)
+1 GB maximum
+2 - PC133 SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.3
+Mac OS X 10.5.8 Maximum
+AHT (eMac) 2.2, 2.5.1
+AHT (iMac G5/eMac) 2.5.3'''
+storage = '''
+40 GB Ultra ATA/66 hard drive (Combo drive configuration)
+80 GB Ultra ATA/66 hard drive (SuperDrive configuration)
+Combo drive (DVD-ROM/CD-RW) (128 MB, 40 GB configuration)
+SuperDrive (DVD-R/CD-RW) (256 MB, 80 GB configuration)
+Ultra ATA/66 (ATA-5) hard drive interface'''
+features = '''
+Optional AirPort Extreme (802.11b/g)
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - Built-in 56 Kbps V.92 modem
+3 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - Mini-VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack'''
+design = '''
+White
+50 lbs.
+15.8" H x 15.8" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "eMac G4/1.0 (ATI)", url = "https://everymac.com/systems/apple/emac/specs/emac_1.0.html" }]

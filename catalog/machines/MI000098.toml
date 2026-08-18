@@ -1,0 +1,80 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000098"
+name = "Power Macintosh 7100"
+introductions = [
+  { year = 1994, month = 3, qualifier = "66 MHz" },
+  { year = 1995, month = 1, qualifier = "80 MHz" },
+]
+
+model_numbers = [{ value = "M2391" }]
+gestalt_ids = [
+  { value = "112", qualifier = "66 MHz" },
+  { value = "47", qualifier = "80 MHz" },
+]
+order_numbers = [
+  { value = "M2464", revisions = ["A"] },
+  { value = "M2465", revisions = ["A"] },
+  { value = "M3077", revisions = ["A"], qualifier = "7100/66" },
+  { value = "M2467", revisions = ["A"] },
+  { value = "M2835", revisions = ["A"] },
+  { value = "M2836", revisions = ["A"], qualifier = "7100/66AV" },
+  { value = "M3642", revisions = ["A"] },
+  { value = "M3643", revisions = ["A"], qualifier = "7100/80" },
+  { value = "M3645", revisions = ["A"], qualifier = "7100/80AV" },
+]
+
+codenames = [{ value = "Carl Sagan" }, { value = "BHA" }, { value = "LAW" }]
+
+processor = '''
+**PowerPC 601** 66 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, optional 256 KB L2 cache, 33 MHz system bus
+**PowerPC 601** 80 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, 256 KB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["601"]
+
+graphics = '''
+**Apple Data Path video subsystem with Ariel II DAC** 640 KB shared system memory
+**Apple Power Macintosh 7100 VRAM Expansion Card** 1 MB VRAM standard, 2 MB maximum
+**Apple CIVIC AV video subsystem** 2 MB VRAM on AV models'''
+
+display = "Dual display support via HDI-45 and DB-15, up to 832x624 at 16-bit color with 1 MB VRAM; up to 1152x870 at 16-bit color with 2 MB VRAM"
+ram = '''
+8 or 16 MB standard
+136 MB maximum
+8 MB built-in
+4 - 72-pin SIMM slots installed in pairs, 80 ns'''
+rom = "4 MB Old World ROM"
+software = '''
+System 7.1.2 (PowerPC Enabler v1.0)
+Mac OS 9.1 Maximum'''
+storage = '''
+250, 350, 500, or 700 MB SCSI hard drive
+Optional 2x CD-ROM drive
+1.44 MB floppy drive
+SCSI hard drive interface'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - HDI-45 audio/video port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+1 - S-video input (AV models)
+1 - S-video output (AV models)
+3 - 7-inch NuBus slots
+1 - PDS slot (Power Macintosh VRAM Upgrade Kit installed on non-AV models, Apple AV card installed on AV models)
+1 - 5.25-inch half-height drive bay (used by optional CD-ROM drive)'''
+design = '''
+Platinum
+25 lbs.
+6" H x 13" W x 16.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC_6100"
+links = [
+  { label = "Power Macintosh 7100/66", url = "https://everymac.com/systems/apple/powermac/specs/powermac_7100_66.html" },
+  { label = "Power Macintosh 7100/66AV", url = "https://everymac.com/systems/apple/powermac/specs/powermac_7100_66av.html" },
+  { label = "Power Macintosh 7100/80", url = "https://everymac.com/systems/apple/powermac/specs/powermac_7100_80.html" },
+  { label = "Power Macintosh 7100/80AV", url = "https://everymac.com/systems/apple/powermac/specs/powermac_7100_80av.html" },
+]

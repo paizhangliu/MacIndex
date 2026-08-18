@@ -1,0 +1,82 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000347"
+name = "MacBook Pro (Retina, 15-inch, Mid 2012)"
+introductions = [{ year = 2012, month = 6 }]
+
+codenames = [{ value = "D2" }]
+
+model_numbers = [{ value = "A1398" }]
+identifiers = [{ value = "MacBookPro10,1" }]
+order_numbers = [
+  { value = "MC975", revisions = ["A"], qualifier = "2.3 GHz" },
+  { value = "MC976", revisions = ["A"], qualifier = "2.6 GHz" },
+]
+emc_numbers = [{ value = "2512" }]
+
+processor = '''
+**Intel Core i7 (3615QM) ("Ivy Bridge")** 2.3 GHz, up to 3.3 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (3720QM) ("Ivy Bridge")** 2.6 GHz, up to 3.6 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (3820QM) ("Ivy Bridge")** 2.7 GHz, up to 3.7 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["ivb"]
+processor_logo_keys = ["corei7_2"]
+
+graphics = '''
+**NVIDIA GeForce GT 650M** 1 GB GDDR5
+**Intel HD Graphics 4000** 1 GB DDR3 shared with main memory'''
+graphics_logo_keys = [
+  "nvgeforcegt2012",
+  "intelhd",
+]
+
+display = '''
+15.4-inch (diagonal) LED-backlit display with IPS technology, 2880x1800, 220 ppi
+Up to two external Thunderbolt displays
+One HDMI-compatible display while using one Thunderbolt display
+External resolution up to 1920x1080 via HDMI or 2560x1600 via Thunderbolt
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+PC3-12800 (1600 MHz) DDR3L onboard memory'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.7.4 (11E2068)
+macOS 10.15.7 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+AHT 3A238'''
+storage = '''
+256 GB standard (2.3 GHz)
+512 GB standard (2.6 GHz)
+768 GB configurable
+Optional Apple USB SuperDrive
+6.0 Gbps Serial ATA (SATA) flash storage interface'''
+features = '''
+Wi-Fi (802.11n)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+Optional Apple Thunderbolt to Gigabit Ethernet Adapter
+2 - USB 3.0 ports (up to 5 Gbps)
+Optional Apple Thunderbolt to FireWire Adapter
+2 - Thunderbolt 1 ports (up to 10 Gbps)
+1 - HDMI port (up to 1920x1080)
+1 - 3.5-mm digital/analog headphone jack
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Precision aluminum unibody
+4.46 lbs.
+0.71" H x 14.13" W x 9.73" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Pro 15\" \"Core i7\" 2.3 Retina 2012", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.3-15-mid-2012-retina-display-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 2.6 Retina 2012", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.6-15-mid-2012-retina-display-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 2.7 Retina 2012", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.7-15-mid-2012-retina-display-specs.html" },
+]

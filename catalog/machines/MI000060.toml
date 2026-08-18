@@ -1,0 +1,78 @@
+category = "mac_performa_68k"
+picture_asset_key = "MI000028"
+name = "Macintosh Performa 630, 630CD"
+aliases = [
+  "Macintosh Performa 630",
+  "Macintosh Performa 630CD",
+  "Macintosh Performa 630CD DOS Compatible",
+]
+introductions = [
+  { year = 1994, month = 7, qualifier = "630 and 630CD" },
+  { year = 1995, month = 5, qualifier = "630CD DOS Compatible" },
+]
+
+model_numbers = [{ value = "M3076" }]
+gestalt_ids = [{ value = "98" }]
+order_numbers = [
+  { value = "M3423", revisions = ["A"], qualifier = "630 4/250" },
+  { value = "M3424", revisions = ["A"], qualifier = "630CD 8/250" },
+]
+
+codenames = [{ value = "Crusader" }, { value = "Show Biz" }, { value = "Show & Tell" }]
+
+processor = '''
+**Motorola 68LC040** 33 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, 33 MHz system bus
+**Intel 486DX2** 66 MHz, 0.8 µm process, 32-bit, 8 KB unified L1 cache, 33 MHz system bus (DOS-compatible configuration)'''
+processor_family_keys = ["68040"]
+
+graphics = "**Apple Valkyrie video controller** 1 MB display DRAM"
+
+display = '''
+External display required
+512x384 or 640x480 at 16-bit color
+800x600 or 832x624 at 8-bit color
+Video input unavailable at 832x624'''
+ram = '''
+4 or 8 MB standard
+36 MB maximum (standard configuration)
+52 MB maximum (DOS-compatible configuration)
+4 MB built-in
+1 - 72-pin SIMM slot, 80 ns (standard configuration)
+2 - 72-pin SIMM slots, 80 ns (DOS-compatible configuration)
+4 MB standard (DOS Compatibility Card)
+32 MB maximum (DOS Compatibility Card)
+1 - 72-pin SIMM slot, 80 ns (DOS Compatibility Card)'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.1.2 Pro (System Enabler 405)
+Mac OS 8.1 Maximum
+MS-DOS 6.22 and Windows 3.1 (DOS-compatible configuration)'''
+storage = '''
+250 MB IDE hard drive (630 and 630CD)
+500 MB IDE hard drive (630CD DOS Compatible)
+Optional 2x CD-ROM drive
+1.44 MB floppy drive
+IDE hard drive interface'''
+features = '''
+1 - Built-in speaker
+Sound Blaster 16-compatible expansion card (DOS-compatible configuration)'''
+expansion = '''
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack (8-bit mono)
+2 - 3.5-mm analog output jacks (8-bit stereo)
+1 - LC PDS slot
+1 - Communications slot
+1 - Video input/output slot
+1 - PDS DOS Compatibility Card with Intel 486DX2 at 66 MHz
+1 - PC game port (DOS-compatible configuration)'''
+design = '''
+Platinum
+19 lbs.
+4.3" H x 12.6" W x 16.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "Macintosh Performa 630 (CD) (PC)", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_630.html" }]

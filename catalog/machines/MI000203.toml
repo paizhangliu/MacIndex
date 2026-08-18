@@ -1,0 +1,76 @@
+category = "mac_server_ppc"
+picture_asset_key = "MI000160"
+name = "Macintosh Server G4 (QuickSilver 2002)"
+introductions = [{ year = 2002, month = 1 }]
+
+model_numbers = [{ value = "M8493" }]
+identifiers = [{ value = "PowerMac3,5" }]
+order_numbers = [
+  { value = "M8649", revisions = ["A"], qualifier = "933 MHz" },
+  { value = "M8650", revisions = ["A"], qualifier = "dual 1 GHz" },
+]
+emc_numbers = [{ value = "1896" }]
+
+codenames = [{ value = "Nichrome" }, { value = "P57" }]
+
+processor = '''
+**PowerPC 7455 (G4)** 933 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 2 MB DDR L3 cache, 133 MHz system bus
+**Dual PowerPC 7455 (G4)** 1 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 256 KB on-chip L2 cache per processor, 2 MB DDR L3 cache per processor, 133 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = '''
+**ATI Radeon 7500** 32 MB standard
+**NVIDIA GeForce4 MX** 64 MB build-to-order
+**NVIDIA GeForce4 Ti** 128 MB build-to-order'''
+graphics_logo_keys = [
+  "atiradeon2000",
+  "nvgeforce4",
+]
+
+display = '''
+ATI Radeon 7500: digital resolution up to 1920x1200; analog resolution up to 2048x1536
+NVIDIA GeForce4 MX: digital and analog resolution up to 1920x1200
+NVIDIA GeForce4 Ti: digital and analog resolution up to 2048x1536
+Dual display extended and video mirroring'''
+ram = '''
+256 MB standard (933 MHz)
+512 MB standard (dual 1 GHz)
+1.5 GB maximum
+3 - PC133 168-pin SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.2
+Mac OS X Server 10.1.2
+Mac OS X 10.5.8 Maximum'''
+storage = '''
+80 GB Ultra ATA/66 hard drive
+24x CD-RW drive'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in speaker (16-bit, 44.1 kHz sample rate)'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - Optional 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (15 W total power)
+1 - ADC port and 1 - VGA port (Radeon 7500 or GeForce4 MX)
+1 - ADC port and 1 - DVI port (GeForce4 Ti)
+1 - 3.5-mm analog output jack
+4 - 64-bit 33 MHz PCI slots
+1 - AGP 4x slot
+4 - Internal 3.5-inch ATA drive bays
+1 - Optical drive bay
+1 - Zip 250 bay
+1 - Apple Pro Speaker minijack'''
+design = '''
+QuickSilver
+30 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Macintosh Server G4 933 (QuickSilver 2002)", url = "https://everymac.com/systems/apple/mac_server_g4/specs/macserver_g4_933_qs.html" },
+  { label = "Macintosh Server G4 1 GHz DP (QuickSilver 2002)", url = "https://everymac.com/systems/apple/mac_server_g4/specs/macserver_g4_1ghz_dp_qs.html" },
+]

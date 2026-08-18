@@ -1,0 +1,86 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000329"
+name = "MacBook Pro (15-inch, Late 2011)"
+introductions = [{ year = 2011, month = 10 }]
+
+codenames = [{ value = "K91A" }]
+
+model_numbers = [{ value = "A1286" }]
+identifiers = [{ value = "MacBookPro8,2" }]
+order_numbers = [
+  { value = "MD318", revisions = ["A"], qualifier = "2.2 GHz" },
+  { value = "MD322", revisions = ["A"], qualifier = "2.4 GHz" },
+]
+emc_numbers = [{ value = "2563" }]
+
+processor = '''
+**Intel Core i7 (2675QM) ("Sandy Bridge")** 2.2 GHz, up to 3.1 GHz, 32 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (2760QM) ("Sandy Bridge")** 2.4 GHz, up to 3.5 GHz, 32 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (2860QM) ("Sandy Bridge")** 2.5 GHz, up to 3.6 GHz, 32 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["snb"]
+processor_logo_keys = ["corei7_2"]
+
+graphics = '''
+**AMD Radeon HD 6750M** 512 MB GDDR5 (2.2 GHz)
+**AMD Radeon HD 6770M** 1 GB GDDR5 (2.4 and 2.5 GHz)
+**Intel HD Graphics 3000** 384 MB DDR3 shared with main memory'''
+graphics_logo_keys = [
+  "amdradeon",
+  "intelhd",
+]
+
+display = '''
+15.4-inch (diagonal) LED-backlit glossy widescreen display, 1440x900
+Optional high-resolution display, 1680x1050, glossy or antiglare
+One external display up to 2560x1600
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+4 GB standard
+8 GB Apple-supported maximum
+16 GB actual maximum
+2 - 204-pin PC3-10600 (1333 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.7.2 (11C74)
+macOS 10.13.6 Maximum
+AirDrop Supported
+AHT 3A222'''
+storage = '''
+500 GB 5400-rpm hard drive standard (2.2 GHz)
+750 GB 5400-rpm hard drive standard (2.4 GHz)
+750 GB 5400-rpm hard drive configurable (2.2 GHz)
+750 GB 7200-rpm hard drive configurable
+128, 256, or 512 GB SSD configurable
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+6.0 Gbps Serial ATA (SATA) hard drive interface
+6.0 Gbps Serial ATA (SATA) optical drive interface'''
+features = '''
+Wi-Fi (802.11n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+1 - Built-in subwoofer
+Built-in FaceTime HD camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+2 - USB 2.0 ports
+1 - FireWire 800 port
+1 - Thunderbolt 1 port (up to 10 Gbps; digital video output)
+1 - 3.5-mm analog/optical audio input jack
+1 - 3.5-mm analog/optical audio output/headphone jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Precision aluminum unibody
+5.6 lbs.
+0.95" H x 14.35" W x 9.82" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Pro 15\" \"Core i7\" 2.2 Late 2011", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.2-15-late-2011-unibody-thunderbolt-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 2.4 Late 2011", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.4-15-late-2011-unibody-thunderbolt-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 2.5 Late 2011", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.5-15-late-2011-unibody-thunderbolt-specs.html" },
+]

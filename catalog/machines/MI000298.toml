@@ -1,0 +1,83 @@
+category = "imac_intel"
+picture_asset_key = "MI000279"
+name = "iMac (Retina 5K, 27-inch, 2017)"
+introductions = [{ year = 2017, month = 6 }]
+
+model_numbers = [{ value = "A1419" }]
+identifiers = [{ value = "iMac18,3" }]
+order_numbers = [
+  { value = "MNE92", revisions = ["A"], qualifier = "3.4 GHz" },
+  { value = "MNEA2", revisions = ["A"], qualifier = "3.5 GHz" },
+  { value = "MNED2", revisions = ["A"], qualifier = "3.8 GHz" },
+]
+emc_numbers = [{ value = "3070" }]
+
+processor = '''
+**Intel Core i5 (7500) ("Kaby Lake")** 3.4 GHz, up to 3.8 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (7600) ("Kaby Lake")** 3.5 GHz, up to 4.1 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (7600K) ("Kaby Lake")** 3.8 GHz, up to 4.2 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (7700K) ("Kaby Lake")** 4.2 GHz, up to 4.5 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 8 GT/s'''
+processor_family_keys = ["kabylake"]
+processor_logo_keys = [
+  "corei5_7",
+  "corei7_7",
+]
+
+graphics = '''
+**AMD Radeon Pro 570** 4 GB GDDR5 (3.4 GHz base)
+**AMD Radeon Pro 575** 4 GB GDDR5 (3.5 GHz base)
+**AMD Radeon Pro 580** 8 GB GDDR5 (3.8 GHz base)'''
+graphics_logo_keys = ["amdradeon2016"]
+
+display = '''
+27-inch (diagonal) Retina 5K display with IPS technology, 5120x2880, 218 ppi, 500 nits, wide color gamut (P3)
+Up to two external displays at 4096x2304 or one at 5120x2880 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 or 32 GB configurable
+64 GB configurable (3.5 or 3.8 GHz base)
+64 GB maximum
+4 - 260-pin PC4-19200 (2400 MHz) DDR4 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.12.4 (16E2193)
+macOS 13.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB Fusion Drive standard (3.4 or 3.5 GHz)
+2 TB Fusion Drive standard (3.8 GHz)
+2 TB Fusion Drive or 256 or 512 GB, or 1 TB SSD configurable (3.4 GHz)
+2 or 3 TB Fusion Drive or 256 or 512 GB, or 1 TB SSD configurable (3.5 GHz)
+3 TB Fusion Drive or 512 GB, or 1 or 2 TB SSD configurable (3.8 GHz)
+1 - 8.0 GT/s NVMe PCIe x4 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.2
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 3 ports (up to 40 Gbps; digital video output)
+1 - 3.5-mm output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+20.8 lbs.
+20.3" H x 25.6" W x 8" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "iMac 27-Inch \"Core i5\" 3.4 (5K, Mid-2017)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.4-27-inch-aluminum-retina-5k-mid-2017-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 3.5 (5K, Mid-2017)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.5-27-inch-aluminum-retina-5k-mid-2017-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 3.8 (5K, Mid-2017)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.8-27-inch-aluminum-retina-5k-mid-2017-specs.html" },
+  { label = "iMac 27-Inch \"Core i7\" 4.2 (5K, Mid-2017)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-4.2-27-inch-aluminum-retina-5k-mid-2017-specs.html" },
+]

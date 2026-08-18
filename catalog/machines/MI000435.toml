@@ -1,0 +1,74 @@
+category = "macbook_air_arm"
+picture_asset_key = "MI000433"
+name = "MacBook Air (15-inch, M5)"
+introductions = [{ year = 2026, month = 3 }]
+
+model_numbers = [{ value = "A3448" }]
+identifiers = [{ value = "Mac17,4" }]
+order_numbers = [
+  { value = "MDV94", revisions = ["A"] },
+  { value = "MDVA4", revisions = ["A"] },
+  { value = "MDVC4", revisions = ["A"] },
+  { value = "MDVD4", revisions = ["A"] },
+  { value = "MDVE4", revisions = ["A"] },
+  { value = "MDVF4", revisions = ["A"] },
+  { value = "MDVH4", revisions = ["A"] },
+  { value = "MDVK4", revisions = ["A"] },
+  { value = "MDVN4", revisions = ["A"] },
+  { value = "MDVQ4", revisions = ["A"] },
+  { value = "MDVT4", revisions = ["A"] },
+  { value = "MDVU4", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8878" }]
+
+codenames = [{ value = "J815" }]
+
+processor = '''
+**Apple M5 "Hidra"** TSMC N3P process, 64-bit, 10 cores (4 "Everest v4" super cores, 6 "Sawtooth v4" E-cores), 192 KB instruction and 128 KB data L1 cache per super core, 16 MB shared L2 cache for the super core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 6 MB shared L2 cache for the efficiency core cluster, 16-core Neural Engine, Secure Enclave, 153 GB/s memory bandwidth'''
+processor_family_keys = ["m5"]
+processor_logo_keys = ["m5"]
+
+graphics = "**Apple 10-core GPU** unified memory architecture"
+
+display = '''
+15.3-inch (diagonal) Liquid Retina display, 2880x1864, 224 ppi, 500 nits, wide color gamut (P3)
+M5: up to two external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt
+M5: alternatively, one external display up to a native resolution of 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt
+M5: a supported hub or display daisy chain can carry up to two external displays over one Thunderbolt port without increasing the maximum display count
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+16 GB standard
+24 or 32 GB configurable
+32 GB maximum
+LPDDR5X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 26.3.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard
+1, 2, or 4 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Apple N1 wireless networking chip
+Wi-Fi 7 (802.11be)
+Bluetooth 6
+Thread networking technology
+3 - Built-in microphones with directional beamforming
+6 - Built-in speakers with force-cancelling woofers
+Built-in 12MP Center Stage camera with Desk View and 1080p HD video recording'''
+expansion = '''
+2 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps; DisplayPort 1.4)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver, Starlight, Sky Blue, or Midnight
+Precision aluminum unibody
+3.3 lbs.
+0.45" H x 13.40" W x 9.35" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Air \"M5\" 10 CPU/10 GPU 15\"", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-m5-10-core-cpu-10-core-gpu-15-2026-specs.html" }]

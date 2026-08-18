@@ -1,0 +1,69 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000419"
+name = "MacBook Pro (14-inch, M5)"
+introductions = [{ year = 2025, month = 10 }]
+
+model_numbers = [{ value = "A3434" }]
+identifiers = [{ value = "Mac17,2" }]
+order_numbers = [
+  { value = "MDE04", revisions = ["A"] },
+  { value = "MDE14", revisions = ["A"] },
+  { value = "MDE34", revisions = ["A"] },
+  { value = "MDE44", revisions = ["A"] },
+  { value = "MDE54", revisions = ["A"] },
+  { value = "MDE64", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8896" }]
+
+codenames = [{ value = "J704" }]
+
+processor = '''
+**Apple M5 "Hidra"** TSMC N3P process, 64-bit, 10 cores (4 "Everest v4" super cores, 6 "Sawtooth v4" E-cores), 192 KB instruction and 128 KB data L1 cache per super core, 16 MB shared L2 cache for the super core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 6 MB shared L2 cache for the efficiency core cluster, 16-core Neural Engine, Secure Enclave, 153 GB/s memory bandwidth'''
+processor_family_keys = ["m5"]
+processor_logo_keys = ["m5"]
+
+graphics = "**Apple 10-core GPU** unified memory architecture"
+
+display = '''
+14.2-inch (diagonal) Liquid Retina XDR display, 3024x1964, 254 ppi, XDR brightness: 1000 nits sustained full-screen and 1600 nits peak (HDR content only), up to 1000 nits outdoor SDR brightness, wide color gamut (P3), up to 120 Hz ProMotion
+Nano-texture glass configurable
+M5: up to two external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz, via any combination of Thunderbolt and HDMI
+M5: alternatively, one external display up to a native resolution of 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt or HDMI
+M5: a supported hub or display daisy chain can carry up to two external displays over one Thunderbolt port without increasing the maximum display count
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+16, 24, or 32 GB standard
+24 or 32 GB configurable
+32 GB maximum
+LPDDR5X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 26.0.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB or 1 TB SSD standard
+1, 2, or 4 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+3 - Built-in studio-quality microphones
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 12MP Center Stage camera with Desk View and 1080p HD video recording'''
+expansion = '''
+3 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps; DisplayPort 1.4)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - SDXC card slot'''
+design = '''
+Silver or Space Black
+Precision aluminum unibody
+3.4 lbs.
+0.61" H x 12.31" W x 8.71" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Pro \"M5\" 10 CPU/10 GPU 14\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m5-10-core-cpu-10-core-gpu-14-2025-specs.html" }]

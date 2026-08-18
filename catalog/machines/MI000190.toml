@@ -1,0 +1,78 @@
+category = "emac"
+picture_asset_key = "MI000190"
+name = "eMac"
+introductions = [
+  { year = 2002, month = 4, qualifier = "700 MHz education CD-ROM and Combo drive configurations" },
+  { year = 2002, month = 6, qualifier = "700 MHz retail CD-RW configuration" },
+  { year = 2002, month = 8, qualifier = "700 MHz Combo drive and 800 MHz SuperDrive configurations" },
+]
+
+model_numbers = [{ value = "A1002" }]
+identifiers = [{ value = "PowerMac4,4" }]
+order_numbers = [
+  { value = "M8655", revisions = ["A"], qualifier = "700 MHz, CD-ROM" },
+  { value = "M8577", revisions = ["A"], qualifier = "700 MHz, CD-RW, modem" },
+  { value = "M8578", revisions = ["A"], qualifier = "700 MHz, Combo drive, modem" },
+  { value = "M8891", revisions = ["A"], qualifier = "700 MHz, Combo drive, modem" },
+  { value = "M8892", revisions = ["A"], qualifier = "800 MHz, SuperDrive, modem" },
+  { value = "M8894", revisions = ["A"], qualifier = "700 MHz, CD-RW, no modem" },
+]
+emc_numbers = [{ value = "1903" }]
+
+codenames = [{ value = "P69" }, { value = "P62" }, { value = "Beyond" }]
+
+processor = '''
+**PowerPC 7441 (G4)** 700 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus
+**PowerPC 7441 (G4)** 800 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7440",
+  "7450",
+]
+
+graphics = "**NVIDIA GeForce2 MX** 32 MB DDR VRAM"
+graphics_logo_keys = ["nvgeforce2mx"]
+
+display = '''
+17-inch CRT, 16-inch viewable, 1280x960 at 72 Hz
+Video mirroring via Mini-VGA'''
+ram = '''
+128 MB standard (700 MHz)
+256 MB standard (800 MHz)
+1 GB maximum
+2 - PC133 SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.2 (Mac OS ROM 9.2.1)
+Mac OS X 10.1.4 (5R106)
+Mac OS X 10.4.11 Maximum
+AHT (iMac/eMac) 1.2.1, 1.2.2, 2.5.1'''
+storage = '''
+40 GB Ultra ATA/66 hard drive (700 MHz)
+60 GB Ultra ATA/66 hard drive (800 MHz)
+CD-ROM, CD-RW, or Combo drive (DVD-ROM/CD-RW) (700 MHz)
+SuperDrive (DVD-R/CD-RW) (800 MHz)
+Ultra ATA/66 (ATA-5) hard drive interface'''
+features = '''
+Optional AirPort (802.11b)
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - Built-in 56 Kbps V.90 modem on selected configurations
+3 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - Mini-VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack'''
+design = '''
+White
+50 lbs.
+15.8" H x 15.8" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "eMac G4/700", url = "https://everymac.com/systems/apple/emac/specs/emac_700.html" },
+  { label = "eMac G4/800", url = "https://everymac.com/systems/apple/emac/specs/emac_800.html" },
+]

@@ -1,0 +1,47 @@
+category = "xserve_ppc"
+picture_asset_key = "MI000208"
+name = "Xserve (Cluster Node)"
+introductions = [{ year = 2003, month = 3 }]
+
+model_numbers = [{ value = "A1004" }]
+identifiers = [{ value = "RackMac1,2" }]
+order_numbers = [{ value = "M9090", revisions = ["A"] }]
+
+codenames = [{ value = "Q28" }, { value = "High Fidelity" }]
+
+processor = "**Dual PowerPC 7455 (G4)** 1.33 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 256 KB on-chip L2 cache per processor, 2 MB DDR L3 cache per processor, 167 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+ram = '''
+256 MB standard
+2 GB maximum
+4 - PC2700 184-pin DDR SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X Server 10.2.4 (10-client)
+Mac OS X Server 10.5.8 Maximum'''
+storage = '''
+60 GB 7200-rpm Ultra ATA/133 hard drive
+1 - Hot-plug Apple Drive Module
+No optical drive'''
+features = '''
+Cluster-optimized configuration
+Remote monitoring
+Front-panel system identifier button'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+2 - USB 1.1 ports
+1 - FireWire 400 port
+2 - FireWire 800 ports
+1 - DB-9 serial port
+2 - 64-bit, 66 MHz PCI slots
+1 - Hot-plug 3.5-inch Ultra ATA drive bay'''
+design = '''
+1U rack-mountable
+24 lbs.
+1.73" H x 17.6" W x 28" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [{ label = "Xserve G4/1.33 DP Cluster Node", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g4_1.33_dp_cluster_node.html" }]

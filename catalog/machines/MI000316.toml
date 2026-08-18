@@ -1,0 +1,78 @@
+category = "mac_mini_intel"
+picture_asset_key = "MI000316"
+name = "Mac mini (2018)"
+introductions = [{ year = 2018, month = 10 }]
+
+codenames = [{ value = "J174" }]
+
+model_numbers = [{ value = "A1993" }]
+identifiers = [{ value = "Macmini8,1" }]
+order_numbers = [
+  { value = "MRTR2", revisions = ["A"] },
+  { value = "MXNF2", revisions = ["A"], qualifier = "3.6 GHz" },
+  { value = "MRTT2", revisions = ["A"] },
+  { value = "MXNG2", revisions = ["A"], qualifier = "3.0 GHz" },
+]
+emc_numbers = [{ value = "3213" }]
+
+processor = '''
+**Intel Core i3 (8100B) ("Coffee Lake")** 3.6 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (8500B) ("Coffee Lake")** 3.0 GHz, up to 4.1 GHz, 14 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 9 MB shared L3 cache
+**Intel Core i7 (8700B) ("Coffee Lake")** 3.2 GHz, up to 4.6 GHz, 14 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 12 MB shared L3 cache
+Intel Direct Media Interface (DMI) 3.0 at 8 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["coffeelake"]
+processor_logo_keys = [
+  "corei3_8",
+  "corei5_8",
+  "corei7_8",
+  "t2",
+]
+
+graphics = "**Intel UHD Graphics 630** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+Up to two external displays at 4096x2304 at 60 Hz via Thunderbolt 3, plus one display at 4096x2160 at 60 Hz via HDMI 2.0
+One external display at 5120x2880 at 60 Hz via Thunderbolt 3, plus one display at 4096x2160 at 60 Hz via HDMI 2.0
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16, 32, or 64 GB configurable
+64 GB maximum
+2 - 260-pin PC4-21300 (2666 MHz) DDR4 SO-DIMM slots (Upgrade through Apple Store or Apple Authorized Service Provider)'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.14 (18A2063)
+macOS 15.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+128, 256, or 512 GB SSD standard (depending on configuration)
+256 or 512 GB, or 1 or 2 TB SSD configurable (128 GB base configuration)
+512 GB, or 1 or 2 TB SSD configurable (256 GB base configuration)
+1 or 2 TB SSD configurable (512 GB base configuration)
+8.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0
+1 - Built-in speaker'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45) or optional 10Gb Ethernet port (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB 3.0 ports (up to 5 Gbps)
+4 - Thunderbolt 3 ports (up to 40 Gbps)
+1 - HDMI 2.0 port (up to 4096x2160 at 60 Hz)
+1 - 3.5-mm headphone jack'''
+design = '''
+Space Gray
+2.9 lbs.
+1.4" H x 7.7" W x 7.7" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "Mac mini \"Core i3\" 3.6 (Late 2018)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i3-3.6-late-2018-specs.html" },
+  { label = "Mac mini \"Core i5\" 3.0 (Late 2018)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i5-3.0-late-2018-specs.html" },
+  { label = "Mac mini \"Core i7\" 3.2 (Late 2018)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i7-3.2-late-2018-specs.html" },
+]

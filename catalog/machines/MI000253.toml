@@ -1,0 +1,31 @@
+category = "mac_pro_intel"
+picture_asset_key = "MI000253"
+name = "Developer Transition Kit (2005)"
+introductions = [{ year = 2005, month = 6 }]
+
+identifiers = [{ value = "ADP2,1" }]
+
+codenames = [{ value = "Barracuda" }]
+
+processor = "**Intel Pentium 4 660 (\"Prescott\")** 3.6 GHz, 90 nm process, 64-bit, 1 core, 2 threads, 16 KB data L1 cache, 12K micro-op trace cache, 2 MB L2 cache, 800 MHz system bus"
+processor_family_keys = ["netburst"]
+processor_logo_keys = ["p4ht"]
+
+graphics = "**Intel GMA 900**"
+
+display = "External display support through DVI-D"
+ram = '''
+1 GB standard
+533 MHz DDR2 ECC SDRAM'''
+rom = "BIOS"
+software = "Developer builds of Mac OS X 10.4.1 to 10.4.3"
+storage = "160 GB 3.5-inch IDE hard drive standard"
+features = "1 - Built-in mono speaker"
+expansion = '''
+1 - DVI-D video output
+1 - PCI Express x16 slot
+1 - PCI Express x1 slot
+2 - PCI slots'''
+design = "20.1\" H x 8.1\" W x 18.7\" D"
+
+support_status = "N/A"

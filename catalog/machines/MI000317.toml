@@ -1,0 +1,69 @@
+category = "xserve_intel"
+picture_asset_key = "MI000317"
+name = "Xserve (Late 2006)"
+introductions = [{ year = 2006, month = 8 }]
+
+model_numbers = [{ value = "A1196" }]
+identifiers = [{ value = "Xserve1,1" }]
+order_numbers = [
+  { value = "MA409", revisions = ["A"], qualifier = "dual 2 GHz" },
+]
+emc_numbers = [{ value = "2107" }]
+
+processor = '''
+**Dual Intel Xeon 5130 ("Woodcrest")** 2 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor, dual 1.33 GHz system buses
+**Dual Intel Xeon 5150 ("Woodcrest")** 2.66 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor, dual 1.33 GHz system buses
+**Dual Intel Xeon 5160 ("Woodcrest")** 3 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor, dual 1.33 GHz system buses'''
+processor_family_keys = ["core"]
+processor_logo_keys = ["xeon_a"]
+
+graphics = '''
+**ATI Radeon X1300** 64 MB GDDR3 with Mini-DVI output
+**ATI Radeon X1300** 256 MB SDRAM with dual-link DVI output (configurable)'''
+graphics_logo_keys = ["atiradeon2004"]
+
+display = '''
+External display support through Mini-DVI (64 MB graphics)
+External display support through dual-link DVI (optional 256 MB graphics)'''
+ram = '''
+1 GB standard
+32 GB maximum
+8 - 667 MHz DDR2 ECC FB-DIMM slots'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X Server 10.4.8 (8N1215)
+OS X Server 10.7.5 Maximum'''
+storage = '''
+80 GB 7200-rpm SATA Apple Drive Module standard
+80 or 750 GB 7200-rpm SATA Apple Drive Modules configurable
+73 or 300 GB 15,000-rpm SAS Apple Drive Modules configurable
+2.25 TB maximum across 3 hot-plug SATA or SAS Apple Drive Modules
+Combo drive standard
+SuperDrive configurable'''
+features = '''
+Remote monitoring
+Front-panel system identifier button
+Optional redundant 650 W power supply'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; jumbo frame support)
+2 - USB 2.0 ports
+1 - FireWire 400 port
+2 - FireWire 800 ports
+1 - DB-9 serial port
+1 - Mini-DVI port (64 MB graphics)
+1 - Dual-link DVI port (optional 256 MB graphics)
+1 - Half-length (6.6-inch) PCI Express x8 slot
+1 - Full-length (9-inch) configurable PCI Express x8 or 64-bit, 133 MHz PCI-X slot
+3 - Hot-plug 3.5-inch SATA or SAS drive bays'''
+design = '''
+1U rack-mountable
+31.7 lbs.
+1.73" H x 17.6" W x 30" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [
+  { label = "Xserve Xeon 2 GHz Quad Core (Late 2006)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.0-quad-specs.html" },
+  { label = "Xserve Xeon 2.66 GHz Quad Core (Late 2006)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.66-quad-specs.html" },
+  { label = "Xserve Xeon 3 GHz Quad Core (Late 2006)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-3.0-quad-specs.html" },
+]

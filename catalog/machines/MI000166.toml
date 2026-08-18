@@ -1,0 +1,99 @@
+category = "power_mac"
+picture_asset_key = "MI000166"
+name = "Power Mac G5"
+introductions = [
+  { year = 2003, month = 6 },
+  { year = 2003, month = 11, qualifier = "dual 1.8 GHz" },
+]
+
+model_numbers = [{ value = "A1047" }]
+identifiers = [{ value = "PowerMac7,2" }]
+order_numbers = [
+  { value = "M9020", revisions = ["A"], qualifier = "1.6 GHz" },
+  { value = "M9031", revisions = ["A"], qualifier = "1.8 GHz" },
+  { value = "M9393", revisions = ["A"], qualifier = "dual 1.8 GHz" },
+  { value = "M9032", revisions = ["A"], qualifier = "dual 2.0 GHz" },
+]
+emc_numbers = [{ value = "1969" }]
+
+codenames = [{ value = "Q37" }, { value = "Grand Prix" }, { value = "Omega" }]
+
+processor = '''
+**PowerPC 970 (G5)** 1.6 GHz, 0.13 µm process, 64-bit, 64 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 800 MHz system bus
+**PowerPC 970 (G5)** 1.8 GHz, 0.13 µm process, 64-bit, 64 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 900 MHz system bus
+**Dual PowerPC 970 (G5)** 1.8 GHz, 0.13 µm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, dual 900 MHz system buses
+**Dual PowerPC 970 (G5)** 2.0 GHz, 0.13 µm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, dual 1.0 GHz system buses'''
+processor_family_keys = ["g5"]
+processor_logo_keys = ["970"]
+
+graphics = '''
+**NVIDIA GeForce FX 5200 Ultra** 64 MB DDR VRAM standard (1.6 GHz, single 1.8 GHz, and dual 1.8 GHz)
+**ATI Radeon 9600 Pro** 64 MB DDR VRAM standard (dual 2.0 GHz)
+**ATI Radeon 9800 Pro** 128 MB DDR VRAM configurable'''
+graphics_logo_keys = [
+  "nvgeforcefx",
+  "atiradeon2000",
+]
+
+display = '''
+Digital resolution up to 1920x1200
+Analog resolution up to 1600x1200
+Dual display extended and video mirroring'''
+ram = '''
+256 MB standard (1.6 GHz)
+512 MB standard (single or dual 1.8 GHz and dual 2.0 GHz)
+4 GB maximum (1.6 GHz model)
+8 GB maximum (1.8 and 2.0 GHz models)
+4 - PC2700 DDR SDRAM slots installed in pairs (1.6 GHz)
+8 - PC3200 DDR SDRAM slots installed in pairs (1.8 GHz or 2.0 GHz)'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.2.7 (6S80; G5)
+Mac OS X 10.3 (dual 1.8 GHz)
+Mac OS X 10.5.8 Maximum
+AHT (Power Mac) 2.1, 2.2.5, 2.5, 2.5.2'''
+storage = '''
+80 GB 7200-rpm SATA hard drive standard (1.6 GHz)
+160 GB 7200-rpm SATA hard drive standard (single or dual 1.8 GHz and dual 2.0 GHz)
+250 GB 7200-rpm SATA hard drive configurable
+SuperDrive (DVD-R/CD-RW)
+2 - 1.5 Gbps Serial ATA (SATA) controllers
+Ultra ATA/100 optical drive interface'''
+features = '''
+Optional AirPort Extreme (802.11b/g)
+Optional Bluetooth 1.1
+1 - Built-in speaker'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - 56 Kbps V.92 modem
+3 - USB 2.0 ports
+2 - USB 1.1 ports on the keyboard
+2 - FireWire 400 ports
+1 - FireWire 800 port
+15 W total FireWire bus power
+1 - DVI port
+1 - ADC port
+1 - 3.5-mm analog audio input jack
+1 - 3.5-mm analog audio output jack
+1 - Front 3.5-mm headphone jack
+1 - Optical S/PDIF input (Toslink)
+1 - Optical S/PDIF output (Toslink)
+3 - 33 MHz 64-bit PCI slots (1.6 GHz)
+2 - 100 MHz 64-bit PCI-X slots (1.8 GHz and faster)
+1 - 133 MHz 64-bit PCI-X slot (1.8 GHz and faster)
+1 - AGP 8x Pro slot
+2 - Internal 3.5-inch SATA drive bays
+1 - Optical drive bay'''
+design = '''
+Aluminum
+39.2 lbs.
+20.1" H x 8.1" W x 18.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G5 1.6 (PCI)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_1.6.html" },
+  { label = "Power Macintosh G5 1.8 (PCI-X)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_1.8.html" },
+  { label = "Power Macintosh G5 2.0 DP (PCI-X)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_2.0_dp.html" },
+  { label = "Power Macintosh G5 1.8 DP (PCI-X)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_1.8_dp.html" },
+]

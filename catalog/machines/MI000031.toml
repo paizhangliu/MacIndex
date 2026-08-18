@@ -1,0 +1,62 @@
+category = "mac_quadra"
+picture_asset_key = "MI000031"
+name = "Macintosh Quadra 900"
+introductions = [{ year = 1991, month = 10 }]
+
+model_numbers = [{ value = "M4200" }]
+gestalt_ids = [{ value = "20" }]
+order_numbers = [
+  { value = "M4210", revisions = ["A"], qualifier = "no hard drive" },
+  { value = "M4230", revisions = ["A"], qualifier = "160 MB hard drive" },
+]
+
+codenames = [{ value = "Darwin" }, { value = "Eclipse" }, { value = "IIex" }, { value = "Premise 500" }]
+
+processor = '''
+**Motorola 68040** 25 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, integrated FPU, 25 MHz system bus
+**Dual Apple peripheral interface controllers (PICs)** 2 MHz each, 65CX02 cores, 32 KB external memory per PIC (floppy/ADB and serial control)'''
+processor_family_keys = ["68040"]
+
+graphics = "**Apple DAFB video controller** 1 MB VRAM standard, 2 MB maximum"
+
+display = '''
+External display required
+512x384 at 24-bit color
+640x480 or 832x624 at 8-bit color with 1 MB VRAM; at 24-bit color with 2 MB VRAM
+1152x870 at 8-bit color
+Second display support with additional video card'''
+ram = '''
+4 MB standard
+64 MB Apple-supported maximum
+256 MB actual maximum
+16 - 30-pin SIMM slots (groups of 4), 80 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.0.1
+Mac OS 8.1 Maximum'''
+storage = '''
+80 MB, 160 MB, or 400 MB SCSI hard drive
+SCSI hard drive interface
+Optional 2x CD-ROM drive
+1.44 MB floppy drive
+Optional DDS-DC tape drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm mono audio input jack
+1 - 3.5-mm stereo audio output jack
+5 - NuBus slots
+1 - 040 PDS slot
+2 - 5.25-inch drive bays'''
+design = '''
+Platinum
+36.8 lbs.
+18.6" H x 8.9" W x 20.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "Macintosh Quadra 900", url = "https://everymac.com/systems/apple/mac_quadra/specs/mac_quadra_900.html" }]

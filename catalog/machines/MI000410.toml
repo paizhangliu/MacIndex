@@ -1,0 +1,90 @@
+category = "mac_mini_arm"
+picture_asset_key = "MI000409"
+name = "Mac mini (2023)"
+introductions = [{ year = 2023, month = 1 }]
+
+model_numbers = [
+  { value = "A2686", qualifier = "M2" },
+  { value = "A2816", qualifier = "M2 Pro" },
+]
+identifiers = [
+  { value = "Mac14,3", qualifier = "M2" },
+  { value = "Mac14,12", qualifier = "M2 Pro" },
+]
+order_numbers = [
+  { value = "MMFJ3", revisions = ["A"] },
+  { value = "MMFK3", revisions = ["A"] },
+  { value = "MNH73", revisions = ["A"] },
+]
+emc_numbers = [
+  { value = "8003", qualifier = "M2" },
+  { value = "8180", qualifier = "M2 Pro" },
+]
+
+codenames = [{ value = "J473", qualifier = "M2" }, { value = "J474s", qualifier = "M2 Pro" }]
+
+processor = '''
+**Apple M2 "Staten"** TSMC N5P process, 64-bit, 8 cores (4 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 100 GB/s memory bandwidth
+**Apple M2 Pro "Rhodes Chop"** TSMC N5P process, 64-bit, 10 cores (6 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 200 GB/s memory bandwidth (16-core GPU)
+**Apple M2 Pro "Rhodes Chop"** TSMC N5P process, 64-bit, 12 cores (8 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 200 GB/s memory bandwidth (19-core GPU)'''
+processor_family_keys = ["m2"]
+processor_logo_keys = [
+  "m2",
+  "m2pro",
+]
+
+graphics = '''
+**Apple 10-core GPU** unified memory architecture (M2)
+**Apple 16-core GPU** unified memory architecture (M2 Pro)
+**Apple 19-core GPU** unified memory architecture (M2 Pro)'''
+
+display = '''
+M2: up to two external displays: one display up to 6K at 60 Hz via Thunderbolt and either one display up to 5K at 60 Hz via Thunderbolt or one display up to 4K at 60 Hz via HDMI
+M2 Pro: up to three external displays: two displays up to 6K at 60 Hz via Thunderbolt and one display up to 4K at 60 Hz via HDMI
+M2 Pro: alternatively, up to two external displays: one display up to 6K at 60 Hz via Thunderbolt and one display up to 4K at 144 Hz via HDMI
+M2 Pro: alternatively, one external display up to 8K at 60 Hz or 4K at 240 Hz via HDMI'''
+ram = '''
+8 GB standard (M2)
+16 GB standard (M2 Pro)
+16 or 24 GB configurable (M2)
+32 GB configurable (M2 Pro)
+24 GB maximum (M2)
+32 GB maximum (M2 Pro)
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 13.2
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard (M2)
+512 GB, 1 TB, or 2 TB SSD configurable (M2)
+512 GB SSD standard (M2 Pro)
+1, 2, 4, or 8 TB SSD configurable (M2 Pro)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+1 - Built-in speaker'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45), configurable to 10Gb Ethernet (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+2 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps; M2)
+4 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps; M2 Pro)
+1 - HDMI port (up to 4K at 60 Hz; M2)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz; M2 Pro)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver
+2.6 lbs. (M2)
+2.8 lbs. (M2 Pro)
+1.41" H x 7.75" W x 7.75" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac mini \"M2\" 8 CPU/10 GPU 2023", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m2-8-core-cpu-10-core-gpu-2023-specs.html" },
+  { label = "Mac mini \"M2 Pro\" 10 CPU/16 GPU 2023", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m2-pro-10-core-cpu-16-core-gpu-2023-specs.html" },
+  { label = "Mac mini \"M2 Pro\" 12 CPU/19 GPU 2023", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m2-pro-12-core-cpu-19-core-gpu-2023-specs.html" },
+]

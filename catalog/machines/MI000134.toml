@@ -1,0 +1,82 @@
+category = "mac_performa_ppc"
+picture_asset_key = "MI000113"
+name = "Macintosh Performa 6400 Series"
+aliases = [
+  "Macintosh Performa 6400",
+  "Macintosh Performa 6410",
+  "Macintosh Performa 6420",
+]
+introductions = [{ year = 1996, month = 8 }]
+
+model_numbers = [{ value = "M3548" }]
+gestalt_ids = [{ value = "58" }]
+order_numbers = [
+  { value = "M5167", revisions = ["A"], qualifier = "6400/180" },
+  { value = "M5168", revisions = ["A"], qualifier = "6400/200" },
+  { value = "M5609", revisions = ["A"], qualifier = "6400/200 Video Editing Edition" },
+]
+
+codenames = [
+  { value = "PowerStar", qualifier = "PSX platform" },
+  { value = "Hacksaw", qualifier = "system project" },
+  { value = "InstaTower", qualifier = "enclosure" },
+  { value = "Alchemy", qualifier = "logic board" },
+]
+
+processor = '''
+**PowerPC 603e (PID7v)** 180 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 603e (PID7v)** 200 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["603"]
+
+graphics = "**Apple Valkyrie-AR video controller** 1 MB display DRAM"
+
+display = "External display support via DB-15, up to 800x600 at 16-bit color; up to 1024x768 at 8-bit color"
+ram = '''
+16 MB standard (6400/180, 6400/200, or 6410)
+24 MB standard (6420)
+136 MB maximum
+8 MB built-in
+2 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.3 (System Enabler 410 v1.1)
+Mac OS 9.1 Maximum'''
+storage = '''
+1.6 or 2.4 GB IDE hard drive
+8x CD-ROM drive
+1.44 MB floppy drive'''
+features = '''
+1 - Built-in speaker
+1 - Built-in subwoofer
+1 - Infrared receiver for Apple TV/FM Radio System remote'''
+expansion = '''
+1 - Optional Ethernet port (10BASE-T)
+1 - 28.8 Kbps modem
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm audio input jack
+2 - 3.5-mm audio output jacks
+1 - Optional S-video input
+1 - Optional composite video input
+1 - Optional stereo RCA audio input
+2 - PCI slots
+1 - Comm II slot
+1 - Video input slot
+1 - TV tuner slot
+1 - 5.25-inch SCSI bay
+1 - Optional PC Compatibility Card'''
+design = '''
+Platinum
+44.5 lbs.
+16" H x 7.8" W x 16.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Macintosh Performa 6400/180", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_6400_180.html" },
+  { label = "Macintosh Performa 6410/180", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_6410_180.html" },
+  { label = "Macintosh Performa 6400/200 (VEE)", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_6400_200.html" },
+  { label = "Macintosh Performa 6420/200", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_6420_200.html" },
+]

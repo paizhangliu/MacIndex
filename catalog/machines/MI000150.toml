@@ -1,0 +1,42 @@
+category = "powerbook_duo_ppc"
+picture_asset_key = "MI000150"
+name = "Macintosh PowerBook Duo 2300c"
+introductions = [{ year = 1995, month = 8 }]
+
+gestalt_ids = [{ value = "118" }]
+
+codenames = [{ value = "AJ" }]
+
+processor = "**PowerPC 603e** 100 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["603"]
+
+graphics = "**Apple CSC display controller** 512 KB VRAM"
+
+display = "9.5-inch active-matrix color LCD, 640x400 at 16-bit color; 640x480 at 8-bit color"
+ram = '''
+8 or 20 MB standard
+56 MB maximum
+8 MB built-in
+1 - Duo memory slot, 70 ns'''
+rom = "4 MB Macintosh ROM"
+software = '''
+System 7.5.2 (PowerBook 5300/2300/190 Enabler)
+Mac OS 9.1 Maximum'''
+storage = '''
+750 MB or 1.1 GB hard drive
+SCSI or IDE hard drive interface'''
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker'''
+expansion = '''
+1 - Optional Express modem/fax card
+1 - RS-422 serial port
+1 - Modem slot
+1 - 152-pin dock connector (supports Duo Dock with Top Cover Upgrade, Duo Dock II, Duo Dock Plus, and Duo MiniDock)'''
+design = '''
+4.8 lbs.
+1.5" H x 10.9" W x 8.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWERBOOK"
+links = [{ label = "PowerBook Duo 2300c/100", url = "https://everymac.com/systems/apple/powerbook_duo/specs/mac_powerbook_duo2300c_100.html" }]

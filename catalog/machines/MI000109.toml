@@ -1,0 +1,75 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000109"
+name = "Power Macintosh 5400"
+introductions = [
+  { year = 1996, month = 4, qualifier = "120 MHz" },
+  { year = 1996, month = 10, qualifier = "180 MHz" },
+  { year = 1997, month = 2, qualifier = "200 MHz" },
+]
+
+model_numbers = [{ value = "M3046" }]
+gestalt_ids = [{ value = "74" }]
+order_numbers = [{ value = "M5686", revisions = ["B"], qualifier = "5400/180" }]
+
+codenames = [{ value = "Excalibur" }, { value = "Chimera" }, { value = "Alchemy", qualifier = "logic board" }]
+
+processor = '''
+**PowerPC 603e** 120 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 603e (PID7v)** 180 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 603e (PID7v)** 200 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["603"]
+
+graphics = "**Apple Valkyrie-AR video controller** 1 MB display DRAM"
+
+display = '''
+15-inch color display
+Up to 640x480 at 16-bit color; up to 832x624 at 8-bit color (120 MHz)
+Up to 800x600 at 16-bit color; up to 1024x768 at 8-bit color (180 or 200 MHz)
+External display support via DB-15'''
+ram = '''
+16 or 24 MB standard (120 or 180 MHz)
+24 or 32 MB standard (200 MHz)
+136 MB maximum
+8 or 16 MB built-in (depending on configuration)
+2 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.3 (System Enabler 410)
+System 7.5.5
+Mac OS 9.1 Maximum'''
+storage = '''
+1.6 GB ATA hard drive
+4x CD-ROM drive (120 MHz)
+8x CD-ROM drive (180 and 200 MHz)
+1.44 MB floppy drive
+ATA hard drive interface'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers
+1 - Infrared receiver for Apple TV/FM Radio System remote'''
+expansion = '''
+1 - Ethernet port (10BASE-T; 120 and 200 MHz models)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+2 - 3.5-mm analog output jacks
+1 - 6.88-inch PCI 2.0 slot
+1 - Comm II slot (preinstalled with Ethernet card)
+1 - Video input slot
+1 - Optional Apple Video-In Card with S-video, RCA composite video, and stereo RCA audio input
+1 - Optional Apple TV/FM Radio System (requires Apple Video-In Card)
+1 - Optional PC Compatibility Card'''
+design = '''
+Platinum
+47 lbs.
+17.5" H x 15.1" W x 16" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 5400/120", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5400_120.html" },
+  { label = "Power Macintosh 5400/180", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5400_180.html" },
+  { label = "Power Macintosh 5400/200", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5400_200.html" },
+]

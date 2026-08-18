@@ -1,0 +1,59 @@
+category = "mac_ii"
+picture_asset_key = "MI000015"
+name = "Macintosh IIci"
+introductions = [{ year = 1989, month = 9 }]
+
+model_numbers = [{ value = "M5780" }]
+gestalt_ids = [{ value = "11" }]
+order_numbers = [
+  { value = "M5710", revisions = ["A"] },
+  { value = "M5715", revisions = ["A"] },
+  { value = "M5737", revisions = ["A"] },
+  { value = "M5740", revisions = ["A"] },
+  { value = "M5745", revisions = ["A"] },
+  { value = "M5750", revisions = ["A"] },
+]
+
+codenames = [{ value = "Aurora II" }, { value = "Cobra II" }, { value = "Pacific" }, { value = "Stingray" }]
+
+processor = '''
+**Motorola 68030** 25 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, optional 32 KB L2 cache, 25 MHz system bus
+**Motorola 68882 FPU**'''
+processor_family_keys = ["68030"]
+
+graphics = "**Apple RBV video controller** 64–320 KB shared system memory"
+
+display = '''
+External display required
+512x384 or 640x480 at up to 8-bit color
+Multiple display support with additional NuBus video cards'''
+ram = '''
+1 MB or 4 MB standard
+128 MB maximum
+8 - 30-pin SIMM slots (groups of 4), 80 ns'''
+rom = "512 KB Macintosh ROM"
+software = '''
+System 6.0.4
+System 7.6.1 Maximum'''
+storage = '''
+Optional 40 MB or 80 MB SCSI hard drive
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+2 - ADB ports
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-19 external floppy port
+1 - DB-15 video port
+1 - 3.5-mm stereo audio output jack
+3 - NuBus slots
+1 - Cache PDS slot'''
+design = '''
+Platinum
+13.6 lbs.
+5.5" H x 11.9" W x 14.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [{ label = "Macintosh IIci", url = "https://everymac.com/systems/apple/mac_ii/specs/mac_iici.html" }]

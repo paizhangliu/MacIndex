@@ -1,0 +1,84 @@
+category = "imac_intel"
+picture_asset_key = "MI000278"
+name = "iMac (21.5-inch, Late 2013)"
+introductions = [{ year = 2013, month = 9 }]
+
+model_numbers = [{ value = "A1418" }]
+identifiers = [
+  { value = "iMac14,1" },
+  { value = "iMac14,3" },
+]
+order_numbers = [
+  { value = "ME086", revisions = ["A"], qualifier = "2.7 GHz" },
+  { value = "ME087", revisions = ["A"], qualifier = "2.9 GHz" },
+]
+emc_numbers = [{ value = "2638" }]
+
+processor = '''
+**Intel Core i5 (4570R) ("Haswell")** 2.7 GHz, up to 3.2 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+**Intel Core i5 (4570S) ("Haswell")** 2.9 GHz, up to 3.6 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (4770S) ("Haswell")** 3.1 GHz, up to 3.9 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["haswell"]
+processor_logo_keys = [
+  "corei5_4",
+  "corei7_4",
+]
+
+graphics = '''
+**NVIDIA GeForce GT 750M** 1 GB GDDR5 (2.9 or 3.1 GHz)
+**Intel Iris Pro 5200** up to 1.5 GB shared with main memory (2.7 GHz)'''
+graphics_logo_keys = [
+  "nvgeforcegt2012",
+  "inteliris",
+]
+
+display = '''
+21.5-inch (diagonal) LED-backlit display with IPS technology, 1920x1080
+Up to two external Thunderbolt displays
+External resolution up to 2560x1600
+Dual display extended, video mirroring, AirPlay Mirroring, and Target Display'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+PC3-12800 (1600 MHz) DDR3 memory
+2 - 204-pin PC3-12800 (1600 MHz) DDR3 SO-DIMM slots (not user-accessible)'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.8.4 (12E4022)
+macOS 10.15.7 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB 5400-rpm SATA hard drive standard
+1 TB Fusion Drive configurable
+256 or 512 GB flash storage configurable
+Optional Apple USB SuperDrive
+1 - 5.0 GT/s PCIe x2 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 1 ports (up to 10 Gbps; digital video output)
+1 - 3.5-mm analog/optical combo output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+12.5 lbs.
+17.7" H x 20.8" W x 6.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac 21.5-Inch \"Core i5\" 2.9 (Late 2013)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-2.9-21-inch-aluminum-late-2013-specs.html" },
+  { label = "iMac 21.5-Inch \"Core i7\" 3.1 (Late 2013)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-3.1-21-inch-aluminum-late-2013-specs.html" },
+]

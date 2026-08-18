@@ -1,0 +1,78 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000114"
+name = "Power Macintosh 4400"
+introductions = [
+  { year = 1996, month = 11, qualifier = "160 MHz" },
+  { year = 1997, month = 4, qualifier = "200 MHz and PC Compatible" },
+]
+
+model_numbers = [{ value = "M3959" }]
+gestalt_ids = [
+  { value = "514", qualifier = "160 MHz" },
+  { value = "515", qualifier = "200 MHz" },
+]
+order_numbers = [
+  { value = "M5767", revisions = ["A"], qualifier = "4400/200" },
+  { value = "M5817", revisions = ["A"], qualifier = "4400/200 PC Compatible" },
+]
+
+codenames = [
+  { value = "Frosty", qualifier = "160 MHz" },
+  { value = "Cupid", qualifier = "200 MHz and PC Compatible" },
+  { value = "Tanzania", qualifier = "logic board" },
+]
+
+processor = '''
+**PowerPC 603e (PID7v)** 160 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 603e (PID7v)** 200 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 40 MHz system bus
+**Cyrix 6x86 P166+** 133 MHz, 0.65 µm process, 32-bit, 16 KB unified L1 cache, 66 MHz system bus (PC-compatible configuration)'''
+processor_family_keys = ["603"]
+
+graphics = '''
+**ATI 264VT-A4S2** 1 MB video memory standard, 4 MB maximum (160 MHz)
+**ATI 264VT-A4S2** 2 MB video memory standard, 4 MB maximum (200 MHz)'''
+
+display = "External display support up to 1152x870 with 1 MB VRAM; up to 1280x1024 with 2 MB VRAM"
+ram = '''
+16 or 32 MB standard
+96 MB Apple-supported maximum
+160 MB actual maximum
+3 - 168-pin 3.3-volt unbuffered EDO DIMM slots, 60 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.2 (System Enabler 827)
+Mac OS 9.1 Maximum
+Windows 95 (PC-compatible configuration)'''
+storage = '''
+1.2 or 2 GB ATA hard drive
+8x or 12x CD-ROM drive
+1.44 MB floppy drive
+ATA hard drive interface'''
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker'''
+expansion = '''
+1 - Optional Ethernet port (10BASE-T; 160 MHz)
+1 - Ethernet port (10BASE-T; 200 MHz)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+3 - PCI slots (160 MHz)
+2 - PCI slots (200 MHz)
+1 - Comm II slot (200 MHz)
+1 - PCI PC Compatibility Card with Cyrix 6x86 P166+ at 133 MHz (4400/200 PC Compatible)
+1 - PC game port (PC-compatible configuration)'''
+design = '''
+Platinum
+24 lbs.
+5.43" H x 15.12" W x 17.37" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 4400/160", url = "https://everymac.com/systems/apple/powermac/specs/powermac_4400_160.html" },
+  { label = "Power Macintosh 4400/200 (PC)", url = "https://everymac.com/systems/apple/powermac/specs/powermac_4400_200.html" },
+]

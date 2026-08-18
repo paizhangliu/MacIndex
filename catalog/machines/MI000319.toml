@@ -1,0 +1,73 @@
+category = "xserve_intel"
+picture_asset_key = "MI000317"
+name = "Xserve (Early 2009)"
+introductions = [
+  { year = 2009, month = 4, qualifier = "up to 3 TB" },
+  { year = 2009, month = 12, qualifier = "up to 6 TB" },
+]
+
+model_numbers = [{ value = "A1279" }]
+identifiers = [{ value = "Xserve3,1" }]
+order_numbers = [
+  { value = "MB449", revisions = ["A"], qualifier = "2.26 GHz" },
+]
+emc_numbers = [{ value = "2279" }]
+
+processor = '''
+**Intel Xeon E5520 ("Gainestown")** 2.26 GHz, up to 2.53 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB fully shared L3 cache, Intel QuickPath Interconnect (QPI) at 5.86 GT/s
+**Dual Intel Xeon E5520 ("Gainestown")** 2.26 GHz, up to 2.53 GHz, 45 nm process, 64-bit, 4 cores per processor (8 cores total), 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB fully shared L3 cache per processor, Intel QuickPath Interconnect (QPI) at 5.86 GT/s
+**Dual Intel Xeon X5550 ("Gainestown")** 2.66 GHz, up to 3.06 GHz, 45 nm process, 64-bit, 4 cores per processor (8 cores total), 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB fully shared L3 cache per processor, Intel QuickPath Interconnect (QPI) at 6.4 GT/s
+**Dual Intel Xeon X5570 ("Gainestown")** 2.93 GHz, up to 3.33 GHz, 45 nm process, 64-bit, 4 cores per processor (8 cores total), 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB fully shared L3 cache per processor, Intel QuickPath Interconnect (QPI) at 6.4 GT/s'''
+processor_family_keys = ["nehalem"]
+processor_logo_keys = ["xeon_b"]
+
+graphics = "**NVIDIA GeForce GT 120** 256 MB GDDR3"
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = "External display support through Mini DisplayPort"
+ram = '''
+3 GB standard
+Up to 24 GB configurable (quad-core)
+Up to 48 GB configurable (8-core)
+96 GB maximum with Mac OS X Server v10.6
+6 - 1066 MHz DDR3 ECC DIMM slots (quad-core)
+12 - 1066 MHz DDR3 ECC DIMM slots (8-core)'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X Server 10.5.6 (April 2009)
+Mac OS X Server 10.6 (December 2009)
+OS X 10.11.6 Maximum'''
+storage = '''
+160 GB 7200-rpm SATA Apple Drive Module standard
+160 GB, 1 TB, or 2 TB 7200-rpm SATA Apple Drive Modules configurable
+128 GB SSD configurable
+6 TB maximum across 3 hot-plug drive bays
+450 GB 15,000-rpm SAS drive available as a third-party kit
+8x SuperDrive DL'''
+features = '''
+Remote monitoring
+Front-panel system identifier button
+Optional Xserve RAID Card with 512 MB cache and 72-hour cache battery backup
+Optional redundant 750 W power supply'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; jumbo frame support)
+3 - USB 2.0 ports
+2 - FireWire 800 ports
+1 - DB-9 serial port
+1 - Mini DisplayPort
+1 - Half-length (6.6-inch) PCI Express 2.0 x16 slot
+1 - 9.25-inch PCI Express 2.0 x16 slot
+3 - Hot-plug 3.5-inch SATA or SAS drive bays'''
+design = '''
+1U rack-mountable
+30.8-38.3 lbs.
+1.73" H x 17.6" W x 30" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [
+  { label = "Xserve Xeon Nehalem 2.26 GHz Quad Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.26-2009-quad-specs.html" },
+  { label = "Xserve Xeon Nehalem 2.26 GHz Eight Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.26-2009-eight-core-specs.html" },
+  { label = "Xserve Xeon Nehalem 2.66 GHz Eight Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.66-2009-eight-core-specs.html" },
+  { label = "Xserve Xeon Nehalem 2.93 GHz Eight Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.93-2009-eight-core-specs.html" },
+]

@@ -1,0 +1,76 @@
+category = "ibook"
+picture_asset_key = "MI000249"
+name = "iBook G4 (Late 2004)"
+introductions = [{ year = 2004, month = 10 }]
+
+model_numbers = [
+  { value = "A1054", qualifier = "12.1-inch" },
+  { value = "A1055", qualifier = "14.1-inch" },
+]
+identifiers = [{ value = "PowerBook6,5" }]
+order_numbers = [
+  { value = "M9623", revisions = ["A"], qualifier = "12.1-inch" },
+  { value = "M9627", revisions = ["A"], qualifier = "14.1-inch Combo" },
+  { value = "M9628", revisions = ["A"], qualifier = "14.1-inch SuperDrive" },
+]
+
+codenames = [{ value = "Q72A", qualifier = "12.1-inch" }, { value = "Q73A", qualifier = "14.1-inch" }]
+
+processor = '''
+**PowerPC 7447A (G4)** 1.2 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 133 MHz system bus (12.1-inch configuration)
+**PowerPC 7447A (G4)** 1.33 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 133 MHz system bus (14.1-inch configuration)'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7447"]
+
+graphics = "**ATI Mobility Radeon 9200** 32 MB DDR VRAM"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+12.1-inch active-matrix color LCD, 1024x768 (1.2 GHz)
+14.1-inch active-matrix color LCD, 1024x768 (1.33 GHz)
+Video mirroring via VGA, composite, or S-video output'''
+ram = '''
+256 MB standard and built-in
+1.25 GB maximum
+1 - PC2100 DDR SO-DIMM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.3.5 (7P216)
+Mac OS X 10.5.8 Maximum
+AHT (iBook) 2.2.1, 2.5'''
+storage = '''
+30 GB 4200-rpm Ultra ATA/100 hard drive standard (12.1-inch configuration)
+60 GB 4200-rpm Ultra ATA/100 hard drive standard (14.1-inch configurations)
+60 or 80 GB 4200-rpm Ultra ATA/100 hard drive configurable
+Slot-loading Combo drive (DVD-ROM/CD-RW) standard on 12.1-inch and selected 14.1-inch configurations
+Slot-loading SuperDrive (DVD-R/CD-RW) standard on selected 14.1-inch configuration
+Ultra ATA/100 (ATA-6) hard drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11b/g)
+Optional Bluetooth 1.1
+1 - Built-in microphone
+2 - Built-in stereo speakers (16-bit, 44.1 kHz sample rate)
+50 Wh lithium-ion battery (12-inch)
+61 or 62 Wh lithium-ion battery (14-inch)'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.92 modem
+2 - USB 2.0 ports
+1 - FireWire 400 port
+1 - Mini-VGA port
+Composite and S-video output via adapter
+1 - 3.5-mm audio output jack
+1 - Kensington security slot'''
+design = '''
+Opaque White
+4.9 lbs. (12-inch)
+5.9 lbs. (14-inch)
+1.35" H x 11.2" W x 9.06" D (12-inch)
+1.35" H x 12.7" W x 10.2" D (14-inch)'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iBook G4/1.2 12-Inch (Late 2004 - Op)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_g4_1.2_12.html" },
+  { label = "iBook G4/1.33 14-Inch (Late 2004 - Op)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_g4_1.33_14.html" },
+]

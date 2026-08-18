@@ -1,0 +1,75 @@
+category = "mac_server_ppc"
+picture_asset_key = "MI000154"
+name = "Macintosh Server G3 (Blue and White)"
+introductions = [
+  { year = 1999, month = 1, qualifier = "350, 400 MHz" },
+  { year = 1999, month = 6, qualifier = "450 MHz" },
+]
+
+model_numbers = [{ value = "M5183" }]
+identifiers = [{ value = "PowerMac1,1" }]
+order_numbers = [
+  { value = "M6657", revisions = ["A"], qualifier = "350 MHz; 1 - 9 GB; AppleShare IP 6.1" },
+  { value = "M6658", revisions = ["A"], qualifier = "400 MHz; 2 - 9 GB; AppleShare IP 6.1" },
+  { value = "M7558", revisions = ["A"], qualifier = "400 MHz; 1 - 9 GB; AppleShare IP 6.2" },
+  { value = "M7559", revisions = ["A"], qualifier = "450 MHz; 2 - 9 GB; AppleShare IP 6.2" },
+  { value = "M7560", revisions = ["A"], qualifier = "450 MHz; 2 - 9 GB; Mac OS X Server" },
+]
+
+codenames = [{ value = "Yosemite" }]
+
+processor = '''
+**PowerPC 750 (G3)** 350 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 400 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 450 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage 128 GL** 16 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = "Single display support via VGA, up to 1600x1200"
+ram = '''
+128 MB standard (350 MHz or late 400 MHz)
+256 MB standard (early 400 MHz or 450 MHz)
+1 GB maximum
+4 - PC100 168-pin SDRAM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.5.1 or 8.6
+AppleShare IP 6.1 or 6.2, or Mac OS X Server 1.0
+Mac OS X 10.4.11 Maximum'''
+storage = '''
+1 - 9 GB 7200-rpm Ultra2 SCSI hard drive standard (350 MHz or late 400 MHz)
+2 - 9 GB 10,000-rpm Ultra2 SCSI hard drives standard (early 400 MHz or 450 MHz)
+24x CD-ROM drive (350 MHz or early 400 MHz)
+32x CD-ROM drive (late 400 MHz or 450 MHz)
+Optional Zip 100 drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (10/100BASE-T; RJ-45)
+1 - Four-port 10/100BASE-T Ethernet card (Mac OS X Server)
+1 - Optional 56 Kbps modem
+1 - ADB port
+2 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+3 - 33 MHz PCI slots
+1 - 66 MHz PCI slot
+3 - Internal 3.5-inch ATA drive bays
+1 - Optical drive bay
+1 - Zip drive bay'''
+design = '''
+Blue and White
+30 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Macintosh Server G3 350 (Blue and White)", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_350_bl.html" },
+  { label = "Macintosh Server G3 400 (Blue and White)", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_400_bl.html" },
+  { label = "Macintosh Server G3 450 (Blue and White)", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_450_bl.html" },
+]

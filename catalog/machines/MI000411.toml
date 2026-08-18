@@ -1,0 +1,97 @@
+category = "mac_mini_arm"
+picture_asset_key = "MI000411"
+name = "Mac mini (2024)"
+introductions = [{ year = 2024, month = 10 }]
+
+model_numbers = [
+  { value = "A3238", qualifier = "M4" },
+  { value = "A3239", qualifier = "M4 Pro" },
+]
+identifiers = [
+  { value = "Mac16,10", qualifier = "M4" },
+  { value = "Mac16,11", qualifier = "M4 Pro" },
+]
+order_numbers = [
+  { value = "MCX44", revisions = ["A"] },
+  { value = "MCYT4", revisions = ["A"] },
+  { value = "MDAP4", revisions = ["A"] },
+  { value = "MDAQ4", revisions = ["A"] },
+  { value = "MDAY4", revisions = ["A"] },
+  { value = "MU9D3", revisions = ["A"] },
+  { value = "MU9E3", revisions = ["A"] },
+]
+emc_numbers = [
+  { value = "8739", qualifier = "M4" },
+  { value = "8852", qualifier = "M4 Pro" },
+]
+
+codenames = [{ value = "J773g", qualifier = "M4" }, { value = "J773s", qualifier = "M4 Pro" }]
+
+processor = '''
+**Apple M4 "Donan"** TSMC N3E process, 64-bit, 10 cores (4 "Everest v3" P-cores, 6 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 120 GB/s memory bandwidth
+**Apple M4 Pro "Brava Chop"** TSMC N3E process, 64-bit, 12 cores (8 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 273 GB/s memory bandwidth (16-core GPU)
+**Apple M4 Pro "Brava Chop"** TSMC N3E process, 64-bit, 14 cores (10 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 273 GB/s memory bandwidth (20-core GPU)'''
+processor_family_keys = ["m4"]
+processor_logo_keys = [
+  "m4",
+  "m4pro",
+]
+
+graphics = '''
+**Apple 10-core GPU** unified memory architecture (M4)
+**Apple 16-core GPU** unified memory architecture (M4 Pro)
+**Apple 20-core GPU** unified memory architecture (M4 Pro)'''
+
+display = '''
+M4: up to three external displays: two displays up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI, and one display up to 5K at 60 Hz over Thunderbolt
+M4: alternatively, up to three external displays: two displays up to 6K at 60 Hz or 4K at 144 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M4: alternatively, up to two external displays: one display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt or HDMI, and one display up to 5K at 60 Hz over Thunderbolt
+M4: alternatively, up to two external displays: one display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M4: alternatively, up to two external displays, each up to 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI
+M4 Pro: up to three external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI
+M4 Pro: alternatively, up to two external displays over Thunderbolt or HDMI: one display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz, and one display up to 6K at 60 Hz or 4K at 144 Hz
+M4 and M4 Pro: a supported hub or display daisy chain can carry up to two displays over one Thunderbolt port without increasing the maximum display count'''
+ram = '''
+16 GB standard (M4)
+24 GB standard (M4 Pro)
+24 or 32 GB configurable (M4)
+48 or 64 GB configurable (M4 Pro)
+32 GB maximum (M4)
+64 GB maximum (M4 Pro)
+LPDDR5X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 15.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard (M4)
+512 GB, 1 TB, or 2 TB SSD configurable (M4)
+512 GB SSD standard (M4 Pro)
+1, 2, 4, or 8 TB SSD configurable (M4 Pro)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+1 - Built-in speaker'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45), configurable to 10Gb Ethernet (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - Front USB-C ports (up to 10 Gbps; no display output)
+3 - Rear Thunderbolt 4 / USB 4 ports (up to 40 Gbps; DisplayPort 1.4; M4)
+3 - Rear Thunderbolt 5 / USB 4 ports (up to 120 Gbps; DisplayPort 2.1; M4 Pro)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver
+1.5 lbs. (M4)
+1.6 lbs. (M4 Pro)
+2.0" H x 5.0" W x 5.0" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac mini \"M4\" 10 CPU/10 GPU 2024", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-10-core-cpu-10-core-gpu-2024-specs.html" },
+  { label = "Mac mini \"M4 Pro\" 12 CPU/16 GPU 2024", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-pro-12-core-cpu-16-core-gpu-2024-specs.html" },
+  { label = "Mac mini \"M4 Pro\" 14 CPU/20 GPU 2024", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m4-pro-14-core-cpu-20-core-gpu-2024-specs.html" },
+]

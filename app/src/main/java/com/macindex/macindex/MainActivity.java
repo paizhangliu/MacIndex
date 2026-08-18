@@ -1,43 +1,51 @@
 package com.macindex.macindex;
 
-import androidx.annotation.NonNull;
-import androidx.activity.BackEventCompat;
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.core.widget.TextViewCompat;
-import androidx.customview.widget.ViewDragHelper;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.animation.LayoutTransition;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.util.Locale;
-import java.util.Map;
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.TextViewCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.macindex.macindex.catalog.BrowseGroup;
+import com.macindex.macindex.catalog.BrowseGrouping;
+import com.macindex.macindex.catalog.BrowseScope;
+import com.macindex.macindex.catalog.Machine;
+import com.macindex.macindex.catalog.MachineCatalog;
+import com.macindex.macindex.userstate.AppStateRepository;
+import com.macindex.macindex.userstate.FavouriteFolder;
+import com.macindex.macindex.userstate.UserState;
+import com.macindex.macindex.userstate.UserStateCommands;
+import com.macindex.macindex.userstate.UserStateLifecycleAdapter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * MacIndex.
@@ -54,842 +62,804 @@ import java.util.Random;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private static SQLiteDatabase database = null;
+    private static final int DRAWER_OPEN_EDGE_DP = 200;
+    private static final String STATE_DRAWER_OPEN = "drawerOpen";
+    private static final String STATE_SCOPE = "mainBrowseScope";
+    private static final String STATE_GROUPING = "mainBrowseGrouping";
+    private static final String STATE_EXTERNAL_REQUEST_CONSUMED =
+            "externalRequestConsumed";
 
-    private static volatile MachineHelper machineHelper = null;
+    private DrawerLayout drawerLayout;
+    private BrowseScope browseScope = BrowseScope.ALL;
+    private BrowseGrouping browseGrouping = BrowseGrouping.NAMES;
+    private List<BrowseGroup> browseGroups = Collections.emptyList();
+    private final List<View> loadedMachineRows = new ArrayList<>();
+    private Set<String> favouriteUids = Collections.emptySet();
+    private MachineCatalog catalog;
+    private UserState userState;
+    private UserStateLifecycleAdapter userStateAdapter;
+    private Bundle restorationState;
+    private boolean initialized;
+    private boolean startupPending = true;
+    private boolean drawerGesture;
+    private float drawerGestureDownX;
+    private float drawerGestureDownY;
+    private int drawerOpenEdgeWidth;
+    private int drawerTouchSlop;
+    private boolean trackingWideDrawerGesture;
+    private boolean consumingWideDrawerGesture;
+    private Runnable pendingDrawerAction;
+    private boolean pendingNoticePresented;
+    private boolean externalRequestConsumed;
 
-    private static Resources resources = null;
-
-    private DrawerLayout mDrawerLayout = null;
-
-    private String thisManufacturer = "all";
-
-    private String thisFilter = "names";
-
-    private int[][] loadPositions = {};
-
-    private TextView[][] machineLoadedCount = null;
-
-    private ProgressDialog waitDialog = null;
-
-    private boolean isDrawerGesture = false;
-
-    private Runnable pendingDrawerAction = null;
-
-    private static boolean isMainRunning = false;
+    private AutomaticUpdateCoordinator updateCoordinator;
+    private UpdateCheckState updateState;
+    private AlertDialog crashReportDialog;
+    private AlertDialog updateDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        final SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> startupPending);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WindowInsetsHelper.apply(this);
+        ContentInsetsHelper.apply(this);
+        restorationState = savedInstanceState;
+        final boolean restoredRequestConsumed = savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_EXTERNAL_REQUEST_CONSUMED, false);
+        // A new shortcut or app link may revive a killed singleTask Activity together with its
+        // old saved state. The new Intent always wins over the old "already consumed" marker.
+        externalRequestConsumed = restoreExternalRequestConsumed(
+                restoredRequestConsumed, getIntent());
+        initMenu();
+        initBackHandling();
+
+        final MacIndexApplication application = (MacIndexApplication) getApplication();
+        updateCoordinator = application.automaticUpdateCoordinator();
+        updateCoordinator.getState().observe(this, state -> {
+            updateState = state;
+            renderAutomaticUpdate();
+        });
+
+        StartupUiGate.bind(this, () -> startupPending = false,
+                (readyCatalog, repository) -> {
+                    catalog = readyCatalog;
+                    observeUserState(repository);
+                });
+    }
+
+    private void initBackHandling() {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackStarted(@NonNull final BackEventCompat backEvent) {
-                isDrawerGesture = mDrawerLayout != null
-                        && !mDrawerLayout.isDrawerOpen(GravityCompat.START)
-                        && backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT;
+                final int drawerEdge = ViewCompat.getLayoutDirection(drawerLayout)
+                        == ViewCompat.LAYOUT_DIRECTION_RTL
+                        ? BackEventCompat.EDGE_RIGHT : BackEventCompat.EDGE_LEFT;
+                drawerGesture = drawerLayout != null
+                        && !drawerLayout.isDrawerVisible(GravityCompat.START)
+                        && backEvent.getSwipeEdge() == drawerEdge;
             }
 
             @Override
             public void handleOnBackPressed() {
-                if (isDrawerGesture) {
-                    isDrawerGesture = false;
-                    mDrawerLayout.openDrawer(GravityCompat.START);
+                if (drawerGesture) {
+                    drawerGesture = false;
+                    drawerLayout.openDrawer(GravityCompat.START);
+                } else if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
                 } else {
-                    handleBackPressed();
+                    finish();
                 }
             }
 
             @Override
             public void handleOnBackCancelled() {
-                isDrawerGesture = false;
+                drawerGesture = false;
             }
         });
-
-        try {
-            isMainRunning = true;
-            initMenu();
-            waitDialog = new ProgressDialog(MainActivity.this);
-            waitDialog.setMessage(getString(R.string.loading_category));
-            waitDialog.setCancelable(false);
-
-            resources = getResources();
-            final File databaseFile = getDatabasePath("specs.db");
-            final boolean isNewVersion = PrefsHelper.isNewVersion(this);
-            if ((!databaseFile.exists() || isNewVersion)
-                    && (database == null || !database.isOpen() || machineHelper == null)) {
-                // Copy the bundled database off the UI thread on install and update.
-                waitDialog.show();
-                final Context applicationContext = getApplicationContext();
-                new Thread(() -> {
-                    Exception initializationError = null;
-                    try {
-                        initDatabase(applicationContext, isNewVersion);
-                    } catch (Exception e) {
-                        initializationError = e;
-                    }
-                    final Exception finalInitializationError = initializationError;
-                    runOnUiThread(() -> {
-                        if (isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                                && isDestroyed())) {
-                            return;
-                        }
-                        waitDialog.dismiss();
-                        if (finalInitializationError == null) {
-                            if (!isNewVersion || PrefsHelper.registerNewVersion(this)) {
-                                completeCreation(savedInstanceState);
-                            }
-                        } else {
-                            ExceptionHelper.handleDatabaseException(this, finalInitializationError,
-                                    "MainCreation", "Unable to initialize the database.");
-                        }
-                    });
-                }, "MacIndex-DatabaseInit").start();
-            } else {
-                if (!isNewVersion || PrefsHelper.registerNewVersion(this)) {
-                    completeCreation(savedInstanceState);
-                }
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
-        }
-    }
-
-    private void completeCreation(final Bundle savedInstanceState) {
-        try {
-            // Version registration has already normalized all known preference
-            // types before normal getters are allowed to read them.
-            thisManufacturer = PrefsHelper.getStringPrefs("lastMainManufacturer", this);
-            thisFilter = PrefsHelper.getStringPrefs("lastMainFilter", this);
-            boolean shouldCheckForUpdates = true;
-            if (savedInstanceState == null) {
-                // Creating activity due to user
-                DebugHelper.log("MacIndex", "Welcome to MacIndex.");
-
-                // If MainActivity Usage is set to not be saved
-                if (!(PrefsHelper.getBooleanPrefs("isSaveMainUsage", this))) {
-                    PrefsHelper.clearPrefs("lastMainManufacturer", this);
-                    PrefsHelper.clearPrefs("lastMainFilter", this);
-                }
-
-                // Reset Volume Warning
-                PrefsHelper.clearPrefs("isEnableVolWarningThisTime", this);
-
-                if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
-                    DebugHelper.log("MacIndex", "Initializing database.");
-                    if (!validateOperation(this)) {
-                        return;
-                    }
-                } else {
-                    Log.w("MacIndex", "Database already initialized.");
-                }
-
-                initInterface();
-            } else {
-                // Creating activity due to system
-                DebugHelper.log("MacIndex", "Reloading the main activity.");
-
-                if (!validateOperation(this)) {
-                    return;
-                }
-                initInterface();
-
-                // Finally, restore drawer.
-                if (savedInstanceState.getBoolean("drawerOpen")) {
-                    resetDrawerTitle();
-                    resetDrawerSelection();
-                }
-            }
-
-            // Deep Link Support, Activity Not Present
-            // Keep pending links across a system recreation.
-            Uri deepLink = getIntent().getData();
-            getIntent().setData(null);
-            if (deepLink != null) {
-                shouldCheckForUpdates = false;
-                decodeDeepLink(deepLink.toString());
-            } else {
-                Log.w("onCreateDeepLinkEntry", "Got null data");
-            }
-            final boolean upgradeReportShown = deepLink == null
-                    && PrefsHelper.showUpgradeReport(this);
-            if (shouldCheckForUpdates && !upgradeReportShown) {
-                UpdateHelper.checkAutomatically(this);
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "MainCreation", "Unable to create the main activity.");
-        }
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        // Deep Link Support, Activity Present
-        // Override this function due to the special launch mode
-        Uri deepLink = intent.getData();
-        if (PrefsHelper.getIntPrefs("lastKnownVersion", this) != BuildConfig.VERSION_CODE) {
-            Log.w("onNewIntentDeepLinkEntry", "Version registration is required");
-            // completeCreation() will consume this after database registration.
-            if (deepLink != null) {
-                setIntent(intent);
+    public boolean dispatchTouchEvent(final MotionEvent event) {
+        // Keep the app's forgiving legacy swipe region without touching DrawerLayout internals.
+        final int action = event.getActionMasked();
+        if (consumingWideDrawerGesture) {
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                consumingWideDrawerGesture = false;
             }
-            if (waitDialog == null || !waitDialog.isShowing()) {
-                recreate();
+            return true;
+        }
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            drawerGestureDownX = event.getX();
+            drawerGestureDownY = event.getY();
+            trackingWideDrawerGesture = drawerLayout != null
+                    && !drawerLayout.isDrawerVisible(GravityCompat.START)
+                    && drawerLayout.getDrawerLockMode(GravityCompat.START)
+                    == DrawerLayout.LOCK_MODE_UNLOCKED
+                    && isInDrawerOpenEdge(drawerGestureDownX);
+        } else if ((action == MotionEvent.ACTION_POINTER_DOWN
+                || action == MotionEvent.ACTION_POINTER_UP) && trackingWideDrawerGesture) {
+            trackingWideDrawerGesture = false;
+        } else if (action == MotionEvent.ACTION_MOVE && trackingWideDrawerGesture) {
+            final float horizontal = drawerOpeningDistance(event.getX());
+            final float vertical = Math.abs(event.getY() - drawerGestureDownY);
+            if (vertical > drawerTouchSlop && vertical > Math.abs(horizontal)) {
+                trackingWideDrawerGesture = false;
+            } else if (horizontal > drawerTouchSlop && horizontal > vertical) {
+                trackingWideDrawerGesture = false;
+                consumingWideDrawerGesture = true;
+                final MotionEvent cancel = MotionEvent.obtain(event);
+                cancel.setAction(MotionEvent.ACTION_CANCEL);
+                super.dispatchTouchEvent(cancel);
+                cancel.recycle();
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
             }
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            trackingWideDrawerGesture = false;
+        }
+
+        return super.dispatchTouchEvent(event);
+    }
+
+    private boolean isInDrawerOpenEdge(final float x) {
+        if (ViewCompat.getLayoutDirection(drawerLayout) == ViewCompat.LAYOUT_DIRECTION_RTL) {
+            return x >= drawerLayout.getWidth() - drawerOpenEdgeWidth;
+        }
+        return x <= drawerOpenEdgeWidth;
+    }
+
+    private float drawerOpeningDistance(final float x) {
+        if (ViewCompat.getLayoutDirection(drawerLayout) == ViewCompat.LAYOUT_DIRECTION_RTL) {
+            return drawerGestureDownX - x;
+        }
+        return x - drawerGestureDownX;
+    }
+
+    private void observeUserState(final AppStateRepository repository) {
+        if (userStateAdapter != null) {
             return;
         }
-        intent.setData(null);
+        userStateAdapter = new UserStateLifecycleAdapter(this, repository,
+                this::onUserStateChanged,
+                error -> ExceptionHelper.showUserStateReadFailure(this, error));
+    }
+
+    private void onUserStateChanged(final UserState state) {
+        userState = state;
+        favouriteUids = collectFavouriteUids(state);
+        refreshFavouriteIndicators();
+        resetDrawerSelection();
+
+        if (!initialized) {
+            if (restorationState != null) {
+                browseScope = restoreEnum(restorationState, STATE_SCOPE,
+                        BrowseScope.class, state.getUiMemory().getMainScope());
+                browseGrouping = restoreEnum(restorationState, STATE_GROUPING,
+                        BrowseGrouping.class, state.getUiMemory().getMainGrouping());
+            } else if (state.getPreferences().getRememberMainState()) {
+                browseScope = state.getUiMemory().getMainScope();
+                browseGrouping = state.getUiMemory().getMainGrouping();
+            } else {
+                browseScope = BrowseScope.ALL;
+                browseGrouping = BrowseGrouping.NAMES;
+            }
+            initInterface();
+            initialized = true;
+            if (restorationState != null
+                    && restorationState.getBoolean(STATE_DRAWER_OPEN, false)) {
+                resetDrawerTitle();
+                resetDrawerSelection();
+            }
+            restorationState = null;
+            continueStartupPresentation();
+            return;
+        }
+
+        if (state.getPendingNotice() == null) {
+            pendingNoticePresented = false;
+        }
+        continueStartupPresentation();
+    }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+        // Only the latest request survives startup. Once READY, consuming clears it exactly once.
         setIntent(intent);
-        if (deepLink != null) {
-            decodeDeepLink(deepLink.toString());
-        } else {
-            Log.w("onNewIntentDeepLinkEntry", "Got null data");
+        externalRequestConsumed = false;
+        if (initialized) {
+            continueStartupPresentation();
         }
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        try {
-            // Reload favourites
-            SpecsIntentHelper.refreshFavourites(machineLoadedCount, this);
-            if (!PrefsHelper.showUpgradeReport(this)) {
-                UpdateHelper.checkAutomatically(this);
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "MainOnRestart", "Unable to resume normal activity.");
+        if (initialized) {
+            continueStartupPresentation();
         }
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Is drawer opened?
-        outState.putBoolean("drawerOpen", mDrawerLayout != null
-                && mDrawerLayout.isDrawerOpen(GravityCompat.START));
+        outState.putBoolean(STATE_DRAWER_OPEN,
+                drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START));
+        outState.putString(STATE_SCOPE, browseScope.name());
+        outState.putString(STATE_GROUPING, browseGrouping.name());
+        outState.putBoolean(STATE_EXTERNAL_REQUEST_CONSUMED, externalRequestConsumed);
     }
 
     @Override
     protected void onDestroy() {
-        isMainRunning = false;
         pendingDrawerAction = null;
-        if (waitDialog != null && waitDialog.isShowing()) {
-            waitDialog.dismiss();
+        if (crashReportDialog != null) {
+            crashReportDialog.dismiss();
+            crashReportDialog = null;
+        }
+        if (updateDialog != null) {
+            updateDialog.setOnCancelListener(null);
+            updateDialog.dismiss();
+            updateDialog = null;
         }
         super.onDestroy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_main, menu);
-        // Debug items visibility
-        if (!BuildConfig.DEBUG) {
-            DebugHelper.log("DebugMode", "Disabling debug menu items.");
-            menu.findItem(R.id.mainDebugTriggerErrorItem).setVisible(false);
-            menu.findItem(R.id.mainDebugVersionRegistration).setVisible(false);
-            menu.findItem(R.id.mainDebugResetItem).setVisible(false);
-            menu.findItem(R.id.mainDebugBrowseAllItem).setVisible(false);
-        }
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        final int itemID = item.getItemId();
-        if (itemID == android.R.id.home) {
-            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+        final int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
             } else {
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.START);
             }
-        } else if (itemID == R.id.mainDebugTriggerErrorItem) {
-            ExceptionHelper.handleException(this, null, "Debug", "User triggered.");
-        } else if (itemID == R.id.mainDebugVersionRegistration) {
-            PrefsHelper.clearPrefs("lastKnownVersion", this);
-            PrefsHelper.triggerRebirth(this);
-        } else if (itemID == R.id.mainDebugResetItem) {
-            Toast.makeText(this, "Application reset requested", Toast.LENGTH_SHORT).show();
-            PrefsHelper.clearPrefs(this);
-        } else if (itemID == R.id.mainDebugBrowseAllItem) {
-            final String[] navigationUIDs = new String[machineHelper.getMachineCount()];
-            for (int i = 0; i < navigationUIDs.length; i++) {
-                navigationUIDs[i] = machineHelper.getUID(i);
-            }
-            final Intent intent = new Intent(this, SpecsActivity.class);
-            intent.putExtra("machineUID", navigationUIDs[0]);
-            intent.putExtra("navigationUIDs", navigationUIDs);
-            intent.putExtra("forceNavigationButtons", true);
-            startActivity(intent);
-        } else if (itemID == R.id.mainExpandAllItem) {
+        } else if (itemId == R.id.mainExpandAllItem) {
             setAllCategoriesVisibility(true);
-        } else if (itemID == R.id.mainCollapseAllItem) {
+        } else if (itemId == R.id.mainCollapseAllItem) {
             setAllCategoriesVisibility(false);
-        } else if (itemID == R.id.mainResetItem) {
-            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (itemId == R.id.mainResetItem) {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
             }
-            if (!(thisManufacturer.equals("all") && thisFilter.equals("names"))) {
-                thisManufacturer = "all";
-                thisFilter = "names";
-                PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
-                PrefsHelper.editPrefs("lastMainFilter", "names", this);
-                initInterface();
-            }
+            setBrowseState(BrowseScope.ALL, BrowseGrouping.NAMES);
         } else {
             return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
-    private void handleBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            finish();
-        }
-    }
-
-    private static synchronized void initDatabase(final Context context, final boolean isNewVersion) {
-        try {
-            Log.w("Database", "Initializing.");
-            if (database != null && database.isOpen() && machineHelper != null) {
-                return;
-            }
-
-            final Context applicationContext = context.getApplicationContext();
-            final File dbFilePath = applicationContext.getDatabasePath("specs.db");
-            final File dbFolder = dbFilePath.getParentFile();
-            if (dbFolder == null || (!dbFolder.exists() && !dbFolder.mkdirs())) {
-                throw new IllegalStateException("Unable to create database directory");
-            }
-            if (!dbFilePath.exists() || isNewVersion) {
-                final File temporaryDatabase = new File(dbFolder, "specs.db.tmp");
-                if (temporaryDatabase.exists() && !temporaryDatabase.delete()) {
-                    throw new IllegalStateException("Unable to remove temporary database file");
-                }
-                try (InputStream inputStream = applicationContext.getAssets().open("specs.db");
-                     OutputStream outputStream = new FileOutputStream(temporaryDatabase)) {
-                    byte[] buffer = new byte[64 * 1024];
-                    int length;
-                    while ((length = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, length);
-                    }
-                    outputStream.flush();
-                } catch (Exception copyException) {
-                    if (!temporaryDatabase.delete()) {
-                        Log.w("Database", "Unable to remove partial database file.");
-                    }
-                    throw copyException;
-                }
-                if (dbFilePath.exists() && !applicationContext.deleteDatabase("specs.db")) {
-                    throw new IllegalStateException("Unable to remove outdated database");
-                }
-                if (!temporaryDatabase.renameTo(dbFilePath)) {
-                    if (!temporaryDatabase.delete()) {
-                        Log.w("Database", "Unable to remove temporary database file.");
-                    }
-                    throw new IllegalStateException("Unable to install bundled database");
-                }
-            }
-
-            DatabaseOpenHelper dbHelper = new DatabaseOpenHelper(applicationContext);
-            database = dbHelper.getReadableDatabase();
-
-            // Open MachineHelper
-            machineHelper = new MachineHelper(database);
-
-        } catch (Exception e) {
-            closeDatabase();
-            Log.e("initDatabaseSafe", "Initialize failed.", e);
-            throw new IllegalStateException("Unable to initialize bundled database", e);
-        }
-    }
-
-    static synchronized void closeDatabase() {
-        if (machineHelper != null) {
-            machineHelper.setStopQuery();
-        }
-        if (database != null) {
-            Log.w("Database", "Current database close.");
-            database.close();
-        }
-        database = null;
-        machineHelper = null;
-    }
-
     private void initMenu() {
-        try {
-            DebugHelper.log("initMenu", "Initializing");
-            // Set the slide menu.
-            // Set the edge size of drawer.
-            mDrawerLayout = findViewById(R.id.mainContainer);
-            mDrawerLayout.addOnLayoutChangeListener((view, left, top, right, bottom,
-                                                     oldLeft, oldTop, oldRight, oldBottom) ->
-                    enlargeDrawerEdge());
+        drawerLayout = findViewById(R.id.mainContainer);
+        drawerOpenEdgeWidth = Math.round(DRAWER_OPEN_EDGE_DP
+                * getResources().getDisplayMetrics().density);
+        drawerTouchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
 
-            // Initialize the navigation bar
+        bindBrowseItem(R.id.group0MenuItem, BrowseScope.ALL, null);
+        bindBrowseItem(R.id.group1MenuItem, BrowseScope.APPLE_68K, null);
+        bindBrowseItem(R.id.group2MenuItem, BrowseScope.POWERPC, null);
+        bindBrowseItem(R.id.group3MenuItem, BrowseScope.INTEL, null);
+        bindBrowseItem(R.id.group4MenuItem, BrowseScope.APPLE_SILICON, null);
+        bindBrowseItem(R.id.view1MenuItem, null, BrowseGrouping.NAMES);
+        bindBrowseItem(R.id.view2MenuItem, null, BrowseGrouping.PROCESSORS);
+        bindBrowseItem(R.id.view3MenuItem, null, BrowseGrouping.YEARS);
 
-            // Manufacturer Menu
-            // Manufacturer 0: all (Default)
-            findViewById(R.id.group0MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisManufacturer = "all";
-                PrefsHelper.editPrefs("lastMainManufacturer", "all", this);
-                initInterface();
-            }));
-            // Manufacturer 1: apple68k
-            findViewById(R.id.group1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisManufacturer = "apple68k";
-                PrefsHelper.editPrefs("lastMainManufacturer", "apple68k", this);
-                initInterface();
-            }));
-            // Manufacturer 2: appleppc
-            findViewById(R.id.group2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisManufacturer = "appleppc";
-                PrefsHelper.editPrefs("lastMainManufacturer", "appleppc", this);
-                initInterface();
-            }));
-            // Manufacturer 3: appleintel
-            findViewById(R.id.group3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisManufacturer = "appleintel";
-                PrefsHelper.editPrefs("lastMainManufacturer", "appleintel", this);
-                initInterface();
-            }));
-            // Manufacturer 4: applearm
-            findViewById(R.id.group4MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisManufacturer = "applearm";
-                PrefsHelper.editPrefs("lastMainManufacturer", "applearm", this);
-                initInterface();
-            }));
+        findViewById(R.id.searchMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, SearchActivity.class))));
+        findViewById(R.id.randomMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(this::openRandom));
+        findViewById(R.id.favouriteMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, FavouriteActivity.class))));
+        findViewById(R.id.compareMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, CompareActivity.class))));
+        findViewById(R.id.commentMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, CommentActivity.class))));
+        findViewById(R.id.aboutMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, SettingsAboutActivity.class))));
+        findViewById(R.id.newAboutMenuItem).setOnClickListener(view ->
+                closeDrawerWithAction(() -> startActivity(
+                        new Intent(this, NewAboutActivity.class))));
 
-            // Filter Menu
-            // Filter 1: names (Default)
-            findViewById(R.id.view1MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisFilter = "names";
-                PrefsHelper.editPrefs("lastMainFilter", "names", this);
-                initInterface();
-            }));
-            // Filter 2: processors
-            findViewById(R.id.view2MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisFilter = "processors";
-                PrefsHelper.editPrefs("lastMainFilter", "processors", this);
-                initInterface();
-            }));
-            // Filter 3: years
-            findViewById(R.id.view3MenuItem).setOnClickListener(view -> closeDrawerWithAction(() -> {
-                thisFilter = "years";
-                PrefsHelper.editPrefs("lastMainFilter", "years", this);
-                initInterface();
-            }));
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull final View drawerView, final float slideOffset) {
+                // No state change.
+            }
 
-            // Main Menu
-            // SearchActivity Entrance
-            findViewById(R.id.searchMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, SearchActivity.class))));
-            // Random Access
-            findViewById(R.id.randomMenuItem).setOnClickListener(view ->
-                    closeDrawerWithAction(this::openRandom));
-            // FavouriteActivity Entrance
-            findViewById(R.id.favouriteMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, FavouriteActivity.class))));
-            // CompareActivity Entrance
-            findViewById(R.id.compareMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, CompareActivity.class))));
-            // CommentActivity Entrance
-            findViewById(R.id.commentMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, CommentActivity.class))));
-            // SettingsAboutActivity Entrance
-            findViewById(R.id.aboutMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, SettingsAboutActivity.class))));
-            // AboutActivity Entrance
-            findViewById(R.id.newAboutMenuItem).setOnClickListener(view -> closeDrawerWithAction(() ->
-                    startActivity(new Intent(MainActivity.this, NewAboutActivity.class))));
+            @Override
+            public void onDrawerOpened(@NonNull final View drawerView) {
+                resetDrawerTitle();
+            }
 
-            // Set a drawer listener to change title and color.
-            mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-                @Override
-                public void onDrawerSlide(@NonNull final View drawerView, final float slideOffset) {
-                    // No action
-                }
+            @Override
+            public void onDrawerClosed(@NonNull final View drawerView) {
+                runPendingDrawerAction();
+                setTitle(translateTitleRes());
+            }
 
-                @Override
-                public void onDrawerOpened(@NonNull final View drawerView) {
-                    resetDrawerTitle();
-                }
+            @Override
+            public void onDrawerStateChanged(final int newState) {
+                resetDrawerSelection();
+            }
+        });
 
-                @Override
-                public void onDrawerClosed(@NonNull final View drawerView) {
-                    runPendingDrawerAction();
-                    setTitle(getString(translateTitleRes()));
-                }
-
-                @Override
-                public void onDrawerStateChanged(final int newState) {
-                    resetDrawerSelection();
-                }
-            });
-
-            // Set the toolbar.
-            final Toolbar mainToolbar = findViewById(R.id.mainToolbar);
-            final ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mainToolbar, 0, 0);
-            mDrawerLayout.addDrawerListener(drawerToggle);
-            drawerToggle.syncState();
-            setSupportActionBar(mainToolbar);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "initMenu", "Initialize failed!!");
-        }
+        final Toolbar toolbar = findViewById(R.id.mainToolbar);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, 0, 0);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        setSupportActionBar(toolbar);
     }
 
-    private void closeDrawerWithAction(final Runnable drawerAction) {
-        pendingDrawerAction = drawerAction;
-        if (mDrawerLayout.isDrawerVisible(GravityCompat.START)) {
-            closeDrawerQuickly();
+    private void bindBrowseItem(final int viewId,
+                                final BrowseScope scope,
+                                final BrowseGrouping grouping) {
+        findViewById(viewId).setOnClickListener(view -> closeDrawerWithAction(() ->
+                setBrowseState(scope == null ? browseScope : scope,
+                        grouping == null ? browseGrouping : grouping)));
+    }
+
+    private void setBrowseState(final BrowseScope scope, final BrowseGrouping grouping) {
+        if (!initialized || (browseScope == scope && browseGrouping == grouping)) {
+            return;
+        }
+        browseScope = scope;
+        browseGrouping = grouping;
+        initInterface();
+        userStateAdapter.execute(UserStateCommands.setMainBrowseState(
+                        scope, grouping),
+                ignored -> { },
+                error -> ExceptionHelper.showUserStateWriteFailure(this, error,
+                        R.string.menu_view, R.string.main_browse_save_failed));
+    }
+
+    private void closeDrawerWithAction(final Runnable action) {
+        pendingDrawerAction = action;
+        if (drawerLayout.isDrawerVisible(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             runPendingDrawerAction();
         }
     }
 
-    private void closeDrawerQuickly() {
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        try {
-            final ViewDragHelper draggerObj = getDrawerDragger();
-            final View drawerView = draggerObj.getCapturedView();
-            if (drawerView != null) {
-                // Close the drawer in half of the default duration.
-                draggerObj.smoothSlideViewTo(drawerView, -drawerView.getWidth(),
-                        drawerView.getTop(), 256, null);
-                mDrawerLayout.invalidate();
-            }
-        } catch (Exception e) {
-            // A changed AndroidX field must not take the whole main menu down.
-            Log.w("initMenu", "Unable to accelerate drawer.", e);
-        }
-    }
-
     private void runPendingDrawerAction() {
-        final Runnable drawerAction = pendingDrawerAction;
+        final Runnable action = pendingDrawerAction;
         pendingDrawerAction = null;
-        if (drawerAction != null) {
-            drawerAction.run();
+        if (action != null) {
+            action.run();
         }
-    }
-
-    private void enlargeDrawerEdge() {
-        try {
-            final ViewDragHelper draggerObj = getDrawerDragger();
-            draggerObj.setEdgeSize(draggerObj.getDefaultEdgeSize() * 10);
-        } catch (Exception e) {
-            // A changed AndroidX field must not take the whole main menu down.
-            Log.w("initMenu", "Unable to enlarge drawer edge.", e);
-        }
-    }
-
-    private ViewDragHelper getDrawerDragger() throws Exception {
-        final Field mDragger = mDrawerLayout.getClass().getDeclaredField(
-                "mLeftDragger");
-        mDragger.setAccessible(true);
-        return (ViewDragHelper) mDragger.get(mDrawerLayout);
     }
 
     private void resetDrawerTitle() {
-        // Set if it is in EveryMac mode.
-        if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", MainActivity.this)) {
-            setTitle(getString(R.string.app_name_everymac));
-        } else {
-            setTitle(R.string.app_name);
-        }
+        setTitle(R.string.app_name);
     }
 
     private void resetDrawerSelection() {
-        // Manufacturer Menu
-        final LinearLayout manufacturerLayout = findViewById(R.id.groupLayout);
-        for (int i = 1; i < manufacturerLayout.getChildCount(); i++) {
-            if (manufacturerLayout.getChildAt(i) instanceof TextView) {
-                final TextView currentChild = (TextView) manufacturerLayout.getChildAt(i);
-                if (currentChild == findViewById(translateManufacturerMenuRes())) {
-                    currentChild.setEnabled(false);
-                    currentChild.setTextColor(ContextCompat.getColor(this,
-                            android.R.color.white));
-                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
-                            R.color.colorSelectedBackground));
-                    currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24_white, 0);
+        if (drawerLayout == null) {
+            return;
+        }
+        updateDrawerSelection(findViewById(R.id.groupLayout), translateScopeMenuRes());
+        updateDrawerSelection(findViewById(R.id.viewLayout), translateGroupingMenuRes());
+        final TextView random = findViewById(R.id.randomMenuItem);
+        final boolean limited = userState != null
+                && userState.getPreferences().getLimitRandomToCurrentBrowse();
+        random.setText(limited ? R.string.menu_random_limited_label : R.string.menu_random);
+    }
 
-                } else {
-                    currentChild.setEnabled(true);
-                    currentChild.setTextColor(ContextCompat.getColor(this,
-                            R.color.colorDefaultText));
-                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
-                            R.color.colorBackground));
-                    currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-                }
+    private void updateDrawerSelection(final LinearLayout layout, final int selectedId) {
+        for (int i = 1; i < layout.getChildCount(); i++) {
+            if (!(layout.getChildAt(i) instanceof TextView)) {
+                continue;
             }
-        }
-
-        // Filter Menu
-        final LinearLayout filterLayout = findViewById(R.id.viewLayout);
-        for (int i = 1; i < filterLayout.getChildCount(); i++) {
-            if (filterLayout.getChildAt(i) instanceof TextView) {
-                final TextView currentChild = (TextView) filterLayout.getChildAt(i);
-                if (currentChild == findViewById(translateFilterMenuRes())) {
-                    currentChild.setEnabled(false);
-                    currentChild.setTextColor(ContextCompat.getColor(this,
-                            android.R.color.white));
-                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
-                            R.color.colorSelectedBackground));
-                    currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24_white, 0);
-                } else {
-                    currentChild.setEnabled(true);
-                    currentChild.setTextColor(ContextCompat.getColor(this,
-                            R.color.colorDefaultText));
-                    currentChild.setBackgroundColor(ContextCompat.getColor(this,
-                            R.color.colorBackground));
-                    currentChild.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
-                }
-            }
-        }
-
-        // If EveryMac enabled, random should be disabled
-        if (PrefsHelper.getBooleanPrefs("isOpenEveryMac", MainActivity.this)) {
-            findViewById(R.id.randomMenuItem).setEnabled(false);
-            findViewById(R.id.favouriteMenuItem).setEnabled(false);
-            findViewById(R.id.compareMenuItem).setEnabled(false);
-            findViewById(R.id.commentMenuItem).setEnabled(false);
-        } else {
-            findViewById(R.id.randomMenuItem).setEnabled(true);
-            findViewById(R.id.favouriteMenuItem).setEnabled(true);
-            findViewById(R.id.compareMenuItem).setEnabled(true);
-            findViewById(R.id.commentMenuItem).setEnabled(true);
-        }
-
-        // If limit range is enabled, show the limited label.
-        if (PrefsHelper.getBooleanPrefs("isRandomAll", MainActivity.this)) {
-            ((TextView) findViewById(R.id.randomMenuItem))
-                    .setText(R.string.menu_random_limited_label);
-        } else {
-            ((TextView) findViewById(R.id.randomMenuItem))
-                    .setText(getString(R.string.menu_random));
+            final TextView item = (TextView) layout.getChildAt(i);
+            final boolean selected = item.getId() == selectedId;
+            item.setEnabled(!selected);
+            item.setTextColor(ContextCompat.getColor(this,
+                    selected ? android.R.color.white : R.color.colorDefaultText));
+            item.setBackgroundColor(ContextCompat.getColor(this,
+                    selected ? R.color.colorSelectedBackground : R.color.colorBackground));
+            item.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0, 0, selected ? R.drawable.ic_baseline_check_24_white : 0, 0);
         }
     }
 
     private void initInterface() {
+        setTitle(translateTitleRes());
+        browseGroups = catalog.browseGroups(browseScope, browseGrouping);
+        loadedMachineRows.clear();
+        final LinearLayout container = findViewById(R.id.categoryContainer);
+        final LayoutTransition transition = container.getLayoutTransition();
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        container.setLayoutTransition(null);
         try {
-            // Set Activity title.
-            setTitle(getString(translateTitleRes()));
-            // Parent layout of all categories.
-            final LinearLayout categoryContainer = findViewById(R.id.categoryContainer);
-            // Fix an animation bug here
-            final LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
-            layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-            // Get filter string and positions.
-            final String[][] thisFilterString = machineHelper.getFilterString(thisFilter);
-            final int[] sectionPositions = machineHelper.getFilterSectionPositions(thisFilter);
-            final String[] sectionNames = machineHelper.getFilterSectionNames(thisFilter);
-            if (sectionPositions.length != sectionNames.length) {
-                throw new IllegalStateException("Incomplete main sections");
-            }
-
-            loadPositions = machineHelper.getMainPositions(thisFilter, thisManufacturer);
-
-            // Set up each category.
-            categoryContainer.setLayoutTransition(null);
-            try {
-                categoryContainer.removeAllViews();
-                machineLoadedCount = new TextView[loadPositions.length][];
-                int currentSection = -1;
-                int displayedSection = -1;
-                for (int i = 0; i < loadPositions.length; i++) {
-                    while (currentSection + 1 < sectionPositions.length
-                            && sectionPositions[currentSection + 1] <= i) {
-                        currentSection++;
-                    }
-                    if (loadPositions[i].length != 0) {
-                        if (currentSection != -1 && currentSection != displayedSection) {
-                            final View sectionChunk = getLayoutInflater()
-                                    .inflate(R.layout.chunk_main_section,
-                                            categoryContainer, false);
-                            final TextView sectionName = sectionChunk.findViewById(
-                                    R.id.mainSection);
-                            sectionName.setText(translateSectionRes(
-                                    sectionNames[currentSection]));
-                            categoryContainer.addView(sectionChunk);
-                            displayedSection = currentSection;
-                        }
-                        final int categoryID = i;
-                        final int[] thisCategoryPositions = loadPositions[i];
-                        final View categoryChunk = getLayoutInflater()
-                                .inflate(R.layout.chunk_category, categoryContainer, false);
-                        final LinearLayout categoryChunkLayout = categoryChunk.findViewById(R.id.categoryInfoLayout);
-                        final TextView categoryName = categoryChunk.findViewById(R.id.category);
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            categoryName.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                        } else {
-                            TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                        }
-                        categoryName.setText(thisFilterString[2][i]);
-
-                        /* Remake my teammate's code */
-                        categoryName.setOnClickListener(new View.OnClickListener() {
-                            private boolean isCategoryLoaded = false;
-
-                            @Override
-                            public void onClick(final View view) {
-                                try {
-                                    if (!isCategoryLoaded) {
-                                        DebugHelper.log("initCategory", "Loading category " + categoryID);
-                                        machineLoadedCount[categoryID] = SpecsIntentHelper
-                                                .initCategory(categoryChunkLayout, thisCategoryPositions,
-                                                        false, MainActivity.this);
-                                        SpecsIntentHelper.refreshFavourites(
-                                                new TextView[][]{machineLoadedCount[categoryID]},
-                                                MainActivity.this);
-                                        isCategoryLoaded = true;
-                                    }
-
-                                    final View firstChild = categoryChunkLayout.getChildAt(1);
-                                    if (categoryName.isActivated()) {
-                                        // Make machines invisible.
-                                        if (!(firstChild instanceof LinearLayout)) {
-                                            // Have the divider
-                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                            }
-                                            firstChild.setVisibility(View.VISIBLE);
-                                        } else {
-                                            // Does not have the divider
-                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                categoryChunkLayout.getChildAt(j).setVisibility(View.GONE);
-                                            }
-                                        }
-                                        categoryName.setActivated(false);
-                                    } else {
-                                        // Make machines visible.
-                                        if (!(firstChild instanceof LinearLayout)) {
-                                            // Have the divider
-                                            for (int j = 2; j < categoryChunkLayout.getChildCount(); j++) {
-                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                            }
-                                            firstChild.setVisibility(View.GONE);
-                                        } else {
-                                            // Does not have the divider
-                                            for (int j = 1; j < categoryChunkLayout.getChildCount(); j++) {
-                                                categoryChunkLayout.getChildAt(j).setVisibility(View.VISIBLE);
-                                            }
-                                        }
-                                        categoryName.setActivated(true);
-                                    }
-                                } catch (Exception e) {
-                                    ExceptionHelper.handleException(MainActivity.this, e, null, null);
-                                }
-                            }
-                        });
-                        categoryContainer.addView(categoryChunk);
-                    }
+            container.removeAllViews();
+            for (BrowseGroup group : browseGroups) {
+                if (group.sectionKey() != null) {
+                    final View section = getLayoutInflater().inflate(
+                            R.layout.chunk_main_section, container, false);
+                    ((TextView) section.findViewById(R.id.mainSection)).setText(
+                            translateSectionRes(group.sectionKey()));
+                    container.addView(section);
                 }
-                // Remove the last divider.
-                if (categoryContainer.getChildCount() != 0) {
-                    ((LinearLayout) categoryContainer.getChildAt(
-                            categoryContainer.getChildCount() - 1)).removeViewAt(1);
-                }
-            } finally {
-                categoryContainer.setLayoutTransition(layoutTransition);
+                final View category = getLayoutInflater().inflate(
+                        R.layout.chunk_category, container, false);
+                final LinearLayout categoryLayout =
+                        category.findViewById(R.id.categoryInfoLayout);
+                final TextView categoryName = category.findViewById(R.id.category);
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(categoryName,
+                        TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                categoryName.setText(group.label());
+                categoryName.setOnClickListener(new View.OnClickListener() {
+                    private boolean loaded;
+
+                    @Override
+                    public void onClick(final View view) {
+                        if (!loaded) {
+                            populateCategory(categoryLayout, group);
+                            loaded = true;
+                        }
+                        setCategoryVisibility(categoryLayout, categoryName,
+                                !categoryName.isActivated());
+                    }
+                });
+                container.addView(category);
             }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "initInterface", "Initialize failed!!");
+            removeLastCategoryDivider(container);
+        } finally {
+            container.setLayoutTransition(transition);
+        }
+        resetDrawerSelection();
+    }
+
+    private void populateCategory(final LinearLayout layout, final BrowseGroup group) {
+        for (Machine machine : group.machines()) {
+            final View row = MachineRowBinder.inflate(getLayoutInflater(), layout);
+            MachineRowBinder.bindCatalogMachine(
+                    row,
+                    machine,
+                    favouriteUids.contains(machine.uid()),
+                    ignored -> openMachine(machine, group.machines(), false));
+            row.setVisibility(View.GONE);
+            layout.addView(row);
+            loadedMachineRows.add(row);
         }
     }
 
-    private void setAllCategoriesVisibility(final boolean isVisible) {
-        try {
-            final LinearLayout categoryContainer = findViewById(R.id.categoryContainer);
-            final LayoutTransition layoutTransition = categoryContainer.getLayoutTransition();
-            categoryContainer.setLayoutTransition(null);
-            try {
-                for (int i = 0; i < categoryContainer.getChildCount(); i++) {
-                    final LinearLayout categoryChunk = categoryContainer.getChildAt(i)
-                            .findViewById(R.id.categoryInfoLayout);
-                    if (categoryChunk == null) {
-                        continue;
-                    }
-                    final TextView categoryName = categoryChunk.findViewById(R.id.category);
-                    if (categoryName.isActivated() != isVisible) {
-                        final LayoutTransition categoryTransition = categoryChunk.getLayoutTransition();
-                        categoryChunk.setLayoutTransition(null);
-                        categoryName.performClick();
-                        categoryChunk.setLayoutTransition(categoryTransition);
-                    }
-                }
-            } finally {
-                categoryContainer.setLayoutTransition(layoutTransition);
+    private static void setCategoryVisibility(final LinearLayout layout,
+                                              final TextView categoryName,
+                                              final boolean visible) {
+        if (layout.getChildCount() < 2) {
+            categoryName.setActivated(visible);
+            return;
+        }
+        final boolean hasDivider = !(layout.getChildAt(1) instanceof LinearLayout);
+        final int firstMachine = hasDivider ? 2 : 1;
+        for (int i = firstMachine; i < layout.getChildCount(); i++) {
+            layout.getChildAt(i).setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (hasDivider) {
+            layout.getChildAt(1).setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        categoryName.setActivated(visible);
+    }
+
+    private static void removeLastCategoryDivider(final LinearLayout container) {
+        for (int i = container.getChildCount() - 1; i >= 0; i--) {
+            final LinearLayout category = container.getChildAt(i)
+                    .findViewById(R.id.categoryInfoLayout);
+            if (category != null && category.getChildCount() > 1) {
+                category.removeViewAt(1);
+                return;
             }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "MainCategoryVisibility", "Unable to change category visibility.");
+        }
+    }
+
+    private void setAllCategoriesVisibility(final boolean visible) {
+        final LinearLayout container = findViewById(R.id.categoryContainer);
+        final LayoutTransition outerTransition = container.getLayoutTransition();
+        container.setLayoutTransition(null);
+        try {
+            for (int i = 0; i < container.getChildCount(); i++) {
+                final LinearLayout category = container.getChildAt(i)
+                        .findViewById(R.id.categoryInfoLayout);
+                if (category == null) {
+                    continue;
+                }
+                final TextView name = category.findViewById(R.id.category);
+                if (name.isActivated() != visible) {
+                    final LayoutTransition transition = category.getLayoutTransition();
+                    category.setLayoutTransition(null);
+                    name.performClick();
+                    category.setLayoutTransition(transition);
+                }
+            }
+        } finally {
+            container.setLayoutTransition(outerTransition);
+        }
+    }
+
+    private void refreshFavouriteIndicators() {
+        for (View row : loadedMachineRows) {
+            MachineRowBinder.refreshFavourite(row, favouriteUids);
         }
     }
 
     private void openRandom() {
-        try {
-            if (machineHelper.getMachineCount() == 0) {
-                throw new IllegalStateException();
-            }
-            int machineID = 0;
-            if (!PrefsHelper.getBooleanPrefs("isRandomAll", this)) {
-                // Random All mode.
-                machineID = new Random().nextInt(machineHelper.getMachineCount());
-                DebugHelper.log("RandomAccess", "Random All mode, get total " + machineHelper.getMachineCount() + " , ID " + machineID);
-            } else {
-                // Limited Random mode.
-                int totalLoadad = 0;
-                for (int[] i : loadPositions) {
-                    totalLoadad += i.length;
-                }
-                if (totalLoadad == 0) {
-                    throw new IllegalStateException();
-                }
-                int randomCode = new Random().nextInt(totalLoadad);
-                DebugHelper.log("RandomAccess", "Limit Random mode, get total " + totalLoadad + " , ID " + randomCode);
-                for (int[] loadPosition : loadPositions) {
-                    if (randomCode >= loadPosition.length) {
-                        randomCode -= loadPosition.length;
-                    } else {
-                        machineID = loadPosition[randomCode];
-                        break;
-                    }
-                }
-            }
-            DebugHelper.log("RandomAccess", "Machine ID " + machineID);
-            SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, null, null);
+        if (!initialized || catalog.machines().isEmpty()) {
+            return;
         }
+        final boolean limited = userState.getPreferences().getLimitRandomToCurrentBrowse();
+        final List<Machine> candidates;
+        if (limited) {
+            candidates = catalog.scopeMachines(browseScope);
+        } else {
+            candidates = catalog.machines();
+        }
+        if (candidates.isEmpty()) {
+            throw new IllegalStateException("Random machine range is empty");
+        }
+        final Machine machine = candidates.get(new Random().nextInt(candidates.size()));
+        openMachine(machine, Collections.singletonList(machine), false);
+    }
+
+    private void openMachine(final Machine machine,
+                             final List<Machine> normalNavigation,
+                             final boolean forceNavigationButtons) {
+        final List<Machine> navigation;
+        if (!forceNavigationButtons && userState.getPreferences().getFixedNavigation()) {
+            navigation = catalog.sequenceForProductType(machine.productTypeKey());
+        } else {
+            navigation = normalNavigation;
+        }
+        startActivity(NavigationContract.machineSpecsIntent(this,
+                NavigationContract.MachineRequest.create(
+                        machine, navigation, forceNavigationButtons)));
+    }
+
+    private boolean consumeExternalLaunch(final Intent intent) {
+        if (intent == null || !initialized) {
+            return false;
+        }
+        final Uri deepLink = intent.getData();
+        if (deepLink != null) {
+            externalRequestConsumed = true;
+            intent.setData(null);
+            intent.setAction(null);
+            decodeDeepLink(deepLink.toString());
+            return true;
+        }
+
+        final NavigationContract.ShortcutDestination destination =
+                NavigationContract.getShortcutDestination(intent);
+        if (destination == null) {
+            return false;
+        }
+        externalRequestConsumed = true;
+        intent.setAction(null);
+        switch (destination) {
+            case RANDOM:
+                openRandom();
+                break;
+            case SEARCH:
+                startActivity(new Intent(this, SearchActivity.class));
+                break;
+            case FAVOURITES:
+                startActivity(new Intent(this, FavouriteActivity.class));
+                break;
+            case COMMENTS:
+                startActivity(new Intent(this, CommentActivity.class));
+                break;
+            default:
+                throw new IllegalStateException("Unhandled shortcut " + destination);
+        }
+        return true;
+    }
+
+    static boolean hasExternalRequest(final Intent intent) {
+        return intent != null && (intent.getData() != null
+                || NavigationContract.getShortcutDestination(intent) != null);
+    }
+
+    static boolean restoreExternalRequestConsumed(final boolean restoredConsumed,
+                                                   final Intent currentIntent) {
+        return restoredConsumed && !hasExternalRequest(currentIntent);
+    }
+
+    private void decodeDeepLink(final String deepLink) {
+        try {
+            if (ShareLinkHelper.isComparison(deepLink)) {
+                final String[] uids = resolveSharedMachines(
+                        ShareLinkHelper.decodeComparison(deepLink), catalog);
+                startActivity(NavigationContract.comparisonIntent(this,
+                        NavigationContract.ComparisonRequest.create(uids[0], uids[1])));
+                return;
+            }
+            final String uid = resolveSharedMachines(
+                    new String[]{ShareLinkHelper.decode(deepLink)}, catalog)[0];
+            final Machine machine = catalog.requireByUid(uid);
+            openMachine(machine, Collections.singletonList(machine), false);
+        } catch (IllegalArgumentException e) {
+            Log.w("DeepLink", "Unable to process an invalid share link.", e);
+            ExceptionHelper.showMessageDialog(this,
+                    R.string.share_main_decode_failed_title,
+                    R.string.share_main_decode_failed,
+                    this::continueStartupPresentation);
+        }
+    }
+
+    static String[] resolveSharedMachines(final String[] identities,
+                                          final MachineCatalog catalog) {
+        final String[] result = new String[identities.length];
+        for (int i = 0; i < identities.length; i++) {
+            final String identity = identities[i] == null ? "" : identities[i].trim();
+            final Machine machine = catalog.findByUid(identity);
+            if (machine != null) {
+                result[i] = machine.uid();
+            } else {
+                final Machine legacyMachine = catalog.resolveLegacyName(identity);
+                if (legacyMachine == null) {
+                    throw new IllegalArgumentException("Unknown shared machine");
+                }
+                result[i] = legacyMachine.uid();
+            }
+        }
+        return result;
+    }
+
+    private void continueStartupPresentation() {
+        if (!initialized || userStateAdapter == null || userState == null
+                || crashReportDialog != null || isFinishing() || isDestroyed()) {
+            return;
+        }
+        final MacIndexApplication application = (MacIndexApplication) getApplication();
+        crashReportDialog = application.presentLastCrashReport(
+                this, this::onCrashReportAcknowledged);
+        if (crashReportDialog != null) {
+            return;
+        }
+        if (!externalRequestConsumed && consumeExternalLaunch(getIntent())) {
+            return;
+        }
+        presentNoticeOrCheckForUpdates();
+    }
+
+    private void onCrashReportAcknowledged() {
+        crashReportDialog = null;
+        if (!isFinishing() && !isDestroyed()) {
+            getWindow().getDecorView().post(this::continueStartupPresentation);
+        }
+    }
+
+    private void presentNoticeOrCheckForUpdates() {
+        if (!initialized || userStateAdapter == null || userState == null) {
+            return;
+        }
+        if (userState.getPendingNotice() != null) {
+            if (!pendingNoticePresented) {
+                PendingNoticePresenter.show(
+                        this, userState.getPendingNotice(), userStateAdapter);
+                pendingNoticePresented = true;
+            }
+            return;
+        }
+        pendingNoticePresented = false;
+        updateCoordinator.checkIfEnabled(
+                userState.getPreferences().getAutomaticallyCheckUpdates(),
+                BuildConfig.VERSION_NAME,
+                userState.getPreferences().getSkippedUpdateVersion());
+        renderAutomaticUpdate();
+    }
+
+    private void renderAutomaticUpdate() {
+        if (!initialized || userState == null || crashReportDialog != null
+                || userState.getPendingNotice() != null
+                || updateState == null
+                || !userState.getPreferences().getAutomaticallyCheckUpdates()
+                || updateDialog != null || isFinishing() || isDestroyed()) {
+            return;
+        }
+        if (updateState.getStatus() != UpdateCheckState.Status.AVAILABLE
+                || updateState.getResult().getLatest().getVersion().equals(
+                userState.getPreferences().getSkippedUpdateVersion())) {
+            return;
+        }
+        final UpdateCheckState rendered = updateState;
+        updateDialog = UpdateDialogPresenter.show(this, rendered, true,
+                new UpdateDialogPresenter.Listener() {
+                    @Override
+                    public void onOpen(final UpdateChecker.Information information) {
+                        LinkLoadingHelper.startBrowser(
+                                information.getReleasePage(), MainActivity.this);
+                        acknowledgeAutomaticUpdate(rendered);
+                    }
+
+                    @Override
+                    public void onSkip(final UpdateChecker.Information information) {
+                        acknowledgeAutomaticUpdate(rendered);
+                        userStateAdapter.execute(
+                                UserStateCommands.setSkippedUpdateVersion(
+                                        information.getVersion()),
+                                ignored -> { },
+                                error -> ExceptionHelper.showUserStateWriteFailure(
+                                        MainActivity.this, error,
+                                        R.string.update_skip, R.string.setting_save_failed));
+                    }
+
+                    @Override
+                    public void onAcknowledge() {
+                        acknowledgeAutomaticUpdate(rendered);
+                    }
+                });
+    }
+
+    private void acknowledgeAutomaticUpdate(final UpdateCheckState rendered) {
+        updateDialog = null;
+        updateCoordinator.acknowledge(rendered);
     }
 
     private int translateTitleRes() {
-        switch (thisManufacturer) {
-            case "all":
+        switch (browseScope) {
+            case ALL:
                 return R.string.menu_group0;
-            case "apple68k":
+            case APPLE_68K:
                 return R.string.menu_group1;
-            case "appleppc":
+            case POWERPC:
                 return R.string.menu_group2;
-            case "appleintel":
+            case INTEL:
                 return R.string.menu_group3;
-            case "applearm":
+            case APPLE_SILICON:
                 return R.string.menu_group4;
             default:
-                ExceptionHelper.handleException(this, null,
-                        "translateTitleRes",
-                        "Not a Valid Manufacturer Selection, This should NOT happen!!");
-                return R.string.menu_group0;
+                throw new IllegalStateException("Unhandled browse scope " + browseScope);
         }
     }
 
-    private int translateSectionRes(final String thisSection) {
-        switch (thisSection) {
+    private int translateScopeMenuRes() {
+        switch (browseScope) {
+            case ALL:
+                return R.id.group0MenuItem;
+            case APPLE_68K:
+                return R.id.group1MenuItem;
+            case POWERPC:
+                return R.id.group2MenuItem;
+            case INTEL:
+                return R.id.group3MenuItem;
+            case APPLE_SILICON:
+                return R.id.group4MenuItem;
+            default:
+                throw new IllegalStateException("Unhandled browse scope " + browseScope);
+        }
+    }
+
+    private int translateGroupingMenuRes() {
+        switch (browseGrouping) {
+            case NAMES:
+                return R.id.view1MenuItem;
+            case PROCESSORS:
+                return R.id.view2MenuItem;
+            case YEARS:
+                return R.id.view3MenuItem;
+            default:
+                throw new IllegalStateException("Unhandled browse grouping " + browseGrouping);
+        }
+    }
+
+    private int translateSectionRes(final String section) {
+        switch (section) {
             case "desktop":
                 return R.string.main_section_desktop;
             case "laptop":
@@ -897,149 +867,31 @@ public class MainActivity extends AppCompatActivity {
             case "server":
                 return R.string.main_section_server;
             default:
-                throw new IllegalArgumentException("Illegal main section " + thisSection);
+                throw new IllegalArgumentException("Unknown main section " + section);
         }
     }
 
-    private int translateManufacturerMenuRes() {
-        switch (thisManufacturer) {
-            case "all":
-                return R.id.group0MenuItem;
-            case "apple68k":
-                return R.id.group1MenuItem;
-            case "appleppc":
-                return R.id.group2MenuItem;
-            case "appleintel":
-                return R.id.group3MenuItem;
-            case "applearm":
-                return R.id.group4MenuItem;
-            default:
-                ExceptionHelper.handleException(this, null,
-                        "translateManufacturerMenuRes",
-                        "Not a Valid Manufacturer Selection, This should NOT happen!!");
-                return R.id.group0MenuItem;
+    private static Set<String> collectFavouriteUids(final UserState state) {
+        final Set<String> result = new HashSet<>();
+        for (FavouriteFolder folder : state.getLibrary().getFavouriteFolders()) {
+            result.addAll(folder.getMachineUids());
         }
+        return result;
     }
 
-    private int translateFilterMenuRes() {
-        switch (thisFilter) {
-            case "names":
-                return R.id.view1MenuItem;
-            case "processors":
-                return R.id.view2MenuItem;
-            case "years":
-                return R.id.view3MenuItem;
-            default:
-                ExceptionHelper.handleException(this, null,
-                        "translateFilterMenuRes",
-                        "Not a Valid Search Column Selection, This should NOT happen!!");
-                return R.id.view1MenuItem;
+    private static <T extends Enum<T>> T restoreEnum(final Bundle state,
+                                                      final String key,
+                                                      final Class<T> type,
+                                                      final T fallback) {
+        final String raw = state.getString(key);
+        if (raw == null) {
+            return fallback;
         }
-    }
-
-    private void decodeDeepLink(final String deepLink) {
         try {
-            if (ShareLinkHelper.isComparison(deepLink)) {
-                openComparison(resolveSharedMachines(
-                        ShareLinkHelper.decodeComparison(deepLink), machineHelper, this));
-                return;
-            }
-
-            final String machineUID = resolveSharedMachines(
-                    new String[]{ShareLinkHelper.decode(deepLink)}, machineHelper, this)[0];
-            DebugHelper.log("DeepLinkDecode", "Got machine " + machineUID);
-            final int machineID = machineHelper.getMachineID(machineUID);
-            SpecsIntentHelper.sendIntent(new int[]{machineID}, machineID, this);
-        } catch (MachineHelper.UnknownMachineUIDException e) {
-            ExceptionHelper.handleException(this, e,
-                    "DeepLinkDecode", "A trusted machine UID is unavailable.");
-        } catch (IllegalArgumentException e) {
-            Log.w("DeepLinkDecode", "Unable to process the link due to illegal parameter.");
-            ExceptionHelper.showMessageDialog(this, R.string.share_main_decode_failed_title,
-                    R.string.share_main_decode_failed);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "DeepLinkDecode", "Unable to process the share link.");
+            return Enum.valueOf(type, raw);
+        } catch (IllegalArgumentException ignored) {
+            Log.w("MainState", "Ignoring an invalid restored value for " + key + '.');
+            return fallback;
         }
-    }
-
-    static String[] resolveSharedMachines(final String[] machines,
-                                          final MachineHelper thisMachineHelper,
-                                          final Context thisContext) {
-        final String[] machineUIDs = new String[machines.length];
-        boolean needsLegacyNames = false;
-        for (int i = 0; i < machines.length; i++) {
-            machineUIDs[i] = thisMachineHelper.resolveUID(machines[i]);
-            needsLegacyNames |= machineUIDs[i] == null;
-        }
-
-        if (!needsLegacyNames) {
-            return machineUIDs;
-        }
-
-        // The compatibility asset is irrelevant to current UID links. Load it
-        // only when at least one old name actually needs translating.
-        final Map<String, String> oldMachineNames = OldMachineNamesHelper.read(thisContext);
-        for (int i = 0; i < machines.length; i++) {
-            if (machineUIDs[i] != null) {
-                continue;
-            }
-            final String legacyUID = oldMachineNames.get(
-                    machines[i].trim().toLowerCase(Locale.ROOT));
-            if (legacyUID == null) {
-                throw new IllegalArgumentException("Unknown shared machine");
-            }
-            machineUIDs[i] = thisMachineHelper.resolveUID(legacyUID);
-            if (machineUIDs[i] == null) {
-                throw new MachineHelper.UnknownMachineUIDException(legacyUID);
-            }
-        }
-        return machineUIDs;
-    }
-
-    private void openComparison(final String[] machineUIDs) {
-        if (machineUIDs[0].equals(machineUIDs[1])) {
-            throw new IllegalArgumentException("Unable to compare one machine with itself");
-        }
-
-        // Open shared comparison without editing user's compare list.
-        final Intent compareIntent = new Intent(this, CompareActivity.class);
-        compareIntent.putExtra("compareLeft", machineUIDs[0]);
-        compareIntent.putExtra("compareRight", machineUIDs[1]);
-        startActivity(compareIntent);
-    }
-
-    public static MachineHelper getMachineHelper() {
-        return machineHelper;
-    }
-
-    public static Resources getRes() {
-        return resources;
-    }
-
-    // Verify if the application was killed due to system's process termination.
-    public static boolean validateOperation(final Context context) {
-        if (PrefsHelper.getIntPrefs("lastKnownVersion", context) != BuildConfig.VERSION_CODE
-                || PrefsHelper.hasKnownPreferenceTypeMismatch(context)) {
-            Log.w("MainValidate", "Version registration is required.");
-            PrefsHelper.triggerRebirth(context);
-            return false;
-        }
-        if (machineHelper == null || database == null || resources == null || !database.isOpen()) {
-            Log.w("MainValidate", "Process was killed. Reloading resources.");
-            resources = context.getResources();
-            try {
-                initDatabase(context, false);
-            } catch (Exception e) {
-                ExceptionHelper.handleDatabaseException(context, e,
-                        "MainValidate", "Unable to initialize the database.");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean getMainState() {
-        return isMainRunning;
     }
 }

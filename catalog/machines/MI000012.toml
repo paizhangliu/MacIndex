@@ -1,0 +1,61 @@
+category = "mac_ii"
+picture_asset_key = "MI000012"
+name = "Macintosh II"
+introductions = [{ year = 1987, month = 3 }]
+
+model_numbers = [{ value = "M5000" }]
+gestalt_ids = [{ value = "6" }]
+order_numbers = [
+  { value = "M5333", revisions = ["A"] },
+  { value = "M5430", revisions = ["A"] },
+  { value = "M5410", revisions = ["A"] },
+]
+
+codenames = [{ value = "Little Big Mac" }, { value = "Milwaukee" }, { value = "Ikki" }, { value = "Cabernet" }, { value = "Reno" }, { value = "Becks" }, { value = "Paris" }, { value = "Uzi" }]
+
+processor = '''
+**Motorola 68020** 16 MHz, 2 µm HCMOS process, 32-bit, 0.25 KB instruction L1 cache, 16 MHz system bus
+**Motorola 68881 FPU**
+**Optional Motorola 68851 PMMU** 16 MHz'''
+processor_family_keys = ["68020"]
+
+graphics = '''
+NuBus video card required
+**Macintosh II Video Card** 256 KB VRAM standard, 512 KB maximum'''
+
+display = '''
+External display required
+640x480 at 4-bit color with 256 KB VRAM
+640x480 at 8-bit color with 512 KB VRAM
+Multiple display support with multiple NuBus video cards'''
+ram = '''
+1 MB or 4 MB standard
+20 MB Apple-supported maximum
+68 MB maximum with FDHD Upgrade Kit
+128 MB maximum with MODE32
+8 - 30-pin SIMM slots (groups of 4), 120 ns'''
+rom = "256 KB Macintosh ROM"
+software = '''
+System Software 2.0.1 (System 4.1, Finder 5.5)
+System 7.5.5 Maximum'''
+storage = '''
+Optional 40 MB or 80 MB SCSI hard drive
+SCSI hard drive interface
+1 - 800 KB internal floppy drive
+Optional second 800 KB internal floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+2 - ADB ports
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port (with Macintosh II Video Card)
+1 - 3.5-mm mono audio output jack
+6 - NuBus slots (1 Used by Video Card)'''
+design = '''
+Platinum
+24 lbs.
+5.5" H x 18.7" W x 14.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [{ label = "Macintosh II (Original)", url = "https://everymac.com/systems/apple/mac_ii/specs/mac_ii.html" }]

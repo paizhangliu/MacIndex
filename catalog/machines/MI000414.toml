@@ -1,0 +1,86 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000414"
+name = "MacBook Pro (16-inch, 2021)"
+introductions = [{ year = 2021, month = 10 }]
+
+model_numbers = [{ value = "A2485" }]
+identifiers = [
+  { value = "MacBookPro18,1", qualifier = "M1 Pro" },
+  { value = "MacBookPro18,2", qualifier = "M1 Max" },
+]
+order_numbers = [
+  { value = "MK1E3", revisions = ["A"], qualifier = "16 GB memory, 512 GB storage, Silver" },
+  { value = "MK183", revisions = ["A"], qualifier = "16 GB memory, 512 GB storage, Space Gray" },
+  { value = "MK1F3", revisions = ["A"], qualifier = "16 GB memory, 1 TB storage, Silver" },
+  { value = "MK193", revisions = ["A"], qualifier = "16 GB memory, 1 TB storage, Space Gray" },
+  { value = "MK1H3", revisions = ["A"], qualifier = "32 GB memory, 1 TB storage, Silver" },
+  { value = "MK1A3", revisions = ["A"], qualifier = "32 GB memory, 1 TB storage, Space Gray" },
+]
+emc_numbers = [{ value = "3651" }]
+
+codenames = [{ value = "J316s", qualifier = "M1 Pro" }, { value = "J316c", qualifier = "M1 Max" }]
+
+processor = '''
+**Apple M1 Pro "Jade Chop" (APL1103)** 3.2 GHz (performance) and 2.1 GHz (efficiency), TSMC N5 process, 64-bit, 10 cores (8 "Firestorm" P-cores, 2 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 200 GB/s memory bandwidth
+**Apple M1 Max "Jade 1C" (APL1104)** 3.2 GHz (performance) and 2.1 GHz (efficiency), TSMC N5 process, 64-bit, 10 cores (8 "Firestorm" P-cores, 2 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 400 GB/s memory bandwidth'''
+processor_family_keys = ["m1"]
+processor_logo_keys = [
+  "m1pro",
+  "m1max",
+]
+
+graphics = '''
+**Apple 16-core GPU** unified memory architecture (M1 Pro)
+**Apple 24-core GPU** unified memory architecture (M1 Max)
+**Apple 32-core GPU** unified memory architecture (M1 Max)'''
+
+display = '''
+16.2-inch (diagonal) Liquid Retina XDR display, 3456x2234, 254 ppi, XDR brightness: 1000 nits sustained full-screen and 1600 nits peak (HDR content only), 500 nits SDR brightness, wide color gamut (P3), up to 120 Hz ProMotion
+M1 Pro: up to two external 6K displays at 60 Hz
+M1 Max: up to three external displays, each up to 6K at 60 Hz, and one external display up to 4K at 60 Hz
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+16 GB standard (M1 Pro)
+32 GB standard (M1 Max)
+32 GB configurable (M1 Pro or M1 Max)
+64 GB configurable (M1 Max)
+32 GB maximum (M1 Pro)
+64 GB maximum (M1 Max)
+6400 MT/s LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 12.0 (21A344)
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M1 Pro)
+1 TB SSD standard (M1 Max)
+1, 2, 4, or 8 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.0
+3 - Built-in studio-quality microphones
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+3 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+1 - HDMI port (up to 4K at 60 Hz)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - SDXC card slot'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+4.7 lbs. (M1 Pro)
+4.8 lbs. (M1 Max)
+0.66" H x 14.01" W x 9.77" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 16-Inch \"M1 Pro\" 10 CPU/16 GPU 2021", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m1-pro-10-core-cpu-16-core-gpu-16-2021-specs.html" },
+  { label = "MacBook Pro 16-Inch \"M1 Max\" 10 CPU/24 GPU 2021", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m1-max-10-core-cpu-24-core-gpu-16-2021-specs.html" },
+  { label = "MacBook Pro 16-Inch \"M1 Max\" 10 CPU/32 GPU 2021", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m1-max-10-core-cpu-32-core-gpu-16-2021-specs.html" },
+]

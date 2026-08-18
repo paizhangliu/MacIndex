@@ -1,0 +1,72 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000331"
+name = "MacBook Pro (17-inch, Early 2009)"
+introductions = [{ year = 2009, month = 1 }]
+
+model_numbers = [{ value = "A1297" }]
+identifiers = [{ value = "MacBookPro5,2" }]
+order_numbers = [{ value = "MB604", revisions = ["A"] }]
+emc_numbers = [{ value = "2272" }]
+
+processor = '''
+**Intel Core 2 Duo (T9550) ("Penryn")** 2.66 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache, 1066 MHz system bus
+**Intel Core 2 Duo (T9800) ("Penryn")** 2.93 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache, 1066 MHz system bus'''
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["core2duo"]
+
+graphics = '''
+**NVIDIA GeForce 9600M GT** 512 MB GDDR3
+**NVIDIA GeForce 9400M** 256 MB DDR3 shared with main memory'''
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = '''
+17-inch (diagonal) LED-backlit glossy widescreen display, 1920x1200
+Antiglare display optional
+One external display up to 2560x1600
+Dual display extended and video mirroring'''
+ram = '''
+4 GB standard
+8 GB maximum
+2 - 204-pin PC3-8500 (1066 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.5.6 (9G2141)
+OS X 10.11.6 Maximum
+AirDrop Supported
+AHT 3A148'''
+storage = '''
+320 GB 5400-rpm SATA hard drive standard
+320 GB 7200-rpm SATA hard drive configurable
+128 or 256 GB SSD configurable
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+3.0 Gbps Serial ATA (SATA) hard drive interface
+3.0 Gbps Serial ATA (SATA) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+1 - Built-in subwoofer
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+3 - USB 2.0 ports
+1 - FireWire 800 port
+1 - Mini DisplayPort (VGA, DVI, or dual-link DVI with adapter)
+1 - 3.5-mm analog/optical audio input jack
+1 - 3.5-mm analog/optical audio output/headphone jack
+1 - Kensington security slot
+1 - ExpressCard/34 slot'''
+design = '''
+Precision aluminum unibody
+6.6 lbs.
+0.98" H x 15.47" W x 10.51" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Pro 17\" \"Core 2 Duo\" 2.66 (Unibody)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-2-duo-2.66-aluminum-17-early-2009-unibody-specs.html" },
+  { label = "MacBook Pro 17\" \"Core 2 Duo\" 2.93 (Unibody)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-2-duo-2.93-aluminum-17-early-2009-unibody-specs.html" },
+]

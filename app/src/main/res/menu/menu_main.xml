@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/mainDebugTriggerErrorItem"
-        android:title="Debug: Trigger Error" />
-    <item
-        android:id="@+id/mainDebugVersionRegistration"
-        android:title="Debug: Register New Version" />
-    <item
-        android:id="@+id/mainDebugResetItem"
-        android:title="Debug: Reset App" />
-    <item
-        android:id="@+id/mainDebugBrowseAllItem"
-        android:title="Debug: Browse All Machines" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/mainExpandAllItem"
         android:title="@string/submenu_main_expand_all" />

@@ -1,0 +1,83 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000120"
+name = "Power Macintosh 9600"
+introductions = [
+  { year = 1997, month = 2, qualifier = "200, dual 200, and 233 MHz" },
+  { year = 1997, month = 8, qualifier = "300 and 350 MHz" },
+]
+
+model_numbers = [{ value = "M5433" }]
+gestalt_ids = [
+  { value = "67", qualifier = "200, 200 MP, or 233 MHz" },
+  { value = "105", qualifier = "300 or 350 MHz" },
+]
+order_numbers = [
+  { value = "M5456", revisions = ["A"], qualifier = "9600/200" },
+  { value = "M4952", revisions = ["A"], qualifier = "9600/200MP" },
+  { value = "M5883", revisions = ["A"], qualifier = "9600/233" },
+  { value = "M5901", revisions = ["A"], qualifier = "9600/300" },
+  { value = "M5906", revisions = ["A"], qualifier = "9600/350" },
+]
+
+codenames = [
+  { value = "Tsunami", qualifier = "200, dual 200, and 233 MHz" },
+  { value = "Kansas", qualifier = "300 and 350 MHz" },
+]
+
+processor = '''
+**PowerPC 604e (PID9v)** 200 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus
+**PowerPC 604e (PID9v)** 233 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB L2 cache, 46.6 MHz system bus
+**Dual PowerPC 604e (PID9v)** 200 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 512 KB L2 cache per processor, 50 MHz system bus
+**PowerPC 604e (PID9q)** 300 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB inline L2 cache, 50 MHz system bus
+**PowerPC 604e (PID9q)** 350 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB inline L2 cache, 50 MHz system bus'''
+processor_family_keys = ["604"]
+
+graphics = '''
+**IMS Twin Turbo 128 M4A** 4 MB VRAM (200 and 233 MHz models)
+**IMS Twin Turbo 128 M4A** 8 MB VRAM (300 and 350 MHz models)'''
+
+display = "External display support via DB-15, up to 1600x1200"
+ram = '''
+32 MB standard (200, dual 200, and 233 MHz)
+64 MB standard (300 and 350 MHz)
+768 MB Apple-tested maximum
+1.5 GB actual maximum
+12 - 168-pin EDO or FPM DIMM slots, 70 ns on 200 and 233 MHz models, 60 ns on 300 and 350 MHz models'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.5 (System Enabler 702)
+Mac OS 9.1 Maximum'''
+storage = '''
+4 GB SCSI hard drive
+12x CD-ROM drive (200, dual 200, and 233 MHz)
+24x CD-ROM drive (300 and 350 MHz)
+Iomega Zip 100 drive on some 300 MHz configurations and standard on the 350 MHz configuration
+1.44 MB floppy drive
+Internal Fast SCSI bus (up to 10 MB/s)
+External SCSI bus (up to 5 MB/s)'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+6 - PCI 2.0 slots
+7 - Internal drive positions (open bays vary with configuration)'''
+design = '''
+Platinum
+35 lbs.
+17.3" H x 9.7" W x 17.3" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 9600/200", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9600_200.html" },
+  { label = "Power Macintosh 9600/200MP", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9600_200mp.html" },
+  { label = "Power Macintosh 9600/233", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9600_233.html" },
+  { label = "Power Macintosh 9600/300", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9600_300.html" },
+  { label = "Power Macintosh 9600/350", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9600_350.html" },
+]

@@ -1,0 +1,87 @@
+category = "imac_intel"
+picture_asset_key = "MI000278"
+name = "iMac (Retina 4K, 21.5-inch, 2019)"
+introductions = [{ year = 2019, month = 3 }]
+
+model_numbers = [{ value = "A2116" }]
+identifiers = [{ value = "iMac19,2" }]
+order_numbers = [
+  { value = "MRT32", revisions = ["A"], qualifier = "3.6 GHz" },
+  { value = "MRT42", revisions = ["A"], qualifier = "3.0 GHz" },
+  { value = "MHK23", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3195" }]
+
+processor = '''
+**Intel Core i3 (8100) ("Coffee Lake")** 3.6 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (8500) ("Coffee Lake")** 3.0 GHz, up to 4.1 GHz, 14 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 9 MB shared L3 cache
+**Intel Core i7 (8700) ("Coffee Lake")** 3.2 GHz, up to 4.6 GHz, 14 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 12 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 8 GT/s'''
+processor_family_keys = ["coffeelake"]
+processor_logo_keys = [
+  "corei3_8",
+  "corei5_8",
+  "corei7_8",
+]
+
+graphics = '''
+**AMD Radeon Pro 555X** 2 GB GDDR5 (3.6 GHz base)
+**AMD Radeon Pro 560X** 4 GB GDDR5 (3.0 GHz base)
+**AMD Radeon Pro Vega 20** 4 GB HBM2 configurable (3.0 GHz base)'''
+graphics_logo_keys = [
+  "amdradeon2016",
+  "amdradeonvega",
+]
+
+display = '''
+21.5-inch (diagonal) Retina 4K display with IPS technology, 4096x2304, 219 ppi, 500 nits, wide color gamut (P3)
+Up to two external displays at 4096x2304 or one at 5120x2880 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 or 32 GB configurable
+32 GB maximum
+PC4-19200 (2400 MHz) DDR4 memory (Core i3)
+PC4-21300 (2666 MHz) DDR4 memory (Core i5 or Core i7)
+2 - 260-pin PC4-19200 (2400 MHz) DDR4 SO-DIMM slots (Core i3; not user-accessible)
+2 - 260-pin PC4-21300 (2666 MHz) DDR4 SO-DIMM slots (Core i5 or Core i7; not user-accessible)'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.14.4 (18E2034)
+macOS 15.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB 5400-rpm SATA hard drive standard at launch (3.6 GHz)
+1 TB Fusion Drive standard at launch (3.0 GHz)
+256, 512 GB, or 1 TB SSD configurable at launch
+256 GB SSD standard after August 2020
+1 TB Fusion Drive configurable after August 2020
+1 - 8.0 GT/s NVMe PCIe x4 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.2
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 3 ports (up to 40 Gbps; digital video output)
+1 - 3.5-mm output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+12.1 lbs.
+17.7" H x 20.8" W x 6.9" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "iMac 21.5-Inch \"Core i3\" 3.6 (4K, 2019)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i3-3.6-21-inch-aluminum-retina-4k-early-2019-specs.html" },
+  { label = "iMac 21.5-Inch \"Core i5\" 3.0 (4K, 2019)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.0-21-inch-aluminum-retina-4k-early-2019-specs.html" },
+  { label = "iMac 21.5-Inch \"Core i7\" 3.2 (4K, 2019)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-3.2-21-inch-aluminum-retina-4k-early-2019-specs.html" },
+]

@@ -1,0 +1,68 @@
+category = "power_mac"
+picture_asset_key = "MI000155"
+name = "Power Mac G4 (PCI Graphics)"
+introductions = [
+  { year = 1999, month = 8, qualifier = "400 MHz" },
+  { year = 1999, month = 10, qualifier = "350 MHz" },
+]
+
+model_numbers = [{ value = "M5183" }]
+identifiers = [{ value = "PowerMac1,2" }]
+order_numbers = [
+  { value = "M7826", revisions = ["A"], qualifier = "350 MHz" },
+  { value = "M7631", revisions = ["A"], qualifier = "400 MHz" },
+]
+emc_numbers = [{ value = "1832" }]
+
+codenames = [{ value = "Yikes!" }]
+
+processor = '''
+**PowerPC 7400 (G4)** 350 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside (1:2) L2 cache, 100 MHz system bus
+**PowerPC 7400 (G4)** 400 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside (1:2) L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7400"]
+
+graphics = "**ATI Rage 128** 16 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = "Single display support via VGA, up to 1600x1200"
+ram = '''
+64 MB standard
+1 GB maximum
+4 - PC100 168-pin SDRAM slots, 8 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.6 (Mac OS ROM 1.7.1)
+Mac OS X 10.4.11 Maximum'''
+storage = '''
+10 GB hard drive standard
+CD-ROM drive standard
+Optional DVD-ROM drive
+Optional Zip drive
+Ultra ATA/33 (ATA-4) hard drive interface
+EIDE (ATA-3) optical drive interface'''
+features = "1 - Built-in speaker (16-bit, 44.1 kHz sample rate)"
+expansion = '''
+1 - Ethernet port (10/100BASE-T; RJ-45)
+1 - Optional 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (15 W total power)
+1 - VGA port
+1 - 3.5-mm analog input jack (16-bit, 44.1 kHz sample rate)
+1 - 3.5-mm analog output jack
+3 - 33 MHz PCI slots
+1 - 66 MHz PCI slot
+4 - Internal 3.5-inch ATA drive bays
+1 - Optical drive bay
+1 - Zip 100 bay'''
+design = '''
+Graphite
+30 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G4 400 (PCI)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_400.html" },
+  { label = "Power Macintosh G4 350 (PCI)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_350.html" },
+]

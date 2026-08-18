@@ -1,0 +1,75 @@
+category = "mac_server_ppc_classic"
+picture_asset_key = "MI000106"
+name = "Workgroup Server 8550"
+introductions = [
+  { year = 1996, month = 2, qualifier = "132 MHz" },
+  { year = 1996, month = 9, qualifier = "200 MHz" },
+]
+
+model_numbers = [{ value = "M3409" }]
+gestalt_ids = [{ value = "69" }]
+order_numbers = [
+  { value = "M4342", revisions = ["A"], qualifier = "132 MHz; Applications Server; DAT" },
+  { value = "M4340", revisions = ["A"], qualifier = "132 MHz; AppleShare Server; DAT" },
+  { value = "M4343", revisions = ["A"], qualifier = "132 MHz; AppleShare Server; no DAT" },
+  { value = "M4341", revisions = ["A"], qualifier = "132 MHz; Internet Server; no DAT" },
+  { value = "M5488", revisions = ["A"], qualifier = "200 MHz; Applications Server; DAT" },
+  { value = "M5489", revisions = ["A"], qualifier = "200 MHz; AppleShare Server; DAT" },
+  { value = "M5486", revisions = ["A"], qualifier = "200 MHz; AppleShare Server; no DAT" },
+  { value = "M5487", revisions = ["A"], qualifier = "200 MHz; Internet Server; no DAT" },
+]
+
+codenames = [{ value = "Summit" }, { value = "Nitro", qualifier = "logic board" }]
+
+processor = '''
+**PowerPC 604** 132 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 44 MHz system bus
+**PowerPC 604e (PID9v)** 200 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus'''
+processor_family_keys = ["604"]
+
+graphics = "**Apple Chaos/Control video subsystem with RaDACal DAC** 2 MB VRAM standard, 4 MB maximum"
+
+display = '''
+External display support via DB-15
+2 MB VRAM: up to 832x624 at 24-bit color; up to 1152x870 at 16-bit color; up to 1280x1024 at 8-bit color
+4 MB VRAM: up to 1152x870 at 24-bit color; up to 1280x1024 at 16-bit color'''
+ram = '''
+24 MB standard (132 MHz)
+32 MB standard (200 MHz)
+512 MB Apple-supported maximum
+1 GB actual maximum
+8 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.3
+AppleShare 4.2.1 (selected configurations)
+Mac OS 9.1 Maximum'''
+storage = '''
+2 GB SCSI hard drive
+4x CD-ROM drive (132 MHz)
+8x CD-ROM drive (200 MHz)
+DDS-2 DAT drive (selected configurations)
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - External DB-25 asynchronous SCSI port
+1 - Internal Fast SCSI channel (up to 10 MB/s; hard-drive array support)
+1 - DB-15 video port
+1 - 3.5-mm stereo analog input jack
+1 - 3.5-mm stereo analog output jack
+3 - PCI slots
+1 - Additional 3.5-inch hard-drive bay'''
+design = '''
+Platinum
+25 lbs.
+14" H x 7.7" W x 15.75" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Workgroup Server 8550/132", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_8550_132.html" },
+  { label = "Workgroup Server 8550/200", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_8550_200.html" },
+]

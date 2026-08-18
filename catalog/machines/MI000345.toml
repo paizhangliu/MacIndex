@@ -1,0 +1,79 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000332"
+name = "MacBook Pro (13-inch, Mid 2012)"
+introductions = [{ year = 2012, month = 6 }]
+
+model_numbers = [{ value = "A1278" }]
+identifiers = [{ value = "MacBookPro9,2" }]
+order_numbers = [
+  { value = "MD101", revisions = ["A"], qualifier = "2.5 GHz" },
+  { value = "MD102", revisions = ["A"], qualifier = "2.9 GHz" },
+]
+emc_numbers = [{ value = "2554" }]
+
+processor = '''
+**Intel Core i5 (3210M) ("Ivy Bridge")** 2.5 GHz, up to 3.1 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i7 (3520M) ("Ivy Bridge")** 2.9 GHz, up to 3.6 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["ivb"]
+processor_logo_keys = [
+  "corei5_2",
+  "corei7_2",
+]
+
+graphics = "**Intel HD Graphics 4000** up to 1 GB DDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit glossy widescreen display, 1280x800
+One external Thunderbolt display up to 2560x1600
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+4 GB standard (2.5 GHz)
+8 GB standard (2.9 GHz)
+8 GB configurable (2.5 GHz)
+8 GB Apple-supported maximum
+16 GB actual maximum
+2 - 204-pin PC3-12800 (1600 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.7.4 (11E2617)
+macOS 10.15.7 Maximum
+AirDrop Supported
+Handoff Supported
+AHT 3A237'''
+storage = '''
+500 GB 5400-rpm SATA hard drive standard (2.5 GHz)
+750 GB 5400-rpm SATA hard drive standard (2.9 GHz)
+750 GB or 1 TB 5400-rpm SATA hard drive configurable (depending on configuration)
+128, 256, or 512 GB SSD configurable
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+6.0 Gbps Serial ATA (SATA) hard drive interface
+6.0 Gbps Serial ATA (SATA) optical drive interface'''
+features = '''
+Wi-Fi (802.11n)
+Bluetooth 4.0
+1 - Built-in microphone
+2 - Built-in stereo speakers
+1 - Built-in subwoofer
+Built-in 720p FaceTime HD camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+2 - USB 3.0 ports (up to 5 Gbps)
+1 - FireWire 800 port
+1 - Thunderbolt 1 port (up to 10 Gbps; digital video output)
+1 - 3.5-mm digital/analog audio output/headphone jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Precision aluminum unibody
+4.5 lbs.
+0.95" H x 12.78" W x 8.94" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Pro 13\" \"Core i5\" 2.5 Mid-2012", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i5-2.5-13-mid-2012-unibody-usb3-specs.html" },
+  { label = "MacBook Pro 13\" \"Core i7\" 2.9 Mid-2012", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.9-13-mid-2012-unibody-usb3-specs.html" },
+]

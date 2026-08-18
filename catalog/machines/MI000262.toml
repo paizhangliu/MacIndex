@@ -1,0 +1,75 @@
+category = "mac_pro_intel"
+picture_asset_key = "MI000262"
+name = "Mac Pro (Late 2013)"
+introductions = [{ year = 2013, month = 10 }]
+
+codenames = [{ value = "J90" }]
+
+model_numbers = [{ value = "A1481" }]
+identifiers = [{ value = "MacPro6,1" }]
+order_numbers = [
+  { value = "ME253", revisions = ["A"], qualifier = "Quad-Core" },
+  { value = "MD878", revisions = ["A"], qualifier = "6-Core" },
+]
+emc_numbers = [{ value = "2630" }]
+
+processor = '''
+**Intel Xeon E5-1620 v2 ("Ivy Bridge")** 3.7 GHz, up to 3.9 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 10 MB L3 cache, Intel Direct Media Interface (DMI) 2.0 at 5 GT/s
+**Intel Xeon E5-1650 v2 ("Ivy Bridge")** 3.5 GHz, up to 3.9 GHz, 22 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 12 MB L3 cache, Intel Direct Media Interface (DMI) 2.0 at 5 GT/s
+**Intel Xeon E5-1680 v2 ("Ivy Bridge")** 3.0 GHz, up to 3.9 GHz, 22 nm process, 64-bit, 8 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 25 MB L3 cache, Intel Direct Media Interface (DMI) 2.0 at 5 GT/s
+**Intel Xeon E5-2697 v2 ("Ivy Bridge")** 2.7 GHz, up to 3.5 GHz, 22 nm process, 64-bit, 12 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 30 MB L3 cache, 2 Intel QuickPath Interconnects (QPI) at 8.0 GT/s'''
+processor_family_keys = ["ivb"]
+processor_logo_keys = ["xeon_2"]
+
+graphics = '''
+**Dual AMD FirePro D300** 2 GB GDDR5 per GPU
+**Dual AMD FirePro D500** 3 GB GDDR5 per GPU
+**Dual AMD FirePro D700** 6 GB GDDR5 per GPU'''
+graphics_logo_keys = ["amdfirepro"]
+
+display = '''
+Up to six external Thunderbolt displays or three external 5K displays
+External resolution up to 4096x2160 at 24 Hz via HDMI or 5120x2880 via Thunderbolt
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+12 GB standard (quad-core)
+16 GB standard (6-core or 8-core)
+16, 32, or 64 GB configurable (quad-core)
+32 or 64 GB configurable (6-core or 8-core)
+64 GB Apple-supported maximum
+128 GB actual maximum
+4 - 240-pin PC3-14900 (1866 MHz) DDR3 ECC SDRAM slots'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.9 (13A4023)
+macOS 12.7.6 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB flash storage standard
+512 GB or 1 TB flash storage configurable
+PCIe flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+1 - Built-in speaker'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; jumbo frame support)
+4 - USB 3 ports (up to 5 Gbps)
+6 - Thunderbolt 2 ports (up to 20 Gbps)
+1 - HDMI 1.4 port (up to 4096x2160 at 24 Hz)
+1 - 3.5-mm analog/optical audio output jack
+1 - 3.5-mm headphone jack with headset support'''
+design = '''
+11 lbs.
+9.9" H x 6.6" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "Mac Pro \"Quad Core\" 3.7 (Late 2013)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-quad-core-3.7-xeon-e5-gray-black-cylinder-late-2013-specs.html" },
+  { label = "Mac Pro \"Six Core\" 3.5 (Late 2013)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-six-core-3.5-xeon-e5-gray-black-cylinder-late-2013-specs.html" },
+  { label = "Mac Pro \"Eight Core\" 3.0 (Late 2013)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-eight-core-3.0-xeon-e5-gray-black-cylinder-late-2013-specs.html" },
+  { label = "Mac Pro \"Twelve Core\" 2.7 (Late 2013)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-twelve-core-2.7-xeon-e5-gray-black-cylinder-late-2013-specs.html" },
+]

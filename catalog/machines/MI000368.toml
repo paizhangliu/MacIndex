@@ -1,0 +1,93 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000368"
+name = "MacBook Pro (16-inch, 2019)"
+introductions = [{ year = 2019, month = 11 }]
+
+codenames = [{ value = "J152F", qualifier = "MacBookPro16,1" }, { value = "J215", qualifier = "MacBookPro16,4" }]
+
+model_numbers = [{ value = "A2141" }]
+identifiers = [
+  { value = "MacBookPro16,1" },
+  { value = "MacBookPro16,4" },
+]
+order_numbers = [
+  { value = "MVVL2", revisions = ["A"], qualifier = "2.6 GHz Silver" },
+  { value = "MVVM2", revisions = ["A"], qualifier = "2.3 GHz Silver" },
+  { value = "MVVJ2", revisions = ["A"], qualifier = "2.6 GHz Space Gray" },
+  { value = "MVVK2", revisions = ["A"], qualifier = "2.3 GHz Space Gray" },
+]
+emc_numbers = [{ value = "3347" }]
+
+processor = '''
+**Intel Core i7 (9750H) ("Coffee Lake")** 2.6 GHz, up to 4.5 GHz, 14 nm process, 64-bit, 6 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 12 MB shared L3 cache
+**Intel Core i9 (9880H) ("Coffee Lake")** 2.3 GHz, up to 4.8 GHz, 14 nm process, 64-bit, 8 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 16 MB shared L3 cache
+**Intel Core i9 (9980HK) ("Coffee Lake")** 2.4 GHz, up to 5.0 GHz, 14 nm process, 64-bit, 8 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 16 MB shared L3 cache
+Intel Direct Media Interface (DMI) 3.0 at 8 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["coffeelake"]
+processor_logo_keys = [
+  "corei7_9",
+  "corei9_9",
+  "t2",
+]
+
+graphics = '''
+**AMD Radeon Pro 5300M** 4 GB GDDR6 (2.6 GHz)
+**AMD Radeon Pro 5500M** 4 GB GDDR6 (2.3 GHz; configurable with 2.6 GHz)
+**AMD Radeon Pro 5500M** 8 GB GDDR6 configurable
+**AMD Radeon Pro 5600M** 8 GB HBM2 configurable
+**Intel UHD Graphics 630** up to 1.5 GB shared with main memory'''
+graphics_logo_keys = [
+  "amdradeon2016",
+  "intelhd",
+]
+
+display = '''
+16-inch (diagonal) LED-backlit display with IPS technology, 3072x1920, 226 ppi, 500 nits, wide color gamut (P3)
+Up to two external displays at 6016x3384 at 60 Hz
+Up to four external displays at 4096x2304 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+16 GB standard
+32 or 64 GB configurable
+64 GB maximum
+PC4-21300 (2666 MHz) DDR4 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.15.1 (19B2093)
+macOS 26 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB standard (2.6 GHz)
+1 TB standard (2.3 GHz)
+1, 2, 4, or 8 TB configurable (2.6 GHz)
+2, 4, or 8 TB configurable (2.3 GHz)
+8.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0
+3 - Built-in studio-quality microphones with high signal-to-noise ratio and directional beamforming
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+4 - Thunderbolt 3 ports (up to 40 Gbps; USB 3.1 Gen 2 up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+4.3 lbs.
+0.64" H x 14.09" W x 9.68" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 16\" \"Core i7\" 2.6 2019", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.6-six-core-16-2019-scissor-specs.html" },
+  { label = "MacBook Pro 16\" \"Core i9\" 2.3 2019", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i9-2.3-eight-core-16-2019-scissor-specs.html" },
+  { label = "MacBook Pro 16\" \"Core i9\" 2.4 2019", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i9-2.4-eight-core-16-2019-scissor-specs.html" },
+  { label = "MacBook Pro 16\" \"Core i7\" 2.6 2019 5600M", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.6-six-core-16-2019-5600m-16-4-scissor-specs.html" },
+  { label = "MacBook Pro 16\" \"Core i9\" 2.3 2019 5600M", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i9-2.3-eight-core-16-2019-5600m-16-4-scissor-specs.html" },
+  { label = "MacBook Pro 16\" \"Core i9\" 2.4 2019 5600M", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i9-2.4-eight-core-16-2019-5600m-16-4-scissor-specs.html" },
+]

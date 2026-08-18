@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:lineSpacingExtra="18sp"
-            android:maxLines="1"
+            android:maxLines="2"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="@string/comments_not_available_tips"

@@ -1,0 +1,82 @@
+category = "mac_performa_ppc"
+picture_asset_key = "MI000109"
+name = "Macintosh Performa 5400 Series"
+aliases = [
+  "Macintosh Performa 5400CD",
+  "Macintosh Performa 5400",
+  "Macintosh Performa 5410CD",
+  "Macintosh Performa 5420CD",
+  "Macintosh Performa 5430",
+  "Macintosh Performa 5440",
+]
+introductions = [{ year = 1996, month = 4 }]
+
+model_numbers = [{ value = "M3046" }]
+gestalt_ids = [{ value = "74" }]
+
+codenames = [{ value = "Excalibur" }, { value = "Chimera" }, { value = "Alchemy", qualifier = "logic board" }]
+
+processor = '''
+**PowerPC 603e** 120 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache (standard on Performa 5420), 40 MHz system bus
+**PowerPC 603e (PID7v)** 160 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 603e (PID7v)** 180 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["603"]
+
+graphics = "**Apple Valkyrie-AR video controller** 1 MB display DRAM"
+
+display = '''
+15-inch color display
+Up to 640x480 at 16-bit color; up to 832x624 at 8-bit color (120 MHz)
+Up to 800x600 at 16-bit color; up to 1024x768 at 8-bit color (160 or 180 MHz)
+Optional external display support via DB-15'''
+ram = '''
+16 MB standard
+24 MB standard (Performa 5430)
+136 MB maximum
+8 MB built-in
+2 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.5 (System Enabler 410)
+Mac OS 9.1 Maximum'''
+storage = '''
+1.6 or 2.4 GB IDE hard drive
+4x or 8x CD-ROM drive
+1.44 MB floppy drive'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers
+1 - Infrared receiver for Apple TV/FM Radio System remote'''
+expansion = '''
+1 - Optional Ethernet port (10BASE-T)
+1 - Up to 28.8 Kbps modem
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - Optional DB-15 video port
+1 - 3.5-mm audio input jack
+2 - 3.5-mm audio output jacks
+1 - S-video input
+1 - Composite video input
+1 - Stereo RCA audio input
+1 - PCI slot
+1 - Comm II slot
+1 - Video input slot
+1 - TV/FM tuner slot
+1 - Optional PC Compatibility Card'''
+design = '''
+Platinum (5400CD, 5400/160, 5410CD, 5430, and 5440) or Black (5400/180 Director's Edition and 5420CD)
+47 lbs.
+17.5" H x 15.1" W x 16" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC_5000"
+links = [
+  { label = "Macintosh Performa 5400CD", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5400cd.html" },
+  { label = "Macintosh Performa 5400/160", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5400_160.html" },
+  { label = "Macintosh Performa 5400/180 (DE)", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5400_180.html" },
+  { label = "Macintosh Performa 5410CD", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5410cd.html" },
+  { label = "Macintosh Performa 5420CD", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5420cd.html" },
+  { label = "Macintosh Performa 5430", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5430_160.html" },
+  { label = "Macintosh Performa 5440", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_5440_180.html" },
+]

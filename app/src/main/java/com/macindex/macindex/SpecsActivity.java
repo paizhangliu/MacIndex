@@ -3,13 +3,10 @@ package com.macindex.macindex;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
+import androidx.lifecycle.Lifecycle;
 
-import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,7 +24,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.macindex.macindex.catalog.Machine;
+import com.macindex.macindex.catalog.MachineCatalog;
+import com.macindex.macindex.resources.LogoAsset;
+import com.macindex.macindex.resources.MachineResourceRegistry;
+import com.macindex.macindex.userstate.FavouriteFolder;
+import com.macindex.macindex.userstate.UserComment;
+import com.macindex.macindex.userstate.UserState;
+import com.macindex.macindex.userstate.UserStateCommands;
+import com.macindex.macindex.userstate.UserStateLimits;
+import com.macindex.macindex.userstate.UserStateLifecycleAdapter;
 
 public class SpecsActivity extends AppCompatActivity {
 
@@ -37,54 +48,24 @@ public class SpecsActivity extends AppCompatActivity {
 
     private static final float IMAGE_MINIMUM_SCALE = 0.625f;
 
-    private int machineID = -1;
+    private MachineCatalog catalog = null;
+
+    private Machine machine = null;
 
     private String[] navigationUIDs = {};
     private boolean forceNavigationButtons = false;
 
-    private int machineIDPosition = -1;
+    private int navigationPosition = -1;
 
     private SpecsHelper specsHelper = null;
 
-    private String thisName = null;
+    private UserStateLifecycleAdapter stateAdapter = null;
 
-    private String thisUID = null;
+    private UserState currentState = null;
 
-    private String thisType = null;
+    private LifecycleMachineImageLoader imageLoader = null;
 
-    private String thisProcessor = null;
-
-    private String thisMaxram = null;
-
-    private String thisYear = null;
-
-    private String thisModel = null;
-
-    private String thisId = null;
-
-    private String thisGraphics = null;
-
-    private String thisDisplay = null;
-
-    private String thisFeatures = null;
-
-    private String thisExpansion = null;
-
-    private String thisStorage = null;
-
-    private String thisOrder = null;
-
-    private String thisGestalt = null;
-
-    private String thisEmc = null;
-
-    private String thisSoftware = null;
-
-    private String thisDesign = null;
-
-    private String thisSupport = null;
-
-    private String thisComment = null;
+    private VolumeWarningSession volumeWarningSession = null;
 
     private MenuItem compareItem = null;
 
@@ -92,46 +73,33 @@ public class SpecsActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_specs);
-        WindowInsetsHelper.apply(this);
+        ContentInsetsHelper.apply(this);
         specsHelper = new SpecsHelper(this);
+        imageLoader = new LifecycleMachineImageLoader(this, getAssets());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        if (!MainActivity.validateOperation(this)) {
-            return;
-        }
-
-        try {
-            final Intent intent = getIntent();
-            navigationUIDs = intent.getStringArrayExtra("navigationUIDs");
-            thisUID = intent.getStringExtra("machineUID");
-            forceNavigationButtons = intent.getBooleanExtra("forceNavigationButtons", false);
-
-            if (navigationUIDs == null || thisUID == null) {
-                throw new IllegalArgumentException();
-            }
-            machineID = MainActivity.getMachineHelper().getMachineID(thisUID);
-
-            // Find the current position.
-            for (int i = 0; i < navigationUIDs.length; i++) {
-                if (navigationUIDs[i].equals(thisUID)) {
-                    machineIDPosition = i;
-                    break;
-                }
-            }
-
-            if (machineIDPosition == -1) {
-                throw new IllegalArgumentException();
-            }
-
-            ViewGroup mainView = findViewById(R.id.mainView);
-            LayoutTransition layoutTransition = mainView.getLayoutTransition();
-            layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-            initialize();
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, null, null);
-        }
+        final MacIndexApplication application = (MacIndexApplication) getApplication();
+        StartupUiGate.bind(this, (readyCatalog, userState) -> {
+                        if (stateAdapter != null) {
+                            return;
+                        }
+                        volumeWarningSession = application.volumeWarningSession();
+                        stateAdapter = new UserStateLifecycleAdapter(
+                                SpecsActivity.this,
+                                userState,
+                                state -> {
+                                    currentState = state;
+                                    if (machine == null) {
+                                        initializeFromRequest(readyCatalog);
+                                    } else {
+                                        renderUserState();
+                                    }
+                                },
+                                error -> ExceptionHelper.showUserStateReadFailure(
+                                        SpecsActivity.this, error));
+                    });
     }
 
     @Override
@@ -139,8 +107,19 @@ public class SpecsActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_specs, menu);
         compareItem = menu.findItem(R.id.addCompareItem);
-        initCompareCheckBox();
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        final boolean isReady = machine != null;
+        for (int index = 0; index < menu.size(); index++) {
+            menu.getItem(index).setEnabled(isReady);
+        }
+        if (isReady) {
+            initCompareCheckBox();
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -163,12 +142,6 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        release();
-        super.onDestroy();
-    }
-
-    @Override
     protected void onStop() {
         release();
         super.onStop();
@@ -178,6 +151,9 @@ public class SpecsActivity extends AppCompatActivity {
     protected void onRestart() {
         // Restart Sound System.
         super.onRestart();
+        if (machine == null) {
+            return;
+        }
         initImage();
     }
 
@@ -187,17 +163,42 @@ public class SpecsActivity extends AppCompatActivity {
         return true;
     }
 
+    private void initializeFromRequest(@NonNull final MachineCatalog readyCatalog) {
+        final NavigationContract.MachineRequest request =
+                NavigationContract.MachineRequest.from(getIntent());
+        catalog = readyCatalog;
+        navigationUIDs = request.getNavigationUIDs();
+        final String requestedUID = request.getMachineUID();
+        forceNavigationButtons = request.shouldForceNavigationButtons();
+        machine = catalog.requireByUid(requestedUID);
+
+        for (int index = 0; index < navigationUIDs.length; index++) {
+            catalog.requireByUid(navigationUIDs[index]);
+            if (navigationUIDs[index].equals(requestedUID)) {
+                navigationPosition = index;
+            }
+        }
+        if (navigationPosition == -1) {
+            throw new IllegalArgumentException(
+                    "Navigation request does not contain " + requestedUID);
+        }
+
+        initialize();
+        findViewById(R.id.mainView).setVisibility(View.VISIBLE);
+        invalidateOptionsMenu();
+    }
+
     private void initialize() {
-        DebugHelper.log("SpecsInitialize", "Machine ID " + machineID);
-        if ((forceNavigationButtons || PrefsHelper.getBooleanPrefs("isUseNavButtons", this))
+        DebugHelper.log("SpecsInitialize", "Machine UID " + machine.uid());
+        if ((forceNavigationButtons
+                || currentState.getPreferences().getUseNavigationButtons())
                 && navigationUIDs.length > 1) {
             initButtons();
         }
-        getSpecs();
         initSpecs();
         initImage();
         initLinks();
-        initComment();
+        renderUserState();
     }
 
     private void release() {
@@ -206,188 +207,150 @@ public class SpecsActivity extends AppCompatActivity {
         }
     }
 
-    private void getSpecs() {
-        final MachineHelper helper = MainActivity.getMachineHelper();
-        final String[] thisSpecs = helper.getSpecs(machineID);
-        thisName = helper.getName(machineID);
-        thisUID = helper.getUID(machineID);
-        thisYear = thisSpecs[0];
-        thisModel = thisSpecs[1];
-        thisId = thisSpecs[2];
-        thisGestalt = thisSpecs[3];
-        thisOrder = thisSpecs[4];
-        thisEmc = thisSpecs[5];
-        thisProcessor = thisSpecs[6];
-        thisGraphics = thisSpecs[7];
-        thisDisplay = thisSpecs[8];
-        thisMaxram = thisSpecs[9];
-        thisType = thisSpecs[10];
-        thisSoftware = thisSpecs[11];
-        thisStorage = thisSpecs[12];
-        thisFeatures = thisSpecs[13];
-        thisExpansion = thisSpecs[14];
-        thisDesign = thisSpecs[15];
-        thisSupport = thisSpecs[16];
+    private void initSpecs() {
+        final TextView type = findViewById(R.id.typeText);
+        final TextView processor = findViewById(R.id.processorText);
+        final TextView maxram = findViewById(R.id.maxramText);
+        final TextView year = findViewById(R.id.yearText);
+        final TextView model = findViewById(R.id.modelText);
+        final TextView id = findViewById(R.id.idText);
+        final TextView graphics = findViewById(R.id.graphicsText);
+        final TextView display = findViewById(R.id.displayText);
+        final TextView features = findViewById(R.id.featuresText);
+        final TextView expansion = findViewById(R.id.expansionText);
+        final TextView storage = findViewById(R.id.storageText);
+        final TextView order = findViewById(R.id.orderText);
+        final TextView codename = findViewById(R.id.codenameText);
+        final TextView gestalt = findViewById(R.id.gestaltText);
+        final TextView emc = findViewById(R.id.emcText);
+        final TextView software = findViewById(R.id.softwareText);
+        final TextView design = findViewById(R.id.designText);
+        final TextView support = findViewById(R.id.supportText);
+
+        this.setTitle(machine.name());
+        reloadName();
+
+        final boolean isClassic = machine.identifiers() == null
+                && !"xserve".equals(machine.productTypeKey());
+        findViewById(R.id.idLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+        findViewById(R.id.idDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+        findViewById(R.id.gestaltLayout).setVisibility(isClassic ? View.VISIBLE : View.GONE);
+        findViewById(R.id.gestaltDivider).setVisibility(
+                isClassic ? View.VISIBLE : View.GONE);
+        findViewById(R.id.emcLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+        findViewById(R.id.emcDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
+
+        type.setText(specsHelper.getDisplayInfo(machine.rom()));
+        specsHelper.initCopy(type, machine.rom(), "typeInfo");
+        processor.setText(specsHelper.formatModels(machine.processor(),
+                machine.processorModelRanges()));
+        specsHelper.initCopy(processor, machine.processor(), "processorInfo");
+        maxram.setText(specsHelper.getDisplayInfo(machine.ram()));
+        specsHelper.initCopy(maxram, machine.ram(), "maxramInfo");
+        year.setText(machine.introductionDisplayText());
+        specsHelper.initCopy(year, machine.introductionDisplayText(), "yearInfo");
+        model.setText(specsHelper.getDisplayInfo(machine.modelNumbers()));
+        specsHelper.initCopy(model, machine.modelNumbers(), "modelInfo");
+        id.setText(specsHelper.getDisplayInfo(machine.identifiers()));
+        specsHelper.initCopy(id, machine.identifiers(), "idInfo");
+        graphics.setText(specsHelper.formatModels(machine.graphics(),
+                machine.graphicsModelRanges()));
+        specsHelper.initCopy(graphics, machine.graphics(), "graphicsInfo");
+        display.setText(specsHelper.getDisplayInfo(machine.display()));
+        specsHelper.initCopy(display, machine.display(), "displayInfo");
+        features.setText(specsHelper.getDisplayInfo(machine.features()));
+        specsHelper.initCopy(features, machine.features(), "featuresInfo");
+        expansion.setText(specsHelper.getDisplayInfo(machine.expansion()));
+        specsHelper.initCopy(expansion, machine.expansion(), "expansionInfo");
+        storage.setText(specsHelper.getDisplayInfo(machine.storage()));
+        specsHelper.initCopy(storage, machine.storage(), "storageInfo");
+        specsHelper.initPartNumbers(order, machine.orderNumbers());
+        specsHelper.initCopy(order, machine.orderNumbers(), "orderInfo");
+        final String codenameText = machine.codenameDisplayText();
+        codename.setText(specsHelper.getDisplayInfo(codenameText));
+        specsHelper.initCopy(codename, codenameText, "codenameInfo");
+        gestalt.setText(specsHelper.getDisplayInfo(machine.gestaltIds()));
+        specsHelper.initCopy(gestalt, machine.gestaltIds(), "gestaltInfo");
+        emc.setText(specsHelper.getDisplayInfo(machine.emcNumbers()));
+        specsHelper.initCopy(emc, machine.emcNumbers(), "emcInfo");
+        software.setText(specsHelper.getDisplayInfo(machine.software()));
+        specsHelper.initCopy(software, machine.software(), "softwareInfo");
+        design.setText(specsHelper.getDisplayInfo(machine.design()));
+        specsHelper.initCopy(design, machine.design(), "designInfo");
+        final String supportText = specsHelper.getSupportText(machine.supportStatus());
+        support.setText(specsHelper.getDisplayInfo(supportText));
+        specsHelper.initCopy(support, supportText, "supportInfo");
+        specsHelper.setSupportColor(support, machine.supportStatus());
+
+        /*
+            Processor Images dynaLoad.
+
+            (1) Try getting type image. Will load if the type image is present.
+            (2) Try getting specific image. Will load if specific image(s) is/are present.
+            (3) No action. The case is not applicable for both loading process.
+        */
+        final LinearLayout processorTypeImageLayout = findViewById(R.id.processorTypeImageLayout);
+        final ImageView processorTypeImage = findViewById(R.id.processorTypeImage);
+        final LinearLayout processorImageLayoutContainer = findViewById(R.id.processorImageLayoutContainer);
+        final HorizontalScrollView processorImageScrollView = findViewById(R.id.processorImageScrollView);
+        final LinearLayout processorImages = findViewById(R.id.processorImageLayout);
+        final LogoAsset[] processorImageAssets =
+                MachineResourceRegistry.processorLogos(machine);
+
+        // The type logo is independent from the model-specific logo strip.
+        processorTypeImageLayout.setVisibility(View.GONE);
+
+        final LogoAsset processorTypeAsset =
+                MachineResourceRegistry.processorTypeLogo(machine);
+        if (processorTypeAsset != null) {
+            // Got type image. Now loading.
+            processorTypeImageLayout.setVisibility(View.VISIBLE);
+            ThemeHelper.setLogo(this, processorTypeImage, processorTypeAsset);
+        }
+        bindLogoStrip(processorImageLayoutContainer, processorImageScrollView,
+                processorImages, processorImageAssets);
+
+        /*
+            Graphics Images dynaLoad.
+
+            (1) Try getting specific image. Will load if specific image(s) is/are present.
+            (2) No action. The case is not applicable for the loading process.
+        */
+        final LinearLayout graphicsImageLayoutContainer = findViewById(R.id.graphicsImageLayoutContainer);
+        final HorizontalScrollView graphicsImageScrollView = findViewById(R.id.graphicsImageScrollView);
+        final LinearLayout graphicsImages = findViewById(R.id.graphicsImageLayout);
+        final LogoAsset[] graphicsImageAssets =
+                MachineResourceRegistry.graphicsLogos(machine);
+
+        bindLogoStrip(graphicsImageLayoutContainer, graphicsImageScrollView,
+                graphicsImages, graphicsImageAssets);
     }
 
-    private void initSpecs() {
-        try {
-            final TextView type = findViewById(R.id.typeText);
-            final TextView processor = findViewById(R.id.processorText);
-            final TextView maxram = findViewById(R.id.maxramText);
-            final TextView year = findViewById(R.id.yearText);
-            final TextView model = findViewById(R.id.modelText);
-            final TextView id = findViewById(R.id.idText);
-            final TextView graphics = findViewById(R.id.graphicsText);
-            final TextView display = findViewById(R.id.displayText);
-            final TextView features = findViewById(R.id.featuresText);
-            final TextView expansion = findViewById(R.id.expansionText);
-            final TextView storage = findViewById(R.id.storageText);
-            final TextView order = findViewById(R.id.orderText);
-            final TextView gestalt = findViewById(R.id.gestaltText);
-            final TextView emc = findViewById(R.id.emcText);
-            final TextView software = findViewById(R.id.softwareText);
-            final TextView design = findViewById(R.id.designText);
-            final TextView support = findViewById(R.id.supportText);
-
-            this.setTitle(thisName);
-            reloadName();
-
-            final boolean isClassic = MainActivity.getMachineHelper()
-                    .isClassicMachine(machineID);
-            findViewById(R.id.idLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
-            findViewById(R.id.idDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
-            findViewById(R.id.gestaltLayout).setVisibility(isClassic ? View.VISIBLE : View.GONE);
-            findViewById(R.id.gestaltDivider).setVisibility(
-                    isClassic ? View.VISIBLE : View.GONE);
-            findViewById(R.id.emcLayout).setVisibility(isClassic ? View.GONE : View.VISIBLE);
-            findViewById(R.id.emcDivider).setVisibility(isClassic ? View.GONE : View.VISIBLE);
-
-            type.setText(specsHelper.getDisplayInfo(thisType));
-            specsHelper.initCopy(type, thisType, "typeInfo");
-            processor.setText(specsHelper.formatModels(thisProcessor,
-                    MainActivity.getMachineHelper().getProcessorModelRanges(machineID)));
-            specsHelper.initCopy(processor, thisProcessor, "processorInfo");
-            maxram.setText(specsHelper.getDisplayInfo(thisMaxram));
-            specsHelper.initCopy(maxram, thisMaxram, "maxramInfo");
-            year.setText(specsHelper.getDisplayInfo(thisYear));
-            specsHelper.initCopy(year, thisYear, "yearInfo");
-            model.setText(specsHelper.getDisplayInfo(thisModel));
-            specsHelper.initCopy(model, thisModel, "modelInfo");
-            id.setText(specsHelper.getDisplayInfo(thisId));
-            specsHelper.initCopy(id, thisId, "idInfo");
-            graphics.setText(specsHelper.formatModels(thisGraphics,
-                    MainActivity.getMachineHelper().getGraphicsModelRanges(machineID)));
-            specsHelper.initCopy(graphics, thisGraphics, "graphicsInfo");
-            display.setText(specsHelper.getDisplayInfo(thisDisplay));
-            specsHelper.initCopy(display, thisDisplay, "displayInfo");
-            features.setText(specsHelper.getDisplayInfo(thisFeatures));
-            specsHelper.initCopy(features, thisFeatures, "featuresInfo");
-            expansion.setText(specsHelper.getDisplayInfo(thisExpansion));
-            specsHelper.initCopy(expansion, thisExpansion, "expansionInfo");
-            storage.setText(specsHelper.getDisplayInfo(thisStorage));
-            specsHelper.initCopy(storage, thisStorage, "storageInfo");
-            specsHelper.initPartNumbers(order, thisOrder);
-            specsHelper.initCopy(order, thisOrder, "orderInfo");
-            gestalt.setText(specsHelper.getDisplayInfo(thisGestalt));
-            specsHelper.initCopy(gestalt, thisGestalt, "gestaltInfo");
-            emc.setText(specsHelper.getDisplayInfo(thisEmc));
-            specsHelper.initCopy(emc, thisEmc, "emcInfo");
-            software.setText(specsHelper.getDisplayInfo(thisSoftware));
-            specsHelper.initCopy(software, thisSoftware, "softwareInfo");
-            design.setText(specsHelper.getDisplayInfo(thisDesign));
-            specsHelper.initCopy(design, thisDesign, "designInfo");
-            support.setText(specsHelper.getDisplayInfo(thisSupport));
-            specsHelper.initCopy(support, thisSupport, "supportInfo");
-            specsHelper.setSupportColor(support, thisSupport);
-
-            /*
-                Processor Images dynaLoad.
-
-                (1) Try getting type image. Will load if the type image is present.
-                (2) Try getting specific image. Will load if specific image(s) is/are present.
-                (3) No action. The case is not applicable for both loading process.
-            */
-            final LinearLayout processorTypeImageLayout = findViewById(R.id.processorTypeImageLayout);
-            final ImageView processorTypeImage = findViewById(R.id.processorTypeImage);
-            final LinearLayout processorImageLayoutContainer = findViewById(R.id.processorImageLayoutContainer);
-            final HorizontalScrollView processorImageScrollView = findViewById(R.id.processorImageScrollView);
-            final LinearLayout processorImages = findViewById(R.id.processorImageLayout);
-            final int[][] processorImageRes = MainActivity.getMachineHelper().getProcessorImage(machineID, SpecsActivity.this);
-
-            // Default states are all hidden.
-            processorTypeImageLayout.setVisibility(View.GONE);
-            processorImageLayoutContainer.setVisibility(View.GONE);
-
-            final int processorTypeImageRes = MainActivity.getMachineHelper().getProcessorTypeImage(machineID, SpecsActivity.this);
-            if (processorTypeImageRes != 0) {
-                // Got type image. Now loading.
-                processorTypeImageLayout.setVisibility(View.VISIBLE);
-                processorTypeImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), processorTypeImageRes, 200, 200));
-                ThemeHelper.applyProcessorTypeLogo(this, processorTypeImage,
-                        processorTypeImageRes);
-            }
-            if (processorImageRes[0][0] != 0) {
-                // Got specific images. Now loading.
-                processorImageLayoutContainer.setVisibility(View.VISIBLE);
-                // Clear all existing children.
-                processorImages.removeAllViews();
-                for (int[] processorImageResGroup : processorImageRes) {
-                    for (final int thisProcessorImageRes : processorImageResGroup) {
-                        @SuppressLint("InflateParams")
-                        final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_processor_image, null);
-                        final ImageView thisProcessorImage = imageChunk.findViewById(R.id.processorImage);
-                        thisProcessorImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), thisProcessorImageRes, 200, 200));
-                        ThemeHelper.applyImageMask(this, thisProcessorImage);
-                        processorImages.addView(imageChunk);
-                    }
-                }
-                // Remove the last space.
-                ((LinearLayout) processorImages.getChildAt(processorImages.getChildCount() - 1)).removeViewAt(1);
-                fitImageLayout(processorImageScrollView, processorImages, R.id.processorImage);
-            }
-
-            /*
-                Graphics Images dynaLoad.
-
-                (1) Try getting specific image. Will load if specific image(s) is/are present.
-                (2) No action. The case is not applicable for the loading process.
-            */
-            final LinearLayout graphicsImageLayoutContainer = findViewById(R.id.graphicsImageLayoutContainer);
-            final HorizontalScrollView graphicsImageScrollView = findViewById(R.id.graphicsImageScrollView);
-            final LinearLayout graphicsImages = findViewById(R.id.graphicsImageLayout);
-            final int[][] graphicsImageRes = MainActivity.getMachineHelper().getGraphicsImage(machineID, SpecsActivity.this);
-
-            // Default state is hidden.
-            graphicsImageLayoutContainer.setVisibility(View.GONE);
-
-            if (graphicsImageRes[0][0] != 0) {
-                // Got specific images. Now loading.
-                graphicsImageLayoutContainer.setVisibility(View.VISIBLE);
-                // Clear all existing children.
-                graphicsImages.removeAllViews();
-                for (int[] graphicsImageResGroup : graphicsImageRes) {
-                    for (final int thisGraphicsImageRes : graphicsImageResGroup) {
-                        @SuppressLint("InflateParams")
-                        final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_graphics_image, null);
-                        final ImageView thisGraphicsImage = imageChunk.findViewById(R.id.graphicsImage);
-                        thisGraphicsImage.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(getResources(), thisGraphicsImageRes, 200, 200));
-                        ThemeHelper.applyImageMask(this, thisGraphicsImage);
-                        graphicsImages.addView(imageChunk);
-                    }
-                }
-                // Remove the last space.
-                ((LinearLayout) graphicsImages.getChildAt(graphicsImages.getChildCount() - 1)).removeViewAt(1);
-                fitImageLayout(graphicsImageScrollView, graphicsImages, R.id.graphicsImage);
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "initSpecs", "Failed, Machine ID " + machineID);
+    @SuppressLint("InflateParams")
+    private void bindLogoStrip(final LinearLayout container,
+                               final HorizontalScrollView scrollView,
+                               final LinearLayout imageLayout,
+                               final LogoAsset[] assets) {
+        container.setVisibility(View.GONE);
+        imageLayout.removeAllViews();
+        if (assets.length == 0) {
+            return;
         }
+
+        container.setVisibility(View.VISIBLE);
+        for (LogoAsset asset : assets) {
+            final View imageChunk = getLayoutInflater().inflate(R.layout.chunk_logo_image, null);
+            final ImageView image = imageChunk.findViewById(R.id.logoImage);
+            ThemeHelper.setLogo(this, image, asset);
+            imageLayout.addView(imageChunk);
+        }
+        // The chunk supplies spacing between images; the final image needs no trailing gap.
+        ((LinearLayout) imageLayout.getChildAt(imageLayout.getChildCount() - 1)).removeViewAt(1);
+        fitImageLayout(scrollView, imageLayout);
     }
 
     private void fitImageLayout(final HorizontalScrollView thisScrollView,
-                                final LinearLayout thisImageLayout, final int thisImageID) {
+                                final LinearLayout thisImageLayout) {
         thisScrollView.post(() -> {
             final float density = getResources().getDisplayMetrics().density;
             final int allSpacesWidth = Math.round(5 * density)
@@ -399,13 +362,15 @@ public class SpecsActivity extends AppCompatActivity {
             float allImagesWidth = 0;
 
             for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
-                final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
+                final ImageView thisImage = thisImageLayout.getChildAt(i)
+                        .findViewById(R.id.logoImage);
                 if (thisImage.getDrawable() != null
-                        && thisImage.getDrawable().getIntrinsicHeight() != 0) {
-                    final float imageRatio = (float) thisImage.getDrawable().getIntrinsicWidth()
+                        && thisImage.getDrawable().getIntrinsicWidth() > 0
+                        && thisImage.getDrawable().getIntrinsicHeight() > 0) {
+                    final float aspectRatio = (float) thisImage.getDrawable().getIntrinsicWidth()
                             / thisImage.getDrawable().getIntrinsicHeight();
-                    float imageWidth = (float) (baseSize * Math.sqrt(imageRatio));
-                    float imageHeight = (float) (baseSize / Math.sqrt(imageRatio));
+                    float imageWidth = baseSize * (float) Math.sqrt(aspectRatio);
+                    float imageHeight = baseSize / (float) Math.sqrt(aspectRatio);
                     final float longestSide = Math.max(imageWidth, imageHeight);
                     if (longestSide > maximumSide) {
                         final float sideScale = maximumSide / longestSide;
@@ -429,7 +394,8 @@ public class SpecsActivity extends AppCompatActivity {
                     Math.min(1, availableImageWidth / allImagesWidth));
 
             for (int i = 0; i < thisImageLayout.getChildCount(); i++) {
-                final ImageView thisImage = thisImageLayout.getChildAt(i).findViewById(thisImageID);
+                final ImageView thisImage = thisImageLayout.getChildAt(i)
+                        .findViewById(R.id.logoImage);
                 final ViewGroup.LayoutParams imageParams = thisImage.getLayoutParams();
                 imageParams.width = Math.round(imageWidths[i] * imageScale);
                 imageParams.height = Math.round(imageHeights[i] * imageScale);
@@ -442,21 +408,19 @@ public class SpecsActivity extends AppCompatActivity {
 
     private void reloadName() {
         final TextView name = findViewById(R.id.nameText);
+        final String machineName = machine.name();
         name.setVisibility(View.INVISIBLE);
 
         // Reset the auto-sizing
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-        } else {
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(name, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
-        }
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                name, TextViewCompat.AUTO_SIZE_TEXT_TYPE_NONE);
 
         // Reset the Machine Name.
-        name.setText(thisName);
+        name.setText(machineName);
         name.setTextSize(20);
 
         // Check if the star is needed.
-        if (UserFavouriteHelper.contains(thisUID, this)) {
+        if (isFavourite()) {
             name.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_star_24, 0);
         } else {
             name.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
@@ -464,129 +428,134 @@ public class SpecsActivity extends AppCompatActivity {
 
         // Auto-sizing only if the width is insufficient.
         name.post(() -> {
-            if (!name.getLayout().getText().toString().equals(thisName)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    name.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                } else {
-                    TextViewCompat.setAutoSizeTextTypeWithDefaults(name, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                }
+            if (!name.isAttachedToWindow()) {
+                return;
+            }
+            if (name.getLayout() != null
+                    && !name.getLayout().getText().toString().equals(machineName)) {
+                TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                        name, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
             }
             name.setVisibility(View.VISIBLE);
         });
 
         // Set copy
-        specsHelper.initCopy(name, thisName, "nameInfo");
+        specsHelper.initCopy(name, machineName, "nameInfo");
     }
 
     private void initImage() {
-        try {
-            // Init image
-            final ImageView image = findViewById(R.id.pic);
-            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID,
-                    getResources().getDisplayMetrics().widthPixels,
-                    Math.round(150 * getResources().getDisplayMetrics().density));
-            DebugHelper.log("SpecsAct", "Image exists");
-            image.setImageBitmap(picture);
-            ThemeHelper.applyMachineImagePreview(this, image);
+        // Init image
+        final ImageView image = findViewById(R.id.pic);
+        imageLoader.load("specs-picture", machine,
+                getResources().getDisplayMetrics().widthPixels,
+                Math.round(150 * getResources().getDisplayMetrics().density),
+                picture -> {
+                    DebugHelper.log("SpecsAct", "Image exists");
+                    ThemeHelper.applyMachineImage(this, image);
+                    image.setImageBitmap(picture);
+                },
+                error -> {
+                    Log.w("SpecsImage", "Machine image unavailable for " + machine.uid(), error);
+                    Toast.makeText(this, R.string.machine_image_unavailable,
+                            Toast.LENGTH_SHORT).show();
+                });
 
-            final TextView informationLabel = findViewById(R.id.information);
-            specsHelper.initSound(machineID, image, informationLabel);
+        final TextView informationLabel = findViewById(R.id.information);
+        specsHelper.initSound(machine, image, informationLabel,
+                currentState.getPreferences().getPlayDeathSound(),
+                currentState.getPreferences().getEnableVolumeWarning(),
+                volumeWarningSession);
 
-            // Set a long click listener
-            image.setOnLongClickListener(v -> {
-                Intent viewImageIntent = new Intent(SpecsActivity.this, ViewImageActivity.class);
-                viewImageIntent.putExtra("machineUID", thisUID);
-                startActivity(viewImageIntent);
-                return true;
-            });
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "initSound", "Failed, Machine Name " + thisName);
-        }
+        // Set a long click listener
+        image.setOnLongClickListener(v -> {
+            startActivity(NavigationContract.machineImageIntent(
+                    SpecsActivity.this, machine.uid()));
+            return true;
+        });
     }
 
     private void initLinks() {
         final ImageView link = findViewById(R.id.everymac);
-        specsHelper.initLinks(machineID, thisName, link);
+        specsHelper.initLinks(machine, link);
         ThemeHelper.applyInvertedLogo(this, link);
     }
 
     private void initButtons() {
-        try {
-            DebugHelper.log("SpecNavButtons", "Loading");
-            // Reset the padding
-            final LinearLayout basicInfoLayout = findViewById(R.id.basicInfoLayout);
-            final float density = getResources().getDisplayMetrics().density;
-            basicInfoLayout.setPadding((int) (10 * density), (int) (10 * density), (int) (10 * density), 0);
+        DebugHelper.log("SpecNavButtons", "Loading");
+        // Reset the padding
+        final LinearLayout basicInfoLayout = findViewById(R.id.basicInfoLayout);
+        final float density = getResources().getDisplayMetrics().density;
+        basicInfoLayout.setPadding((int) (10 * density), (int) (10 * density), (int) (10 * density), 0);
 
-            final View buttonView = findViewById(R.id.buttonView);
-            final Button previous = findViewById(R.id.buttonPrevious);
-            final Button next = findViewById(R.id.buttonNext);
+        final View buttonView = findViewById(R.id.buttonView);
+        final Button previous = findViewById(R.id.buttonPrevious);
+        final Button next = findViewById(R.id.buttonNext);
 
-            // Reset the listener
-            previous.setOnClickListener(null);
-            next.setOnClickListener(null);
+        // Reset the listener
+        previous.setOnClickListener(null);
+        next.setOnClickListener(null);
 
-            // GONE by default, let it show up
-            buttonView.setVisibility(View.VISIBLE);
+        // GONE by default, let it show up
+        buttonView.setVisibility(View.VISIBLE);
 
-            // Previous button.
-            if (machineIDPosition == 0) {
-                // First one, disable the prev button
+        // Previous button.
+        if (navigationPosition == 0) {
+            // First one, disable the prev button
+            previous.setEnabled(false);
+            previous.setText(getResources().getString(R.string.first_one));
+        } else {
+            previous.setEnabled(true);
+            previous.setText(catalog.requireByUid(
+                    navigationUIDs[navigationPosition - 1]).name());
+            previous.setOnClickListener(v -> {
                 previous.setEnabled(false);
-                previous.setText(getResources().getString(R.string.first_one));
-            } else {
-                previous.setEnabled(true);
-                previous.setText(MainActivity.getMachineHelper().getIdentityName(
-                        navigationUIDs[machineIDPosition - 1]));
-                previous.setOnClickListener(v -> {
-                    previous.setEnabled(false);
-                    navPrev();
-                });
-            }
+                navPrev();
+            });
+        }
 
-            // Next button.
-            if (machineIDPosition == navigationUIDs.length - 1) {
-                // Last one, disable the next button
+        // Next button.
+        if (navigationPosition == navigationUIDs.length - 1) {
+            // Last one, disable the next button
+            next.setEnabled(false);
+            next.setText(getResources().getString(R.string.last_one));
+        } else {
+            next.setEnabled(true);
+            next.setText(catalog.requireByUid(
+                    navigationUIDs[navigationPosition + 1]).name());
+            next.setOnClickListener(v -> {
                 next.setEnabled(false);
-                next.setText(getResources().getString(R.string.last_one));
-            } else {
-                next.setEnabled(true);
-                next.setText(MainActivity.getMachineHelper().getIdentityName(
-                        navigationUIDs[machineIDPosition + 1]));
-                next.setOnClickListener(v -> {
-                    next.setEnabled(false);
-                    navNext();
-                });
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "SpecsActivity", "Unable to init buttons.");
+                navNext();
+            });
         }
     }
+
     /* Gestures were removed since Ver. 4.5b3 */
+
+    private void renderUserState() {
+        if (machine == null || currentState == null) {
+            return;
+        }
+        reloadName();
+        initComment();
+        initCompareCheckBox();
+    }
 
     /* Comments Functions */
     private void initComment() {
-        try {
-            final TextView comment = findViewById(R.id.commentText);
-            final String savedComment = UserCommentHelper.getComment(thisUID, this);
-            thisComment = savedComment;
-            comment.setText(savedComment == null ? getString(R.string.comment_null) : savedComment);
-            comment.setOnClickListener(view -> {
-                initCommentDialog();
-            });
-            specsHelper.initCopy(comment, thisComment, "userComment");
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "initComment",
-                    "Unable to read comments.");
-        }
+        final TextView comment = findViewById(R.id.commentText);
+        final String savedComment = getSavedComment();
+        comment.setText(savedComment == null ? getString(R.string.comment_null) : savedComment);
+        comment.setOnClickListener(view -> initCommentDialog());
+        specsHelper.initCopy(comment, savedComment, "userComment");
     }
 
     private void initCommentDialog() {
         final View commentChunk = getLayoutInflater().inflate(R.layout.chunk_edit_comment, null);
         final EditText editComment = commentChunk.findViewById(R.id.editComment);
-        final String savedComment = UserCommentHelper.getComment(thisUID, this);
+        if (currentState == null || stateAdapter == null) {
+            return;
+        }
+        final String savedComment = getSavedComment();
         if (savedComment != null) {
             editComment.setText(savedComment);
         }
@@ -606,19 +575,17 @@ public class SpecsActivity extends AppCompatActivity {
         commentDialogCreated.show();
         // Overwrite the positive button
         commentDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            try {
-                final String inputtedString = editComment.getText().toString().trim();
-                if (inputtedString.length() > 500) {
-                    Log.w("commentDialog", "Input is too long.");
-                    Toast.makeText(this, R.string.comment_length, Toast.LENGTH_LONG).show();
-                } else {
-                    UserCommentHelper.setComment(thisUID, inputtedString, this);
-                    initComment();
-                    commentDialogCreated.dismiss();
-                }
-            } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "commentDialog",
-                        "Unable to save comment.");
+            final String inputtedString = editComment.getText().toString().trim();
+            if (inputtedString.length() > UserStateLimits.MAX_COMMENT_LENGTH) {
+                editComment.setError(getString(R.string.comment_length,
+                        UserStateLimits.MAX_COMMENT_LENGTH));
+            } else {
+                stateAdapter.execute(
+                        UserStateCommands.setComment(machine.uid(), inputtedString),
+                        ignored -> commentDialogCreated.dismiss(),
+                        error -> ExceptionHelper.showUserStateEditFailure(this, error,
+                                R.string.submenu_specs_comment,
+                                R.string.comment_save_failed));
             }
         });
     }
@@ -626,63 +593,81 @@ public class SpecsActivity extends AppCompatActivity {
     /* Favourites Functions */
     // Call this when trying to add to favourites.
     private void selectFolder() {
-        try {
-            // Check if totally empty.
-            if (!isEmptyString()) {
-                final View selectChunk = this.getLayoutInflater().inflate(R.layout.chunk_favourites_select, null);
-                final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
-                final List<UserFavouriteHelper.Folder> folders = UserFavouriteHelper.read(this);
-                final boolean[] currentSelections = new boolean[folders.size()];
-                for (int i = 0; i < folders.size(); i++) {
-                    final boolean isExistsAtHere = folders.get(i).machineUIDs.contains(thisUID);
-                    CheckBox thisCheckBox = new CheckBox(this);
-                    thisCheckBox.setText(folders.get(i).name);
-                    thisCheckBox.setChecked(isExistsAtHere);
-                    currentSelections[i] = isExistsAtHere;
-                    int finalI = i;
-                    thisCheckBox.setOnCheckedChangeListener((compoundButton, b) ->
-                            currentSelections[finalI] = thisCheckBox.isChecked());
-                    selectLayout.addView(thisCheckBox);
-                }
+        selectFolder(null);
+    }
 
-                // Create the dialog.
-                final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(this);
-                deleteDialog.setTitle(R.string.submenu_specs_favourite);
-                deleteDialog.setMessage(R.string.favourites_tips);
-                deleteDialog.setView(selectChunk);
-                deleteDialog.setPositiveButton(R.string.link_confirm, (dialog, which) -> {
-                    try {
-                        UserFavouriteHelper.setMembership(
-                                thisUID, currentSelections, this);
-                        reloadName();
-                    } catch (Exception e) {
-                        ExceptionHelper.handleException(this, e, "selectFolder",
-                                "Unable to save favourites.");
-                    }
-                });
-                deleteDialog.setNegativeButton(R.string.link_cancel, ((dialog, which) -> {
-                    // Cancelled, do nothing
-                }));
-                deleteDialog.show();
+    private void selectFolder(final FavouriteFolder newlyCreatedFolder) {
+        if (currentState == null || stateAdapter == null) {
+            return;
+        }
+        final List<FavouriteFolder> folders = new ArrayList<>(
+                currentState.getLibrary().getFavouriteFolders());
+        boolean containsNewFolder = false;
+        for (FavouriteFolder folder : folders) {
+            if (newlyCreatedFolder != null && folder.getId() == newlyCreatedFolder.getId()) {
+                containsNewFolder = true;
+                break;
             }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "deleteFolder",
-                    "Unable to read favourites.");
         }
-    }
-
-    // Modified from the original one from the FavouriteActivity
-    private boolean isEmptyString() {
-        if (UserFavouriteHelper.read(this).isEmpty()) {
+        if (newlyCreatedFolder != null && !containsNewFolder) {
+            folders.add(0, newlyCreatedFolder);
+        }
+        if (folders.isEmpty()) {
             createFolder();
-            return true;
-        } else {
-            return false;
+            return;
         }
+        final View selectChunk = getLayoutInflater().inflate(
+                R.layout.chunk_favourites_select, null);
+        final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
+        final Set<Long> selectedFolderIds = new HashSet<>();
+        for (FavouriteFolder folder : folders) {
+            final boolean selected = folder.getMachineUids().contains(machine.uid());
+            final CheckBox checkBox = new CheckBox(this);
+            checkBox.setText(folder.getName());
+            checkBox.setChecked(selected);
+            if (selected) {
+                selectedFolderIds.add(folder.getId());
+            }
+            checkBox.setOnCheckedChangeListener((unused, checked) -> {
+                if (checked) {
+                    selectedFolderIds.add(folder.getId());
+                } else {
+                    selectedFolderIds.remove(folder.getId());
+                }
+            });
+            selectLayout.addView(checkBox);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.submenu_specs_favourite)
+                .setMessage(R.string.favourites_tips)
+                .setView(selectChunk)
+                .setPositiveButton(R.string.link_confirm, (dialog, which) ->
+                        stateAdapter.execute(
+                                UserStateCommands.setFavouriteMembership(
+                                        machine.uid(), selectedFolderIds),
+                                ignored -> { },
+                                error -> ExceptionHelper.showUserStateEditFailure(this, error,
+                                        R.string.submenu_specs_favourite,
+                                        R.string.favourite_membership_save_failed)))
+                .setNegativeButton(R.string.link_cancel, (dialog, which) -> { })
+                .show();
     }
 
-    // Modified from the original one from the FavouriteActivity
     private void createFolder() {
+        if (currentState == null || stateAdapter == null) {
+            return;
+        }
+        final List<FavouriteFolder> folders = currentState.getLibrary().getFavouriteFolders();
+        if (folders.size() >= UserStateLimits.MAX_FOLDERS) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.submenu_favourite_add)
+                    .setMessage(getString(R.string.favourites_error_limit,
+                            UserStateLimits.MAX_FOLDERS))
+                    .setPositiveButton(R.string.link_confirm, (dialog, which) -> { })
+                    .show();
+            return;
+        }
         final View newFolderChunk = getLayoutInflater().inflate(R.layout.chunk_favourites_new, null);
         final EditText folderName = newFolderChunk.findViewById(R.id.folderName);
         final AlertDialog.Builder newFolderDialog = new AlertDialog.Builder(this);
@@ -696,89 +681,123 @@ public class SpecsActivity extends AppCompatActivity {
             // Do nothing
         });
 
-        final AlertDialog newFolderDialogCreated = newFolderDialog.create();
-        newFolderDialogCreated.show();
+        final AlertDialog folderCreationDialog = newFolderDialog.create();
+        folderCreationDialog.show();
         // Overwrite the positive button
-        newFolderDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-            try {
-                final String inputtedName = folderName.getText().toString().trim();
-                // Check if the input is legal
-                if (FavouriteActivity.validateFolderName(inputtedName, new String[0], this)) {
-                    final List<UserFavouriteHelper.Folder> folders =
-                            UserFavouriteHelper.read(this);
-                    folders.add(0, new UserFavouriteHelper.Folder(
-                            inputtedName, new ArrayList<>()));
-                    UserFavouriteHelper.write(folders, this);
-                    newFolderDialogCreated.dismiss();
-                    selectFolder();
-                }
-            } catch (Exception e) {
-                ExceptionHelper.handleException(this, e, "newFolderDialog",
-                        "Unable to save favourites.");
+        folderCreationDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+            final String inputtedName = folderName.getText().toString().trim();
+            if (FavouriteFolderNameValidator.validate(folderName, inputtedName, folders)) {
+                folderCreationDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                        .setEnabled(false);
+                stateAdapter.execute(
+                        UserStateCommands.createFavouriteFolder(inputtedName),
+                        folderId -> {
+                            folderCreationDialog.dismiss();
+                            if (getLifecycle().getCurrentState()
+                                    .isAtLeast(Lifecycle.State.STARTED)) {
+                                selectFolder(new FavouriteFolder(folderId, inputtedName,
+                                        Collections.emptyList()));
+                            }
+                        },
+                        error -> {
+                            folderCreationDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                                    .setEnabled(true);
+                            ExceptionHelper.showUserStateEditFailure(this, error,
+                                    R.string.submenu_favourite_add,
+                                    R.string.favourites_save_failed);
+                        });
             }
         });
     }
 
     /* Compare Functions */
     private void addToCompare() {
-        try {
-            CompareActivity.toggleCompare(thisUID, this);
-            initCompareCheckBox();
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "addToCompare",
-                    "Unable to save comparison list.");
+        if (currentState == null || stateAdapter == null) {
+            return;
         }
+        final List<String> compareUIDs =
+                currentState.getLibrary().getCompare().getMachineUids();
+        stateAdapter.execute(
+                compareUIDs.contains(machine.uid())
+                        ? UserStateCommands.removeCompareMachine(machine.uid())
+                        : UserStateCommands.addCompareMachine(machine.uid()),
+                ignored -> { },
+                error -> ExceptionHelper.showUserStateEditFailure(this, error,
+                        R.string.submenu_specs_compare,
+                        R.string.compare_list_save_failed));
     }
 
     private void initCompareCheckBox() {
-        try {
-            final java.util.List<String> compareNames = CompareActivity.getCompareList(this);
-            final boolean containsCurrentMachine = compareNames.contains(thisUID);
-            compareItem.setChecked(containsCurrentMachine);
-            compareItem.setEnabled(compareNames.size() < 10 || containsCurrentMachine);
-            if (compareNames.size() == 10) {
-                compareItem.setTitle(getString(R.string.submenu_specs_compare) + " " + getString(R.string.compare_limit));
-            } else {
-                compareItem.setTitle(getString(R.string.submenu_specs_compare) + " (" + compareNames.size() + ")");
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "initCompareCheckBox",
-                    "Unable to read comparison list.");
+        if (compareItem == null || currentState == null) {
+            return;
+        }
+        final List<String> compareUIDs =
+                currentState.getLibrary().getCompare().getMachineUids();
+        final boolean containsCurrentMachine = compareUIDs.contains(machine.uid());
+        compareItem.setChecked(containsCurrentMachine);
+        compareItem.setEnabled(compareUIDs.size() < UserStateLimits.MAX_COMPARE_MACHINES
+                || containsCurrentMachine);
+        if (compareUIDs.size() == UserStateLimits.MAX_COMPARE_MACHINES) {
+            compareItem.setTitle(getString(R.string.submenu_specs_compare) + " "
+                    + getString(R.string.compare_limit));
+        } else {
+            compareItem.setTitle(getString(R.string.submenu_specs_compare) + " ("
+                    + compareUIDs.size() + ")");
         }
     }
 
+    private String getSavedComment() {
+        if (currentState == null) {
+            return null;
+        }
+        for (UserComment comment : currentState.getLibrary().getComments()) {
+            if (comment.getMachineUid().equals(machine.uid())) {
+                return comment.getText();
+            }
+        }
+        return null;
+    }
+
+    private boolean isFavourite() {
+        if (currentState == null) {
+            return false;
+        }
+        for (FavouriteFolder folder : currentState.getLibrary().getFavouriteFolders()) {
+            if (folder.getMachineUids().contains(machine.uid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void copySpecification() {
-        specsHelper.copySpecification(new String[]{thisName},
+        specsHelper.copySpecification(new String[]{machine.name()},
                 new String[][]{getSpecification()});
     }
 
     private void generateShareLink() {
-        specsHelper.generateShareLink(thisUID);
+        specsHelper.generateShareLink(machine.uid());
     }
 
     private String[] getSpecification() {
-        return new String[]{thisYear, thisModel, thisId, thisGestalt, thisOrder, thisEmc,
-                thisProcessor, thisGraphics, thisDisplay, thisMaxram, thisType, thisSoftware,
-                thisStorage, thisFeatures, thisExpansion, thisDesign, thisSupport, thisComment};
+        return specsHelper.specification(machine, getSavedComment());
     }
 
     private void navPrev() {
-        machineIDPosition--;
+        navigationPosition--;
         refresh();
     }
 
     private void navNext() {
-        machineIDPosition++;
+        navigationPosition++;
         refresh();
     }
 
     private void refresh() {
-        thisUID = navigationUIDs[machineIDPosition];
-        final Intent newMachine = new Intent(SpecsActivity.this, SpecsActivity.class);
-        newMachine.putExtra("machineUID", thisUID);
-        newMachine.putExtra("navigationUIDs", navigationUIDs);
-        newMachine.putExtra("forceNavigationButtons", forceNavigationButtons);
-        startActivity(newMachine);
+        final String targetUID = navigationUIDs[navigationPosition];
+        startActivity(NavigationContract.machineSpecsIntent(this,
+                NavigationContract.MachineRequest.create(
+                        targetUID, navigationUIDs, forceNavigationButtons)));
         finish();
     }
 }

@@ -1,0 +1,67 @@
+category = "ibook"
+picture_asset_key = "MI000239"
+name = "iBook (Late 2001)"
+introductions = [{ year = 2001, month = 10 }]
+
+model_numbers = [{ value = "M6497" }]
+identifiers = [{ value = "PowerBook4,1" }]
+order_numbers = [
+  { value = "M8597", revisions = ["C"], qualifier = "500 MHz" },
+  { value = "M8599", revisions = ["C"], qualifier = "600 MHz" },
+]
+
+codenames = [{ value = "Marble" }, { value = "P92" }, { value = "P29" }]
+
+processor = '''
+**PowerPC 750CXe (G3)** 500 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 66 MHz system bus
+**PowerPC 750CXe (G3)** 600 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750cxe"]
+
+graphics = "**ATI Rage Mobility 128** 8 MB"
+graphics_logo_keys = ["ati"]
+
+display = '''
+12.1-inch active-matrix color LCD, 1024x768
+Video mirroring via VGA or composite output'''
+ram = '''
+128 MB standard and built-in
+640 MB maximum
+1 - PC100 3.3 V 144-pin SO-DIMM slot, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.1
+Mac OS X 10.1 (5G64)
+Mac OS X 10.4.11 Maximum
+AHT (iBook) 1.2.1, 1.2.2, 1.2.3, 1.2.4'''
+storage = '''
+15 GB Ultra ATA hard drive (500 MHz and 600 MHz DVD-ROM)
+20 GB Ultra ATA hard drive (600 MHz Combo drive)
+Tray-loading CD-ROM drive (500 MHz)
+Tray-loading DVD-ROM drive (600 MHz)
+Tray-loading Combo drive (DVD-ROM/CD-RW) (600 MHz)
+Ultra ATA hard drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in microphone
+2 - Built-in stereo speakers (16-bit, 44.1 kHz sample rate)
+42 Wh lithium-ion battery'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.90 modem
+2 - USB 1.1 ports
+1 - FireWire 400 port
+VGA and composite video output via adapter
+1 - 3.5-mm audio output jack
+1 - Kensington security slot'''
+design = '''
+Translucent White
+4.9 lbs.
+1.35" H x 11.2" W x 9.06" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iBook G3/500 (Late 2001 - Tr)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_500_late_2001.html" },
+  { label = "iBook G3/600 (Late 2001 - Tr)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_600.html" },
+]

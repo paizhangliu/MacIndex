@@ -1,0 +1,89 @@
+category = "mac_mini_intel"
+picture_asset_key = "MI000310"
+name = "Mac mini (Late 2014)"
+introductions = [{ year = 2014, month = 10 }]
+
+model_numbers = [{ value = "A1347" }]
+identifiers = [{ value = "Macmini7,1" }]
+order_numbers = [
+  { value = "MGEM2", revisions = ["A"], qualifier = "1.4 GHz" },
+  { value = "MGEN2", revisions = ["A"], qualifier = "2.6 GHz" },
+  { value = "MGEQ2", revisions = ["A"], qualifier = "2.8 GHz" },
+]
+emc_numbers = [{ value = "2840" }]
+
+processor = '''
+**Intel Core i5 (4260U) ("Haswell")** 1.4 GHz, up to 2.7 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i5 (4278U) ("Haswell")** 2.6 GHz, up to 3.1 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i5 (4308U) ("Haswell")** 2.8 GHz, up to 3.3 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i7 (4578U) ("Haswell")** 3.0 GHz, up to 3.5 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["haswell"]
+processor_logo_keys = [
+  "corei5_4",
+  "corei7_4",
+]
+
+graphics = '''
+**Intel HD Graphics 5000** up to 1.5 GB shared with main memory (1.4 GHz)
+**Intel Iris 5100** up to 1.5 GB shared with main memory (2.6 and 2.8 GHz)'''
+graphics_logo_keys = [
+  "intelhd",
+  "inteliris",
+]
+
+display = '''
+Up to two external Thunderbolt displays
+One HDMI-compatible display while using one Thunderbolt display
+External resolution up to 3840x2160 at 30 Hz or 4096x2160 at 24 Hz via HDMI
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+4 GB standard (1.4 GHz)
+8 GB standard (2.6 or 2.8 GHz)
+8 or 16 GB configurable (1.4 GHz)
+16 GB configurable (2.6 or 2.8 GHz)
+16 GB maximum
+PC3-12800 (1600 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.10 (14A389)
+macOS 12.7.6 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+500 GB 5400-rpm hard drive standard (1.4 GHz)
+1 TB 5400-rpm hard drive standard (2.6 GHz)
+1 TB Fusion Drive standard (2.8 GHz)
+1 TB Fusion Drive configurable (1.4 GHz)
+1 TB Fusion Drive or 256 GB SSD configurable (2.6 GHz)
+2 TB Fusion Drive or 256, 512 GB, or 1 TB SSD configurable (2.8 GHz)
+Optional Apple USB SuperDrive
+5.0 GT/s PCIe x2 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+1 - Built-in speaker
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 2 ports (up to 20 Gbps)
+1 - HDMI port (up to 3840x2160 at 30 Hz or 4096x2160 at 24 Hz)
+1 - 3.5-mm analog/optical input jack
+1 - 3.5-mm analog/optical combo output jack
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+2.6–2.7 lbs.
+1.4" H x 7.7" W x 7.7" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "Mac mini \"Core i5\" 1.4 (Late 2014)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i5-1.4-late-2014-specs.html" },
+  { label = "Mac mini \"Core i5\" 2.6 (Late 2014)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i5-2.6-late-2014-specs.html" },
+  { label = "Mac mini \"Core i5\" 2.8 (Late 2014)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i5-2.8-late-2014-specs.html" },
+  { label = "Mac mini \"Core i7\" 3.0 (Late 2014)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-i7-3.0-late-2014-specs.html" },
+]

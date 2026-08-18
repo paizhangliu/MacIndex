@@ -1,0 +1,42 @@
+category = "powerbook_duo_68k"
+picture_asset_key = "MI000088"
+name = "Macintosh PowerBook Duo Dock"
+introductions = [{ year = 1992, month = 10 }]
+
+model_numbers = [{ value = "M7779" }]
+order_numbers = [
+  { value = "M4179", revisions = ["A"] },
+  { value = "M2631", revisions = ["A"] },
+]
+
+codenames = [{ value = "Gemini" }]
+
+processor = "**Optional Motorola 68882 FPU** 33 MHz"
+
+graphics = "**Apple VSC video subsystem** 512 KB VRAM standard, 1 MB maximum"
+
+display = '''
+External display support via DB-15
+512x384, 640x480, 800x600, or 832x624 at 8-bit color with 512 KB VRAM; at 16-bit color with 1 MB VRAM'''
+storage = '''
+Optional 230 MB SCSI hard drive
+1.44 MB floppy drive'''
+features = '''
+External omnidirectional microphone included
+1 - Built-in speaker'''
+expansion = '''
+1 - ADB port
+2 - RS-422 serial ports
+1 - HDI-30 SCSI port
+1 - DB-15 video port
+1 - Modem pass-through port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - NuBus slots
+1 - 3.5-inch internal hard-drive bay'''
+design = '''
+13.1 lbs.
+4.8" H x 12.3" W x 16.3" D'''
+
+support_status = "Obsolete"
+links = [{ label = "PowerBook Duo Dock", url = "https://everymac.com/systems/apple/powerbook_duo/specs/mac_powerbook_duodock.html" }]

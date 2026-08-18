@@ -1,8 +1,6 @@
 package com.macindex.macindex;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioDeviceInfo;
@@ -25,7 +23,13 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.macindex.macindex.catalog.Machine;
+import com.macindex.macindex.catalog.SupportStatus;
+import com.macindex.macindex.catalog.TextRange;
+import com.macindex.macindex.resources.MachineResourceRegistry;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,146 +54,133 @@ class SpecsHelper {
         vibrator = (Vibrator) thisContext.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
-    void initSound(final int machineID, final ImageView image, final TextView informationLabel) {
-        try {
-            release();
-            startup = true;
+    void initSound(final Machine machine, final ImageView image,
+                   final TextView informationLabel,
+                   final boolean playDeathSound,
+                   final boolean enableVolumeWarning,
+                   final VolumeWarningSession volumeWarningSession) {
+        release();
+        startup = true;
 
-            // Init startup and death sound
-            final int[] sound = MainActivity.getMachineHelper().getSound(machineID, thisContext);
-            final int startupID = sound[0];
-            final int deathID = sound[1];
+        // Init startup and death sound
+        final int[] sound = MachineResourceRegistry.soundResources(machine);
+        final int startupID = sound[0];
+        final int deathID = sound[1];
 
-            if (startupID != 0 || deathID != 0) {
-                // Set Sound accordingly
-                if (startupID != 0 && deathID != 0
-                        && PrefsHelper.getBooleanPrefs("isPlayDeathSound", thisContext)) {
-                    // Startup sound exists, death sound exists, and user prefers both
-                    if (informationLabel != null) {
-                        informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_full));
-                    }
-                    startupSound = MediaPlayer.create(thisContext, startupID);
-                    deathSound = MediaPlayer.create(thisContext, deathID);
-                    DebugHelper.log("InitSound", "Startup and death sound loaded");
-                } else {
-                    // Startup sound exists, death sound not exist
-                    // Fix IllegalStateException
-                    if (informationLabel != null) {
-                        informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_no_death));
-                    }
-                    startupSound = MediaPlayer.create(thisContext, startupID);
-                    deathSound = null;
-                    DebugHelper.log("InitSound", "Startup sound loaded");
+        if (startupID != 0 || deathID != 0) {
+            // Set Sound accordingly
+            if (startupID != 0 && deathID != 0
+                    && playDeathSound) {
+                // Startup sound exists, death sound exists, and user prefers both
+                if (informationLabel != null) {
+                    informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_full));
                 }
-                // Should set a listener
-                image.setOnClickListener(unused -> {
-                    // Initialize Sound.
-                    try {
-                        vibrate();
-                        if (!startupSound.isPlaying() && (deathSound == null || !deathSound.isPlaying())) {
-                            // Not playing any sound
-                            if (PrefsHelper.getBooleanPrefs("isEnableVolWarningThisTime", thisContext)
-                                    && PrefsHelper.getBooleanPrefs("isEnableVolWarning", thisContext)) {
-                                // High Volume Warning Enabled
-                                boolean currentOutputDevice = false;
-                                AudioManager audioManager = (AudioManager) thisContext.getSystemService(Context.AUDIO_SERVICE);
-                                if (audioManager != null) {
-                                    for (AudioDeviceInfo deviceInfo : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
-                                        final int thisType = deviceInfo.getType();
-                                        DebugHelper.log("VolWarning", "Get type " + thisType);
-                                        if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                                                || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
-                                                || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
-                                                || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
-                                                || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
-                                                || thisType == AudioDeviceInfo.TYPE_HEARING_AID
-                                                || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                                && thisType == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
-                                            DebugHelper.log("VolWarning", "Earphone detected");
-                                            currentOutputDevice = true;
-                                            break;
-                                        }
-                                    }
-                                    int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                                    int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                                    int currentVolumePercentage = 100 * currentVolume / maxVolume;
-                                    DebugHelper.log("VolWarning", "Enabled, current percentage " + currentVolumePercentage
-                                            + " current output device " + currentOutputDevice);
-                                    if (currentVolumePercentage >= 60 && currentOutputDevice) {
-                                        DebugHelper.log("VolWarning", "Armed");
-                                        final AlertDialog.Builder volWarningDialog = new AlertDialog.Builder(thisContext);
-                                        volWarningDialog.setMessage(R.string.information_specs_high_vol_warning);
-                                        volWarningDialog.setPositiveButton(R.string.action_play_anyway, (dialogInterface, i) -> {
-                                            // Enabled, and popup a warning
-                                            PrefsHelper.editPrefs("isEnableVolWarningThisTime", false, thisContext);
-                                            playSound();
-                                        });
-                                        volWarningDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-                                            // Do nothing
-                                        });
-                                        volWarningDialog.show();
-                                    } else {
-                                        // Enabled, but should not popup a warning
-                                        DebugHelper.log("VolWarning", "Unarmed");
-                                        playSound();
-                                    }
-                                } else {
-                                    // Enabled, but audio service not available
-                                    ExceptionHelper.handleException(thisContext, null,
-                                            "VolWarning",
-                                            "Audio Service Not Available.");
-                                    playSound();
-                                }
-                            } else {
-                                // High Volume Warning Disabled
-                                DebugHelper.log("VolWarning", "Disabled");
-                                playSound();
+                startupSound = MediaPlayer.create(thisContext, startupID);
+                deathSound = MediaPlayer.create(thisContext, deathID);
+                DebugHelper.log("InitSound", "Startup and death sound loaded");
+            } else {
+                // Startup sound exists, death sound not exist
+                // Fix IllegalStateException
+                if (informationLabel != null) {
+                    informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_no_death));
+                }
+                startupSound = MediaPlayer.create(thisContext, startupID);
+                deathSound = null;
+                DebugHelper.log("InitSound", "Startup sound loaded");
+            }
+            if (startupSound == null || (deathID != 0 && playDeathSound && deathSound == null)) {
+                Log.w("SpecsHelper", "Android could not create the machine sound player.");
+                release();
+                configureUnavailableSound(image, informationLabel);
+                return;
+            }
+
+            // Should set a listener
+            image.setOnClickListener(unused -> {
+                vibrate();
+                if (soundIsPlayingOrUnavailable()) {
+                    return;
+                }
+                if (enableVolumeWarning && volumeWarningSession.isArmed()) {
+                    boolean currentOutputDevice = false;
+                    final AudioManager audioManager = (AudioManager) thisContext.getSystemService(
+                            Context.AUDIO_SERVICE);
+                    if (audioManager != null) {
+                        for (AudioDeviceInfo deviceInfo : audioManager.getDevices(
+                                AudioManager.GET_DEVICES_OUTPUTS)) {
+                            final int thisType = deviceInfo.getType();
+                            DebugHelper.log("VolWarning", "Get type " + thisType);
+                            if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                                    || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
+                                    || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
+                                    || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+                                    || thisType == AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+                                    || thisType == AudioDeviceInfo.TYPE_HEARING_AID
+                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                                    && thisType == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
+                                DebugHelper.log("VolWarning", "Earphone detected");
+                                currentOutputDevice = true;
+                                break;
                             }
                         }
-                    } catch (Exception e) {
-                        ExceptionHelper.handleException(thisContext, e,
-                                "initImage", "Unable to initialize sounds.");
+                        final int currentVolume = audioManager.getStreamVolume(
+                                AudioManager.STREAM_MUSIC);
+                        final int maxVolume = audioManager.getStreamMaxVolume(
+                                AudioManager.STREAM_MUSIC);
+                        if (maxVolume <= 0) {
+                            Log.w("SpecsHelper", "Invalid music volume range; skipping warning.");
+                            playSoundWithFeedback();
+                            return;
+                        }
+                        final int currentVolumePercentage = 100 * currentVolume / maxVolume;
+                        DebugHelper.log("VolWarning", "Enabled, current percentage "
+                                + currentVolumePercentage + " current output device "
+                                + currentOutputDevice);
+                        if (currentVolumePercentage >= 60 && currentOutputDevice) {
+                            DebugHelper.log("VolWarning", "Armed");
+                            new AlertDialog.Builder(thisContext)
+                                    .setMessage(R.string.information_specs_high_vol_warning)
+                                    .setPositiveButton(R.string.action_play_anyway,
+                                            (dialogInterface, i) -> {
+                                                volumeWarningSession.disarm();
+                                                playSoundWithFeedback();
+                                            })
+                                    .setNegativeButton(R.string.link_cancel, null)
+                                    .show();
+                        } else {
+                            DebugHelper.log("VolWarning", "Unarmed");
+                            playSoundWithFeedback();
+                        }
+                    } else {
+                        Log.w("SpecsHelper",
+                                "AudioManager is unavailable; skipping volume warning.");
+                        playSoundWithFeedback();
                     }
-                });
-            } else {
-                // Exception for PowerBook DuoDock...
-                // Fix IllegalStateException
-                startupSound = null;
-                deathSound = null;
-                DebugHelper.log("InitSound", "Startup and death sound do not exist");
-                image.setOnClickListener(v -> {
-                    vibrate();
-                    Toast.makeText(thisContext, R.string.information_specs_no_sound,
-                            Toast.LENGTH_SHORT).show();
-                });
-                if (informationLabel != null) {
-                    informationLabel.setText(R.string.information_specs_no_sound);
+                } else {
+                    DebugHelper.log("VolWarning", "Disabled");
+                    playSoundWithFeedback();
                 }
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e,
-                    "initSound", "Failed, Machine ID " + machineID);
+            });
+        } else {
+            configureUnavailableSound(image, informationLabel);
         }
     }
 
-    void initLinks(final int machineID, final String thisName, final ImageView link) {
-        link.setOnClickListener(v -> loadLinks(machineID, thisName));
+    void initLinks(final Machine machine, final ImageView link) {
+        link.setOnClickListener(v -> LinkLoadingHelper.loadLinks(machine, thisContext));
     }
 
-    void initLinks(final int[] machineIDs, final String[] machineNames, final ImageView link) {
-        final String[] machineLinks = new String[machineIDs.length];
-        for (int i = 0; i < machineIDs.length; i++) {
-            machineLinks[i] = MainActivity.getMachineHelper().getConfig(machineIDs[i]);
-        }
-        link.setOnClickListener(v -> LinkLoadingHelper.loadLinks(machineNames,
-                machineLinks, thisContext));
+    void initLinks(final Machine leftMachine, final Machine rightMachine,
+                   final ImageView link) {
+        link.setOnClickListener(v -> LinkLoadingHelper.loadLinks(
+                leftMachine, rightMachine, thisContext));
     }
 
     void initCopy(final TextView entry, final String thisInfo, final String clipLabel) {
         entry.setOnLongClickListener(view -> {
             if (!isAvailable(thisInfo)) {
                 Toast.makeText(thisContext,
-                        thisContext.getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
+                        thisContext.getString(R.string.copy_not_available), Toast.LENGTH_LONG).show();
             } else {
                 copy(clipLabel, thisInfo, R.string.copy_information_success);
             }
@@ -202,7 +193,7 @@ class SpecsHelper {
         entry.setOnLongClickListener(view -> {
             if (!isAvailable(leftInfo) && !isAvailable(rightInfo)) {
                 Toast.makeText(thisContext,
-                        thisContext.getString(R.string.error_copy_not_available), Toast.LENGTH_LONG).show();
+                        thisContext.getString(R.string.copy_not_available), Toast.LENGTH_LONG).show();
             } else {
                 copy("compareInfo", generateCompareInfo(leftName, leftInfo, rightName, rightInfo),
                         R.string.copy_information_success);
@@ -247,77 +238,92 @@ class SpecsHelper {
         });
     }
 
-    CharSequence formatModels(final String thisInfo, final int[] modelRanges) {
+    CharSequence formatModels(final String thisInfo, final List<TextRange> modelRanges) {
         if (thisInfo == null) {
             return getDisplayInfo(null);
         }
-        if (modelRanges == null || modelRanges.length == 0) {
+        if (modelRanges.isEmpty()) {
             return thisInfo;
         }
-        if (modelRanges.length % 2 != 0) {
-            throw new IllegalStateException("Illegal model format");
-        }
         final SpannableString formattedInfo = new SpannableString(thisInfo);
-        int previousEnd = 0;
-        for (int i = 0; i < modelRanges.length; i += 2) {
-            final int rangeStart = modelRanges[i];
-            final int rangeEnd = modelRanges[i + 1];
-            if (rangeStart < previousEnd || rangeEnd <= rangeStart
-                    || rangeEnd > thisInfo.length()) {
-                throw new IllegalStateException("Illegal model range");
-            }
-            formattedInfo.setSpan(new StyleSpan(Typeface.BOLD), rangeStart, rangeEnd,
+        for (TextRange modelRange : modelRanges) {
+            formattedInfo.setSpan(new StyleSpan(Typeface.BOLD),
+                    modelRange.startInclusive(), modelRange.endExclusive(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            previousEnd = rangeEnd;
         }
         return formattedInfo;
     }
 
-    void setSupportColor(final TextView support, final String thisSupport) {
+    String getSupportText(final SupportStatus supportStatus) {
+        switch (supportStatus) {
+            case SUPPORTED:
+                return "Supported";
+            case VINTAGE:
+                return "Vintage";
+            case OBSOLETE:
+                return "Obsolete";
+            case NOT_APPLICABLE:
+                return thisContext.getString(R.string.not_applicable);
+            default:
+                throw new IllegalStateException("Unknown support status " + supportStatus);
+        }
+    }
+
+    void setSupportColor(final TextView support, final SupportStatus supportStatus) {
         // Set Support Box Text Color.
-        if ("Obsolete".equals(thisSupport)) {
-            support.setTextColor(ContextCompat.getColor(thisContext,
-                    R.color.colorSupportObsolete));
-        } else if ("Vintage".equals(thisSupport)) {
-            support.setTextColor(ContextCompat.getColor(thisContext,
-                    R.color.colorSupportVintage));
-        } else if ("Supported".equals(thisSupport)) {
-            support.setTextColor(ContextCompat.getColor(thisContext,
-                    R.color.colorSupportSupported));
+        switch (supportStatus) {
+            case OBSOLETE:
+                support.setTextColor(ContextCompat.getColor(thisContext,
+                        R.color.colorSupportObsolete));
+                break;
+            case VINTAGE:
+                support.setTextColor(ContextCompat.getColor(thisContext,
+                        R.color.colorSupportVintage));
+                break;
+            case SUPPORTED:
+                support.setTextColor(ContextCompat.getColor(thisContext,
+                        R.color.colorSupportSupported));
+                break;
+            case NOT_APPLICABLE:
+                break;
+            default:
+                throw new IllegalStateException("Unknown support status " + supportStatus);
         }
     }
 
     void copySpecification(final String[] machineNames, final String[][] machineSpecs) {
-        try {
-            if (machineNames == null || machineSpecs == null
-                    || machineNames.length == 0 || machineNames.length > 2
-                    || machineNames.length != machineSpecs.length) {
+        if (machineNames == null || machineSpecs == null
+                || machineNames.length == 0 || machineNames.length > 2
+                || machineNames.length != machineSpecs.length) {
+            throw new IllegalArgumentException();
+        }
+        final int entryCount = machineSpecs[0].length;
+        for (String[] specs : machineSpecs) {
+            if (specs == null || specs.length != entryCount) {
                 throw new IllegalArgumentException();
             }
-            final int entryCount = machineSpecs[0].length;
-            for (String[] specs : machineSpecs) {
-                if (specs == null || specs.length != entryCount) {
-                    throw new IllegalArgumentException();
-                }
-            }
+        }
 
-            // 2021.11.13 at Jinzhong, Shanxi, China
-            final AlertDialog.Builder shareDialog = new AlertDialog.Builder(thisContext);
-            shareDialog.setTitle(thisContext.getString(R.string.submenu_specs_share));
-            final String[] shareEntries = thisContext.getResources().getStringArray(R.array.share_menu);
-            final String[] shareDescription = thisContext.getResources().getStringArray(R.array.share_description);
-            shareDialog.setItems(shareEntries, (dialog, which) -> {
-                try {
-                    if (which == 0 || which == 1) {
+        // 2021.11.13 at Jinzhong, Shanxi, China
+        final AlertDialog.Builder shareDialog = new AlertDialog.Builder(thisContext);
+        shareDialog.setTitle(thisContext.getString(R.string.submenu_specs_share));
+        final String[] shareEntries = thisContext.getResources().getStringArray(R.array.share_menu);
+        final String[] shareDescription = thisContext.getResources().getStringArray(R.array.share_description);
+        shareDialog.setItems(shareEntries, (dialog, which) -> {
+            if (which == 0 || which == 1) {
                         // Model no. or all info
-                        List<Integer> currentEntries = new ArrayList<>(5);
-                        for (int i = 1; i < (which == 0 ? Math.min(6, entryCount) : entryCount); i++) {
-                            currentEntries.add(i);
+                        final List<Integer> currentEntries;
+                        if (which == 0) {
+                            currentEntries = modelIdentifierEntries(entryCount);
+                        } else {
+                            currentEntries = allSpecificationEntries(entryCount);
                         }
                         final String modelInfo = generateShareInfo(machineNames, machineSpecs, currentEntries);
-                        copy("MacIndexModelInfo", modelInfo, 0);
-                        Toast.makeText(thisContext, shareDescription[which], Toast.LENGTH_LONG).show();
-                    } else if (which == 2) {
+                        if (copy("MacIndexModelInfo", modelInfo, 0)) {
+                            Toast.makeText(thisContext, shareDescription[which],
+                                    Toast.LENGTH_LONG).show();
+                        }
+            } else if (which == 2) {
                         // User choose info
                         final View selectChunk = ((LayoutInflater) thisContext
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
@@ -353,38 +359,42 @@ class SpecsHelper {
                         final AlertDialog selectDialogCreated = selectDialog.create();
                         selectDialogCreated.show();
 
-                        selectDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
-                            // Overwrite the positive button
-                            try {
-                                List<Integer> currentEntries = new ArrayList<>(0);
-                                for (int i = 0; i < currentSelections.length; i++) {
-                                    if (currentSelections[i]) {
-                                        currentEntries.add(i);
-                                    }
-                                }
-                                if (currentEntries.size() > 0) {
-                                    final String modelInfo = generateShareInfo(machineNames, machineSpecs, currentEntries);
-                                    copy("MacIndexModelInfo", modelInfo, 0);
-                                    Toast.makeText(thisContext, shareDescription[which], Toast.LENGTH_LONG).show();
-                                    selectDialogCreated.dismiss();
-                                } else {
-                                    Toast.makeText(thisContext, R.string.share_menu_null, Toast.LENGTH_LONG).show();
-                                }
-                            } catch (Exception e) {
-                                ExceptionHelper.handleException(thisContext, e,
-                                        "selectDialog", "Error when copying currentSelections.");
-                            }
-                        });
+                selectDialogCreated.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                    // Overwrite the positive button
+                    List<Integer> currentEntries = new ArrayList<>(0);
+                    for (int i = 0; i < currentSelections.length; i++) {
+                        if (currentSelections[i]) {
+                            currentEntries.add(i);
+                        }
                     }
-                } catch (Exception e) {
-                    ExceptionHelper.handleException(thisContext, e,
-                            "shareDialog", "Unable to create the share dialog.");
-                }
-            });
-            shareDialog.show();
-        } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e,
-                    "shareDialog", "Unable to create the share dialog.");
+                    if (currentEntries.size() > 0) {
+                        final String modelInfo = generateShareInfo(machineNames, machineSpecs, currentEntries);
+                        if (copy("MacIndexModelInfo", modelInfo, 0)) {
+                            Toast.makeText(thisContext, shareDescription[which],
+                                    Toast.LENGTH_LONG).show();
+                            selectDialogCreated.dismiss();
+                        }
+                    } else {
+                        Toast.makeText(thisContext, R.string.share_menu_null, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+        shareDialog.show();
+    }
+
+    private void configureUnavailableSound(final ImageView image,
+                                           final TextView informationLabel) {
+        startupSound = null;
+        deathSound = null;
+        DebugHelper.log("InitSound", "Startup and death sound are unavailable");
+        image.setOnClickListener(v -> {
+            vibrate();
+            Toast.makeText(thisContext, R.string.information_specs_no_sound,
+                    Toast.LENGTH_SHORT).show();
+        });
+        if (informationLabel != null) {
+            informationLabel.setText(R.string.information_specs_no_sound);
         }
     }
 
@@ -398,68 +408,81 @@ class SpecsHelper {
     }
 
     void release() {
-        try {
-            if (startupSound != null && startupSound.isPlaying()) {
-                startupSound.stop();
-                DebugHelper.log("releaseSound", "Startup sound stopped");
-            }
-            if (deathSound != null && deathSound.isPlaying()) {
-                deathSound.stop();
-                DebugHelper.log("releaseSound", "Death sound stopped");
-            }
-            if (startupSound != null) {
-                startupSound.release();
-                DebugHelper.log("releaseSound", "Startup sound released");
-            }
-            if (deathSound != null) {
-                deathSound.release();
-                DebugHelper.log("releaseSound", "Death sound released");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.w("SpecsHelper", "Unable to release all sounds.");
-        } finally {
-            startupSound = null;
-            deathSound = null;
+        final MediaPlayer oldStartupSound = startupSound;
+        final MediaPlayer oldDeathSound = deathSound;
+        startupSound = null;
+        deathSound = null;
+        releaseSound(oldStartupSound, "startup");
+        releaseSound(oldDeathSound, "death");
+    }
+
+    private static void releaseSound(final MediaPlayer player, final String label) {
+        if (player == null) {
+            return;
         }
+        try {
+            // release() relinquishes the native resources from every MediaPlayer state; an
+            // isPlaying()/stop() preflight only adds IllegalStateException failure points.
+            player.release();
+        } catch (RuntimeException error) {
+            Log.w("SpecsHelper", "Unable to release " + label + " sound.", error);
+            return;
+        }
+        DebugHelper.log("releaseSound", label + " sound released");
     }
 
     private void playSound() {
-        try {
-            if (startupSound == null) {
-                throw new IllegalStateException();
-            }
-            if (deathSound != null) {
-                if (startup) {
-                    startupSound.start();
-                    startup = false;
-                } else {
-                    deathSound.start();
-                    startup = true;
-                }
-            } else {
-                startupSound.start();
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e,
-                    "playSound", "Unable to play sound.");
+        if (startupSound == null) {
+            throw new IllegalStateException("Startup sound is unavailable");
         }
+        if (deathSound != null) {
+            if (startup) {
+                startupSound.start();
+                startup = false;
+            } else {
+                deathSound.start();
+                startup = true;
+            }
+        } else {
+            startupSound.start();
+        }
+    }
+
+    private void playSoundWithFeedback() {
+        try {
+            playSound();
+        } catch (IllegalStateException failure) {
+            reportSoundFailure(failure);
+        }
+    }
+
+    private boolean soundIsPlayingOrUnavailable() {
+        if (startupSound == null) {
+            return true;
+        }
+        try {
+            return startupSound.isPlaying()
+                    || deathSound != null && deathSound.isPlaying();
+        } catch (IllegalStateException failure) {
+            reportSoundFailure(failure);
+            return true;
+        }
+    }
+
+    private void reportSoundFailure(final IllegalStateException failure) {
+        Log.w("SpecsHelper", "Unable to play machine sound.", failure);
+        Toast.makeText(thisContext, R.string.sound_play_failed, Toast.LENGTH_SHORT).show();
     }
 
     private String generateShareInfo(final String[] machineNames, final String[][] machineSpecs,
                                      final List<Integer> entries) {
         String modelInfo = "";
-        try {
-            for (int i = 0; i < machineNames.length; i++) {
-                if (!modelInfo.isEmpty()) {
-                    modelInfo = modelInfo.concat("\n\n");
-                }
-                modelInfo = modelInfo.concat(generateShareInfo(machineNames[i], machineSpecs[i],
-                        entries, machineNames.length > 1));
+        for (int i = 0; i < machineNames.length; i++) {
+            if (!modelInfo.isEmpty()) {
+                modelInfo = modelInfo.concat("\n\n");
             }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(thisContext, e,
-                    "generateShareInfo", "Illegal Argument. Received arguments:" + entries.toString());
+            modelInfo = modelInfo.concat(generateShareInfo(machineNames[i], machineSpecs[i],
+                    entries, machineNames.length > 1));
         }
         return modelInfo.trim();
     }
@@ -483,7 +506,8 @@ class SpecsHelper {
 
     private String[] getSpecificationLabels(final int entryCount) {
         final int[] labelIDs = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
-                R.string.order, R.string.emc, R.string.processor, R.string.graphics,
+                R.string.order, R.string.codename, R.string.emc, R.string.processor,
+                R.string.graphics,
                 R.string.display, R.string.maxram, R.string.type, R.string.software,
                 R.string.storage, R.string.features, R.string.expansion, R.string.design,
                 R.string.support, R.string.comment};
@@ -495,6 +519,56 @@ class SpecsHelper {
             labels[i] = thisContext.getString(labelIDs[i]);
         }
         return labels;
+    }
+
+    static List<Integer> modelIdentifierEntries(final int entryCount) {
+        final int[] identifierEntries = {1, 2, 3, 4, 6};
+        final List<Integer> result = new ArrayList<>(identifierEntries.length);
+        for (int entry : identifierEntries) {
+            if (entry < entryCount) {
+                result.add(entry);
+            }
+        }
+        return result;
+    }
+
+    static List<Integer> allSpecificationEntries(final int entryCount) {
+        final List<Integer> result = new ArrayList<>(entryCount);
+        for (int entry = 0; entry < entryCount; entry++) {
+            result.add(entry);
+        }
+        return result;
+    }
+
+    /** Pure projection shared by the single-machine and comparison presentations. */
+    String[] specification(final Machine machine) {
+        return new String[]{
+                machine.introductionDisplayText(),
+                machine.modelNumbers(),
+                machine.identifiers(),
+                machine.gestaltIds(),
+                machine.orderNumbers(),
+                machine.codenameDisplayText(),
+                machine.emcNumbers(),
+                machine.processor(),
+                machine.graphics(),
+                machine.display(),
+                machine.ram(),
+                machine.rom(),
+                machine.software(),
+                machine.storage(),
+                machine.features(),
+                machine.expansion(),
+                machine.design(),
+                getSupportText(machine.supportStatus())
+        };
+    }
+
+    String[] specification(final Machine machine, final String comment) {
+        final String[] base = specification(machine);
+        final String[] withComment = Arrays.copyOf(base, base.length + 1);
+        withComment[base.length] = comment;
+        return withComment;
     }
 
     private String generateCompareInfo(final String leftName, final String leftInfo,
@@ -520,29 +594,23 @@ class SpecsHelper {
         return false;
     }
 
-    private void loadLinks(final int machineID, final String thisName) {
-        LinkLoadingHelper.loadLinks(thisName,
-                MainActivity.getMachineHelper().getConfig(machineID), thisContext);
-    }
-
-    private void copy(final String clipLabel, final String thisInfo, final int toastMessage) {
-        final ClipboardManager clipboard = (ClipboardManager)
-                thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
-        final ClipData clip = ClipData.newPlainText(clipLabel, thisInfo);
-        clipboard.setPrimaryClip(clip);
-        if (toastMessage != 0) {
-            Toast.makeText(thisContext, toastMessage, Toast.LENGTH_LONG).show();
-        }
+    private boolean copy(final String clipLabel, final String thisInfo, final int toastMessage) {
+        return ExceptionHelper.copyText(thisContext, clipLabel, thisInfo, toastMessage);
     }
 
     private void vibrate() {
         if (vibrator == null) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            vibrator.vibrate(50);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(
+                        50, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else {
+                vibrator.vibrate(50);
+            }
+        } catch (SecurityException denied) {
+            Log.w("SpecsHelper", "Android denied optional vibration.", denied);
         }
     }
 }

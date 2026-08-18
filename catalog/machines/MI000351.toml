@@ -1,0 +1,81 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000348"
+name = "MacBook Pro (Retina, 13-inch, Late 2013)"
+introductions = [{ year = 2013, month = 10 }]
+
+model_numbers = [{ value = "A1502" }]
+identifiers = [{ value = "MacBookPro11,1" }]
+order_numbers = [
+  { value = "ME864", revisions = ["A"], qualifier = "2.4 GHz with 128 GB storage" },
+  { value = "ME865", revisions = ["A"], qualifier = "2.4 GHz with 256 GB storage" },
+  { value = "ME866", revisions = ["A"], qualifier = "2.6 GHz with 512 GB storage" },
+]
+emc_numbers = [{ value = "2678" }]
+
+processor = '''
+**Intel Core i5 (4258U) ("Haswell")** 2.4 GHz, up to 2.9 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i5 (4288U) ("Haswell")** 2.6 GHz, up to 3.1 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i7 (4558U) ("Haswell")** 2.8 GHz, up to 3.3 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["haswell"]
+processor_logo_keys = [
+  "corei5_4",
+  "corei7_4",
+]
+
+graphics = "**Intel Iris 5100** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["inteliris"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit display with IPS technology, 2560x1600, 227 ppi
+Up to two external Thunderbolt displays
+One external 4K HDMI-compatible display while using one Thunderbolt display
+External resolution up to 3840x2160 at 30 Hz or 4096x2160 at 24 Hz via HDMI; up to 3840x2160 at 30 Hz via Thunderbolt
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+4 GB standard (2.4 GHz with 128 GB)
+8 GB standard (other configurations)
+8 or 16 GB configurable (2.4 GHz with 128 GB)
+16 GB configurable (other configurations)
+16 GB maximum
+PC3-12800 (1600 MHz) DDR3L onboard memory'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.9 (13A2093)
+macOS 11.7.11 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+128 or 256 GB standard (2.4 GHz)
+512 GB standard (2.6 GHz)
+1 TB configurable
+Optional Apple USB SuperDrive
+5.0 GT/s PCIe x2 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+Optional Apple Thunderbolt to Gigabit Ethernet Adapter
+2 - USB 3.0 ports (up to 5 Gbps)
+Optional Apple Thunderbolt to FireWire Adapter
+2 - Thunderbolt 2 ports (up to 20 Gbps)
+1 - HDMI port (up to 3840x2160 at 30 Hz or 4096x2160 at 24 Hz)
+1 - 3.5-mm digital/analog headphone jack
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Precision aluminum unibody
+3.46 lbs.
+0.71" H x 12.35" W x 8.62" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 13\" \"Core i5\" 2.4 Late 2013", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i5-2.4-13-late-2013-retina-display-specs.html" },
+  { label = "MacBook Pro 13\" \"Core i5\" 2.6 Late 2013", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i5-2.6-13-late-2013-retina-display-specs.html" },
+  { label = "MacBook Pro 13\" \"Core i7\" 2.8 Late 2013", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.8-13-late-2013-retina-display-specs.html" },
+]

@@ -1,0 +1,83 @@
+category = "imac_intel"
+picture_asset_key = "MI000279"
+name = "iMac (Retina 5K, 27-inch, Late 2015)"
+introductions = [{ year = 2015, month = 10 }]
+
+model_numbers = [{ value = "A1419" }]
+identifiers = [{ value = "iMac17,1" }]
+order_numbers = [
+  { value = "MK462", revisions = ["A"], qualifier = "3.2 GHz with AMD Radeon R9 M380" },
+  { value = "MK472", revisions = ["A"], qualifier = "3.2 GHz with AMD Radeon R9 M390" },
+  { value = "MK482", revisions = ["A"], qualifier = "3.3 GHz with AMD Radeon R9 M395" },
+]
+emc_numbers = [{ value = "2834" }]
+
+processor = '''
+**Intel Core i5 (6500) ("Skylake")** 3.2 GHz, up to 3.6 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (6600) ("Skylake")** 3.3 GHz, up to 3.9 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (6700K) ("Skylake")** 4.0 GHz, up to 4.2 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 8 GT/s'''
+processor_family_keys = ["skylake"]
+processor_logo_keys = [
+  "corei5_6",
+  "corei7_6",
+]
+
+graphics = '''
+**AMD Radeon R9 M380** 2 GB GDDR5 (entry 3.2 GHz base)
+**AMD Radeon R9 M390** 2 GB GDDR5 (mid 3.2 GHz base)
+**AMD Radeon R9 M395** 2 GB GDDR5 (3.3 GHz base)
+**AMD Radeon R9 M395X** 4 GB GDDR5 configurable (3.3 GHz base)'''
+graphics_logo_keys = ["amdradeon2013"]
+
+display = '''
+27-inch (diagonal) Retina 5K display with IPS technology, 5120x2880, 218 ppi, wide color gamut (P3)
+Up to two external Thunderbolt displays
+Up to two external displays at 4096x2160 or one at 5120x2880
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 or 32 GB configurable
+32 GB Apple-supported maximum
+64 GB actual maximum
+4 - 204-pin PC3L-14900 (1867 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.11 (15A4310)
+macOS 12.7.6 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB 7200-rpm SATA hard drive standard (entry 3.2 GHz)
+1 TB Fusion Drive standard (mid 3.2 GHz)
+2 TB Fusion Drive standard (3.3 GHz)
+3 TB Fusion Drive or 256 or 512 GB SSD configurable (entry 3.2 GHz)
+3 TB Fusion Drive or 256, 512 GB, or 1 TB SSD configurable (mid 3.2 or 3.3 GHz)
+1 - 8.0 GT/s PCIe x4 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 2 ports (up to 20 Gbps; digital video output)
+1 - 3.5-mm analog/optical combo output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+21 lbs.
+20.3" H x 25.6" W x 8" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [
+  { label = "iMac 27-Inch \"Core i5\" 3.2 (5K, Late 2015)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.2-27-inch-aluminum-retina-5k-late-2015-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 3.3 (5K, Late 2015)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.3-27-inch-aluminum-retina-5k-late-2015-specs.html" },
+  { label = "iMac 27-Inch \"Core i7\" 4.0 (5K, Late 2015)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-4.0-27-inch-aluminum-retina-5k-late-2015-specs.html" },
+]

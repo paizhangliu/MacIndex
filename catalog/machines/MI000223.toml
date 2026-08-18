@@ -1,0 +1,70 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000220"
+name = "PowerBook G4 (1GHz/867MHz)"
+introductions = [{ year = 2002, month = 11 }]
+
+model_numbers = [{ value = "A1025" }]
+identifiers = [{ value = "PowerBook3,5" }]
+order_numbers = [
+  { value = "M8858", revisions = ["A"], qualifier = "867 MHz" },
+  { value = "M8859", revisions = ["A"], qualifier = "1.0 GHz" },
+]
+emc_numbers = [{ value = "1931" }]
+
+codenames = [{ value = "P88" }, { value = "Antimony" }]
+
+processor = '''
+**PowerPC 7455 (G4)** 867 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB DDR L3 cache, 133 MHz system bus
+**PowerPC 7455 (G4)** 1.0 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB DDR L3 cache, 133 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = '''
+**ATI Mobility Radeon 9000** 32 MB DDR VRAM (867 MHz)
+**ATI Mobility Radeon 9000** 64 MB DDR VRAM (1.0 GHz)'''
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+15.2-inch active-matrix widescreen LCD, 1280x854
+Dual display and video mirroring up to 2048x1536'''
+ram = '''
+256 MB standard (867 MHz)
+512 MB standard (1.0 GHz)
+1 GB maximum
+2 - PC133 SO-DIMM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.2.1
+Mac OS 9.2.2
+Mac OS X 10.5.8 Maximum'''
+storage = '''
+40 GB 4200-rpm Ultra ATA/66 hard drive (867 MHz)
+60 GB 4200-rpm Ultra ATA/66 hard drive (1.0 GHz)
+Slot-loading Combo drive (DVD-ROM/CD-RW) (867 MHz)
+Slot-loading SuperDrive (DVD-R/CD-RW) (1.0 GHz)'''
+features = '''
+Optional AirPort (802.11b; 867 MHz)
+Built-in AirPort (802.11b; 1.0 GHz)
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T)
+1 - 56 Kbps V.92 modem
+2 - USB 1.1 ports
+1 - FireWire 400 port
+1 - DVI port
+1 - S-video output
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+1 - Type I/II CardBus slot'''
+design = '''
+5.4 lbs.
+1" H x 13.4" W x 9.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G4 867 (Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_867.html" },
+  { label = "PowerBook G4 1.0 (Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_1.0.html" },
+]

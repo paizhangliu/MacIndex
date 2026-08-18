@@ -1,0 +1,58 @@
+category = "mac_mini_ppc"
+picture_asset_key = "MI000195"
+name = "Mac mini (Late 2005)"
+introductions = [{ year = 2005, month = 9 }]
+
+model_numbers = [{ value = "A1103" }]
+identifiers = [{ value = "PowerMac10,2" }]
+emc_numbers = [{ value = "2026" }]
+
+codenames = [{ value = "Q88" }, { value = "Twiggy" }]
+
+processor = '''
+**PowerPC 7447A (G4)** 1.33 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus
+**PowerPC 7447A (G4)** 1.5 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7447"]
+
+graphics = "**ATI Radeon 9200** 32 MB DDR VRAM on 1.33 GHz models, 64 MB DDR VRAM on 1.5 GHz models"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = "External display support via DVI, up to 1920x1200 via DVI; up to 1920x1080 via VGA adapter"
+ram = '''
+512 MB standard
+1 GB maximum
+1 - PC2700 DDR SDRAM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.4.2 (8D40, 8E90A)
+Mac OS X 10.5.8 Maximum
+AHT (Mac mini) 1.1'''
+storage = '''
+40 GB 5400-rpm Ultra ATA/100 hard drive standard (1.33 GHz)
+80 GB 5400-rpm Ultra ATA/100 hard drive standard (1.5 GHz)
+Combo drive (DVD-ROM/CD-RW) standard (1.33 GHz and selected 1.5 GHz)
+SuperDrive (DVD±RW/CD-RW) standard on selected 1.5 GHz configuration or configurable'''
+features = '''
+Optional or built-in AirPort Extreme (802.11b/g)
+Optional or built-in Bluetooth 2.0 + EDR
+1 - Built-in speaker'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - Optional 56 Kbps V.92 modem
+2 - USB 2.0 ports
+1 - FireWire 400 port
+1 - DVI port
+VGA, composite, and S-video output via adapters
+1 - 3.5-mm audio output jack'''
+design = '''
+Silver and White
+2.9 lbs.
+2" H x 6.5" W x 6.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Mac mini G4/1.33", url = "https://everymac.com/systems/apple/mac_mini/specs/mac_mini_g4_1.33.html" },
+  { label = "Mac mini G4/1.5", url = "https://everymac.com/systems/apple/mac_mini/specs/mac_mini_g4_1.5.html" },
+]

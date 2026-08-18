@@ -3,6 +3,7 @@ package com.macindex.macindex;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.regex.Pattern;
 
 /**
  * MacIndex Share Link Helper
@@ -10,6 +11,7 @@ import java.net.URLDecoder;
 class ShareLinkHelper {
 
     private static final String SHARE_BASE = "https://macindex.paizhang.info/share";
+    private static final Pattern MACHINE_UID = Pattern.compile("MI\\d{6}");
 
     public static String create(final String machineUID) {
         validateMachineUID(machineUID);
@@ -51,7 +53,7 @@ class ShareLinkHelper {
     }
 
     private static void validateMachineUID(final String machineUID) {
-        if (!UserRecordJsonHelper.isMachineUID(machineUID)) {
+        if (machineUID == null || !MACHINE_UID.matcher(machineUID).matches()) {
             throw new IllegalArgumentException("Illegal machine UID");
         }
     }
@@ -67,7 +69,7 @@ class ShareLinkHelper {
                 try {
                     return URLDecoder.decode(pair[1], "UTF-8");
                 } catch (UnsupportedEncodingException impossible) {
-                    throw new AssertionError("UTF-8 is unavailable", impossible);
+                    throw new AssertionError(impossible);
                 }
             }
         }

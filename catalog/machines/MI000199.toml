@@ -1,0 +1,81 @@
+category = "mac_server_ppc"
+picture_asset_key = "MI000155"
+name = "Macintosh Server G4 (AGP Graphics)"
+introductions = [
+  { year = 1999, month = 12, qualifier = "350, 400 MHz" },
+  { year = 2000, month = 2, qualifier = "400, 500 MHz" },
+]
+
+model_numbers = [{ value = "M5183" }]
+identifiers = [{ value = "PowerMac3,1" }]
+order_numbers = [
+  { value = "M7835", revisions = ["A"], qualifier = "350 MHz; AppleShare IP" },
+  { value = "M7834", revisions = ["A"], qualifier = "400 MHz; Ultra2 SCSI; AppleShare IP" },
+  { value = "M7609", revisions = ["A"], qualifier = "400 MHz; Ultra ATA; AppleShare IP" },
+  { value = "M7646", revisions = ["A"], qualifier = "500 MHz; AppleShare IP" },
+  { value = "M7843", revisions = ["A"], qualifier = "500 MHz; Mac OS X Server" },
+]
+emc_numbers = [
+  { value = "1810", qualifier = "early configurations" },
+  { value = "1843", qualifier = "later configurations" },
+]
+
+codenames = [{ value = "Sawtooth" }, { value = "P5" }]
+
+processor = '''
+**PowerPC 7400 (G4)** 350 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus
+**PowerPC 7400 (G4)** 400 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus
+**PowerPC 7400 (G4)** 500 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7400"]
+
+graphics = "**ATI Rage 128 Pro** 16 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = "Single display support up to 1920x1200"
+ram = '''
+128 MB standard (M7835 or M7609 configuration)
+256 MB standard (M7834, M7646, or M7843 configuration)
+1.5 GB Apple-supported maximum
+2 GB actual maximum
+4 - PC100 168-pin SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.6
+AppleShare IP 6.3.1 or Mac OS X Server 1.2
+Mac OS X 10.4.11 Maximum'''
+storage = '''
+20 GB 7200-rpm Ultra ATA/66 hard drive standard (M7835 or M7609 configuration)
+18 GB 10,000-rpm Ultra2 LVD SCSI hard drive standard (M7834, M7646, or M7843 configuration)
+5x DVD-ROM drive
+Optional Zip 100 drive'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in speaker (16-bit, 44.1 kHz sample rate)'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T; RJ-45)
+1 - Optional 56 Kbps modem
+2 - USB 1.1 ports
+3 - FireWire 400 ports (1 internal; 15 W total power)
+1 - VGA port
+1 - DVI-D port
+1 - 3.5-mm analog input jack (16-bit, 44.1 kHz sample rate)
+1 - 3.5-mm analog output jack
+3 - 64-bit 33 MHz PCI slots
+1 - AGP 2x slot
+4 - Internal 3.5-inch ATA drive bays
+1 - Optical drive bay
+1 - Zip 100/250 bay
+4 - Ethernet ports (10/100BASE-T; M7843 Mac OS X Server configuration)'''
+design = '''
+Graphite
+28.7 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Macintosh Server G4 350 (AGP Graphics)", url = "https://everymac.com/systems/apple/mac_server_g4/specs/macserver_g4_350.html" },
+  { label = "Macintosh Server G4 400 (AGP Graphics)", url = "https://everymac.com/systems/apple/mac_server_g4/specs/macserver_g4_400.html" },
+  { label = "Macintosh Server G4 500 (AGP Graphics)", url = "https://everymac.com/systems/apple/mac_server_g4/specs/macserver_g4_500.html" },
+]

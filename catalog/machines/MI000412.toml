@@ -1,0 +1,61 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000412"
+name = "MacBook Pro (13-inch, M1, 2020)"
+introductions = [{ year = 2020, month = 11 }]
+
+model_numbers = [{ value = "A2338" }]
+identifiers = [{ value = "MacBookPro17,1" }]
+order_numbers = [
+  { value = "MYDA2", revisions = ["A"], qualifier = "256 GB Silver" },
+  { value = "MYD83", revisions = ["A"], qualifier = "256 GB Space Gray" },
+  { value = "MYDC2", revisions = ["A"], qualifier = "512 GB Silver" },
+  { value = "MYD92", revisions = ["A"], qualifier = "512 GB Space Gray" },
+]
+emc_numbers = [{ value = "3578" }]
+
+codenames = [{ value = "J293" }]
+
+processor = '''
+**Apple M1 "Tonga" (APL1102)** 3.2 GHz (performance) and 2.1 GHz (efficiency), TSMC N5 process, 64-bit, 8 cores (4 "Firestorm" P-cores, 4 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 68.25 GB/s memory bandwidth'''
+processor_family_keys = ["m1"]
+processor_logo_keys = ["m1"]
+
+graphics = "**Apple 8-core GPU** unified memory architecture"
+
+display = '''
+13.3-inch (diagonal) LED-backlit display with IPS technology, 2560x1600, 227 ppi, 500 nits, wide color gamut (P3)
+One external display up to 6016x3384 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+4266 MT/s LPDDR4X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 11.0 (20A2411)
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard
+512 GB, 1 TB, or 2 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.0
+3 - Built-in studio-quality microphones
+2 - Built-in stereo speakers with high dynamic range
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+2 - Thunderbolt 3 / USB 4 ports (up to 40 Gbps)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+3.0 lbs.
+0.61" H x 11.97" W x 8.36" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Pro 13\" \"M1\" 8-Core 3.2 (2020)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m1-8-core-13-2020-specs.html" }]

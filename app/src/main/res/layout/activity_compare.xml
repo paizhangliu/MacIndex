@@ -250,7 +250,7 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center"
                     android:background="@color/colorProcessorTypeSurface"
-                    android:contentDescription="@string/app_name_everymac"
+                    android:contentDescription="@string/brand_everymac"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/everymac" />
             </LinearLayout>

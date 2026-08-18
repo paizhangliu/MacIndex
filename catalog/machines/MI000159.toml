@@ -1,0 +1,93 @@
+category = "power_mac"
+picture_asset_key = "MI000155"
+name = "Power Mac G4 (Digital Audio)"
+introductions = [{ year = 2001, month = 1 }]
+
+model_numbers = [{ value = "M5183" }]
+identifiers = [{ value = "PowerMac3,4" }]
+order_numbers = [
+  { value = "M7627", revisions = ["A"], qualifier = "466 MHz" },
+  { value = "M7688", revisions = ["A"], qualifier = "533 MHz" },
+  { value = "M7945", revisions = ["A"], qualifier = "667 MHz" },
+  { value = "M8451", revisions = ["A"], qualifier = "733 MHz, CD-RW" },
+  { value = "M7681", revisions = ["A"], qualifier = "733 MHz, SuperDrive" },
+]
+emc_numbers = [{ value = "1862" }]
+
+codenames = [{ value = "Clockwork" }, { value = "P21" }, { value = "Tangent" }]
+
+processor = '''
+**PowerPC 7410 (G4)** 466 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 133 MHz system bus
+**PowerPC 7410 (G4)** 533 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 133 MHz system bus
+**Dual PowerPC 7410 (G4)** 533 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 1 MB backside L2 cache per processor, 133 MHz system bus
+**PowerPC 7450 (G4)** 667 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB backside L3 cache, 133 MHz system bus
+**PowerPC 7450 (G4)** 733 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB backside L3 cache, 133 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7400",
+  "7410",
+  "7450",
+]
+
+graphics = '''
+**ATI Rage 128 Pro** 16 MB SDRAM standard (466 MHz)
+**NVIDIA GeForce2 MX** 32 MB SDRAM standard (533, 667, or 733 MHz)
+**ATI Radeon** 32 MB DDR SDRAM build-to-order
+**NVIDIA GeForce3** 64 MB DDR SDRAM build-to-order'''
+graphics_logo_keys = [
+  "ati",
+  "atiradeon2000",
+  "nvgeforce2mx",
+  "nvgeforce3",
+]
+
+display = "Single display support up to 1920x1200"
+ram = '''
+128 MB standard (466 or 533 MHz)
+256 MB standard (667 or 733 MHz)
+1.5 GB maximum
+3 - PC133 168-pin SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.1 (Mac OS ROM 6.7.1)
+Mac OS X 10.4.11 Maximum
+AHT (Power Mac) 1.2, 1.2.1, 1.2.2, 1.2.3, 1.2.4, 1.2.5, 1.2.6, 1.2.7'''
+storage = '''
+30 GB 5400-rpm hard drive standard (466 MHz)
+40 GB 7200-rpm hard drive standard (533 MHz)
+60 GB 7200-rpm hard drive standard (667 or 733 MHz)
+36 or 72 GB 10,000-rpm Ultra160 SCSI hard drive configurable
+CD-RW drive standard (466, 533, 667, or selected 733 MHz)
+SuperDrive (DVD-R/CD-RW) standard (selected 733 MHz)
+DVD-ROM drive configurable
+Optional Zip 250 drive
+Ultra ATA/66 (ATA-5) hard drive interface
+EIDE (ATA-3) optical drive interface'''
+features = "1 - Optional AirPort card (802.11b)"
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - Built-in 56 Kbps V.90 modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (15 W total power)
+1 - VGA port
+1 - ADC port
+1 - 3.5-mm analog output jack
+4 - 64-bit 33 MHz PCI slots
+1 - AGP 4x slot
+3 - Internal 3.5-inch hard drive expansion bays (up to 2 internal ATA drives or 3 internal SCSI drives)
+1 - Optical drive bay
+1 - Zip 250 bay
+1 - Apple Pro Speaker minijack'''
+design = '''
+Graphite
+30 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G4 466 (Digital Audio)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_466.html" },
+  { label = "Power Macintosh G4 533 (Digital Audio)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_533.html" },
+  { label = "Power Macintosh G4 667 (Digital Audio)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_667.html" },
+  { label = "Power Macintosh G4 733 (Digital Audio)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_733.html" },
+]

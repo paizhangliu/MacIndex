@@ -1,0 +1,84 @@
+category = "imac_ppc"
+picture_asset_key = "MI000176"
+name = "iMac (Summer 2001)"
+introductions = [{ year = 2001, month = 7 }]
+
+model_numbers = [{ value = "M5521" }]
+identifiers = [{ value = "PowerMac4,1" }]
+order_numbers = [
+  { value = "M8534", revisions = ["A"], qualifier = "500 MHz CD-ROM" },
+  { value = "M8582", revisions = ["A"], qualifier = "500 MHz Indigo" },
+  { value = "M8490", revisions = ["A"], qualifier = "500 MHz Snow" },
+  { value = "M8492", revisions = ["A"], qualifier = "600 MHz Graphite" },
+  { value = "M8546", revisions = ["A"], qualifier = "600 MHz Snow" },
+  { value = "M8510", revisions = ["A"], qualifier = "700 MHz Graphite" },
+  { value = "M8554", revisions = ["A"], qualifier = "700 MHz Snow" },
+]
+emc_numbers = [{ value = "1857" }]
+
+codenames = [{ value = "Kiva" }, { value = "P52" }, { value = "Apogee" }]
+
+processor = '''
+**PowerPC 750 (G3)** 500 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus (CD-ROM configuration)
+**PowerPC 750CXe (G3)** 500 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus (CD-RW configuration)
+**PowerPC 750CXe (G3)** 600 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus
+**PowerPC 750CXe (G3)** 700 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = [
+  "750",
+  "750cxe",
+]
+
+graphics = '''
+**ATI Rage 128 Pro** 8 MB SDRAM (500 MHz CD-ROM)
+**ATI Rage 128 Ultra** 16 MB SDRAM (500 MHz CD-RW, 600 MHz, and 700 MHz)'''
+graphics_logo_keys = ["ati"]
+
+display = '''
+15-inch shadow-mask CRT, 13.8-inch viewable, 1024x768 at 75 Hz
+Video mirroring on equipped models'''
+ram = '''
+64 MB standard (500 MHz CD-ROM)
+128 MB standard (500 MHz CD-RW)
+256 MB standard (600 and 700 MHz)
+1 GB maximum
+2 - PC100 168-pin SDRAM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.1 (Mac OS ROM 7.5.1)
+Mac OS X 10.0.4 (4P13)
+Mac OS X 10.4.11 Maximum
+AHT (iMac/eMac) 1.2.1, 1.2.2'''
+storage = '''
+20 GB Ultra ATA hard drive (500 MHz)
+40 GB Ultra ATA hard drive (600 MHz)
+60 GB Ultra ATA hard drive (700 MHz)
+Slot-loading CD-ROM drive (500 MHz CD-ROM)
+Slot-loading CD-RW drive (500 MHz CD-RW, 600 MHz, and 700 MHz)
+Ultra ATA (shared with optical drive) hard drive interface
+Ultra ATA (shared with hard drive) optical drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b) (adapter required)
+1 - Built-in microphone (16-bit, 44.1 kHz sample rate)
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - 3.5-mm headphone output jacks'''
+design = '''
+Indigo, Graphite, or Snow
+34.7 lbs.
+15.0" H x 15.0" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac G3/500 (Summer 2001 - I/S)", url = "https://everymac.com/systems/apple/imac/specs/imac_500_indigo.html" },
+  { label = "iMac G3/600 (Summer 2001)", url = "https://everymac.com/systems/apple/imac/specs/imac_600_graphite.html" },
+  { label = "iMac G3/700 SE (Summer 2001)", url = "https://everymac.com/systems/apple/imac/specs/imac_se_700.html" },
+]

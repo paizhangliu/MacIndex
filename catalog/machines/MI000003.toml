@@ -1,0 +1,42 @@
+category = "compact_mac"
+picture_asset_key = "MI000003"
+name = "Macintosh XL"
+introductions = [{ year = 1985, month = 1 }]
+
+gestalt_ids = [{ value = "2" }]
+
+codenames = [{ value = "Lisa" }]
+
+processor = "**Motorola 68000** 5 MHz, 3.5 µm HMOS process, 16/32-bit, no on-chip cache, 5 MHz system bus"
+processor_family_keys = ["68000"]
+
+graphics = "**Apple 1-bit framebuffer** 32 KB shared system memory"
+
+display = "12-inch monochrome display, 720x364 or 608x431 with Screen Kit"
+ram = '''
+512 KB standard
+2 MB maximum
+2 - Apple Lisa memory card slots'''
+rom = "16 KB Macintosh ROM"
+software = '''
+MacWorks XL
+MacWorks Plus II (System 7.5.5 Maximum)'''
+storage = '''
+10 MB built-in hard drive
+Optional external 5 MB or 10 MB Apple ProFile hard drive
+Parallel hard drive interface
+400 KB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+2 - Serial ports
+1 - DB-25 parallel port
+1 - RCA composite video output jack
+1 - Mono audio output jack
+3 - Apple Lisa expansion slots'''
+design = '''
+Beige
+48 lbs.
+15.2" H x 18.7" W x 13.8" D'''
+
+support_status = "Obsolete"
+links = [{ label = "Macintosh XL", url = "https://everymac.com/systems/apple/mac_classic/specs/mac_xl.html" }]

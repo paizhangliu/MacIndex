@@ -1,0 +1,59 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000225"
+name = "PowerBook G4 (17-inch 1.67GHz)"
+introductions = [{ year = 2005, month = 1 }]
+
+model_numbers = [{ value = "A1107" }]
+identifiers = [{ value = "PowerBook5,7" }]
+order_numbers = [{ value = "M9689", revisions = ["A"] }]
+
+codenames = [{ value = "Q41B" }]
+
+processor = "**PowerPC 7447A (G4)** 1.67 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7447"]
+
+graphics = "**ATI Mobility Radeon 9700** 128 MB DDR"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+17-inch active-matrix widescreen LCD, 1440x900
+Dual display and video mirroring up to 2560x1600'''
+ram = '''
+512 MB standard
+2 GB maximum
+2 - PC2700 SO-DIMM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.3.7 (7T62)
+Mac OS X 10.5.8 Maximum'''
+storage = '''
+100 GB 5400-rpm Ultra ATA/100 hard drive
+Slot-loading SuperDrive (DVD-R/CD-RW)'''
+features = '''
+AirPort Extreme (802.11b/g)
+Bluetooth 2.0 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+1 - Scrolling trackpad
+1 - Sudden Motion Sensor'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T)
+1 - 56 Kbps V.92 modem
+2 - USB 2.0 ports
+1 - FireWire 400 port
+1 - FireWire 800 port
+1 - Dual-link DVI port
+1 - S-video output
+VGA and composite output with adapters
+1 - 3.5-mm analog/optical audio input jack
+1 - 3.5-mm analog/optical audio output jack
+1 - Kensington security slot
+1 - Type I/II CardBus slot'''
+design = '''
+6.9 lbs.
+1" H x 15.4" W x 10.2" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "PowerBook G4 1.67 17\" (Al)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_1.67_17.html" }]

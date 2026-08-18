@@ -1,0 +1,54 @@
+category = "mac_performa_68k"
+picture_asset_key = "MI000027"
+name = "Macintosh Performa 588CD"
+introductions = [{ year = 1995, month = 4 }]
+
+model_numbers = [{ value = "M3872" }]
+gestalt_ids = [{ value = "99" }]
+
+codenames = [{ value = "Dragonkid" }]
+
+processor = "**Motorola 68LC040** 33 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["68040"]
+
+graphics = "**Apple Valkyrie video controller** 1 MB display DRAM"
+
+display = '''
+14-inch color display, 640x480 at 16-bit color
+Optional external display support via DB-15
+Video mirroring at 640x480 or 800x600'''
+ram = '''
+8 MB standard
+52 MB maximum
+4 MB built-in
+2 - 72-pin SIMM slots, 80 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System J-7.5
+Mac OS 8.1 Maximum'''
+storage = '''
+500 MB IDE hard drive
+2x CD-ROM drive
+1.44 MB floppy drive
+IDE hard drive interface'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers'''
+expansion = '''
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - Optional DB-15 video port
+1 - 3.5-mm analog input jack
+2 - 3.5-mm analog output jacks
+1 - LC PDS slot
+1 - Communications slot
+1 - Video input/output slot'''
+design = '''
+Platinum
+40.5 lbs.
+17.9" H x 13.5" W x 16.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "Macintosh Performa 588CD", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_588cd.html" }]

@@ -11,46 +11,50 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 
+import com.macindex.macindex.resources.LogoAsset;
+import com.macindex.macindex.userstate.Appearance;
+
 class ThemeHelper {
 
-    static final int APPEARANCE_SYSTEM = 0;
-    static final int APPEARANCE_LIGHT = 1;
-    static final int APPEARANCE_DARK = 2;
-
-    static int getAppearance(final Context context) {
-        final int appearance = PrefsHelper.getIntPrefsSafe("appearanceMode", context);
-        if (appearance < APPEARANCE_SYSTEM || appearance > APPEARANCE_DARK) {
-            return APPEARANCE_SYSTEM;
-        }
-        return appearance;
-    }
-
-    static void applySaved(final Context context) {
-        apply(getAppearance(context));
-    }
-
-    static void apply(final int appearance) {
-        if (appearance == APPEARANCE_LIGHT) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else if (appearance == APPEARANCE_DARK) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    static void apply(final Appearance appearance) {
+        switch (appearance) {
+            case LIGHT:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                return;
+            case DARK:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                return;
+            case FOLLOW_SYSTEM:
+                AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                return;
+            default:
+                throw new IllegalStateException("Unknown appearance " + appearance);
         }
     }
 
-    static void applyProcessorTypeLogo(final Context context, final ImageView image,
-                                       final int drawableID) {
+    /** Catalog logos must be sampled; direct resource inflation can exhaust the API 23 heap. */
+    static void setLogo(final Context context, final ImageView image,
+                        final LogoAsset asset) {
+        image.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(
+                context.getResources(), asset.drawableRes(), 200, 200));
         image.clearColorFilter();
         if (!isNight(context)) {
             return;
         }
-        if (drawableID == R.drawable.motorola) {
-            applyMonochromeLogo(context, image);
-        } else if (drawableID == R.drawable.intel
-                || drawableID == R.drawable.powerpc
-                || drawableID == R.drawable.applelogo) {
-            image.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        switch (asset.nightTreatment()) {
+            case DARKEN:
+                image.setColorFilter(Color.argb(90, 0, 0, 0), PorterDuff.Mode.SRC_ATOP);
+                return;
+            case WHITE_TINT:
+                image.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                return;
+            case MONOCHROME:
+                applyMonochromeLogo(context, image);
+                return;
+            default:
+                throw new IllegalStateException(
+                        "Unknown logo night treatment " + asset.nightTreatment());
         }
     }
 
@@ -108,16 +112,6 @@ class ThemeHelper {
         image.setPadding(0, 0, 0, 0);
         image.setBackgroundColor(ContextCompat.getColor(context, R.color.colorMachineSurface));
         applyImageMask(context, image);
-    }
-
-    static void applyMachineImagePreview(final Context context, final ImageView image) {
-        applyMachineImage(context, image);
-        image.post(() -> {
-            final int maximumWidth = Math.round(
-                    320 * context.getResources().getDisplayMetrics().density);
-            final int horizontalPadding = Math.max(0, (image.getWidth() - maximumWidth) / 2);
-            image.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-        });
     }
 
     static void applyImageMask(final Context context, final ImageView image) {

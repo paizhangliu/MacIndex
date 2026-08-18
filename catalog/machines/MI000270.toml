@@ -1,0 +1,70 @@
+category = "imac_intel"
+picture_asset_key = "MI000270"
+name = "iMac (24-inch)"
+introductions = [{ year = 2006, month = 9 }]
+
+model_numbers = [{ value = "A1200" }]
+identifiers = [{ value = "iMac6,1" }]
+order_numbers = [{ value = "MA456", revisions = ["A"] }]
+emc_numbers = [{ value = "2111" }]
+
+processor = '''
+**Intel Core 2 Duo (T7400) ("Merom")** 2.16 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 667 MHz system bus
+**Intel Core 2 Duo (T7600) ("Merom")** 2.33 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 667 MHz system bus'''
+processor_family_keys = ["core"]
+processor_logo_keys = ["core2duo"]
+
+graphics = '''
+**NVIDIA GeForce 7300 GT** 128 MB GDDR3
+**NVIDIA GeForce 7600 GT** 256 MB GDDR3'''
+graphics_logo_keys = ["nvgeforce7"]
+
+display = '''
+24-inch (viewable) widescreen TFT LCD, 1920x1200, 400 nits
+External resolution up to 1920x1200 via digital output or 2048x1536 via analog output
+Dual display extended and video mirroring'''
+ram = '''
+1 GB standard
+2 or 3 GB configurable
+3 GB usable maximum
+4 GB physical maximum
+2 - 200-pin PC2-5300 (667 MHz) DDR2 SO-DIMM slots'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X 10.4.7 (8K1123)
+Mac OS X 10.7.5 Maximum
+AHT 3A113'''
+storage = '''
+250 GB 7200-rpm SATA hard drive standard
+500 GB 7200-rpm SATA hard drive configurable
+Slot-loading SuperDrive (DVD+R DL/DVD±RW/CD-RW)
+1.5 Gbps Serial ATA (SATA) hard drive interface
+Ultra ATA/100 (operates at UATA/33) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11g; 802.11n capable with optional 802.11n Enabler)
+Built-in Bluetooth 2.0 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+3 - USB 2.0 ports
+1 - FireWire 400 port
+1 - FireWire 800 port
+15 W total FireWire bus power
+1 - Mini-DVI port (DVI, VGA, composite and S-video with adapter)
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog/optical combo output jack'''
+design = '''
+White
+24.7 lbs.
+20.6" H x 22.6" W x 8.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac 24-Inch \"Core 2 Duo\" 2.16", url = "https://everymac.com/systems/apple/imac/specs/imac-core-2-duo-2.16-24-inch-specs.html" },
+  { label = "iMac 24-Inch \"Core 2 Duo\" 2.33", url = "https://everymac.com/systems/apple/imac/specs/imac-core-2-duo-2.33-24-inch-specs.html" },
+]

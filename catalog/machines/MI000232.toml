@@ -1,0 +1,65 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000224"
+name = "PowerBook G4 (12-inch 1.5GHz)"
+introductions = [{ year = 2005, month = 1 }]
+
+model_numbers = [{ value = "A1104" }]
+identifiers = [{ value = "PowerBook6,8" }]
+order_numbers = [
+  { value = "M9690", revisions = ["A"], qualifier = "Combo drive" },
+  { value = "M9691", revisions = ["A"], qualifier = "SuperDrive" },
+]
+emc_numbers = [{ value = "2030" }]
+
+codenames = [{ value = "Q54B" }]
+
+processor = "**PowerPC 7447A (G4)** 1.5 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7447"]
+
+graphics = "**NVIDIA GeForce FX Go5200** 64 MB DDR VRAM"
+graphics_logo_keys = ["nvgeforcefx"]
+
+display = '''
+12.1-inch active-matrix color LCD, 1024x768
+Dual display and video mirroring up to 2048x1536'''
+ram = '''
+512 MB standard
+1.25 GB maximum
+256 MB built-in
+1 - PC2700 SO-DIMM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.3.7 (7T51)
+Mac OS X 10.5.8 Maximum'''
+storage = '''
+60 GB 5400-rpm Ultra ATA/100 hard drive standard (Combo drive configuration)
+80 GB 5400-rpm Ultra ATA/100 hard drive standard (SuperDrive configuration)
+100 GB 5400-rpm Ultra ATA/100 hard drive configurable
+Slot-loading Combo drive (DVD-ROM/CD-RW)
+Slot-loading SuperDrive (DVD-R/CD-RW)'''
+features = '''
+AirPort Extreme (802.11b/g)
+Bluetooth 2.0 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+1 - Built-in midrange-enhancing speaker
+1 - Scrolling trackpad
+1 - Sudden Motion Sensor'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.92 modem
+2 - USB 2.0 ports
+1 - FireWire 400 port
+1 - Mini-DVI port
+DVI, VGA, composite, and S-video output with adapters
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot'''
+design = '''
+4.6 lbs.
+1.18" H x 10.9" W x 8.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "PowerBook G4 1.5 12\" (Al)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_1.5_12.html" }]

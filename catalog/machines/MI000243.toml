@@ -1,0 +1,58 @@
+category = "ibook"
+picture_asset_key = "MI000241"
+name = "iBook (14.1 LCD 16 VRAM)"
+introductions = [{ year = 2002, month = 5 }]
+
+model_numbers = [{ value = "A1007" }]
+identifiers = [{ value = "PowerBook4,3" }]
+order_numbers = [{ value = "M8603", revisions = ["A"] }]
+
+codenames = [{ value = "P73" }]
+
+processor = "**PowerPC 750FX (G3)** 700 MHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 100 MHz system bus"
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750fx"]
+
+graphics = "**ATI Mobility Radeon** 16 MB"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+14.1-inch active-matrix color LCD, 1024x768
+Video mirroring via VGA or composite output'''
+ram = '''
+256 MB standard
+640 MB maximum
+128 MB built-in
+1 - PC100 3.3 V 144-pin SO-DIMM slot, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.2
+Mac OS X 10.1.4 (4P13)
+Mac OS X 10.4.11 Maximum
+AHT (iBook) 1.2.3, 1.2.4'''
+storage = '''
+30 GB Ultra ATA hard drive standard
+40 GB Ultra ATA hard drive configurable
+Tray-loading Combo drive (DVD-ROM/CD-RW)
+Ultra ATA hard drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in microphone
+2 - Built-in stereo speakers (16-bit, 44.1 kHz sample rate)
+55 Wh lithium-ion battery'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.90 modem
+2 - USB 1.1 ports
+1 - FireWire 400 port
+VGA and composite video output via adapter
+1 - 3.5-mm audio output jack
+1 - Kensington security slot'''
+design = '''
+Translucent White
+5.9 lbs.
+1.35" H x 12.7" W x 10.2" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "iBook G3/700 14-Inch (16 VRAM - Tr)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_700_14.html" }]

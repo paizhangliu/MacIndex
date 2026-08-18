@@ -1,0 +1,45 @@
+category = "compact_mac"
+picture_asset_key = "MI000008"
+name = "Macintosh Classic II"
+introductions = [{ year = 1991, month = 10 }]
+
+model_numbers = [{ value = "M4150" }]
+gestalt_ids = [{ value = "23" }]
+
+codenames = [{ value = "Montana" }, { value = "Apollo" }]
+
+processor = "**Motorola 68030** 16 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 16 MHz system bus"
+processor_family_keys = ["68030"]
+
+graphics = "**Apple EAGLE video controller** 22 KB shared system memory"
+
+display = "9-inch monochrome display, 512x342, 72 ppi"
+ram = '''
+2 MB standard and built-in
+10 MB maximum
+2 - 30-pin SIMM slots (groups of 2), 100 ns'''
+rom = "512 KB Macintosh ROM"
+software = '''
+System 7.0.1
+Mac OS 7.6.1 Maximum'''
+storage = '''
+40 MB or 80 MB SCSI hard drive
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-19 external floppy port
+1 - 3.5-mm mono microphone input jack
+1 - 3.5-mm mono audio output jack
+1 - Proprietary FPU expansion slot'''
+design = '''
+Platinum
+16 lbs.
+13.2" H x 9.7" W x 11.2" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_LC"
+links = [{ label = "Macintosh Classic II", url = "https://everymac.com/systems/apple/mac_classic/specs/mac_classic_ii.html" }]

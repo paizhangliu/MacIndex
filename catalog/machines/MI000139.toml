@@ -1,0 +1,82 @@
+category = "mac_server_ppc_classic"
+picture_asset_key = "MI000139"
+name = "Workgroup Server 9150"
+introductions = [
+  { year = 1994, month = 4, qualifier = "80 MHz" },
+  { year = 1995, month = 4, qualifier = "120 MHz" },
+]
+
+gestalt_ids = [
+  { value = "39", qualifier = "80 MHz" },
+  { value = "57", qualifier = "120 MHz" },
+]
+order_numbers = [
+  { value = "M3272", revisions = ["A"], qualifier = "80 MHz, 16 MB memory and 2 - 1 GB hard drives" },
+  { value = "M3357", revisions = ["A"], qualifier = "80 MHz, AppleShare 4.0.2" },
+  { value = "M3183", revisions = ["A"], qualifier = "80 MHz, 24 MB memory and 2 - 2 GB hard drives" },
+  { value = "M4064", revisions = ["A"], qualifier = "120 MHz, 16 MB memory, 2 - 1 GB hard drives, and DDS-2 DAT drive" },
+  { value = "M4038", revisions = ["A"], qualifier = "120 MHz, AppleShare 4.1" },
+  { value = "M4008", revisions = ["A"], qualifier = "120 MHz, 16 MB memory and 2 GB hard drive" },
+  { value = "M4041", revisions = ["A"], qualifier = "120 MHz, Build-to-Order" },
+  { value = "M4145", revisions = ["A"], qualifier = "120 MHz, Apple Internet Server Solution" },
+]
+
+codenames = [{ value = "Green Giant" }]
+
+processor = '''
+**PowerPC 601** 80 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, 512 KB L2 cache, 40 MHz system bus
+**PowerPC 601v** 120 MHz, 0.5 µm process, 32-bit, 32 KB unified L1 cache, 256 KB or 1 MB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["601"]
+
+graphics = "**Apple DRAM-based video subsystem** up to 640 KB shared system memory"
+
+display = '''
+External display support through DB-15
+512x384 or 640x480 at 16-bit color
+Up to 832x624 at 8-bit color'''
+ram = '''
+16 or 24 MB standard (80 MHz)
+16 MB standard (120 MHz)
+264 MB maximum
+8 MB built-in
+8 - 72-pin SIMM slots installed in pairs, 80 ns'''
+rom = "4 MB Old World ROM"
+software = '''
+System 7.1.2 (9150 Enabler v1.0, 80 MHz)
+System 7.5.1 (120 MHz)
+AppleShare 4.0.2 (selected 80 MHz)
+AppleShare 4.1 (selected 120 MHz)
+Mac OS 9.1 Maximum'''
+storage = '''
+500 MB, 1 GB, or 2 GB SCSI hard drive standard (80 MHz)
+2 - 1 GB or 1 - 2 GB SCSI hard drive standard (120 MHz)
+Additional 1, 2, or 4 GB SCSI hard drives available (120 MHz)
+Up to 5 internal SCSI hard drives
+DDS-2 DAT drive (selected configurations)
+2x CD-ROM drive (80 MHz)
+4x CD-ROM drive (120 MHz)
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - DMA mini-DIN-9 GeoPort serial ports (RS-232/RS-422; LocalTalk and mini-DIN-8 compatible)
+1 - External DB-25 SCSI port
+2 - 5 MB/s asynchronous SCSI DMA buses (up to 7 internal and 7 external devices)
+1 - DB-15 video port
+1 - 3.5-mm stereo audio input jack
+1 - 3.5-mm stereo audio output jack
+4 - NuBus slots
+1 - PDS slot
+2 - 5.25-inch drive bays'''
+design = '''
+Platinum
+36.8 lbs.
+18.6" H x 8.9" W x 20.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC_6100"
+links = [
+  { label = "Workgroup Server 9150/80", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_9150_80.html" },
+  { label = "Workgroup Server 9150/120", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_9150_120.html" },
+]

@@ -1,0 +1,66 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000218"
+name = "PowerBook G3 (Bronze Keyboard)"
+introductions = [{ year = 1999, month = 5 }]
+
+model_numbers = [{ value = "M5343" }]
+identifiers = [{ value = "PowerBook1,1" }]
+order_numbers = [
+  { value = "M7304", revisions = ["A"], qualifier = "333 MHz" },
+  { value = "M7308", revisions = ["A"], qualifier = "400 MHz" },
+]
+codenames = [{ value = "Lombard" }, { value = "101" }]
+
+processor = '''
+**PowerPC 750 (G3)** 333 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 400 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 66 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage LT Pro** 8 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = '''
+14.1-inch active-matrix color LCD, 1024x768
+Dual display and video mirroring up to 1024x768'''
+ram = '''
+64 MB standard
+384 MB Apple-supported maximum
+512 MB actual maximum
+2 - PC66 SO-DIMM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.6
+Mac OS X 10.3.9 Maximum'''
+storage = '''
+4 GB ATA-2 hard drive (333 MHz)
+6 GB ATA-2 hard drive (400 MHz)
+10 GB ATA-2 hard drive configurable
+Tray-loading CD-ROM drive (333 MHz)
+Tray-loading DVD-ROM drive (400 MHz)'''
+features = '''
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Infrared, up to 4 Mbps'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps modem
+1 - HDI-30 SCSI port
+2 - USB 1.1 ports
+1 - VGA port
+1 - S-video output
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+1 - Type I/II CardBus slot
+1 - 5.25-inch media bay'''
+design = '''
+5.9 lbs.
+1.7" H x 12.7" W x 10.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G3 333 (Bronze KB/Lombard)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_333.html" },
+  { label = "PowerBook G3 400 (Bronze KB/Lombard)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_400.html" },
+]

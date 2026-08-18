@@ -1,0 +1,70 @@
+category = "macbook_intel"
+picture_asset_key = "MI000377"
+name = "MacBook (13-inch, Aluminum, Late 2008)"
+introductions = [{ year = 2008, month = 10 }]
+
+model_numbers = [{ value = "A1278" }]
+identifiers = [{ value = "MacBook5,1" }]
+order_numbers = [
+  { value = "MB466", revisions = ["A"], qualifier = "2.0 GHz" },
+  { value = "MB467", revisions = ["A"], qualifier = "2.4 GHz" },
+]
+emc_numbers = [{ value = "2254" }]
+
+processor = '''
+**Intel Core 2 Duo (P7350) ("Penryn")** 2.0 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus
+**Intel Core 2 Duo (P8600) ("Penryn")** 2.4 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus'''
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["core2duo"]
+
+graphics = "**NVIDIA GeForce 9400M** 256 MB DDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit glossy widescreen display, 1280x800
+One external display up to 2560x1600
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+4 GB Apple-supported maximum
+8 GB actual maximum
+2 - 204-pin PC3-8500 (1066 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.5.5 (9F2088, 9F2114, 9F2533)
+OS X 10.11.6 Maximum
+AirDrop Supported
+AHT 3A147'''
+storage = '''
+160 GB 5400-rpm SATA hard drive standard (2.0 GHz)
+250 GB 5400-rpm SATA hard drive standard (2.4 GHz)
+250 or 320 GB 5400-rpm SATA hard drive, or 128 GB SSD configurable (2.0 GHz)
+320 GB 5400-rpm SATA hard drive or 128 GB SSD configurable (2.4 GHz)
+SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+3.0 Gbps Serial ATA (SATA) hard drive interface
+3.0 Gbps Serial ATA (SATA) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+2 - USB 2.0 ports
+1 - Mini DisplayPort (VGA, DVI, or dual-link DVI with adapter)
+1 - 3.5-mm analog/optical combo jack
+1 - Kensington security slot'''
+design = '''
+Precision aluminum unibody
+4.5 lbs.
+0.95" H x 12.78" W x 8.94" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook \"Core 2 Duo\" 2.0 13\" (Unibody)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-2-duo-2.0-aluminum-13-late-2008-unibody-specs.html" },
+  { label = "MacBook \"Core 2 Duo\" 2.4 13\" (Unibody)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-2-duo-2.4-aluminum-13-late-2008-unibody-specs.html" },
+]

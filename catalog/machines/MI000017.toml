@@ -1,0 +1,59 @@
+category = "mac_ii"
+picture_asset_key = "MI000017"
+name = "Macintosh IIsi"
+introductions = [{ year = 1990, month = 10 }]
+
+model_numbers = [{ value = "M0360" }]
+gestalt_ids = [{ value = "18" }]
+order_numbers = [
+  { value = "M0363", revisions = ["A"], qualifier = "IIsi 2/40" },
+  { value = "M0491", revisions = ["B"], qualifier = "IIsi 3/40" },
+  { value = "M0364", revisions = ["A", "B"], qualifier = "revision B: IIsi 5/80" },
+  { value = "M0954", revisions = ["A"], qualifier = "IIsi 5/160" },
+]
+
+codenames = [{ value = "Oceanic" }, { value = "Ray Ban" }, { value = "Erickson" }, { value = "Raffica" }, { value = "Raffika" }, { value = "Spin" }]
+
+processor = '''
+**Motorola 68030** 20 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 20 MHz system bus
+**Optional Motorola 68882 FPU**'''
+processor_family_keys = ["68030"]
+
+graphics = "**Apple RBV video controller** 64–320 KB shared system memory"
+
+display = '''
+External display required
+512x384 or 640x480 at up to 8-bit color
+Multiple display support with optional NuBus adapter and video card'''
+ram = '''
+2 MB, 3 MB, or 5 MB standard
+17 MB Apple-supported maximum
+65 MB actual maximum
+1 MB built-in
+4 - 30-pin SIMM slots (groups of 4), 100 ns'''
+rom = "512 KB Macintosh ROM"
+software = '''
+System 6.0.7
+System 7.6.1 Maximum'''
+storage = '''
+40 MB, 80 MB, or 160 MB SCSI hard drive
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-19 external floppy port
+1 - DB-15 video port
+1 - 3.5-mm mono audio input jack
+1 - 3.5-mm stereo audio output jack
+1 - NuBus or PDS slot'''
+design = '''
+Platinum
+10 lbs.
+4" H x 12.4" W x 14.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [{ label = "Macintosh IIsi", url = "https://everymac.com/systems/apple/mac_ii/specs/mac_iisi.html" }]

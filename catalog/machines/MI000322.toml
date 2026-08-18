@@ -1,0 +1,63 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000322"
+name = "MacBook Pro (17-inch)"
+introductions = [{ year = 2006, month = 4 }]
+
+model_numbers = [{ value = "A1151" }]
+identifiers = [{ value = "MacBookPro1,2" }]
+order_numbers = [{ value = "MA092", revisions = ["A"] }]
+emc_numbers = [{ value = "2102" }]
+
+processor = "**Intel Core Duo (T2600) (\"Yonah\")** 2.16 GHz, 65 nm process, 32-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 2 MB shared L2 cache, 667 MHz system bus"
+processor_family_keys = ["p6"]
+processor_logo_keys = ["coreduo"]
+
+graphics = "**ATI Mobility Radeon X1600** 256 MB GDDR3"
+graphics_logo_keys = ["atiradeon2004"]
+
+display = '''
+17-inch (diagonal) TFT display, 1680x1050, 116 ppi, 300 nits
+Glossy display optional
+One external display up to 2560x1600
+Dual display extended and video mirroring'''
+ram = '''
+1 GB standard
+2 GB maximum
+2 - 200-pin PC2-5300 (667 MHz) DDR2 SO-DIMM slots'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X 10.4.6 (8I2032)
+Mac OS X 10.6.8 Maximum
+AHT 3A105'''
+storage = '''
+120 GB 5400-rpm hard drive standard
+100 GB 7200-rpm hard drive configurable
+Slot-loading SuperDrive (DVD+R DL/DVD±RW/CD-RW)
+1.5 Gbps Serial ATA (SATA) hard drive interface
+Ultra ATA/100 (running at UATA/66) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11b/g)
+Built-in Bluetooth 2.0 + EDR
+1 - Built-in microphone
+4 - Built-in speaker drivers (2 per stereo speaker module)
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+3 - USB 2.0 ports
+1 - FireWire 400 port
+1 - FireWire 800 port
+1 - Dual-link DVI port (VGA, composite and S-video with adapter)
+1 - 3.5-mm analog/optical audio input jack
+1 - 3.5-mm analog/optical audio output/headphone jack
+1 - Kensington security slot
+1 - ExpressCard/34 slot'''
+design = '''
+Lightweight aluminum alloy
+6.8 lbs.
+1" H x 15.4" W x 10.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "MacBook Pro 17\" \"Core Duo\" 2.16", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook_pro_2.16_17.html" }]

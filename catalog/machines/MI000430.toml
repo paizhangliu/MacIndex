@@ -1,0 +1,76 @@
+category = "macbook_air_arm"
+picture_asset_key = "MI000428"
+name = "MacBook Air (13-inch, M3, 2024)"
+introductions = [{ year = 2024, month = 3 }]
+
+model_numbers = [{ value = "A3113" }]
+identifiers = [{ value = "Mac15,12" }]
+order_numbers = [
+  { value = "MRXN3", revisions = ["A"] },
+  { value = "MRXQ3", revisions = ["A"] },
+  { value = "MRXT3", revisions = ["A"] },
+  { value = "MRXV3", revisions = ["A"] },
+  { value = "MRXP3", revisions = ["A"] },
+  { value = "MRXR3", revisions = ["A"] },
+  { value = "MRXU3", revisions = ["A"] },
+  { value = "MRXW3", revisions = ["A"] },
+  { value = "MXCR3", revisions = ["A"] },
+  { value = "MXCT3", revisions = ["A"] },
+  { value = "MXCU3", revisions = ["A"] },
+  { value = "MXCV3", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8611" }]
+
+codenames = [{ value = "J613" }]
+
+processor = '''
+**Apple M3 "Ibiza"** TSMC N3B process, 64-bit, 8 cores (4 "Everest" P-cores, 4 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 100 GB/s memory bandwidth'''
+processor_family_keys = ["m3"]
+processor_logo_keys = ["m3"]
+
+graphics = '''
+**Apple 8-core GPU** unified memory architecture
+**Apple 10-core GPU** unified memory architecture'''
+
+display = '''
+13.6-inch (diagonal) Liquid Retina display, 2560x1664, 224 ppi, 500 nits, wide color gamut (P3)
+One external display up to 6K at 60 Hz
+Up to two external displays with the lid closed: one 6K display at 60 Hz and one 5K display at 60 Hz
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+8 or 16 GB standard
+16 or 24 GB configurable
+24 GB maximum
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 14.4
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard
+512 GB, 1 TB, or 2 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+3 - Built-in microphones with directional beamforming
+4 - Built-in speakers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+2 - Thunderbolt 3 / USB 4 ports (up to 40 Gbps)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver, Starlight, Space Gray, or Midnight
+Precision aluminum unibody
+2.7 lbs.
+0.44" H x 11.97" W x 8.46" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Air \"M3\" 8 CPU/8 GPU 13\"", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-m3-8-core-cpu-8-core-gpu-13-2024-specs.html" },
+  { label = "MacBook Air \"M3\" 8 CPU/10 GPU 13\"", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-m3-8-core-cpu-10-core-gpu-13-2024-specs.html" },
+]

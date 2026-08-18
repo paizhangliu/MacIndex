@@ -1,0 +1,44 @@
+category = "powerbook_duo_68k"
+picture_asset_key = "MI000092"
+name = "Macintosh PowerBook Duo 270c"
+introductions = [{ year = 1993, month = 10 }]
+
+model_numbers = [{ value = "M7777" }]
+gestalt_ids = [{ value = "77" }]
+
+codenames = [{ value = "Escher" }]
+
+processor = '''
+**Motorola 68030** 33 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 33 MHz system bus
+**Motorola 68882 FPU**'''
+processor_family_keys = ["68030"]
+
+graphics = "**Apple CSC display controller** 512 KB VRAM"
+
+display = "8.4-inch 8-bit active-matrix color LCD, 640x480 at 8-bit color; 640x400 at 16-bit color"
+ram = '''
+4 MB standard
+12 MB standard (4 MB built-in with 8 MB expansion card)
+32 MB maximum
+4 MB built-in
+1 - Duo memory slot, 70 ns
+4 to 28 MB expansion card supported'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.1 (PowerBook Duo Enabler v1.0)
+Mac OS 7.6.1 Maximum'''
+storage = "240 MB SCSI hard drive"
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker'''
+expansion = '''
+1 - Internal modem/fax card slot
+1 - RS-422 serial port
+1 - 152-pin dock connector (supports Duo Dock with Top Cover Upgrade, Duo Dock II, Duo Dock Plus, and Duo MiniDock)'''
+design = '''
+4.8 lbs.
+1.5" H x 10.9" W x 8.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "PowerBook Duo 270c", url = "https://everymac.com/systems/apple/powerbook_duo/specs/mac_powerbook_duo270c.html" }]

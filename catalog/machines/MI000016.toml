@@ -1,0 +1,66 @@
+category = "mac_ii"
+picture_asset_key = "MI000016"
+name = "Macintosh IIfx"
+introductions = [{ year = 1990, month = 3 }]
+
+model_numbers = [{ value = "M5525" }]
+gestalt_ids = [{ value = "13" }]
+order_numbers = [
+  { value = "M5510", revisions = ["A"], qualifier = "IIfx" },
+  { value = "M5515", revisions = ["A"], qualifier = "IIfx 4/80" },
+  { value = "M5520", revisions = ["A"], qualifier = "IIfx 4/160" },
+  { value = "M5523", revisions = ["A"], qualifier = "IIfx 4/80 with A/UX" },
+  { value = "M5524", revisions = ["A"], qualifier = "IIfx 4/80 with Parity Support" },
+]
+
+codenames = [{ value = "Stealth" }, { value = "Blackbird" }, { value = "F-16" }, { value = "F-19" }, { value = "Four Square" }, { value = "IIxi" }, { value = "Zone 5" }, { value = "Weed-Whacker" }]
+
+processor = '''
+**Motorola 68030** 40 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 32 KB L2 cache, 40 MHz system bus
+**Motorola 68882 FPU**
+**Dual Apple peripheral interface controllers (PICs)** 2 MHz each, 65CX02 cores, 32 KB external memory per PIC (floppy/ADB and serial control)'''
+processor_family_keys = ["68030"]
+
+graphics = '''
+NuBus video card required
+**Apple Macintosh Display Card 4•8** up to 8-bit color
+**Apple Macintosh Display Card 8•24** up to 24-bit color
+**Apple Macintosh Display Card 8•24 GC** up to 24-bit color, AMD Am29000 graphics coprocessor 30 MHz, 2 MB VRAM display frame buffer, 64 KB SRAM instruction cache; optional 2 MB off-screen DRAM expansion, up to 8 MB with third-party SIMMs'''
+
+display = '''
+External display required
+640x480, up to 8-bit color (Display Card 4•8)
+640x480, up to 24-bit color (Display Card 8•24 or 8•24 GC)
+1152x870, up to 4-bit grayscale (Display Card 4•8)
+1152x870, up to 8-bit grayscale (Display Card 8•24 or 8•24 GC)
+Multiple display support with multiple NuBus video cards'''
+ram = '''
+4 MB standard
+128 MB maximum
+8 - 64-pin SIMM slots (groups of 4), 80 ns'''
+rom = "512 KB Macintosh ROM"
+software = '''
+System 6.0.5
+System 7.6.1 Maximum'''
+storage = '''
+40 MB, 80 MB, or 160 MB SCSI hard drive
+SCSI hard drive interface
+1 - 1.44 MB SuperDrive floppy drive
+Optional second 1.44 MB SuperDrive floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+2 - ADB ports
+2 - Serial ports
+1 - DB-25 SCSI port
+Video connector provided by installed NuBus video card
+1 - 3.5-mm mono audio output jack
+6 - NuBus slots
+1 - IIfx PDS slot'''
+design = '''
+Platinum
+24 lbs.
+5.5" H x 18.7" W x 14.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [{ label = "Macintosh IIfx", url = "https://everymac.com/systems/apple/mac_ii/specs/mac_iifx.html" }]

@@ -1,0 +1,26 @@
+{
+  "schema": 2,
+  "cases": [
+    {
+      "marked": "😀\n**Apple M4** 10-core CPU",
+      "text": "😀\nApple M4 10-core CPU",
+      "ranges": [
+        {"start": 3, "end": 11, "substring": "Apple M4"}
+      ]
+    },
+    {
+      "marked": "😀\n**Apple 10-core GPU** unified memory architecture",
+      "text": "😀\nApple 10-core GPU unified memory architecture",
+      "ranges": [
+        {"start": 3, "end": 20, "substring": "Apple 10-core GPU"}
+      ]
+    },
+    {
+      "marked": "**Apple 😀 M4** 10-core CPU",
+      "text": "Apple 😀 M4 10-core CPU",
+      "ranges": [
+        {"start": 0, "end": 11, "substring": "Apple 😀 M4"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+category = "mac_quadra"
+picture_asset_key = "MI000038"
+name = "Macintosh Quadra 660AV"
+introductions = [{ year = 1993, month = 10 }]
+
+model_numbers = [{ value = "M9040" }]
+gestalt_ids = [{ value = "60" }]
+order_numbers = [{ value = "M2691", revisions = ["A"] }]
+
+codenames = [{ value = "Tempest" }]
+
+processor = '''
+**Motorola 68040** 25 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, integrated FPU, 25 MHz system bus
+**AT&T 3210 DSP** 55 MHz'''
+processor_family_keys = ["68040"]
+
+graphics = "**Apple CIVIC AV video subsystem** 1 MB VRAM"
+
+display = '''
+External display required
+512x384 or 640x400 at 24-bit color
+640x480, 800x600, or 832x624 at 16-bit color
+1024x768 or 1152x870 at 8-bit color
+Second display support with additional video card'''
+ram = '''
+8 MB standard
+68 MB maximum
+4 MB built-in
+2 - 72-pin SIMM slots, 70 ns'''
+rom = "2 MB Macintosh ROM"
+software = '''
+System 7.1 (System Enabler 088 v1.1)
+Mac OS 8.1 Maximum'''
+storage = '''
+80 MB or 500 MB SCSI hard drive
+SCSI hard drive interface
+Optional 2x CD-ROM drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - S-video input
+1 - S-video output
+1 - RCA composite video input
+1 - RCA composite video output
+1 - 3.5-mm stereo audio input jack
+1 - 3.5-mm stereo audio output jack
+1 - 7-inch NuBus or PDS slot'''
+design = '''
+Platinum
+14 lbs.
+3.4" H x 16.3" W x 15.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA_AV"
+links = [{ label = "Macintosh Quadra 660AV", url = "https://everymac.com/systems/apple/mac_quadra/specs/mac_quadra_660av.html" }]

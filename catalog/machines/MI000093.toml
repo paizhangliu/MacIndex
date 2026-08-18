@@ -1,0 +1,56 @@
+category = "powerbook_duo_68k"
+picture_asset_key = "MI000093"
+name = "Macintosh PowerBook Duo 280, 280c"
+aliases = [
+  "Macintosh PowerBook Duo 280",
+  "Macintosh PowerBook Duo 280c",
+]
+introductions = [{ year = 1994, month = 5 }]
+
+model_numbers = [{ value = "M7777" }]
+gestalt_ids = [
+  { value = "102" },
+  { value = "103" },
+]
+
+codenames = [{ value = "Yeager" }]
+
+processor = "**Motorola 68LC040** 33 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["68040"]
+
+graphics = "**Apple CSC display controller** 512 KB VRAM"
+
+display = '''
+9.1-inch 4-bit active-matrix grayscale LCD, 640x400 (280)
+8.4-inch active-matrix color LCD, 640x400 at 16-bit color or 640x480 at 8-bit color (280c)'''
+ram = '''
+4 or 12 MB standard
+40 MB maximum
+4 MB built-in
+1 - Duo memory slot, 70 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.1.1 (PowerBook Duo Enabler v2.0)
+Mac OS 8.1 Maximum'''
+storage = '''
+240 MB SCSI hard drive (280)
+320 MB SCSI hard drive (280c)'''
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker'''
+expansion = '''
+1 - Internal modem/fax card slot
+1 - RS-422 serial port
+1 - 152-pin dock connector (Duo 280 supports Duo Dock; Duo 280c supports Duo Dock with Top Cover Upgrade; both support Duo Dock II, Duo Dock Plus, and Duo MiniDock)'''
+design = '''
+4.2 lbs. (280)
+1.4" H x 10.9" W x 8.5" D (280)
+4.8 lbs. (280c)
+1.5" H x 10.9" W x 8.5" D (280c)'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [
+  { label = "PowerBook Duo 280", url = "https://everymac.com/systems/apple/powerbook_duo/specs/mac_powerbook_duo280.html" },
+  { label = "PowerBook Duo 280c", url = "https://everymac.com/systems/apple/powerbook_duo/specs/mac_powerbook_duo280c.html" },
+]

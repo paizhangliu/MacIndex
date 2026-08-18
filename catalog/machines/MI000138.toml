@@ -1,0 +1,81 @@
+category = "mac_server_ppc_classic"
+picture_asset_key = "MI000138"
+name = "Workgroup Server 8150"
+introductions = [
+  { year = 1994, month = 4, qualifier = "80 MHz" },
+  { year = 1995, month = 4, qualifier = "110 MHz" },
+]
+
+model_numbers = [{ value = "M1688" }]
+gestalt_ids = [
+  { value = "65", qualifier = "80 MHz" },
+  { value = "40", qualifier = "110 MHz" },
+]
+order_numbers = [
+  { value = "M3300", revisions = ["A"], qualifier = "80 MHz, 16 MB memory, 1 GB hard drive, and DDS-2 DAT drive" },
+  { value = "M3359", revisions = ["A"], qualifier = "80 MHz, AppleShare 4.0.2" },
+  { value = "M4042", revisions = ["A"], qualifier = "110 MHz, 16 MB memory, 1 GB hard drive, and DDS-2 DAT drive" },
+  { value = "M4065", revisions = ["A"], qualifier = "110 MHz, AppleShare 4.1" },
+  { value = "M4007", revisions = ["A"], qualifier = "110 MHz, AppleShare 4.1 without DDS-2 DAT drive" },
+  { value = "M4043", revisions = ["A"], qualifier = "110 MHz, Build-to-Order" },
+  { value = "M4141", revisions = ["A"], qualifier = "110 MHz, Apple Internet Server Solution" },
+]
+
+codenames = [
+  { value = "Starbucks" },
+  { value = "Cold Fusion", qualifier = "80 MHz logic board" },
+  { value = "Flagship", qualifier = "110 MHz; shared Power Macintosh 8100 platform" },
+]
+
+processor = '''
+**PowerPC 601** 80 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, 256 KB L2 cache, 40 MHz system bus
+**PowerPC 601v** 110 MHz, 0.5 µm process, 32-bit, 32 KB unified L1 cache, 256 KB or optional 1 MB L2 cache, 36.7 MHz system bus'''
+processor_family_keys = ["601"]
+
+graphics = "**Apple Data Path video subsystem with Ariel II DAC** 640 KB shared system memory"
+
+display = "Single display support via HDI-45, up to 640x480 at 16-bit color; up to 832x624 at 8-bit color"
+ram = '''
+8 or 16 MB standard
+264 MB maximum
+8 MB built-in
+8 - 72-pin SIMM slots installed in pairs, 80 ns'''
+rom = "4 MB Old World ROM"
+software = '''
+System 7.1.2 (PowerPC Enabler v1.0, 80 MHz)
+System 7.5.1 (110 MHz)
+AppleShare 4.0.2 (selected 80 MHz)
+AppleShare 4.1 (selected 110 MHz)
+Mac OS 9.1 Maximum'''
+storage = '''
+500 MB or 1 GB SCSI hard drive (80 MHz)
+1, 2, or 4 GB SCSI hard drive (110 MHz)
+DDS-2 DAT drive (selected configurations)
+2x CD-ROM drive (80 MHz)
+4x CD-ROM drive (110 MHz)
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - DMA mini-DIN-9 GeoPort serial ports (RS-232/RS-422; LocalTalk and mini-DIN-8 compatible)
+1 - External DB-25 SCSI port
+2 - 5 MB/s asynchronous SCSI DMA buses (up to 9 devices: no more than 2 internal hard drives on bus A; built-in CD-ROM, optional DAT drive, and up to 5 external devices on bus B; a second internal hard drive and the DAT drive are mutually exclusive)
+1 - HDI-45 audio/video port
+1 - 3.5-mm stereo analog input jack
+1 - 3.5-mm stereo analog output jack
+3 - 7-inch NuBus slots
+1 - PDS slot
+1 - 5.25-inch half-height drive bay (used by optional CD-ROM drive)
+1 - Additional 3.5-inch drive bay for a hard drive or removable-media device'''
+design = '''
+Platinum
+25.3 lbs.
+14" H x 7.7" W x 15.75" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC_6100"
+links = [
+  { label = "Workgroup Server 8150/80", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_8150_80.html" },
+  { label = "Workgroup Server 8150/110", url = "https://everymac.com/systems/apple/mac_wgs/specs/mac_wgs_8150_110.html" },
+]

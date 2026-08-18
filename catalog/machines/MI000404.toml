@@ -1,0 +1,79 @@
+category = "mac_pro_arm"
+picture_asset_key = "MI000263"
+name = "Mac Pro (2023)"
+introductions = [{ year = 2023, month = 6 }]
+
+model_numbers = [
+  { value = "A2786", qualifier = "Tower" },
+  { value = "A2787", qualifier = "Rack" },
+]
+identifiers = [{ value = "Mac14,8" }]
+emc_numbers = [
+  { value = "8163", qualifier = "Tower" },
+  { value = "8164", qualifier = "Rack" },
+]
+
+codenames = [{ value = "J180d" }]
+
+processor = '''
+**Apple M2 Ultra "Rhodes 2C"** TSMC N5P process, 64-bit, 24 cores (16 "Avalanche" P-cores, 8 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 96 MB system-level cache, 32-core Neural Engine, Secure Enclave, 800 GB/s memory bandwidth'''
+processor_family_keys = ["m2"]
+processor_logo_keys = ["m2ultra"]
+
+graphics = '''
+**Apple 60-core GPU** unified memory architecture
+**Apple 76-core GPU** unified memory architecture'''
+
+display = '''
+M2 Ultra: up to eight external displays using Thunderbolt and HDMI, each up to a native resolution of 4K at 60 Hz or 4K at 144 Hz
+M2 Ultra: alternatively, up to six external displays, each up to 6K at 60 Hz over Thunderbolt or 4K at 144 Hz over Thunderbolt or HDMI
+M2 Ultra: alternatively, up to two external displays, each up to 8K at 60 Hz or 4K at 240 Hz over HDMI
+M2 Ultra: port group 1 comprises the first four rear Thunderbolt ports and the first rear HDMI port
+M2 Ultra: port group 2 comprises the remaining two rear Thunderbolt ports, the second rear HDMI port, and the two top ports on the tower or front ports on the rack
+M2 Ultra: each port group supports up to four display resources; an 8K at 60 Hz or 4K at 240 Hz display over HDMI uses two resources in its port group'''
+ram = '''
+64 GB standard
+128 or 192 GB configurable
+192 GB maximum
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 13.4
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB SSD standard
+2, 4, or 8 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+1 - Built-in speaker'''
+expansion = '''
+2 - 10Gb Ethernet ports (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - External USB-A ports (up to 5 Gbps)
+8 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+2 - HDMI ports (each up to 8K at 60 Hz or 4K at 240 Hz)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+6 - Full-length PCI Express 4.0 slots (2 x16 and 4 x8)
+1 - Half-length x4 PCI Express 3.0 slot with Apple I/O card
+1 - Internal USB-A port (up to 5 Gbps)
+2 - Internal Serial ATA ports (up to 6 Gbps)
+300 W auxiliary PCI Express power'''
+design = '''
+Silver tower enclosure with feet, configurable with wheels
+37.2 lbs. (Tower)
+20.8" H x 8.58" W x 17.7" D (Tower)
+Silver 5U rack enclosure with rack-mount rails
+37.9 lbs. (Rack)
+8.67" H x 18.98" W x 21.24" D (Rack)'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac Pro \"M2 Ultra\" 24 CPU/60 GPU", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-m2-ultra-24-core-cpu-60-core-gpu-tower-2023-specs.html" },
+  { label = "Mac Pro \"M2 Ultra\" 24 CPU/76 GPU", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-m2-ultra-24-core-cpu-76-core-gpu-tower-2023-specs.html" },
+  { label = "Mac Pro \"M2 Ultra\" 24 CPU/60 GPU (Rack)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-m2-ultra-24-core-cpu-60-core-gpu-rack-mountable-2023-specs.html" },
+  { label = "Mac Pro \"M2 Ultra\" 24 CPU/76 GPU (Rack)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-m2-ultra-24-core-cpu-76-core-gpu-rack-mountable-2023-specs.html" },
+]

@@ -1,0 +1,61 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000087"
+name = "Macintosh PowerBook 190, 190cs"
+aliases = [
+  "Macintosh PowerBook 190",
+  "Macintosh PowerBook 190cs",
+]
+introductions = [{ year = 1995, month = 8 }]
+
+model_numbers = [{ value = "M3047" }]
+gestalt_ids = [{ value = "122" }]
+
+codenames = [{ value = "Omega" }]
+
+processor = "**Motorola 68LC040** 33 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["68040"]
+
+graphics = '''
+**Apple CSC internal display controller** 512 KB VRAM
+**Apple Keystone video controller with Ariel DAC** 512 KB VRAM on the optional external video card'''
+
+display = '''
+9.5-inch 4-bit grayscale FSTN passive-matrix display, 640x480 (190)
+10.4-inch 8-bit color FSTN passive-matrix display, 640x480 (190cs)
+Optional external display support via Mini-15 video-output card, up to 832x624 at 8-bit color'''
+ram = '''
+4 MB or 8 MB standard and built-in
+36 MB or 40 MB maximum
+1 - PowerBook 53xx memory slot, 70 ns'''
+rom = "2 MB Macintosh ROM"
+software = '''
+System 7.5.2 (PowerBook 5300/190 Enabler v1.1)
+Mac OS 8.1 Maximum'''
+storage = '''
+500 MB IDE hard drive
+IDE hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+1 - Serial port
+1 - HDI-30 SCSI port
+1 - Optional Mini-15 video port
+1 - Optional infrared upgrade kit
+1 - 3.5-mm analog audio input jack
+1 - 3.5-mm stereo audio output jack
+1 - Optional 28.8 Kbps modem
+2 - Type II PC Card slots or 1 - Type III PC Card slot
+1 - 5.25-inch expansion bay'''
+design = '''
+6 lbs. (190)
+6.3 lbs. (190cs)
+2" H x 11.5" W x 8.5" D (190)
+2.2" H x 11.5" W x 8.5" D (190cs)'''
+
+support_status = "Obsolete"
+sound_profile = "POWERBOOK"
+links = [
+  { label = "PowerBook 190/66", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook190_66.html" },
+  { label = "PowerBook 190cs/66", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook190cs_66.html" },
+]

@@ -1,0 +1,78 @@
+category = "imac_intel"
+picture_asset_key = "MI000278"
+name = "iMac (21.5-inch, Late 2012)"
+introductions = [{ year = 2012, month = 10 }]
+
+codenames = [{ value = "J30" }]
+
+model_numbers = [{ value = "A1418" }]
+identifiers = [{ value = "iMac13,1" }]
+order_numbers = [
+  { value = "MD093", revisions = ["A"], qualifier = "2.7 GHz" },
+  { value = "MD094", revisions = ["A"], qualifier = "2.9 GHz" },
+]
+emc_numbers = [{ value = "2544" }]
+
+processor = '''
+**Intel Core i5 (3330S) ("Ivy Bridge")** 2.7 GHz, up to 3.2 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i5 (3470S) ("Ivy Bridge")** 2.9 GHz, up to 3.6 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (3770S) ("Ivy Bridge")** 3.1 GHz, up to 3.9 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["ivb"]
+processor_logo_keys = [
+  "corei5_2",
+  "corei7_2",
+]
+
+graphics = '''
+**NVIDIA GeForce GT 640M** 512 MB GDDR5 (2.7 GHz)
+**NVIDIA GeForce GT 650M** 512 MB GDDR5 (2.9 or 3.1 GHz)'''
+graphics_logo_keys = ["nvgeforcegt2012"]
+
+display = '''
+21.5-inch (diagonal) LED-backlit display with IPS technology, 1920x1080
+Up to two external Thunderbolt displays
+External resolution up to 2560x1600
+Dual display extended, video mirroring, AirPlay Mirroring, and Target Display'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+PC3-12800 (1600 MHz) DDR3 memory
+2 - 204-pin PC3-12800 (1600 MHz) DDR3 SO-DIMM slots (not user-accessible)'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.8.2 (12C2034)
+macOS 10.15.7 Maximum
+AirDrop Supported
+Handoff Supported
+AHT 3A229'''
+storage = '''
+1 TB 5400-rpm SATA hard drive standard
+1 TB Fusion Drive configurable
+Optional Apple USB SuperDrive
+2 - 6.0 Gbps Serial ATA (SATA) hard drive interfaces'''
+features = '''
+Wi-Fi (802.11n)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 1 ports (up to 10 Gbps; digital video output)
+1 - 3.5-mm analog/optical combo output jack
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+12.5 lbs.
+17.7" H x 20.8" W x 6.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac 21.5-Inch \"Core i5\" 2.7 (Late 2012)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-2.7-21-inch-aluminum-late-2012-specs.html" },
+  { label = "iMac 21.5-Inch \"Core i5\" 2.9 (Late 2012)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-2.9-21-inch-aluminum-late-2012-specs.html" },
+  { label = "iMac 21.5-Inch \"Core i7\" 3.1 (Late 2012)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-3.1-21-inch-aluminum-late-2012-specs.html" },
+]

@@ -1,0 +1,83 @@
+category = "imac_pro_intel"
+picture_asset_key = "MI000302"
+name = "iMac Pro (2017)"
+introductions = [{ year = 2017, month = 12 }]
+
+codenames = [{ value = "J137" }]
+
+model_numbers = [{ value = "A1862" }]
+identifiers = [{ value = "iMacPro1,1" }]
+order_numbers = [
+  { value = "MQ2Y2", revisions = ["A"] },
+  { value = "MHLV3", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3144" }]
+
+processor = '''
+**Intel Xeon W-2140B ("Skylake")** 3.2 GHz, up to 4.2 GHz, 14 nm process, 64-bit, 8 cores, 32 KB instruction and 32 KB data L1 cache per core, 1 MB L2 cache per core, 11 MB shared L3 cache
+**Intel Xeon W-2150B ("Skylake")** 3.0 GHz, up to 4.5 GHz, 14 nm process, 64-bit, 10 cores, 32 KB instruction and 32 KB data L1 cache per core, 1 MB L2 cache per core, 13.75 MB shared L3 cache
+**Intel Xeon W-2170B ("Skylake")** 2.5 GHz, up to 4.3 GHz, 14 nm process, 64-bit, 14 cores, 32 KB instruction and 32 KB data L1 cache per core, 1 MB L2 cache per core, 19.25 MB shared L3 cache
+**Intel Xeon W-2190B ("Skylake")** 2.3 GHz, up to 4.3 GHz, 14 nm process, 64-bit, 18 cores, 32 KB instruction and 32 KB data L1 cache per core, 1 MB L2 cache per core, 24.75 MB shared L3 cache
+Intel Direct Media Interface (DMI) 3.0 at 8 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["skylake"]
+processor_logo_keys = [
+  "xeon_6",
+  "t2",
+]
+
+graphics = '''
+**AMD Radeon Pro Vega 56** 8 GB HBM2
+**AMD Radeon Pro Vega 64** 16 GB HBM2
+**AMD Radeon Pro Vega 64X** 16 GB HBM2'''
+graphics_logo_keys = ["amdradeonvega"]
+
+display = '''
+27-inch (diagonal) Retina 5K display with IPS technology, 5120x2880, 218 ppi, 500 nits, wide color gamut (P3)
+Two external 5K displays up to 5120x2880 at 60 Hz with 1 billion colors
+Four external 4K UHD displays up to 3840x2160 at 60 Hz with 1 billion colors
+Four external 4K displays up to 4096x2304 at 60 Hz with millions of colors
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+32 GB standard
+64, 128, or 256 GB configurable
+256 GB Apple-supported maximum
+512 GB actual maximum
+PC4-21300 (2666 MHz) DDR4 ECC memory
+4 - 288-pin PC4-21300 (2666 MHz) DDR4 ECC DIMM slots (not user-accessible)'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.13.2 (17C2111)
+macOS 15.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB SSD standard
+2 or 4 TB SSD configurable'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0
+4 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+1 - 10Gb Ethernet port (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+4 - Thunderbolt 3 ports (up to 40 Gbps)
+1 - 3.5-mm headphone jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC with UHS-II support) card slot'''
+design = '''
+Space Gray
+21.5 lbs.
+20.3" H x 25.6" W x 8" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "iMac Pro \"8-Core\" 3.2 27-Inch (5K, Late 2017)", url = "https://everymac.com/systems/apple/imac-pro/specs/imac-pro-eight-core-3.2-xeon-27-inch-late-2017-specs.html" },
+  { label = "iMac Pro \"10-Core\" 3.0 27-Inch (5K, Late 2017)", url = "https://everymac.com/systems/apple/imac-pro/specs/imac-pro-ten-core-3.0-xeon-27-inch-late-2017-specs.html" },
+  { label = "iMac Pro \"14-Core\" 2.5 27-Inch (5K, Late 2017)", url = "https://everymac.com/systems/apple/imac-pro/specs/imac-pro-14-core-2.5-xeon-27-inch-late-2017-specs.html" },
+  { label = "iMac Pro \"18-Core\" 2.3 27-Inch (5K, Late 2017)", url = "https://everymac.com/systems/apple/imac-pro/specs/imac-pro-18-core-2.3-xeon-27-inch-late-2017-specs.html" },
+]

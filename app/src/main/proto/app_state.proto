@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package macindex.userstate;
+
+option java_package = "com.macindex.macindex.userstate.proto";
+option java_multiple_files = true;
+
+message AppState {
+  UserPreferences preferences = 1;
+  UiMemory ui_memory = 2;
+  UserLibrary library = 3;
+  PendingNotice pending_notice = 4;
+}
+
+message UserPreferences {
+  bool sort_comments = 1;
+  bool play_death_sound = 2;
+  bool enable_volume_warning = 3;
+  bool use_navigation_buttons = 4;
+  bool fixed_navigation = 5;
+  bool limit_random_to_current_browse = 6;
+  reserved 7, 9;
+  reserved "open_single_search_result", "remember_search_state";
+  bool remember_main_state = 8;
+  bool remember_compare_state = 10;
+  bool highlight_compare_differences = 11;
+  bool automatically_check_updates = 12;
+  string skipped_update_version = 13;
+}
+
+message UiMemory {
+  ManufacturerScope main_manufacturer = 1;
+  MainGrouping main_grouping = 2;
+  reserved 3, 4;
+  reserved "search_manufacturer", "search_field";
+}
+
+enum ManufacturerScope {
+  MANUFACTURER_SCOPE_ALL = 0;
+  MANUFACTURER_SCOPE_68K = 1;
+  MANUFACTURER_SCOPE_POWERPC = 2;
+  MANUFACTURER_SCOPE_INTEL = 3;
+  MANUFACTURER_SCOPE_APPLE_SILICON = 4;
+}
+
+enum MainGrouping {
+  MAIN_GROUPING_NAMES = 0;
+  MAIN_GROUPING_PROCESSORS = 1;
+  MAIN_GROUPING_YEARS = 2;
+}
+
+message UserLibrary {
+  repeated UserComment comments = 1;
+  repeated FavouriteFolder favourite_folders = 2;
+  CompareState compare = 3;
+  int64 next_favourite_folder_id = 4;
+}
+
+message UserComment {
+  string machine_uid = 1;
+  string text = 2;
+}
+
+message FavouriteFolder {
+  int64 id = 1;
+  string name = 2;
+  repeated string machine_uids = 3;
+}
+
+message CompareState {
+  repeated string machine_uids = 1;
+  string left_uid = 2;
+  string right_uid = 3;
+}
+
+message PendingNotice {
+  bool entire_user_state_was_reset = 1;
+  repeated RemovedUserContent removed_content = 2;
+}
+
+message RemovedUserContent {
+  RemovedContentKind kind = 1;
+  string value = 2;
+}
+
+enum RemovedContentKind {
+  REMOVED_CONTENT_KIND_UNSPECIFIED = 0;
+  REMOVED_CONTENT_KIND_COMMENT = 1;
+  REMOVED_CONTENT_KIND_FAVOURITE = 2;
+  REMOVED_CONTENT_KIND_COMPARE = 3;
+}

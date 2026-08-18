@@ -1,0 +1,90 @@
+category = "mac_studio"
+picture_asset_key = "MI000437"
+name = "Mac Studio (2023)"
+introductions = [{ year = 2023, month = 6 }]
+
+model_numbers = [{ value = "A2901" }]
+identifiers = [
+  { value = "Mac14,13", qualifier = "M2 Max" },
+  { value = "Mac14,14", qualifier = "M2 Ultra" },
+]
+order_numbers = [
+  { value = "MQH73", revisions = ["A"], qualifier = "M2 Max" },
+  { value = "MQH63", revisions = ["A"], qualifier = "M2 Ultra" },
+]
+emc_numbers = [{ value = "8292" }]
+
+codenames = [{ value = "J475c", qualifier = "M2 Max" }, { value = "J475d", qualifier = "M2 Ultra" }]
+
+processor = '''
+**Apple M2 Max "Rhodes 1C"** TSMC N5P process, 64-bit, 12 cores (8 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 400 GB/s memory bandwidth
+**Apple M2 Ultra "Rhodes 2C"** TSMC N5P process, 64-bit, 24 cores (16 "Avalanche" P-cores, 8 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 96 MB system-level cache, 32-core Neural Engine, Secure Enclave, 800 GB/s memory bandwidth'''
+processor_family_keys = ["m2"]
+processor_logo_keys = [
+  "m2max",
+  "m2ultra",
+]
+
+graphics = '''
+**Apple 30-core GPU** unified memory architecture (M2 Max)
+**Apple 38-core GPU** unified memory architecture (M2 Max)
+**Apple 60-core GPU** unified memory architecture (M2 Ultra)
+**Apple 76-core GPU** unified memory architecture (M2 Ultra)'''
+
+display = '''
+M2 Max: up to five external displays: four displays up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M2 Max: alternatively, up to three external displays over Thunderbolt or HDMI: two displays up to 6K at 60 Hz or 4K at 144 Hz, and one display up to 8K at 60 Hz or 4K at 240 Hz
+M2 Max: alternatively, up to three external displays: two displays up to 8K at 60 Hz or 4K at 240 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M2 Ultra: up to eight external displays, each up to a native resolution of 4K at 60 Hz over Thunderbolt or HDMI; the eight-display configuration requires a supported daisy chain or dock on the front Thunderbolt ports
+M2 Ultra: alternatively, up to six external displays, each up to 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI; displays must be split across the two port groups
+M2 Ultra: alternatively, up to three external displays, each up to 8K at 60 Hz or 4K at 240 Hz over Thunderbolt or HDMI; displays must be split across the two port groups
+M2 Ultra: port group 1 comprises the two front Thunderbolt 4 ports and rear HDMI; port group 2 comprises the four rear Thunderbolt 4 ports; each group supports up to four display resources; an 8K at 60 Hz or 4K at 240 Hz display over HDMI uses two resources in its port group'''
+ram = '''
+32 GB standard (M2 Max)
+64 GB standard (M2 Ultra)
+64 GB configurable (M2 Max)
+96 GB configurable (M2 Max with 38-core GPU)
+128 or 192 GB configurable (M2 Ultra)
+64 GB maximum (M2 Max with 30-core GPU)
+96 GB maximum (M2 Max with 38-core GPU)
+192 GB maximum (M2 Ultra)
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 13.4
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M2 Max)
+1, 2, 4, or 8 TB SSD configurable (M2 Max)
+1 TB SSD standard (M2 Ultra)
+2, 4, or 8 TB SSD configurable (M2 Ultra)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+1 - Built-in speaker'''
+expansion = '''
+1 - 10Gb Ethernet port (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+4 - Rear Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+2 - Front USB-C ports (up to 10 Gbps; no display output; M2 Max)
+2 - Front Thunderbolt 4 / USB 4 ports (up to 40 Gbps; M2 Ultra)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - Front SDXC card slot (UHS-II)'''
+design = '''
+Silver
+5.9 lbs. (M2 Max)
+7.9 lbs. (M2 Ultra)
+3.7" H x 7.7" W x 7.7" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac Studio \"M2 Max\" 12 CPU/30 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m2-max-12-core-cpu-30-core-gpu-2023-specs.html" },
+  { label = "Mac Studio \"M2 Max\" 12 CPU/38 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m2-max-12-core-cpu-38-core-gpu-2023-specs.html" },
+  { label = "Mac Studio \"M2 Ultra\" 24 CPU/60 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m2-ultra-24-core-cpu-60-core-gpu-2023-specs.html" },
+  { label = "Mac Studio \"M2 Ultra\" 24 CPU/76 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m2-ultra-24-core-cpu-76-core-gpu-2023-specs.html" },
+]

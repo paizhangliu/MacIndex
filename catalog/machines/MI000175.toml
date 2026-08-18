@@ -1,0 +1,86 @@
+category = "imac_ppc"
+picture_asset_key = "MI000175"
+name = "iMac (Early 2001)"
+introductions = [{ year = 2001, month = 2 }]
+
+model_numbers = [{ value = "M5521" }]
+identifiers = [{ value = "PowerMac4,1" }]
+order_numbers = [
+  { value = "M7683", revisions = ["A"], qualifier = "400 MHz Indigo" },
+  { value = "M7669", revisions = ["A"], qualifier = "500 MHz 256 KB L2, Indigo" },
+  { value = "M8347", revisions = ["A"], qualifier = "500 MHz 256 KB L2, Blue Dalmatian" },
+  { value = "M8348", revisions = ["A"], qualifier = "500 MHz 256 KB L2, Flower Power" },
+  { value = "M8344", revisions = ["A"], qualifier = "500 MHz 512 KB L2, Indigo" },
+  { value = "M8345", revisions = ["A"], qualifier = "500 MHz 512 KB L2, Blue Dalmatian" },
+  { value = "M8346", revisions = ["A"], qualifier = "500 MHz 512 KB L2, Flower Power" },
+  { value = "M7680", revisions = ["A"], qualifier = "600 MHz Graphite" },
+  { value = "M7675", revisions = ["A"], qualifier = "600 MHz Blue Dalmatian" },
+  { value = "M7679", revisions = ["A"], qualifier = "600 MHz Flower Power" },
+]
+emc_numbers = [{ value = "1857" }]
+
+codenames = [{ value = "P52" }, { value = "Apogee" }]
+
+processor = '''
+**PowerPC 750 (G3)** 400 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 500 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus (M8344, M8345, and M8346 configurations)
+**PowerPC 750CXe (G3)** 500 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus (M7669, M8347, and M8348 configurations)
+**PowerPC 750CXe (G3)** 600 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = [
+  "750",
+  "750cxe",
+]
+
+graphics = '''
+**ATI Rage 128 Pro** 8 MB SDRAM (400 MHz, M8344, M8345, and M8346)
+**ATI Rage 128 Ultra** 16 MB SDRAM (M7669, M8347, M8348, and 600 MHz)'''
+graphics_logo_keys = ["ati"]
+
+display = '''
+15-inch shadow-mask CRT, 13.8-inch viewable, 1024x768 at 75 Hz
+Video mirroring on equipped models'''
+ram = '''
+64 MB standard (400 or 500 MHz)
+128 MB standard (600 MHz)
+1 GB maximum
+2 - PC100 168-pin SDRAM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.1 (Mac OS ROM 7.5.1)
+Mac OS X 10.4.11 Maximum
+AHT (iMac) 1.1, 1.2
+AHT (iMac/eMac) 1.2.1, 1.2.2'''
+storage = '''
+10 GB Ultra ATA hard drive (400 MHz)
+20 GB Ultra ATA hard drive (500 MHz)
+40 GB Ultra ATA hard drive (600 MHz)
+Slot-loading CD-ROM drive (400 MHz)
+Slot-loading CD-RW drive (500 or 600 MHz)
+Ultra ATA (shared with optical drive) hard drive interface
+Ultra ATA (shared with hard drive) optical drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b) (adapter required)
+1 - Built-in microphone (16-bit, 44.1 kHz sample rate)
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - 3.5-mm headphone output jacks'''
+design = '''
+Indigo, Graphite, Blue Dalmatian, or Flower Power
+34.7 lbs.
+15.0" H x 15.0" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac G3/400 (Early 2001 - Indigo)", url = "https://everymac.com/systems/apple/imac/specs/imac_400_indigo.html" },
+  { label = "iMac G3/500 (Early 2001 - Flower/Blue)", url = "https://everymac.com/systems/apple/imac/specs/imac_500_fp_bd.html" },
+  { label = "iMac G3/600 SE (Early 2001)", url = "https://everymac.com/systems/apple/imac/specs/imac_se_600.html" },
+]

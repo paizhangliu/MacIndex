@@ -1,0 +1,58 @@
+category = "macbook_intel"
+picture_asset_key = "MI000380"
+name = "MacBook (13-inch, Late 2009)"
+introductions = [{ year = 2009, month = 10 }]
+
+model_numbers = [{ value = "A1342" }]
+identifiers = [{ value = "MacBook6,1" }]
+order_numbers = [{ value = "MC207", revisions = ["A"] }]
+emc_numbers = [{ value = "2350" }]
+
+processor = "**Intel Core 2 Duo (P7550) (\"Penryn\")** 2.26 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus"
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["core2duo"]
+
+graphics = "**NVIDIA GeForce 9400M** 256 MB DDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit glossy widescreen display, 1280x800
+One external display up to 2560x1600
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+4 GB Apple-supported maximum
+8 GB actual maximum
+2 - 204-pin PC3-8500 (1066 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.6.1 (10A2047)
+macOS 10.13.6 Maximum
+AirDrop Supported
+AHT 3A181'''
+storage = '''
+250 GB 5400-rpm SATA hard drive standard
+320 or 500 GB 5400-rpm SATA hard drive configurable
+SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+3.0 Gbps Serial ATA (SATA) hard drive interface
+3.0 Gbps Serial ATA (SATA) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in speakers
+Built-in iSight camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+2 - USB 2.0 ports
+1 - Mini DisplayPort connector
+1 - 3.5-mm analog/optical audio output jack (user-selectable as analog audio input)
+1 - Kensington security slot'''
+design = '''
+Polycarbonate unibody enclosure
+4.7 lbs.
+1.08" H x 13" W x 9.12" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "MacBook \"Core 2 Duo\" 2.26 13\" (Uni/Late 09)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-2-duo-2.26-white-13-polycarbonate-unibody-late-2009-specs.html" }]

@@ -1,0 +1,76 @@
+category = "imac_ppc"
+picture_asset_key = "MI000173"
+name = "iMac (Slot Loading)"
+introductions = [{ year = 1999, month = 10 }]
+
+model_numbers = [{ value = "M5521" }]
+identifiers = [{ value = "PowerMac2,1" }]
+order_numbers = [
+  { value = "M7469", revisions = ["A"], qualifier = "iMac - Blueberry" },
+  { value = "M7493", revisions = ["A"], qualifier = "iMac DV - Blueberry" },
+  { value = "M7672", revisions = ["A"], qualifier = "iMac DV - Grape" },
+  { value = "M7673", revisions = ["A"], qualifier = "iMac DV - Strawberry" },
+  { value = "M7671", revisions = ["A"], qualifier = "iMac DV - Tangerine" },
+  { value = "M7674", revisions = ["A"], qualifier = "iMac DV - Lime" },
+  { value = "M7668", revisions = ["A"], qualifier = "iMac DV SE - Graphite" },
+]
+emc_numbers = [{ value = "1821" }]
+
+codenames = [{ value = "Kihei" }, { value = "P7" }]
+
+processor = '''
+**PowerPC 750 (G3)** 350 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus
+**PowerPC 750 (G3)** 400 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (2:5) L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage 128 VR** 8 MB"
+graphics_logo_keys = ["ati"]
+
+display = '''
+15-inch shadow-mask CRT, 13.8-inch viewable, 1024x768 at 75 Hz
+Video mirroring on equipped models'''
+ram = '''
+64 MB standard (350 MHz and 400 MHz DV)
+128 MB standard (400 MHz DV Special Edition)
+512 MB Apple-supported maximum
+1 GB actual maximum
+2 - PC100 168-pin SDRAM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.6 (Mac OS ROM 2.3.1)
+Mac OS X 10.3.9 Maximum (350 MHz)
+Mac OS X 10.4.11 Maximum (400 MHz)'''
+storage = '''
+6 GB Ultra ATA hard drive (350 MHz)
+10 GB Ultra ATA hard drive (400 MHz DV)
+13 GB Ultra ATA hard drive (400 MHz DV Special Edition)
+Slot-loading CD-ROM drive (350 MHz)
+Slot-loading DVD-ROM drive (400 MHz DV and DV Special Edition)
+Ultra ATA (shared with optical drive) hard drive interface
+Ultra ATA (shared with hard drive) optical drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b) (adapter required)
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (400 MHz DV and DV Special Edition)
+1 - VGA port (400 MHz DV and DV Special Edition)
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+2 - 3.5-mm headphone output jacks'''
+design = '''
+Blueberry, Grape, Strawberry, Tangerine, Lime, or Graphite
+34.7 lbs.
+15.8" H x 15.2" W x 17.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac G3/350 (Slot Loading - Blueberry)", url = "https://everymac.com/systems/apple/imac/specs/imac_350.html" },
+  { label = "iMac G3/400 DV (Slot Loading - Fruit)", url = "https://everymac.com/systems/apple/imac/specs/imac_dv_400.html" },
+  { label = "iMac G3/400 DV SE (Slot Loading)", url = "https://everymac.com/systems/apple/imac/specs/imac_se_dv_400.html" },
+]

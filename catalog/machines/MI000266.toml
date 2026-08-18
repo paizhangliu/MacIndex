@@ -1,0 +1,55 @@
+category = "imac_intel"
+picture_asset_key = "MI000188"
+name = "iMac (Mid 2006 17-inch)"
+introductions = [{ year = 2006, month = 7 }]
+
+model_numbers = [{ value = "A1195" }]
+identifiers = [{ value = "iMac4,2" }]
+order_numbers = [{ value = "MA406", revisions = ["A"] }]
+emc_numbers = [{ value = "2110" }]
+
+processor = "**Intel Core Duo (T2400) (\"Yonah\")** 1.83 GHz, 65 nm process, 32-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 2 MB shared L2 cache, 667 MHz system bus"
+processor_family_keys = ["p6"]
+processor_logo_keys = ["coreduo"]
+
+graphics = "**Intel Graphics Media Accelerator (GMA) 950** 64 MB DDR2 shared with main memory (80 MB minimum memory usage)"
+
+display = '''
+17-inch (viewable) widescreen TFT LCD, 1440x900, 250 nits
+Dual display extended and video mirroring'''
+ram = '''
+512 MB standard
+2 GB maximum
+2 - 200-pin PC2-5300 (667 MHz) DDR2 SO-DIMM slots'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X 10.4.6 (8I2057)
+Mac OS X 10.6.8 Maximum
+AHT 3A108'''
+storage = '''
+80 GB 7200-rpm SATA hard drive standard
+160 GB 7200-rpm SATA hard drive configurable
+Combo drive (DVD-ROM/CD-RW)
+1.5 Gbps Serial ATA (SATA) hard drive interface
+Ultra ATA/100 (operates at UATA/33) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11b/g)
+1 - Built-in microphone (24-bit, 96 kHz sample rate)
+2 - Built-in stereo speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+3 - USB 2.0 ports
+2 - FireWire 400 ports (8 W total power)
+1 - Mini-DVI port (DVI, VGA, composite and S-video with adapter)
+1 - 3.5-mm analog/optical combo jack'''
+design = '''
+White
+15.5 lbs.
+16.9" H x 16.8" W x 6.8" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "iMac 17-Inch \"Core Duo\" 1.83 (IG)", url = "https://everymac.com/systems/apple/imac/specs/imac_cd_1.83_17_ig.html" }]

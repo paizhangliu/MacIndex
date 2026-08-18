@@ -1,0 +1,57 @@
+category = "macbook_intel"
+picture_asset_key = "MI000371"
+name = "MacBook (13-inch, Late 2008)"
+introductions = [{ year = 2008, month = 10 }]
+
+model_numbers = [{ value = "A1181" }]
+identifiers = [{ value = "MacBook4,1" }]
+order_numbers = [{ value = "MB402", revisions = ["B"] }]
+emc_numbers = [{ value = "2242" }]
+
+processor = "**Intel Core 2 Duo (T8100) (\"Penryn\")** 2.1 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 800 MHz system bus"
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["core2duo"]
+
+graphics = "**Intel Graphics Media Accelerator (GMA) X3100** 144 MB DDR2 SDRAM shared with main memory, plus 16 MB when using an external display"
+
+display = '''
+13.3-inch (diagonal) glossy widescreen display, 1280x800, 114 ppi, 250 nits
+One external display up to 1920x1200
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+4 GB Apple-supported maximum
+6 GB actual maximum
+2 - 200-pin PC2-5300 (667 MHz) DDR2 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.5.4 (9E27, 9E29)
+Mac OS X 10.7.5 Maximum'''
+storage = '''
+120 GB 5400-rpm SATA hard drive standard
+160 or 250 GB 5400-rpm SATA hard drive configurable
+SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+1.5 Gbps Serial ATA (SATA) hard drive interface
+Ultra ATA/100 (running at UATA/66) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.0 + EDR
+1 - Built-in microphone
+2 - Built-in speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+2 - USB 2.0 ports
+1 - FireWire 400 port (8 W)
+1 - Mini-DVI port (VGA, composite and S-video with adapter)
+1 - 3.5-mm analog/optical combo jack
+1 - Kensington security slot'''
+design = '''
+White durable polycarbonate
+5.0 lbs.
+1.08" H x 12.78" W x 8.92" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"

@@ -1,0 +1,63 @@
+category = "xserve_intel"
+picture_asset_key = "MI000317"
+name = "Xserve (Early 2008)"
+introductions = [{ year = 2008, month = 1 }]
+
+model_numbers = [{ value = "A1246" }]
+identifiers = [{ value = "Xserve2,1" }]
+order_numbers = [
+  { value = "MA882", revisions = ["A"], qualifier = "2.8 GHz" },
+]
+emc_numbers = [{ value = "2186" }]
+
+processor = '''
+**Intel Xeon E5462 ("Harpertown")** 2.8 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache per pair of cores, 1.6 GHz system bus
+**Dual Intel Xeon E5462 ("Harpertown")** 2.8 GHz, 45 nm process, 64-bit, 4 cores per processor (8 cores total), 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache per pair of cores per processor, dual 1.6 GHz system buses
+**Dual Intel Xeon E5472 ("Harpertown")** 3 GHz, 45 nm process, 64-bit, 4 cores per processor (8 cores total), 32 KB instruction and 32 KB data L1 cache per core, 6 MB shared L2 cache per pair of cores per processor, dual 1.6 GHz system buses'''
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["xeon_a"]
+
+graphics = "**ATI Radeon X1300** 64 MB GDDR3"
+graphics_logo_keys = ["atiradeon2004"]
+
+display = "External display support through mini-DVI"
+ram = '''
+2 GB standard
+32 GB maximum
+8 - 800 MHz DDR2 ECC FB-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X Server 10.5 (9B2117)
+OS X Server 10.7.5 Maximum'''
+storage = '''
+80 GB 7200-rpm SATA Apple Drive Module standard
+80 GB or 1 TB 7200-rpm SATA Apple Drive Modules configurable
+73 or 300 GB 15,000-rpm SAS Apple Drive Modules configurable
+3 TB maximum across 3 hot-plug SATA or SAS Apple Drive Modules
+8x SuperDrive DL'''
+features = '''
+Remote monitoring
+Front-panel system identifier button
+Optional Xserve RAID Card with 512 MB cache and 72-hour cache battery backup
+Optional redundant 750 W power supply'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; jumbo frame support)
+3 - USB 2.0 ports
+2 - FireWire 800 ports
+1 - DB-9 serial port
+1 - Mini-DVI port
+1 - Half-length (6.6-inch) configurable PCI Express 2.0 x8 or 64-bit, 133 MHz PCI-X slot
+1 - 9.25-inch PCI Express 2.0 x16 slot
+3 - Hot-plug 3.5-inch SATA or SAS drive bays'''
+design = '''
+1U rack-mountable
+31.9 lbs.
+1.73" H x 17.6" W x 30" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [
+  { label = "Xserve Xeon 2.8 GHz Quad Core (Early 2008)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.8-quad-specs.html" },
+  { label = "Xserve Xeon 2.8 GHz Eight Core (Early 2008)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.8-eight-core-specs.html" },
+  { label = "Xserve Xeon 3 GHz Eight Core (Early 2008)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-3.0-eight-core-specs.html" },
+]

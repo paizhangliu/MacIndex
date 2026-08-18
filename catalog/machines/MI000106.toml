@@ -1,0 +1,96 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000106"
+name = "Power Macintosh 8500"
+aliases = [
+  "Power Macintosh 8515",
+  "Power Macintosh 8515/120",
+]
+introductions = [
+  { year = 1995, month = 8, qualifier = "120 MHz" },
+  { year = 1996, month = 1, qualifier = "8515/120" },
+  { year = 1996, month = 4, qualifier = "132 and 150 MHz" },
+  { year = 1996, month = 8, qualifier = "180 MHz" },
+]
+
+model_numbers = [{ value = "M3409" }]
+gestalt_ids = [{ value = "69" }]
+order_numbers = [
+  { value = "M4881", revisions = ["A"], qualifier = "8515/120" },
+  { value = "M4889", revisions = ["A"], qualifier = "8500/132" },
+  { value = "M4890", revisions = ["A"], qualifier = "8500/150, 4x CD-ROM drive" },
+  { value = "M5347", revisions = ["A"], qualifier = "8500/150, 8x CD-ROM drive" },
+  { value = "M5348", revisions = ["A"], qualifier = "8500/180, 16 MB of RAM" },
+  { value = "M5349", revisions = ["A"], qualifier = "8500/180, 32 MB of RAM" },
+]
+
+codenames = [{ value = "Nitro" }]
+
+processor = '''
+**PowerPC 604** 120 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 40 MHz system bus
+**PowerPC 604** 132 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 44 MHz system bus
+**PowerPC 604** 150 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus
+**PowerPC 604e (PID9v)** 180 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB L2 cache, 45 MHz system bus'''
+processor_family_keys = ["604"]
+
+graphics = '''
+**Apple Chaos/Control video subsystem with RaDACal DAC** 2 MB VRAM standard, 4 MB maximum
+**Apple Chaos/Control video subsystem with RaDACal DAC** 4 MB VRAM standard (8515/120)'''
+
+display = "External display support via DB-15, up to 1280x1024"
+ram = '''
+16 MB or 32 MB standard (120 MHz)
+32 MB standard (8515/120)
+16 MB standard (132 MHz)
+32 MB standard (M4890 150 MHz)
+16 MB standard (M5347 150 MHz)
+16 MB or 32 MB standard (180 MHz)
+512 MB Apple-tested maximum
+1 GB actual maximum
+8 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.2 (System Enabler 701 v1.2)
+Mac OS 9.1 Maximum'''
+storage = '''
+1 GB or 2 GB SCSI hard drive; 4x CD-ROM drive (120 MHz)
+2 GB SCSI hard drive; 4x CD-ROM drive (8515/120)
+1.2 GB SCSI hard drive; 4x CD-ROM drive (132 MHz)
+2 GB SCSI hard drive; 4x CD-ROM drive (M4890 150 MHz)
+1.2 GB SCSI hard drive; 8x CD-ROM drive (M5347 150 MHz)
+2 GB SCSI hard drive; 8x CD-ROM drive (180 MHz)
+1.44 MB floppy drive
+Internal Fast SCSI bus (up to 10 MB/s)
+External SCSI bus (up to 5 MB/s)'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+2 - RCA audio input jacks
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+2 - RCA audio output jacks
+1 - S-video input
+1 - RCA video input
+1 - S-video output
+1 - RCA video output
+3 - PCI slots
+1 - DAV connector
+1 - Additional 3.5-inch hard-drive bay'''
+design = '''
+Platinum
+25 lbs.
+14" H x 7.7" W x 15.75" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 8500/120", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8500_120.html" },
+  { label = "Power Macintosh 8500/132", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8500_132.html" },
+  { label = "Power Macintosh 8500/150", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8500_150.html" },
+  { label = "Power Macintosh 8500/180", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8500_180.html" },
+  { label = "Power Macintosh 8515/120", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8515_120.html" },
+]

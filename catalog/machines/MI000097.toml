@@ -1,0 +1,84 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000097"
+name = "Power Macintosh 6100"
+introductions = [
+  { year = 1994, month = 3, qualifier = "60 MHz" },
+  { year = 1995, month = 1, qualifier = "66 MHz and DOS Compatible" },
+]
+
+model_numbers = [{ value = "M1596" }]
+gestalt_ids = [
+  { value = "75", qualifier = "60 MHz" },
+  { value = "100", qualifier = "66 MHz" },
+]
+order_numbers = [
+  { value = "M2196", revisions = ["A"] },
+  { value = "M2197", revisions = ["A"] },
+  { value = "M1878", revisions = ["A"] },
+  { value = "M3078", revisions = ["A"], qualifier = "6100/60" },
+  { value = "M2738", revisions = ["A"] },
+  { value = "M2837", revisions = ["A"], qualifier = "6100/60AV" },
+  { value = "M3631", revisions = ["A"] },
+  { value = "M3632", revisions = ["A"], qualifier = "6100/66" },
+  { value = "M3972", revisions = ["A"], qualifier = "6100/66 DOS Compatible" },
+]
+
+codenames = [{ value = "Piltdown Man" }]
+
+processor = '''
+**PowerPC 601** 60 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, optional 256 KB L2 cache, 30 MHz system bus
+**PowerPC 601** 66 MHz, 0.65 µm process, 32-bit, 32 KB unified L1 cache, 256 KB L2 cache, 33 MHz system bus
+**Intel 486DX2** 66 MHz, 0.8 µm process, 32-bit, 8 KB unified L1 cache, 33 MHz system bus (DOS-compatible configuration)'''
+processor_family_keys = ["601"]
+
+graphics = '''
+**Apple Data Path video subsystem with Ariel II DAC** 640 KB shared system memory
+**Apple CIVIC AV video subsystem** 2 MB VRAM on AV models'''
+
+display = '''
+Single display support via HDI-45
+AV models support a second display via DB-15, up to 832x624 at 24-bit color; up to 1152x870 at 16-bit color'''
+ram = '''
+8 or 16 MB standard
+72 MB Apple-supported maximum
+136 MB actual maximum
+8 MB built-in
+2 - 72-pin SIMM slots installed in pairs, 80 ns'''
+rom = "4 MB Old World ROM"
+software = '''
+System 7.1.2 (PowerPC Enabler v1.0)
+Mac OS 9.1 Maximum
+MS-DOS 6.22 and Windows 3.1 (DOS-compatible configuration)'''
+storage = '''
+160, 250, 350, or 500 MB SCSI hard drive
+Optional 2x CD-ROM drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - HDI-45 audio/video port
+1 - DB-15 video port on AV models
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - S-video input on AV models
+1 - S-video output on AV models
+1 - 7-inch PDS or NuBus slot
+1 - 5.25-inch half-height drive bay
+1 - PDS DOS Compatibility Card with Intel 486DX2 at 66 MHz
+1 - PC game port (DOS-compatible configuration)'''
+design = '''
+Platinum
+14 lbs.
+3.4" H x 16.3" W x 15.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC_6100"
+links = [
+  { label = "Power Macintosh 6100/60 (PC)", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6100_60.html" },
+  { label = "Power Macintosh 6100/60AV", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6100_60av.html" },
+  { label = "Power Macintosh 6100/66 (PC)", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6100_66.html" },
+  { label = "Power Macintosh 6100/66AV", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6100_66av.html" },
+]

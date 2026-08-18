@@ -1,0 +1,86 @@
+category = "imac_intel"
+picture_asset_key = "MI000279"
+name = "iMac (27-inch, Mid 2010)"
+introductions = [{ year = 2010, month = 7 }]
+
+model_numbers = [{ value = "A1312" }]
+identifiers = [{ value = "iMac11,3" }]
+order_numbers = [
+  { value = "MC510", revisions = ["A"], qualifier = "3.2 GHz" },
+  { value = "MC511", revisions = ["A"], qualifier = "2.8 GHz" },
+  { value = "MC784", revisions = ["A"], qualifier = "2.93 GHz" },
+]
+emc_numbers = [{ value = "2390" }]
+
+processor = '''
+**Intel Core i3 (550) ("Clarkdale")** 3.2 GHz, 32 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+**Intel Core i5 (680) ("Clarkdale")** 3.6 GHz, up to 3.86 GHz, 32 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+**Intel Core i5 (760) ("Lynnfield")** 2.8 GHz, up to 3.33 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+**Intel Core i7 (870) ("Lynnfield")** 2.93 GHz, up to 3.6 GHz, 45 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 2.5 GT/s'''
+processor_family_keys = [
+  "nehalem",
+  "westmere",
+]
+processor_logo_keys = [
+  "corei3_1",
+  "corei5_1",
+  "corei5",
+  "corei7",
+]
+
+graphics = '''
+**ATI Radeon HD 5670** 512 MB GDDR3 (3.2 or 3.6 GHz)
+**ATI Radeon HD 5750** 1 GB GDDR5 (2.8 or 2.93 GHz)'''
+graphics_logo_keys = ["atiradeon2007"]
+
+display = '''
+27-inch (viewable) LED-backlit glossy widescreen TFT LCD with IPS technology, 2560x1440, 375 nits
+One external display up to 2560x1600
+Dual display extended, video mirroring, and Target Display'''
+ram = '''
+4 GB standard
+16 GB Apple-supported maximum
+32 GB (Core i5 or Core i7) actual maximum
+4 - 204-pin PC3-10600 (1333 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.6.3 (10D2322a)
+macOS 10.13.6 Maximum
+AirDrop Supported
+AHT 3A202'''
+storage = '''
+1 TB 7200-rpm SATA hard drive standard
+2 TB 7200-rpm SATA hard drive configurable
+256 GB SSD configurable as a second drive
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+2 - 3.0 Gbps Serial ATA (SATA) hard drive interfaces'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote
+2 - Internal 17-watt amplifiers'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 2.0 ports
+1 - FireWire 800 port
+1 - Mini DisplayPort connector
+1 - 3.5-mm analog/optical combo input jack
+1 - 3.5-mm analog/optical combo output jack
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+30.5 lbs.
+20.4" H x 25.6" W x 8.15" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac 27-Inch \"Core i3\" 3.2 (Mid-2010)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i3-3.2-27-inch-aluminum-mid-2010-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 2.8 (Mid-2010)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-2.8-27-inch-aluminum-mid-2010-specs.html" },
+  { label = "iMac 27-Inch \"Core i5\" 3.6 (Mid-2010)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.6-27-inch-aluminum-mid-2010-specs.html" },
+  { label = "iMac 27-Inch \"Core i7\" 2.93 (Mid-2010)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i7-2.93-27-inch-aluminum-mid-2010-specs.html" },
+]

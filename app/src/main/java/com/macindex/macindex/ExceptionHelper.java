@@ -1,186 +1,215 @@
 package com.macindex.macindex;
 
-import android.app.AlertDialog;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.database.sqlite.SQLiteException;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Calendar;
+import com.macindex.macindex.userstate.InvalidUserDataException;
+import com.macindex.macindex.userstate.UserStateUnavailableException;
 
-class ExceptionHelper {
+import java.util.Objects;
 
-    public static void handleException(final Context thisContext, final Exception thisException,
-                                       final String exceptionModule,
-                                       final String exceptionMessage) {
-        handleException(thisContext, thisException, exceptionModule, exceptionMessage,
-                requiresDataRecovery(thisException));
+/** Small UI primitives for failures that the caller has already classified as expected. */
+final class ExceptionHelper {
+
+    private static final String LOG_TAG = "ExpectedFailure";
+
+    private ExceptionHelper() {
     }
 
-    public static void handleDatabaseException(final Context thisContext,
-                                               final Exception thisException,
-                                               final String exceptionModule,
-                                               final String exceptionMessage) {
-        handleException(thisContext, thisException, exceptionModule, exceptionMessage, true);
+    static void showCatalogStartupFailure(final Context context, final Exception failure) {
+        Log.e("AppStartup", "The bundled machine catalog is unavailable.", failure);
+        showFatalDialog(context, R.string.startup_failure_title,
+                R.string.startup_catalog_failure_information, false);
     }
 
-    private static void handleException(final Context thisContext,
-                                        final Exception thisException,
-                                        final String exceptionModule,
-                                        final String exceptionMessage,
-                                        final boolean requiresDataRecovery) {
-        if (thisContext != null) {
-            if (requiresDataRecovery) {
-                invalidateDataVersion(thisContext);
-            }
+    static void showUserStateStartupFailure(final Context context, final Exception failure) {
+        Log.e("AppStartup", "Saved user data is unavailable during startup.", failure);
+        showFatalDialog(context, R.string.startup_failure_title,
+                R.string.startup_user_state_failure_information, true);
+    }
 
-            final String basicInfo = "Generated: " + Calendar.getInstance().getTime() + "\n"
-                    + "MacIndex Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")\n"
-                    + "Android Version: " + Build.VERSION.RELEASE + "\n"
-                    + "Hardware Model: " + Build.BRAND + " " + Build.MODEL + "\n";
-
-            final String exceptionLog;
-            if (exceptionModule != null && exceptionMessage != null) {
-                Log.e(exceptionModule, exceptionMessage);
-                exceptionLog = "Exception Module: " + exceptionModule + "\n"
-                        + "Exception Message: " + exceptionMessage + "\n";
-            } else {
-                exceptionLog = "Module is not available" + "\n";
-            }
-
-            final String exceptionDetails;
-            if (thisException == null) {
-                exceptionDetails = "Detail is not available" + "\n";
-            } else {
-                thisException.printStackTrace();
-                exceptionDetails = "Exception Details:" + "\n" + getStackTrace(thisException);
-            }
-
-            handleExceptionDialog(thisContext, basicInfo + exceptionLog + exceptionDetails);
+    static void showUserStateReadFailure(final Context context, final Exception failure) {
+        if (!(failure instanceof UserStateUnavailableException)) {
+            throw unexpected(failure);
         }
+        Log.e("UserState", "Saved user data became unavailable.", failure);
+        showFatalDialog(context, R.string.user_state_unavailable_title,
+                R.string.user_state_read_failure_information, true);
     }
 
-    static boolean requiresDataRecovery(final Throwable throwable) {
-        Throwable currentThrowable = throwable;
-        while (currentThrowable != null) {
-            if (currentThrowable instanceof UserRecordJsonHelper.InvalidUserRecordException
-                    || currentThrowable instanceof MachineHelper.UnknownMachineUIDException
-                    || currentThrowable instanceof SQLiteException) {
-                return true;
-            }
-            if (currentThrowable == currentThrowable.getCause()) {
-                break;
-            }
-            currentThrowable = currentThrowable.getCause();
+    static void showUserStateWriteFailure(final Context context, final Exception failure,
+                                          final int title, final int message) {
+        if (!(failure instanceof UserStateUnavailableException)) {
+            throw unexpected(failure);
         }
-        return false;
+        showMessageDialog(context, title, message);
     }
 
-    private static void invalidateDataVersion(final Context thisContext) {
+    static void showUserStateEditFailure(final Context context, final Exception failure,
+                                         final int title, final int message) {
+        if (!(failure instanceof UserStateUnavailableException)
+                && !(failure instanceof InvalidUserDataException)) {
+            throw unexpected(failure);
+        }
+        showMessageDialog(context, title, message);
+    }
+
+    static void showUpgradeReport(final Context context, final String report,
+                                  final Runnable confirmedAction) {
+        showInformationDialog(context,
+                R.string.upgrade_report_title, R.string.upgrade_report_information,
+                R.string.link_confirm, R.string.upgrade_report_copy_button,
+                R.string.upgrade_report_copy_information, report, confirmedAction);
+    }
+
+    static AlertDialog showCrashReport(final Context context, final String report,
+                                       final Runnable confirmedAction) {
+        return showInformationDialog(context,
+                R.string.crash_report_title, R.string.crash_report_information,
+                R.string.crash_report_continue, R.string.crash_report_copy_button,
+                R.string.crash_report_copy_information, report, confirmedAction);
+    }
+
+    static void showMessageDialog(final Context context, final int title, final int message) {
+        showMessageDialog(context, title, message, null);
+    }
+
+    static void showMessageDialog(final Context context, final int title, final int message,
+                                  final Runnable dismissedAction) {
+        Objects.requireNonNull(context, "context");
+        if (activityCannotShowDialog(context)) {
+            Log.w(LOG_TAG, "Message dialog skipped because its Activity is no longer active.");
+            return;
+        }
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(R.string.link_confirm, null)
+                .create();
+        if (dismissedAction != null) {
+            dialog.setOnDismissListener(unused -> dismissedAction.run());
+        }
+        dialog.show();
+    }
+
+    static boolean copyText(final Context context, final String label,
+                            final CharSequence text, final int successToast) {
+        Objects.requireNonNull(context, "context");
+        Objects.requireNonNull(label, "label");
+        Objects.requireNonNull(text, "text");
+        final ClipboardManager clipboard = (ClipboardManager) context.getSystemService(
+                Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            showToast(context, R.string.copy_failed_information);
+            return false;
+        }
         try {
-            final boolean versionInvalidated = thisContext.getSharedPreferences(
-                            PrefsHelper.PREFERENCE_FILENAME, Activity.MODE_PRIVATE).edit()
-                    .putInt("lastKnownVersion", 0).commit();
-            if (!versionInvalidated) {
-                Log.e("ExceptionHelper", "Unable to register the current version again.");
-            } else {
-                // Do not allow a cached process to register the same open
-                // database again after a data error.
-                MainActivity.closeDatabase();
-            }
-        } catch (Exception e) {
-            Log.e("ExceptionHelper", "Unable to register the current version again.", e);
+            clipboard.setPrimaryClip(ClipData.newPlainText(label, text));
+        } catch (SecurityException denied) {
+            Log.w("Clipboard", "Android denied clipboard access.", denied);
+            showToast(context, R.string.copy_failed_information);
+            return false;
+        }
+        if (successToast != 0) {
+            showToast(context, successToast);
+        }
+        return true;
+    }
+
+    static void showToast(final Context context, final int message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    static RuntimeException unexpected(final Throwable failure) {
+        if (failure instanceof RuntimeException) {
+            return (RuntimeException) failure;
+        }
+        return new IllegalStateException("Unexpected checked failure", failure);
+    }
+
+    private static void showFatalDialog(final Context context, final int title,
+                                        final int message, final boolean canRestart) {
+        Objects.requireNonNull(context, "context");
+        if (activityCannotShowDialog(context)) {
+            Log.w(LOG_TAG, "Fatal dialog skipped because its Activity is no longer active.");
+            return;
+        }
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false);
+        if (canRestart) {
+            builder.setPositiveButton(R.string.action_restart,
+                    (dialog, which) -> AppRestartHelper.restart(context));
+            builder.setNegativeButton(R.string.action_close,
+                    (dialog, which) -> closeActivity(context));
+        } else {
+            builder.setPositiveButton(R.string.action_close,
+                    (dialog, which) -> closeActivity(context));
+        }
+        builder.show();
+    }
+
+    private static AlertDialog showInformationDialog(final Context context, final int title,
+                                                     final int message, final int positiveButton,
+                                                     final int copyButton, final int copyToast,
+                                                     final String information,
+                                                     final Runnable positiveAction) {
+        Objects.requireNonNull(context, "context");
+        Objects.requireNonNull(information, "information");
+        if (activityCannotShowDialog(context)) {
+            Log.w(LOG_TAG, "Information dialog skipped because its Activity is no longer active.");
+            return null;
+        }
+        final LayoutInflater inflater = (LayoutInflater) context.getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
+        if (inflater == null) {
+            throw new IllegalStateException("LayoutInflater is unavailable");
+        }
+        final View content = inflater.inflate(R.layout.chunk_exception_dialog, null);
+        final TextView informationView = content.findViewById(R.id.exceptionInfo);
+        informationView.setText(information);
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setView(content)
+                .setCancelable(false)
+                .setPositiveButton(positiveButton, (unused, which) -> {
+                    if (positiveAction != null) {
+                        positiveAction.run();
+                    }
+                })
+                .setNeutralButton(copyButton, null)
+                .create();
+        dialog.show();
+        final View copy = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+        if (copy != null) {
+            copy.setOnClickListener(unused ->
+                    copyText(context, "MacIndex diagnostic information", information, copyToast));
+        }
+        return dialog;
+    }
+
+    private static void closeActivity(final Context context) {
+        if (context instanceof Activity) {
+            ((Activity) context).finishAffinity();
         }
     }
 
-    private static void handleExceptionDialog(final Context thisContext, final String exceptionInfo) {
-        showInformationDialog(thisContext, R.string.error, R.string.error_information,
-                R.string.error_restart, R.string.error_copy_button,
-                R.string.error_copy_information, exceptionInfo,
-                () -> PrefsHelper.triggerRebirth(thisContext));
-    }
-
-    public static void showUpgradeReport(final Context thisContext, final String report,
-                                         final Runnable confirmedAction) {
-        showInformationDialog(thisContext, R.string.upgrade_report_title,
-                R.string.upgrade_report_information, R.string.link_confirm,
-                R.string.upgrade_report_copy_button, R.string.upgrade_report_copy_information,
-                report, confirmedAction);
-    }
-
-    public static void showMessageDialog(final Context thisContext, final int title,
-                                         final int message) {
-        if (thisContext instanceof Activity) {
-            final Activity activity = (Activity) thisContext;
-            if (activity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                    && activity.isDestroyed())) {
-                Log.e("MessageDialog", thisContext.getString(message));
-                return;
-            }
+    private static boolean activityCannotShowDialog(final Context context) {
+        if (!(context instanceof Activity)) {
+            return false;
         }
-        final AlertDialog.Builder messageDialog = new AlertDialog.Builder(thisContext);
-        messageDialog.setTitle(title);
-        messageDialog.setMessage(message);
-        messageDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-            // Confirmed, dismiss the dialog.
-        });
-        messageDialog.show();
+        final Activity activity = (Activity) context;
+        return activity.isFinishing() || activity.isDestroyed();
     }
 
-    private static void showInformationDialog(final Context thisContext, final int title,
-                                              final int message, final int positiveButton,
-                                              final int copyButton, final int copyToast,
-                                              final String information,
-                                              final Runnable positiveAction) {
-        if (thisContext instanceof Activity) {
-            final Activity activity = (Activity) thisContext;
-            if (activity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                    && activity.isDestroyed())) {
-                Log.e("InformationDialog", information);
-                return;
-            }
-        }
-        final AlertDialog.Builder informationDialog = new AlertDialog.Builder(thisContext);
-        informationDialog.setTitle(title);
-        informationDialog.setMessage(message);
-        informationDialog.setCancelable(false);
-        informationDialog.setPositiveButton(positiveButton, (dialogInterface, i) ->
-                positiveAction.run());
-        informationDialog.setNeutralButton(copyButton, (dialogInterface, i) -> {
-            // To be override
-        });
-
-        final View infoChunk = ((LayoutInflater) thisContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.chunk_exception_dialog, null);
-        final TextView exceptionInfoBox = infoChunk.findViewById(R.id.exceptionInfo);
-
-        exceptionInfoBox.setText(information);
-        informationDialog.setView(infoChunk);
-
-        final AlertDialog informationDialogCreated = informationDialog.create();
-        informationDialogCreated.show();
-
-        // Override the neutral button
-        informationDialogCreated.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> {
-            ClipboardManager clipboard = (ClipboardManager) thisContext.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("ExceptionInfo", information);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(thisContext, thisContext.getString(copyToast), Toast.LENGTH_LONG).show();
-        });
-    }
-
-    private static String getStackTrace(final Exception thisException) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        thisException.printStackTrace(printWriter);
-        return stringWriter.toString();
-    }
 }

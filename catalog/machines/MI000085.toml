@@ -1,0 +1,42 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000085"
+name = "Macintosh PowerBook 150"
+introductions = [{ year = 1994, month = 7 }]
+
+model_numbers = [{ value = "M2740" }]
+gestalt_ids = [{ value = "115" }]
+
+codenames = [{ value = "JeDI" }]
+
+processor = "**Motorola 68030** 33 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["68030"]
+
+graphics = "**Apple GSC display controller** 128 KB VRAM"
+
+display = "9.5-inch 2-bit grayscale FSTN passive-matrix display, 640x480"
+ram = '''
+4 MB or 8 MB standard
+40 MB maximum
+4 MB built-in
+1 - Macintosh Duo memory slot, 70 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.1.1 (PowerBook 150 Enabler)
+Mac OS 7.6.1 Maximum'''
+storage = '''
+120 MB or 250 MB IDE hard drive
+IDE hard drive interface
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Optional modem
+1 - Serial port
+1 - HDI-30 SCSI port
+1 - Internal 20-pin modem connector'''
+design = '''
+5.8 lbs.
+2.25" H x 11.25" W x 9.3" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "PowerBook 150", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook150.html" }]

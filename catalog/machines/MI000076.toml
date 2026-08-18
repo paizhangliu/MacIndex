@@ -1,0 +1,44 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000076"
+name = "Macintosh PowerBook 100"
+introductions = [{ year = 1991, month = 10 }]
+
+model_numbers = [{ value = "M1506" }]
+gestalt_ids = [{ value = "24" }]
+
+codenames = [{ value = "Asahi" }, { value = "Classic" }, { value = "Derringer" }, { value = "Rosebud" }, { value = "Sapporo" }]
+
+processor = "**Motorola 68HC000** 16 MHz, 1.2 µm HCMOS process, 16/32-bit, no on-chip cache, 16 MHz system bus"
+processor_family_keys = ["68000"]
+
+graphics = "**Apple DDC display controller** 32 KB video SRAM"
+
+display = "9-inch monochrome passive-matrix display, 640x400"
+ram = '''
+2 MB or 4 MB standard
+8 MB maximum
+2 MB built-in
+1 - PowerBook 1xx memory slot, 100 ns'''
+rom = "256 KB Macintosh ROM"
+software = '''
+System 7.0.1
+System 7.5.5 Maximum'''
+storage = '''
+20 MB or 40 MB SCSI hard drive
+SCSI hard drive interface
+Optional external 1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+1 - Printer serial port
+1 - HDI-30 SCSI port
+1 - HDI-20 external floppy port
+1 - 3.5-mm mono audio output jack
+1 - Internal 20-pin modem connector'''
+design = '''
+5.1 lbs.
+1.8" H x 11" W x 8.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [{ label = "PowerBook 100", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook100.html" }]

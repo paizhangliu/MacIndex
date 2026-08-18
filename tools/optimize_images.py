@@ -10,7 +10,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MACHINE_DIRECTORY = ROOT / "app/src/main/assets/machines"
-DRAWABLE_DIRECTORY = ROOT / "app/src/main/res/drawable"
+DRAWABLE_DIRECTORIES = (
+    ROOT / "app/src/main/res/drawable",
+    ROOT / "app/src/main/res/drawable-nodpi",
+)
 
 MACHINE_QUALITY = 90
 DRAWABLE_QUALITY = 90
@@ -159,7 +162,9 @@ def main():
 
     machine_paths = list(MACHINE_DIRECTORY.glob("*.webp"))
     drawable_paths = [
-        path for path in DRAWABLE_DIRECTORY.iterdir()
+        path
+        for directory in DRAWABLE_DIRECTORIES
+        for path in directory.iterdir()
         if path.is_file() and path.suffix.lower() in RASTER_EXTENSIONS
     ]
 

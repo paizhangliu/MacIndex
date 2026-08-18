@@ -1,0 +1,82 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000320"
+name = "MacBook Pro (15-inch Mid/Late 2007, 2.4/2.2 GHz)"
+introductions = [
+  { year = 2007, month = 6 },
+  { year = 2007, month = 11 },
+]
+
+model_numbers = [{ value = "A1226" }]
+identifiers = [{ value = "MacBookPro3,1" }]
+order_numbers = [
+  { value = "MA895", revisions = ["A"], qualifier = "2.2 GHz" },
+  { value = "MA896", revisions = ["A"], qualifier = "2.4 GHz" },
+]
+emc_numbers = [{ value = "2136" }]
+
+processor = '''
+**Intel Core 2 Duo (T7500) ("Merom")** 2.2 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 800 MHz system bus
+**Intel Core 2 Duo (T7700) ("Merom")** 2.4 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 800 MHz system bus
+**Intel Core 2 Duo (T7800) ("Merom")** 2.6 GHz (Late 2007 configuration), 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 800 MHz system bus'''
+processor_family_keys = ["core"]
+processor_logo_keys = ["core2duo"]
+
+graphics = '''
+**NVIDIA GeForce 8600M GT** 128 MB GDDR3 (2.2 GHz)
+**NVIDIA GeForce 8600M GT** 256 MB GDDR3 (2.4 and 2.6 GHz)'''
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = '''
+15.4-inch (diagonal) LED-backlit TFT display, 1440x900, 110 ppi
+Glossy display optional
+One external display up to 2560x1600
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+4 GB Apple-supported maximum
+6 GB actual maximum
+2 - 200-pin PC2-5300 (667 MHz) DDR2 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.4.9 (8Q1058)
+OS X 10.11.6 Maximum
+AHT 3A121, 3A124, 3A141'''
+storage = '''
+120 GB 5400-rpm hard drive standard (2.2 GHz)
+160 GB 5400-rpm hard drive standard (2.4 GHz)
+160 GB 5400-rpm hard drive configurable (2.2 GHz)
+160 GB 7200-rpm or 200 GB 4200-rpm hard drive configurable (Mid 2007)
+200 GB 7200-rpm or 250 GB 5400-rpm hard drive configurable (Late 2007)
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+1.5 Gbps Serial ATA (SATA) hard drive interface
+Ultra ATA/100 (running at UATA/66) optical drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.0 + EDR
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Built-in iSight camera
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+2 - USB 2.0 ports
+1 - FireWire 400 port
+1 - FireWire 800 port
+1 - Dual-link DVI port (VGA, composite and S-video with adapter)
+1 - 3.5-mm analog/optical audio input jack
+1 - 3.5-mm analog/optical audio output/headphone jack
+1 - Kensington security slot
+1 - ExpressCard/34 slot'''
+design = '''
+Lightweight aluminum alloy
+5.4 lbs.
+1" H x 14.1" W x 9.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Pro 15\" \"Core 2 Duo\" 2.2 (SR)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-2-duo-2.2-15-santa-rosa-specs.html" },
+  { label = "MacBook Pro 15\" \"Core 2 Duo\" 2.4 (SR)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-2-duo-2.4-15-santa-rosa-specs.html" },
+  { label = "MacBook Pro 15\" \"Core 2 Duo\" 2.6 (SR)", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-2-duo-2.6-15-santa-rosa-specs.html" },
+]

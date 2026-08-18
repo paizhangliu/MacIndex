@@ -1,0 +1,49 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000077"
+name = "Macintosh PowerBook 170"
+introductions = [{ year = 1991, month = 10 }]
+
+model_numbers = [{ value = "M5409" }]
+gestalt_ids = [{ value = "21" }]
+
+codenames = [{ value = "Road Warrior" }, { value = "Tim" }]
+
+processor = '''
+**Motorola 68030** 25 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 25 MHz system bus
+**Motorola 68882 FPU**'''
+processor_family_keys = ["68030"]
+
+graphics = "**Apple DDC display controller** 32 KB video SRAM"
+
+display = "9.8-inch monochrome active-matrix display, 640x400"
+ram = '''
+4 MB standard
+8 MB maximum
+2 MB built-in
+1 - PowerBook 1xx memory slot, 100 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.0.1
+Mac OS 7.6.1 Maximum'''
+storage = '''
+40 MB or 80 MB SCSI hard drive
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = '''
+1 - Built-in microphone
+1 - Built-in speaker'''
+expansion = '''
+1 - 2400 baud modem
+1 - ADB port
+2 - Serial ports
+1 - HDI-30 SCSI port
+1 - 3.5-mm mono audio input jack
+1 - 3.5-mm mono audio output jack
+1 - Internal 20-pin modem connector'''
+design = '''
+6.8 lbs.
+2.25" H x 11.25" W x 9.3" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "PowerBook 170", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook170.html" }]

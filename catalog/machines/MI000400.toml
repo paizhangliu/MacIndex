@@ -1,0 +1,72 @@
+category = "macbook_air_intel"
+picture_asset_key = "MI000389"
+name = "MacBook Air (13-inch, 2017)"
+introductions = [{ year = 2017, month = 6 }]
+
+model_numbers = [{ value = "A1466" }]
+identifiers = [{ value = "MacBookAir7,2" }]
+order_numbers = [
+  { value = "MQD32", revisions = ["A"], qualifier = "128 GB storage" },
+  { value = "MQD42", revisions = ["A"], qualifier = "256 GB storage" },
+  { value = "MQD52", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3178" }]
+
+processor = '''
+**Intel Core i5 (5350U) ("Broadwell")** 1.8 GHz, up to 2.9 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i7 (5650U) ("Broadwell")** 2.2 GHz, up to 3.2 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["broadwell"]
+processor_logo_keys = [
+  "corei5_5",
+  "corei7_5",
+]
+
+graphics = "**Intel HD Graphics 6000** up to 1.5 GB LPDDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit glossy widescreen display, 1440x900
+One external display up to 3840x2160 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+8 GB maximum
+PC3-12800 (1600 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.12.4 (16E195)
+macOS 12.7.6 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+128 or 256 GB SSD standard (depending on configuration)
+256 or 512 GB SSD configurable (128 GB base configuration)
+512 GB SSD configurable (256 GB base configuration)
+Optional external USB MacBook Air SuperDrive
+8.0 GT/s PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in speakers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+Optional Apple USB Ethernet Adapter or Thunderbolt to Gigabit Ethernet Adapter
+2 - USB 3.0 ports (up to 5 Gbps)
+1 - Thunderbolt 2 port (up to 20 Gbps; digital video output)
+1 - 3.5-mm headphone jack
+1 - Secure Digital (SD) card slot'''
+design = '''
+Precision aluminum unibody
+2.96 lbs.
+0.11–0.68" H x 12.8" W x 8.94" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Air \"Core i5\" 1.8 13\" (2017*)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-i5-1.8-13-2017-specs.html" },
+  { label = "MacBook Air \"Core i7\" 2.2 13\" (2017*)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-i7-2.2-13-2017-specs.html" },
+]

@@ -11,7 +11,6 @@
     <color name="colorSelectedBackground">#0D98BA</color>
     <color name="colorCompareDifferent">#E7F6FA</color>
     <color name="colorDivider">#CDCDCD</color>
-    <color name="colorError">#FF0000</color>
     <color name="colorSupportObsolete">#FF0000</color>
     <color name="colorSupportVintage">#FF00FF</color>
     <color name="colorSupportSupported">#00FF00</color>
@@ -21,6 +20,10 @@
     <color name="colorAboutTitle">#0D98BA</color>
     <color name="colorAboutLogo">#212121</color>
     <color name="colorLogoBackground">#00000000</color>
-    <color name="colorIconAccent">#0095B6</color>
+    <color name="colorShortcutIconBackground">#303030</color>
     <color name="colorFavouriteIcon">#F9D71C</color>
+    <color name="colorSearchFacetBorder">#B7C6CA</color>
+    <color name="colorSearchFacetSelectedBorder">#8FC8D5</color>
+    <color name="colorSearchFacetSelectedBackground">#E7F6FA</color>
+    <color name="colorSearchFacetSelectedText">#006C84</color>
 </resources>

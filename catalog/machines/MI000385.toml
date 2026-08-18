@@ -1,0 +1,60 @@
+category = "macbook_air_intel"
+picture_asset_key = "MI000385"
+name = "MacBook Air"
+introductions = [{ year = 2008, month = 1 }]
+
+model_numbers = [{ value = "A1237" }]
+identifiers = [{ value = "MacBookAir1,1" }]
+order_numbers = [{ value = "MB003", revisions = ["A"] }]
+emc_numbers = [{ value = "2142" }]
+
+processor = '''
+**Intel Core 2 Duo (P7500) ("Merom")** 1.6 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 800 MHz system bus
+**Intel Core 2 Duo (P7700) ("Merom")** 1.8 GHz, 65 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache, 800 MHz system bus'''
+processor_family_keys = ["core"]
+processor_logo_keys = ["core2duo"]
+
+graphics = "**Intel Graphics Media Accelerator (GMA) X3100** 144 MB DDR2 SDRAM shared with main memory, plus 16 MB when using an external display"
+
+display = '''
+13.3-inch (diagonal) glossy widescreen display, 1280x800, 114 ppi, 300 nits
+One external display up to 1920x1200
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+2 GB maximum
+DDR2 PC2-5300 SDRAM onboard memory'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X 10.5.1 (9B2324)
+Mac OS X 10.7.5 Maximum
+AHT 3A131'''
+storage = '''
+80 GB 4200-rpm ATA hard drive standard
+64 GB SSD configurable
+Optional MacBook Air SuperDrive (MB397G/A)
+Parallel ATA (PATA) hard drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in microphone
+1 - Built-in speaker
+Built-in iSight camera (640x480)
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+Optional USB Ethernet Adapter (MB442Z/A)
+Optional Apple USB Modem (MA034Z/A)
+1 - USB 2.0 port
+1 - Micro-DVI port (DVI, VGA, composite and S-video with adapter)
+1 - 3.5-mm analog output jack'''
+design = '''
+Precision aluminum unibody
+3.0 lbs.
+0.16–0.76" H x 12.8" W x 8.94" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "MacBook Air \"Core 2 Duo\" 1.6 13\" (Original)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-2-duo-1.6-13-specs.html" },
+  { label = "MacBook Air \"Core 2 Duo\" 1.8 13\" (Original)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-2-duo-1.8-13-specs.html" },
+]

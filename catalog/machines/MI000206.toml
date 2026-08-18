@@ -1,0 +1,70 @@
+category = "xserve_ppc"
+picture_asset_key = "MI000206"
+name = "Xserve (Slot Load)"
+introductions = [{ year = 2003, month = 2 }]
+
+model_numbers = [{ value = "A1004" }]
+identifiers = [{ value = "RackMac1,2" }]
+order_numbers = [
+  { value = "M8888", revisions = ["A"], qualifier = "1.33 GHz" },
+  { value = "M8889", revisions = ["A"], qualifier = "dual 1.33 GHz" },
+]
+emc_numbers = [{ value = "1971" }]
+
+codenames = [{ value = "Q28" }, { value = "High Fidelity" }]
+
+processor = '''
+**PowerPC 7455 (G4)** 1.33 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 2 MB DDR L3 cache, 167 MHz system bus
+**Dual PowerPC 7455 (G4)** 1.33 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 256 KB on-chip L2 cache per processor, 2 MB DDR L3 cache per processor, 167 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = '''
+**ATI PCI graphics** 32 MB DDR SDRAM standard
+**ATI Radeon 8500** 64 MB DDR SDRAM build-to-order (replaces second Gigabit Ethernet card)'''
+graphics_logo_keys = [
+  "ati",
+  "atiradeon2000",
+]
+
+display = '''
+VGA display support
+DVI, VGA, and S-video display support up to 2048x1536 (Radeon 8500)'''
+ram = '''
+256 MB standard (single 1.33 GHz)
+512 MB standard (dual 1.33 GHz)
+2 GB maximum
+4 - PC2700 184-pin DDR SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X Server 10.2.4
+Mac OS X Server 10.5.8 Maximum'''
+storage = '''
+60 GB 7200-rpm Ultra ATA/133 hard drive
+Up to 720 GB across 4 hot-plug Apple Drive Modules
+24x slot-loading CD-ROM or optional Combo drive'''
+features = '''
+Remote monitoring
+Front-panel system identifier button'''
+expansion = '''
+1 - Built-in Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - Second Gigabit Ethernet port on PCI card (unavailable with build-to-order AGP graphics card)
+2 - USB 1.1 ports
+1 - FireWire 400 port
+2 - FireWire 800 ports
+1 - DB-9 serial port
+1 - VGA port
+2 - 64-bit, 66 MHz PCI slots
+1 - 32-bit, 66 MHz PCI/AGP slot
+4 - Hot-plug 3.5-inch Ultra ATA drive bays'''
+design = '''
+1U rack-mountable
+26-31 lbs.
+1.73" H x 17.6" W x 28" D'''
+
+support_status = "Obsolete"
+sound_profile = "NONE"
+links = [
+  { label = "Xserve G4/1.33", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g4_1.33.html" },
+  { label = "Xserve G4/1.33 DP", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g4_1.33_dp.html" },
+]

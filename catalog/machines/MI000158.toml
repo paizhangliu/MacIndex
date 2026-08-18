@@ -1,0 +1,87 @@
+category = "power_mac"
+picture_asset_key = "MI000158"
+name = "Power Mac G4 Cube"
+introductions = [
+  { year = 2000, month = 7, qualifier = "DVD" },
+  { year = 2001, month = 2, qualifier = "CD-RW" },
+]
+
+model_numbers = [{ value = "M7886" }]
+identifiers = [{ value = "PowerMac5,1" }]
+order_numbers = [
+  { value = "M7642", revisions = ["A"], qualifier = "450 MHz DVD" },
+  { value = "M8328", revisions = ["A"], qualifier = "450 MHz CD-RW" },
+]
+emc_numbers = [{ value = "1844" }]
+
+codenames = [
+  { value = "Trinity" },
+  { value = "P9" },
+  { value = "Kubrick", qualifier = "firmware identifier" },
+  { value = "Rubicon" },
+]
+
+processor = '''
+**PowerPC 7400 (G4)** 450 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside (1:2) L2 cache, 100 MHz system bus
+**PowerPC 7400 (G4)** 500 MHz, 0.20 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside (1:2) L2 cache, 100 MHz system bus
+**PowerPC 7410 (G4)** 500 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside (1:2) L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7400",
+  "7410",
+]
+
+graphics = '''
+**ATI Rage 128 Pro** 16 MB VRAM standard
+**ATI Radeon** 32 MB DDR VRAM build-to-order
+**NVIDIA GeForce2 MX** 32 MB VRAM build-to-order (CD-RW configuration)'''
+graphics_logo_keys = [
+  "ati",
+  "atiradeon2000",
+  "nvgeforce2mx",
+]
+
+display = "Single display support via VGA and ADC, up to 1920x1200"
+ram = '''
+64 MB standard (DVD configuration)
+128 MB standard (CD-RW configuration)
+Up to 1.5 GB configurable
+1.5 GB maximum
+3 - PC100 168-pin SDRAM slots, 8 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.0.4 (Mac OS ROM 5.2.1; DVD)
+Mac OS 9.1 (CD-RW)
+Mac OS X 10.4.11 Maximum
+AHT (G4 Cube) v1.0 (DVD), v1.1 (CD-RW)'''
+storage = '''
+20 GB hard drive standard
+Up to 40 GB hard drive configurable (DVD-ROM configuration)
+Up to 60 GB Ultra ATA/66 hard drive configurable (CD-RW configuration)
+Slot-loading DVD-ROM drive standard (original configuration) or configurable (CD-RW configuration)
+Slot-loading CD-RW drive standard (CD-RW configuration)
+Ultra ATA/66 (ATA-5) hard drive interface
+EIDE (ATA-3) optical drive interface'''
+features = '''
+Optional AirPort (802.11b)
+2 - Harman Kardon USB speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T; RJ-45)
+1 - 56 Kbps V.90 modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (12 W total power)
+1 - VGA port
+1 - ADC port
+USB-based audio output
+1 - AGP 2x slot (graphics card upgrades not supported by Apple)'''
+design = '''
+Graphite
+14 lbs.
+9.8" H x 7.7" W x 7.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G4 450 Cube", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_450_cube.html" },
+  { label = "Power Macintosh G4 500 Cube", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_500_cube.html" },
+]

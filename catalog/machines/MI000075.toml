@@ -1,0 +1,70 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000075"
+name = "Macintosh Portable"
+introductions = [{ year = 1989, month = 9 }]
+
+model_numbers = [
+  { value = "M5120", qualifier = "Original" },
+  { value = "M5126", qualifier = "Backlit" },
+]
+gestalt_ids = [{ value = "10" }]
+
+codenames = [
+  { value = "Esprit", qualifier = "Original" },
+  { value = "Guinness", qualifier = "Original" },
+  { value = "Laguna", qualifier = "Original" },
+  { value = "Malibu", qualifier = "Original" },
+  { value = "Riviera", qualifier = "Original" },
+  { value = "Aruba", qualifier = "Backlit" },
+  { value = "Love Shack", qualifier = "Backlit" },
+  { value = "Mulligan", qualifier = "Backlit" },
+]
+
+processor = "**Motorola 68HC000** 16 MHz, 1.2 µm HCMOS process, 16/32-bit, no on-chip cache, 16 MHz system bus"
+processor_family_keys = ["68000"]
+
+graphics = "**Apple LCD video controller** 32 KB video SRAM"
+
+display = '''
+9.8-inch monochrome active-matrix display, 640x400
+Backlight (Backlit model)
+External display support via HDI-15'''
+ram = '''
+1 MB standard and built-in (Original)
+1 MB standard and built-in (Backlit)
+2 MB or 4 MB configurable through the RAM slot (Backlit)
+2 MB maximum through the RAM slot; up to 9 MB with higher-density or third-party PDS memory (Original)
+8 MB maximum through PDS memory (Backlit; Apple RAM card must be removed when using PDS memory)
+1 - Portable memory slot, 100 ns'''
+rom = "256 KB Macintosh ROM"
+software = '''
+System 6.0.4 (Original)
+System 6.0.8 (Backlit)
+System 7.5.5 Maximum'''
+storage = '''
+No hard drive or optional 40 MB SCSI hard drive (Original)
+40 MB SCSI hard drive standard (Backlit)
+SCSI hard drive interface
+1 - 1.44 MB internal floppy drive
+Optional second internal 1.44 MB floppy drive when no hard drive is installed
+1 - External 800 KB or 1.44 MB floppy drive supported'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Optional 2400 baud modem
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-19 external floppy port
+1 - HDI-15 video port
+1 - 3.5-mm stereo audio output jack
+1 - Modem slot'''
+design = '''
+15.8 lbs.
+4.05" H x 15.25" W x 14.83" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_II"
+links = [
+  { label = "Portable (Original)", url = "https://everymac.com/systems/apple/powerbook/specs/mac_portable.html" },
+  { label = "Portable Backlit", url = "https://everymac.com/systems/apple/powerbook/specs/mac_portable_bl.html" },
+]

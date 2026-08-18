@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">MacIndex</string>
-    <string name="app_name_everymac" translatable="false">EveryMacIndex</string>
+    <string name="brand_everymac" translatable="false">EveryMac</string>
     <string name="information_specs_full">Tap the top image to play the startup and death sounds</string>
     <string name="information_specs_no_death">Tap the top image to play the startup sound</string>
     <string name="information_specs_no_sound">This machine has no startup or death sounds</string>
@@ -15,16 +15,22 @@
     <string name="setting_user_data_description">Back up or restore bookmarks, comments, and the compare list as a file.</string>
     <string name="user_data_export">Export User Data</string>
     <string name="user_data_import">Import User Data</string>
+    <string name="loading_user_data_export">Exporting user data</string>
+    <string name="loading_user_data_import">Reading user data</string>
+    <string name="loading_user_data_apply">Importing user data</string>
     <string name="user_data_export_success">User data exported</string>
     <string name="user_data_export_failed">Unable to export user data</string>
     <string name="user_data_import_invalid">This is not a valid MacIndex user data file</string>
     <string name="user_data_import_failed">Unable to read user data</string>
     <string name="user_data_import_information">This file contains %1$d comments, %2$d bookmarks in %3$d folders, and %4$d machines in the compare list. Importing will replace the corresponding user data currently stored on this device.</string>
-    <string name="user_data_import_removed">%1$d items no longer match the current database. They will be removed during import and listed afterward.</string>
+    <string name="user_data_import_removed">%1$d items no longer match the current machine catalog and will be removed during import.</string>
     <string name="user_data_import_success">User data imported</string>
-    <string name="setting_everymac">Open Directly on EveryMac</string>
-    <string name="setting_everymac_description">Open this machine’s EveryMac page directly instead of the Specifications page. If multiple configurations are available, you will be asked to choose one.</string>
-    <string name="setting_everymac_warning_content">This applies to both the main page and the search page. Some features will also be unavailable.</string>
+    <string name="user_data_choose_location">Choose Another Location</string>
+    <string name="user_data_choose_file">Choose Another File</string>
+    <string name="user_data_export_picker_failed">MacIndex could not open the system file picker. Check that a file manager is available, then try again.</string>
+    <string name="user_data_import_picker_failed">MacIndex could not open the system file picker. Check that a file manager is available, then try again.</string>
+    <string name="user_data_export_prepare_failed">Your saved data could not be prepared for export. Check available device storage, then try again.</string>
+    <string name="user_data_import_apply_failed">The imported data could not be saved. Check available device storage, then try again.</string>
     <string name="setting_deathsound">Enable Death Sound</string>
     <string name="setting_deathsound_deathsound_description">Alternate between the startup and death sounds on the Specifications page. When disabled, only the startup sound is played.</string>
     <string name="setting_high_vol_warning">High Volume Warning</string>
@@ -37,8 +43,6 @@
     <string name="setting_randomall_description">Only pick from the 68K, PowerPC, Intel, Apple silicon, or all-machine group currently selected on the main page.</string>
     <string name="setting_save_main">Remember Main Page State</string>
     <string name="setting_save_main_description">Remember the last selected category filter and view.</string>
-    <string name="setting_save_search">Remember Search Page State</string>
-    <string name="setting_save_search_description">Remember the last selected category filter and search option.</string>
     <string name="setting_save_compare">Remember Compare Page State</string>
     <string name="setting_save_compare_description">Remember the two machines selected for comparison and their left/right order.</string>
     <string name="setting_auto_update">Automatically Check for Updates</string>
@@ -48,37 +52,31 @@
     <string name="setting_appearance_system">Follow System</string>
     <string name="setting_appearance_light">Light</string>
     <string name="setting_appearance_dark">Dark</string>
-    <string name="setting_search_open_directly">Open Single Search Result</string>
-    <string name="setting_search_open_directly_description">Open the result automatically when a search returns exactly one machine.</string>
     <string name="setting_section_general">General</string>
     <string name="setting_section_browsing">Browsing</string>
     <string name="setting_section_sound">Sound</string>
     <string name="setting_section_data">Data &amp; State</string>
-    <string name="setting_section_advanced">Advanced</string>
-    <string name="search_searchBy">Search Options</string>
-    <string-array name="search_Filters">
-        <item>All Categories</item>
-        <item>68K Macintosh</item>
-        <item>PowerPC Macintosh</item>
-        <item>Intel Macintosh</item>
-        <item>Apple Silicon Macintosh</item>
-    </string-array>
-    <string-array name="search_Options">
-        <item>Search by Machine Name</item>
-        <item>Search by Model Identifiers</item>
-    </string-array>
-    <string-array name="search_Tips">
-        <item>Machine Name</item>
-        <item>Model No. / Part No. / Identifier / EMC / Gestalt</item>
-    </string-array>
-    <string name="search_noResult">No results</string>
+    <string name="search_hint">Machine name, codename, or identifiers</string>
+    <string name="search_noResult">No results for “%1$s”</string>
     <plurals name="search_results">
         <item quantity="one">%d result</item>
         <item quantity="other">%d results</item>
     </plurals>
-    <string name="search_prompt">Press Enter to search</string>
-    <string name="search_control_character">Search terms cannot contain control characters</string>
-    <string name="search_overlength">Input is too long</string>
+    <string name="search_field_name">Name</string>
+    <string name="search_field_alias">Alias</string>
+    <string name="search_field_codename">Codename</string>
+    <string name="search_field_model_number">Model Number</string>
+    <string name="search_field_model_identifier">Model Identifier</string>
+    <string name="search_field_gestalt_id">Gestalt ID</string>
+    <string name="search_field_part_number">Part Number</string>
+    <string name="search_field_emc_number">EMC Number</string>
+    <string name="search_result_field_prefix">%1$s:\u0020</string>
+    <string name="search_facet_all">All</string>
+    <string name="search_facet_with_count">%1$s (%2$d)</string>
+    <string name="machine_row_accessibility">%1$s. %2$s</string>
+    <string name="machine_row_accessibility_favourite">%1$s. Bookmarked. %2$s</string>
+    <string name="search_prompt">Tap the Search key to search</string>
+    <string name="search_loading">Loading…</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
     <string name="menu_random_limited_label">I\'m Feeling Lucky (Limited)</string>
@@ -109,7 +107,6 @@
     <string name="submenu_specs_comment">Edit Comment</string>
     <string name="submenu_specs_share">Copy Specification</string>
     <string name="submenu_specs_share_link">Generate Share Link</string>
-    <string name="submenu_search_reset">Reset Filter and Search Options</string>
     <string name="submenu_search_SN">Apple Serial Number Lookup</string>
     <string name="submenu_search_everymac">EveryMac Lookup</string>
     <string name="submenu_favourite_add">Create New Folder</string>
@@ -133,6 +130,7 @@
         <item quantity="one">… %d more</item>
         <item quantity="other">… %d more</item>
     </plurals>
+    <string name="codename">Codename</string>
     <string name="emc">EMC Number</string>
     <string name="processor">Processor</string>
     <string name="graphics">Graphics</string>
@@ -147,13 +145,15 @@
     <string name="support">Support Status</string>
     <string name="comment">Comment</string>
     <string name="comment_null">No Comment</string>
-    <string name="comment_length">Comments are limited to 500 characters.</string>
+    <string name="comment_length">Comments are limited to %1$d characters.</string>
     <string name="comment_tips">View all saved comments on the Comments page.</string>
     <string name="not_applicable">N/A</string>
     <string name="link_confirm">Confirm</string>
     <string name="link_open_failed_title">Unable to Open Link</string>
     <string name="link_open_failed_message">MacIndex could not open this link. Check that a web browser is available, then try again.</string>
     <string name="link_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_try_again">Try Again</string>
     <string name="action_delete">Delete</string>
     <string name="action_clear">Clear</string>
     <string name="action_play_anyway">Play Anyway</string>
@@ -163,47 +163,63 @@
     <string name="link_opening">Opening on EveryMac: %1$s</string>
     <string name="link_message">Multiple configurations are available for this machine. Select one to continue.</string>
     <string name="link_not_available">EveryMac information is unavailable for this machine, possibly because it was region-specific or built to order.</string>
-    <string name="error">Internal Error</string>
-    <string name="error_information">Report this problem to the developer, then restart MacIndex to continue.</string>
-    <string name="error_copy_button">Copy Details</string>
-    <string name="error_copy_information">Error details copied</string>
+    <string name="startup_failure_title">MacIndex Could Not Start</string>
+    <string name="startup_catalog_failure_information">The built-in machine catalog could not be loaded. Update or reinstall MacIndex. Your saved data was not changed.</string>
+    <string name="startup_user_state_failure_information">Your saved data could not be read. It was not deleted. Restart MacIndex and check available device storage if the problem continues.</string>
+    <string name="user_state_unavailable_title">Saved Data Unavailable</string>
+    <string name="user_state_read_failure_information">MacIndex can no longer access your saved data. Restart MacIndex before making further changes.</string>
     <string name="copy_information_success">Information copied</string>
-    <string name="error_copy_not_available">Nothing available to copy</string>
+    <string name="copy_failed_information">The text could not be copied to the clipboard. Please try again.</string>
+    <string name="copy_not_available">Nothing available to copy</string>
     <string name="upgrade_report_title">Saved Data Updated</string>
-    <string name="upgrade_report_information">Some saved data was invalid or no longer matched the current database and was removed. You can copy the details below for your records.</string>
+    <string name="upgrade_report_information">Some saved data was invalid or no longer matched the current machine catalog and was removed. You can copy the details below for your records.</string>
     <string name="upgrade_report_copy_button">Copy Details</string>
     <string name="upgrade_report_copy_information">Removed items copied</string>
     <string name="upgrade_report_empty_entry">(Empty entry)</string>
-    <string name="error_restart">Restart</string>
+    <string name="upgrade_report_reset_entry">Your saved user data could not be read and was reset.</string>
+    <string name="upgrade_report_acknowledge_failed">MacIndex could not finish acknowledging this notice. Check available device storage, then try again.</string>
+    <string name="crash_report_title">MacIndex Closed Unexpectedly</string>
+    <string name="crash_report_information">MacIndex encountered an unexpected error the last time it was open. Copy the technical details when reporting the problem, or continue using MacIndex.</string>
+    <string name="crash_report_continue">Continue</string>
+    <string name="crash_report_copy_button">Copy Details</string>
+    <string name="crash_report_copy_information">Crash details copied</string>
+    <string name="action_restart">Restart</string>
     <string name="first_one">Already the first machine</string>
     <string name="last_one">Already the last machine</string>
-    <string name="loading_category">Loading Database</string>
-    <string name="loading_search">Searching</string>
-    <string name="loading_favourites">Loading Bookmarks</string>
     <string name="loading_update">Checking for Updates</string>
-    <string name="comments_not_available_tips">No comments have been saved yet</string>
+    <string name="comments_not_available_tips">No comments have been saved yet\nAdd one from any machine page</string>
     <string name="comments_delete">Select the comments to delete. This cannot be undone.</string>
     <string name="comments_clear_warning">All comments will be deleted. This cannot be undone.</string>
-    <string name="favourites_no_folder_tips">No bookmark folders have been created yet\nTap here to create one</string>
+    <string name="comments_clear_failed">MacIndex could not clear the comments. Check available device storage, then try again.</string>
+    <string name="comments_delete_failed">MacIndex could not delete the selected comments. Check available device storage, then try again.</string>
+    <string name="favourites_no_folder_tips">No bookmark folders have been created yet\nTap this page to create one</string>
     <string name="favourites_tips">Select one or more folders. You can manage folders on the Bookmarks page.</string>
     <string name="favourites_delete">Select the folders to delete. This cannot be undone.</string>
     <string name="favourites_rename">Select the folder to rename.</string>
     <string name="favourites_new_folder">Enter a folder name.</string>
     <string name="favourites_empty_folder">%1$s (Empty)</string>
     <string name="favourites_error_empty">Folder name cannot be empty.</string>
-    <string name="favourites_error_length">Folder names are limited to one line and 30 characters.</string>
+    <string name="favourites_error_length">Folder names are limited to one line and %1$d characters.</string>
     <string name="favourites_error_conflict">A folder with this name already exists.</string>
-    <string name="favourites_error_limit">You can create up to 15 folders.</string>
+    <string name="favourites_error_limit">You can create up to %1$d folders.</string>
     <string name="favourites_clear_warning">All folders will be deleted. This cannot be undone.</string>
+    <string name="favourites_save_failed">MacIndex could not save this bookmark folder. Check available device storage, then try again.</string>
+    <string name="favourites_delete_failed">MacIndex could not delete the selected bookmark folders. Check available device storage, then try again.</string>
+    <string name="favourites_rename_failed">MacIndex could not rename this bookmark folder. Check available device storage, then try again.</string>
+    <string name="favourites_clear_failed">MacIndex could not clear the bookmark folders. Check available device storage, then try again.</string>
+    <string name="favourite_membership_save_failed">MacIndex could not update the bookmarks for this machine. Check available device storage, then try again.</string>
     <string name="compare_limit">(Full)</string>
     <string-array name="compare_insufficient_tips">
-        <item>At least two machines are required\nThe compare list is currently empty</item>
-        <item>At least two machines are required\nThe compare list currently contains only one machine</item>
+        <item>At least two machines are required\nAdd machines from any machine page</item>
+        <item>One more machine is required\nAdd it from any machine page</item>
     </string-array>
     <string name="compare_not_initialized">Select two machines from the menu to start comparing</string>
     <string name="compare_clear_warning">All machines will be removed from the compare list. This cannot be undone.</string>
     <string name="compare_manage">Select the machines to remove from the comparison list. This cannot be undone.</string>
     <string name="compare_select_exactly_two">Select exactly two machines to compare.</string>
+    <string name="compare_highlight_save_failed">MacIndex could not save the highlight setting. Check available device storage, then try again.</string>
+    <string name="compare_selection_save_failed">MacIndex could not save the current comparison. Check available device storage, then try again.</string>
+    <string name="compare_list_save_failed">MacIndex could not update the compare list. Check available device storage, then try again.</string>
     <string name="version_information_general">Version %1$s</string>
     <string name="update_available">Update Available</string>
     <string name="update_available_message">MacIndex %1$s is available. You are currently using %2$s.</string>
@@ -215,6 +231,13 @@
     <string name="about_update">Check for Updates</string>
     <string name="about_opensource">Third-Party Licenses</string>
     <string name="about_release_history">Version History</string>
+    <string name="open_source_licenses_failed">MacIndex could not open the third-party licenses page. Please try again.</string>
+    <string name="machine_image_unavailable">This machine image is unavailable</string>
+    <string name="sound_play_failed">This sound could not be played</string>
+    <string name="comment_save_failed">MacIndex could not save this comment. Check available device storage, then try again.</string>
+    <string name="main_browse_save_failed">MacIndex could not save the main page state. Check available device storage, then try again.</string>
+    <string name="setting_appearance_save_failed">MacIndex could not save the appearance setting. Check available device storage, then try again.</string>
+    <string name="setting_save_failed">MacIndex could not save this setting. Check available device storage, then try again.</string>
     <string name="viewimage_rotate">Image for reference only\nRotate your device to change the orientation</string>
     <string-array name="share_menu">
         <item>Copy Model Identifiers</item>

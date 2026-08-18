@@ -1,0 +1,101 @@
+category = "mac_studio"
+picture_asset_key = "MI000437"
+name = "Mac Studio (2025)"
+introductions = [{ year = 2025, month = 3 }]
+
+model_numbers = [
+  { value = "A3143", qualifier = "M4 Max" },
+  { value = "A3389", qualifier = "M3 Ultra" },
+]
+identifiers = [
+  { value = "Mac16,9", qualifier = "M4 Max" },
+  { value = "Mac15,14", qualifier = "M3 Ultra" },
+]
+order_numbers = [
+  { value = "MU963", revisions = ["A"], qualifier = "M4 Max" },
+  { value = "MU973", revisions = ["A"], qualifier = "M3 Ultra" },
+]
+emc_numbers = [
+  { value = "8549", qualifier = "M4 Max" },
+  { value = "8859", qualifier = "M3 Ultra" },
+]
+
+codenames = [{ value = "J575c", qualifier = "M4 Max" }, { value = "J575d", qualifier = "M3 Ultra" }]
+
+processor = '''
+**Apple M4 Max "Brava"** TSMC N3E process, 64-bit, 14 cores (10 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 410 GB/s memory bandwidth (32-core GPU)
+**Apple M4 Max "Brava"** TSMC N3E process, 64-bit, 16 cores (12 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 546 GB/s memory bandwidth (40-core GPU)
+**Apple M3 Ultra "Palma 2C"** TSMC N3B process, 64-bit, 28 cores (20 "Everest" P-cores, 8 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 96 MB system-level cache, 32-core Neural Engine, Secure Enclave, 819 GB/s memory bandwidth (60-core GPU)
+**Apple M3 Ultra "Palma 2C"** TSMC N3B process, 64-bit, 32 cores (24 "Everest" P-cores, 8 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 96 MB system-level cache, 32-core Neural Engine, Secure Enclave, 819 GB/s memory bandwidth (80-core GPU)'''
+processor_family_keys = [
+  "m4",
+  "m3",
+]
+processor_logo_keys = [
+  "m4max",
+  "m3ultra",
+]
+
+graphics = '''
+**Apple 32-core GPU** unified memory architecture (M4 Max)
+**Apple 40-core GPU** unified memory architecture (M4 Max)
+**Apple 60-core GPU** unified memory architecture (M3 Ultra)
+**Apple 80-core GPU** unified memory architecture (M3 Ultra)'''
+
+display = '''
+M4 Max: up to five external displays: four displays up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M4 Max: alternatively, up to three external displays over Thunderbolt or HDMI: two displays up to 6K at 60 Hz or 4K at 144 Hz, and one display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz
+M4 Max: alternatively, up to three external displays: two displays up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt, and one display up to 4K at 60 Hz over HDMI
+M3 Ultra: up to eight external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI; the eight-display configuration requires a supported daisy chain or dock on the front Thunderbolt ports
+M3 Ultra: alternatively, up to four external displays, each up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt or HDMI; displays must be split across the two port groups
+M3 Ultra: port group 1 comprises the two front Thunderbolt 5 ports and rear HDMI; port group 2 comprises the four rear Thunderbolt 5 ports; each group supports up to four display resources; an 8K at 60 Hz or 4K at 240 Hz display over HDMI uses two resources in its port group'''
+ram = '''
+36 GB standard (M4 Max with 14-core CPU and 32-core GPU)
+96 GB standard (M3 Ultra)
+48, 64, or 128 GB configurable (M4 Max with 16-core CPU and 40-core GPU)
+256 GB configurable (M3 Ultra)
+512 GB configurable (M3 Ultra with 32-core CPU and 80-core GPU)
+36 GB maximum (M4 Max with 14-core CPU and 32-core GPU)
+128 GB maximum (M4 Max with 16-core CPU and 40-core GPU)
+256 GB maximum (M3 Ultra with 28-core CPU and 60-core GPU)
+512 GB maximum (M3 Ultra with 32-core CPU and 80-core GPU)
+LPDDR5X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 15.3.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M4 Max)
+1, 2, 4, or 8 TB SSD configurable (M4 Max)
+1 TB SSD standard (M3 Ultra)
+2, 4, 8, or 16 TB SSD configurable (M3 Ultra)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+1 - Built-in speaker'''
+expansion = '''
+1 - 10Gb Ethernet port (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+4 - Rear Thunderbolt 5 / USB 4 ports (up to 120 Gbps; DisplayPort 2.1)
+2 - Front USB-C ports (up to 10 Gbps; no display output; M4 Max)
+2 - Front Thunderbolt 5 / USB 4 ports (up to 120 Gbps; DisplayPort 2.1; M3 Ultra)
+1 - HDMI 2.1 port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - Front SDXC card slot (UHS-II)'''
+design = '''
+Silver
+6.1 lbs. (M4 Max)
+8.0 lbs. (M3 Ultra)
+3.7" H x 7.7" W x 7.7" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "Mac Studio \"M4 Max\" 14 CPU/32 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m4-max-14-core-cpu-32-core-gpu-2025-specs.html" },
+  { label = "Mac Studio \"M4 Max\" 16 CPU/40 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m4-max-16-core-cpu-40-core-gpu-2025-specs.html" },
+  { label = "Mac Studio \"M3 Ultra\" 28 CPU/60 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m3-ultra-28-core-cpu-60-core-gpu-2025-specs.html" },
+  { label = "Mac Studio \"M3 Ultra\" 32 CPU/80 GPU", url = "https://everymac.com/systems/apple/mac-studio/specs/mac-studio-m3-ultra-32-core-cpu-80-core-gpu-2025-specs.html" },
+]

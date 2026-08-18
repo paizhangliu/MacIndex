@@ -1,0 +1,102 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000420"
+name = "MacBook Pro (16-inch, 2024)"
+introductions = [{ year = 2024, month = 10 }]
+
+model_numbers = [
+  { value = "A3403", qualifier = "M4 Pro" },
+  { value = "A3186", qualifier = "M4 Max" },
+]
+identifiers = [
+  { value = "Mac16,7", qualifier = "M4 Pro" },
+  { value = "Mac16,5", qualifier = "M4 Max" },
+]
+order_numbers = [
+  { value = "MX2T3", revisions = ["A"] },
+  { value = "MX2U3", revisions = ["A"] },
+  { value = "MX2V3", revisions = ["A"] },
+  { value = "MX2W3", revisions = ["A"] },
+  { value = "MX2X3", revisions = ["A"] },
+  { value = "MX2Y3", revisions = ["A"] },
+  { value = "MX303", revisions = ["A"] },
+  { value = "MX313", revisions = ["A"] },
+]
+emc_numbers = [
+  { value = "8895", qualifier = "M4 Pro" },
+  { value = "8624", qualifier = "M4 Max" },
+]
+
+codenames = [{ value = "J616s", qualifier = "M4 Pro" }, { value = "J616c", qualifier = "M4 Max" }]
+
+processor = '''
+**Apple M4 Pro "Brava Chop"** TSMC N3E process, 64-bit, 14 cores (10 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 273 GB/s memory bandwidth (20-core GPU)
+**Apple M4 Max "Brava"** TSMC N3E process, 64-bit, 14 cores (10 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 410 GB/s memory bandwidth (32-core GPU)
+**Apple M4 Max "Brava"** TSMC N3E process, 64-bit, 16 cores (12 "Everest v3" P-cores, 4 "Sawtooth v3" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 546 GB/s memory bandwidth (40-core GPU)'''
+processor_family_keys = ["m4"]
+processor_logo_keys = [
+  "m4pro",
+  "m4max",
+]
+
+graphics = '''
+**Apple 20-core GPU** unified memory architecture (M4 Pro)
+**Apple 32-core GPU** unified memory architecture (M4 Max)
+**Apple 40-core GPU** unified memory architecture (M4 Max)'''
+
+display = '''
+16.2-inch (diagonal) Liquid Retina XDR display, 3456x2234, 254 ppi, XDR brightness: 1000 nits sustained full-screen and 1600 nits peak (HDR content only), up to 1000 nits outdoor SDR brightness, wide color gamut (P3), up to 120 Hz ProMotion
+Nano-texture glass configurable
+M4 Pro: up to two external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI
+M4 Pro: alternatively, one external display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt or HDMI
+M4 Pro and M4 Max: a supported hub or display daisy chain can carry up to two external displays over one Thunderbolt port without increasing the maximum display count
+M4 Max: up to four external displays, each up to a native resolution of 6K at 60 Hz or 4K at 144 Hz over Thunderbolt or HDMI
+M4 Max: alternatively, up to three external displays over Thunderbolt or HDMI: two displays up to 6K at 60 Hz or 4K at 144 Hz, and one display up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz
+M4 Max: alternatively, up to two external displays, each up to 8K at 60 Hz, 5K at 120 Hz, or 4K at 240 Hz over Thunderbolt or HDMI
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+24 GB standard (M4 Pro)
+36 GB standard (M4 Max with 14-core CPU and 32-core GPU)
+36 GB configurable (M4 Max with 14-core CPU and 32-core GPU)
+48 GB configurable (M4 Pro)
+48, 64, or 128 GB configurable (M4 Max with 16-core CPU and 40-core GPU)
+48 GB maximum (M4 Pro)
+36 GB maximum (M4 Max with 14-core CPU and 32-core GPU)
+128 GB maximum (M4 Max with 16-core CPU and 40-core GPU)
+LPDDR5X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 15.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M4 Pro)
+1, 2, or 4 TB SSD configurable (M4 Pro)
+1 TB SSD standard (M4 Max)
+2, 4, or 8 TB SSD configurable (M4 Max)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+3 - Built-in studio-quality microphones
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 12MP Center Stage camera with Desk View and 1080p HD video recording'''
+expansion = '''
+3 - Thunderbolt 5 / USB 4 ports (up to 120 Gbps; DisplayPort 2.1)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - SDXC card slot'''
+design = '''
+Silver or Space Black
+Precision aluminum unibody
+4.7 lbs.
+0.66" H x 14.01" W x 9.77" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro \"M4 Pro\" 14 CPU/20 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m4-pro-14-core-cpu-20-core-gpu-16-2024-specs.html" },
+  { label = "MacBook Pro \"M4 Max\" 14 CPU/32 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m4-max-14-core-cpu-32-core-gpu-16-2024-specs.html" },
+  { label = "MacBook Pro \"M4 Max\" 16 CPU/40 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m4-max-16-core-cpu-40-core-gpu-16-2024-specs.html" },
+]

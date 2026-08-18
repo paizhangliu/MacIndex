@@ -1,0 +1,101 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000420"
+name = "MacBook Pro (16-inch, Nov 2023)"
+introductions = [{ year = 2023, month = 10 }]
+
+model_numbers = [{ value = "A2991" }]
+identifiers = [
+  { value = "Mac15,7", qualifier = "M3 Pro" },
+  { value = "Mac15,9", qualifier = "M3 Max 16-core CPU" },
+  { value = "Mac15,11", qualifier = "M3 Max 14-core CPU" },
+]
+order_numbers = [
+  { value = "FRW13", revisions = ["A"] },
+  { value = "FRW23", revisions = ["A"] },
+  { value = "FRW33", revisions = ["A"] },
+  { value = "FRW43", revisions = ["A"] },
+  { value = "FRW63", revisions = ["A"] },
+  { value = "FRW73", revisions = ["A"] },
+  { value = "FUW63", revisions = ["A"] },
+  { value = "FUW73", revisions = ["A"] },
+  { value = "MRW13", revisions = ["A"] },
+  { value = "MRW23", revisions = ["A"] },
+  { value = "MRW33", revisions = ["A"] },
+  { value = "MRW43", revisions = ["A"] },
+  { value = "MRW63", revisions = ["A"] },
+  { value = "MRW73", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8408" }]
+
+codenames = [{ value = "J516s", qualifier = "M3 Pro" }, { value = "J516c", qualifier = "M3 Max 16-core CPU" }, { value = "J516m", qualifier = "M3 Max 14-core CPU" }]
+
+processor = '''
+**Apple M3 Pro "Lobos"** TSMC N3B process, 64-bit, 12 cores (6 "Everest" P-cores, 6 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 12 MB system-level cache, 16-core Neural Engine, Secure Enclave, 150 GB/s memory bandwidth (18-core GPU)
+**Apple M3 Max "Palma"** TSMC N3B process, 64-bit, 14 cores (10 "Everest" P-cores, 4 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 300 GB/s memory bandwidth (30-core GPU)
+**Apple M3 Max "Palma"** TSMC N3B process, 64-bit, 16 cores (12 "Everest" P-cores, 4 "Sawtooth" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 400 GB/s memory bandwidth (40-core GPU)'''
+processor_family_keys = ["m3"]
+processor_logo_keys = [
+  "m3pro",
+  "m3max",
+]
+
+graphics = '''
+**Apple 18-core GPU** unified memory architecture (M3 Pro)
+**Apple 30-core GPU** unified memory architecture (M3 Max)
+**Apple 40-core GPU** unified memory architecture (M3 Max)'''
+
+display = '''
+16.2-inch (diagonal) Liquid Retina XDR display, 3456x2234, 254 ppi, XDR brightness: 1000 nits sustained full-screen and 1600 nits peak (HDR content only), 600 nits SDR brightness, wide color gamut (P3), up to 120 Hz ProMotion
+M3 Pro: up to two external displays: two 6K displays at 60 Hz via Thunderbolt, or one 6K display at 60 Hz via Thunderbolt and one 4K display at 144 Hz via HDMI
+M3 Pro: alternatively, one external display up to 8K at 60 Hz or 4K at 240 Hz via HDMI
+M3 Max: up to four external displays: three 6K displays at 60 Hz via Thunderbolt and one 4K display at 144 Hz via HDMI
+M3 Max: alternatively, up to three external displays: two 6K displays at 60 Hz via Thunderbolt and one 8K display at 60 Hz or 4K display at 240 Hz via HDMI
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+18 GB standard (M3 Pro)
+36 GB standard (M3 Max with 14-core CPU and 30-core GPU)
+36 GB configurable (M3 Pro)
+36 or 96 GB configurable (M3 Max with 14-core CPU and 30-core GPU)
+48, 64, or 128 GB configurable (M3 Max with 16-core CPU and 40-core GPU)
+36 GB maximum (M3 Pro)
+96 GB maximum (M3 Max with 14-core CPU and 30-core GPU)
+128 GB maximum (M3 Max with 16-core CPU and 40-core GPU)
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 14.1
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M3 Pro)
+1, 2, or 4 TB SSD configurable (M3 Pro)
+1 TB SSD standard (M3 Max)
+2, 4, or 8 TB SSD configurable (M3 Max)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+3 - Built-in studio-quality microphones
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+3 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - SDXC card slot'''
+design = '''
+Silver or Space Black
+Precision aluminum unibody
+4.7 lbs. (M3 Pro)
+4.8 lbs. (M3 Max)
+0.66" H x 14.01" W x 9.77" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro \"M3 Pro\" 12 CPU/18 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m3-pro-12-core-cpu-18-core-gpu-16-late-2023-specs.html" },
+  { label = "MacBook Pro \"M3 Max\" 14 CPU/30 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m3-max-14-core-cpu-30-core-gpu-16-late-2023-specs.html" },
+  { label = "MacBook Pro \"M3 Max\" 16 CPU/40 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m3-max-16-core-cpu-40-core-gpu-16-late-2023-specs.html" },
+]

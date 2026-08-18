@@ -1,0 +1,61 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000412"
+name = "MacBook Pro (13-inch, M2, 2022)"
+introductions = [{ year = 2022, month = 6 }]
+
+model_numbers = [{ value = "A2338" }]
+identifiers = [{ value = "Mac14,7" }]
+order_numbers = [
+  { value = "MNEH3", revisions = ["A"] },
+  { value = "MNEJ3", revisions = ["A"] },
+  { value = "MNEP3", revisions = ["A"] },
+  { value = "MNEQ3", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8162" }]
+
+codenames = [{ value = "J493" }]
+
+processor = '''
+**Apple M2 "Staten"** TSMC N5P process, 64-bit, 8 cores (4 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 100 GB/s memory bandwidth'''
+processor_family_keys = ["m2"]
+processor_logo_keys = ["m2"]
+
+graphics = "**Apple 10-core GPU** unified memory architecture"
+
+display = '''
+13.3-inch (diagonal) Retina display, 2560x1600, 227 ppi, 500 nits, wide color gamut (P3)
+One external display up to 6K at 60 Hz
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+8 GB standard
+16 or 24 GB configurable
+24 GB maximum
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 12.4
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard
+512 GB, 1 TB, or 2 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.0
+3 - Built-in studio-quality microphones
+2 - Built-in stereo speakers with high dynamic range
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+2 - Thunderbolt 3 / USB 4 ports (up to 40 Gbps)
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody with Touch Bar
+3.0 lbs.
+0.61" H x 11.97" W x 8.36" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "MacBook Pro \"M2\" 8 CPU/10 GPU 13\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m2-8-core-cpu-10-core-gpu-13-2022-specs.html" }]

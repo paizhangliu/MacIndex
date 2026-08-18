@@ -1,0 +1,69 @@
+category = "imac_ppc"
+picture_asset_key = "MI000178"
+name = "iMac (17-inch USB 2.0)"
+introductions = [{ year = 2003, month = 9 }]
+
+model_numbers = [{ value = "M6498" }]
+identifiers = [
+  { value = "PowerMac6,1" },
+  { value = "PowerMac6,3" },
+]
+order_numbers = [{ value = "M9168", revisions = ["A"] }]
+emc_numbers = [{ value = "1973" }]
+
+codenames = [{ value = "Horizon" }, { value = "Q26C" }, { value = "Q59" }]
+
+processor = "**PowerPC 7445 (G4)** 1.25 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 167 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7445",
+  "7455",
+]
+
+graphics = "**NVIDIA GeForce FX 5200 Ultra** 64 MB DDR VRAM"
+graphics_logo_keys = ["nvgeforcefx"]
+
+display = '''
+17-inch active-matrix LCD, 1440x900
+Video mirroring via Mini-VGA'''
+ram = '''
+256 MB standard
+1 GB Apple-supported maximum
+2 GB actual maximum
+1 - User-accessible SO-DIMM slot
+1 - Factory-installed DIMM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.2.7 (6R42, 6R49, 6R52)
+Mac OS X 10.5.8 Maximum
+AHT (iMac) 2.0.2'''
+storage = '''
+80 GB 7200-rpm hard drive standard
+160 GB 7200-rpm hard drive configurable
+Tray-loading SuperDrive (DVD-R/CD-RW)
+Ultra ATA/100 (ATA-6) hard drive interface
+Ultra ATA/66 optical drive interface'''
+features = '''
+1 - Optional AirPort Extreme card (802.11b/g)
+Optional Bluetooth 1.1
+1 - Built-in microphone (24-bit, 48 kHz sample rate)
+1 - Built-in speaker (24-bit, 48 kHz sample rate)
+2 - Apple Pro Speakers (7 W each)'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.92 modem
+3 - USB 2.0 ports
+2 - FireWire 400 ports
+1 - Mini-VGA port
+Composite and S-video output via adapter
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Apple Pro Speaker minijack'''
+design = '''
+White
+22.8 lbs.
+13.03–20.0" H x 16.7–17.7" W x 10.6–16.7" D; base diameter: 10.6"'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "iMac G4/1.25 17-Inch \"FP\" (USB 2.0)", url = "https://everymac.com/systems/apple/imac/specs/imac_1.25_17_fp.html" }]

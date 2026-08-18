@@ -1,157 +1,133 @@
 package com.macindex.macindex;
 
-import androidx.annotation.NonNull;
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.TextViewCompat;
-
-import android.animation.LayoutTransition;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.Spinner;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import java.util.Arrays;
-import java.util.concurrent.CancellationException;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
+
+import com.macindex.macindex.catalog.Machine;
+import com.macindex.macindex.catalog.MachineCatalog;
+import com.macindex.macindex.catalog.MachineCatalog.Facet;
+import com.macindex.macindex.catalog.MachineCatalog.SearchResponse;
+import com.macindex.macindex.catalog.MachineCatalog.SearchScope;
+import com.macindex.macindex.catalog.SearchHit;
+import com.macindex.macindex.userstate.AppStateRepository;
+import com.macindex.macindex.userstate.FavouriteFolder;
+import com.macindex.macindex.userstate.UserPreferences;
+import com.macindex.macindex.userstate.UserState;
+import com.macindex.macindex.userstate.UserStateLifecycleAdapter;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private SearchView searchText = null;
+    private static final String STATE_QUERY = "searchQuery";
+    private static final String STATE_SUBMITTED = "searchSubmitted";
+    private static final String STATE_SCOPE = "searchScope";
 
-    private TextView textResult = null;
+    private SearchView searchText;
+    private TextView textResult;
+    private HorizontalScrollView searchFacetContainer;
+    private RadioGroup searchFacetGroup;
+    private ListView resultList;
+    private SearchResultAdapter resultListAdapter;
 
-    private ListView resultList = null;
-
-    private Spinner filtersSpinner = null;
-
-    private Spinner optionsSpinner = null;
-
-    private MachineListAdapter resultListAdapter = null;
-
-    private int[] positions = null;
-
-    private ProgressDialog waitDialog = null;
-
-    private boolean userStopped = true;
-
-    private Thread searchThread = null;
-
-    private volatile int searchRequestID = 0;
+    private MachineCatalog catalog;
+    private UserStateLifecycleAdapter userStateAdapter;
+    private UserPreferences preferences;
+    private Set<String> favouriteUids = Collections.emptySet();
+    private boolean initialized;
+    private boolean settingQuery;
+    private boolean hasSubmittedSearch;
+    private SearchScope selectedScope = SearchScope.ALL;
+    private Bundle restorationState;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        WindowInsetsHelper.apply(this);
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                navigateUp();
-            }
-        });
-
-        if (!MainActivity.validateOperation(this)) {
-            return;
-        }
-
-        // Set the dialog AT HERE; its structure is different from other activities
-        waitDialog = new ProgressDialog(SearchActivity.this);
-        waitDialog.setMessage(getString(R.string.loading_search));
-        waitDialog.setCancelable(false);
-
-        waitDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.link_cancel), (dialog, which) -> {
-            // To be rewritten
-        });
+        ContentInsetsHelper.apply(this);
+        restorationState = savedInstanceState;
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        setTitle(R.string.menu_search);
 
-        this.setTitle(R.string.menu_search);
-
-        final LinearLayout mainLayout = findViewById(R.id.mainLayout);
-        LayoutTransition layoutTransition = mainLayout.getLayoutTransition();
-        layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
-
-        filtersSpinner = findViewById(R.id.filtersSpinner);
-        optionsSpinner = findViewById(R.id.optionsSpinner);
-
-        // If SearchActivity Usage is set to not be saved
-        if (!(PrefsHelper.getBooleanPrefs("isSaveSearchUsage", this))) {
-            PrefsHelper.clearPrefs("lastSearchFiltersSpinner", this);
-            PrefsHelper.clearPrefs("lastSearchOptionsSpinner", this);
-        }
-
-        initSearch();
-        initSpinners();
-
-        // Init Search Prompt at Here!!
+        searchText = findViewById(R.id.searchInput);
+        textResult = findViewById(R.id.textResult);
+        searchFacetContainer = findViewById(R.id.searchFacetContainer);
+        searchFacetGroup = findViewById(R.id.searchFacetGroup);
+        resultList = findViewById(R.id.resultList);
+        initSearchBox();
+        initFacetControls();
         resetSearchPrompt();
 
-        if (savedInstanceState != null) {
-            final CharSequence savedSearchInput = savedInstanceState
-                    .getCharSequence("searchInput", "");
-            searchText.setQuery(savedSearchInput, false);
-            final String restoredSearchInput = savedSearchInput.toString().trim();
-            if (!restoredSearchInput.isEmpty()) {
-                final String[] savedUIDs = savedInstanceState.getStringArray("machineUIDs");
-                if (savedUIDs != null) {
-                    try {
-                        positions = new int[savedUIDs.length];
-                        for (int i = 0; i < savedUIDs.length; i++) {
-                            positions[i] = MainActivity.getMachineHelper().getMachineID(savedUIDs[i]);
-                        }
-                    } catch (IllegalArgumentException ignored) {
-                        // The saved search may belong to an older database revision.
-                        positions = null;
-                    }
-                }
-                final boolean reloadPositions = !savedInstanceState.getBoolean("loadComplete")
-                        || positions == null;
-                performSearch(reloadPositions ? restoredSearchInput : null,
-                        reloadPositions, false);
-            }
+        StartupUiGate.bind(this, (readyCatalog, repository) -> {
+            catalog = readyCatalog;
+            observeUserState(repository);
+        });
+    }
+
+    private void observeUserState(final AppStateRepository repository) {
+        if (userStateAdapter != null) {
+            return;
+        }
+        userStateAdapter = new UserStateLifecycleAdapter(this, repository,
+                this::onUserStateChanged,
+                error -> ExceptionHelper.showUserStateReadFailure(this, error));
+    }
+
+    private void onUserStateChanged(final UserState state) {
+        preferences = state.getPreferences();
+        favouriteUids = collectFavouriteUids(state);
+        if (resultListAdapter != null) {
+            resultListAdapter.setFavouriteUids(favouriteUids);
+        }
+        if (initialized) {
+            return;
         }
 
+        initialized = true;
+        if (restorationState != null) {
+            restoreQuery();
+            return;
+        }
+        final String query = searchText.getQuery().toString();
+        if (hasSubmittedSearch && !MachineCatalog.isBlankSearchText(query)) {
+            performSearch(query.trim());
+        }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        final MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final int itemID = item.getItemId();
-        if (itemID == R.id.searchResetItem) {
-            PrefsHelper.editPrefs("lastSearchFiltersSpinner", 0, SearchActivity.this);
-            PrefsHelper.editPrefs("lastSearchOptionsSpinner", 0, SearchActivity.this);
-            filtersSpinner.setSelection(0);
-            optionsSpinner.setSelection(0);
-            searchText.setQuery("", true);
-            searchText.clearFocus();
-            cancelSearch();
-            changeTips();
-        } else if (itemID == R.id.searchAppleSNItem) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final int itemId = item.getItemId();
+        if (itemId == R.id.searchAppleSNItem) {
             LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", this);
-        } else if (itemID == R.id.searchEveryMacItem) {
+        } else if (itemId == R.id.searchEveryMacItem) {
             LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", this);
         } else {
             return super.onOptionsItemSelected(item);
@@ -160,453 +136,264 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (resultListAdapter != null) {
-            resultListAdapter.refreshFavourites();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (positions != null) {
-            final String[] machineUIDs = new String[positions.length];
-            for (int i = 0; i < positions.length; i++) {
-                machineUIDs[i] = MainActivity.getMachineHelper().getUID(positions[i]);
-            }
-            outState.putStringArray("machineUIDs", machineUIDs);
-        }
-        outState.putCharSequence("searchInput", searchText.getQuery());
-        if (waitDialog != null && !waitDialog.isShowing()) {
-            outState.putBoolean("loadComplete", true);
-        } else {
-            outState.putBoolean("loadComplete", false);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        userStopped = true;
-        searchRequestID++;
-        if (searchThread != null) {
-            searchThread.interrupt();
-            searchThread = null;
-        }
-        if (waitDialog != null && waitDialog.isShowing()) {
-            waitDialog.dismiss();
-        }
-        super.onDestroy();
+        outState.putString(STATE_QUERY,
+                searchText == null ? "" : searchText.getQuery().toString());
+        outState.putBoolean(STATE_SUBMITTED, hasSubmittedSearch);
+        outState.putString(STATE_SCOPE, selectedScope.name());
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        navigateUp();
+        finish();
         return true;
     }
 
-    private void navigateUp() {
-        if (!MainActivity.getMainState()) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
-        finish();
-    }
-
-    private void initSpinners() {
-        try {
-            ArrayAdapter<CharSequence> filtersAdapter = ArrayAdapter.createFromResource(this,
-                    R.array.search_Filters, android.R.layout.simple_spinner_item);
-            ArrayAdapter<String> optionsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
-                    Arrays.asList(getResources().getStringArray(R.array.search_Options)));
-
-            filtersAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            optionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            filtersSpinner.setAdapter(filtersAdapter);
-            optionsSpinner.setAdapter(optionsAdapter);
-
-            filtersSpinner.setSelection(PrefsHelper.getIntPrefs("lastSearchFiltersSpinner", this));
-            optionsSpinner.setSelection(PrefsHelper.getIntPrefs("lastSearchOptionsSpinner", this));
-
-            filtersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    updateSearchParameter("lastSearchFiltersSpinner", i, false);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    // Nothing to do.
-                }
-            });
-
-            optionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    updateSearchParameter("lastSearchOptionsSpinner", i, true);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    // Nothing to do.
-                }
-            });
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "initSpinners", "Unable to initialize spinners.");
-        }
-    }
-
-    private void updateSearchParameter(final String preference, final int selection,
-                                       final boolean updateTips) {
-        try {
-            if (PrefsHelper.getIntPrefs(preference, this) == selection) {
-                if (updateTips && searchText.getQuery().length() == 0) {
-                    changeTips();
-                }
-                return;
-            }
-
-            PrefsHelper.editPrefs(preference, selection, this);
-            if (updateTips) {
-                changeTips();
-            }
-
-            final String currentSearch = searchText.getQuery().toString().trim();
-            if (currentSearch.isEmpty()) {
-                resetSearchPrompt();
-                cancelSearch();
-            } else if (!startSearch(currentSearch, false)) {
-                cancelSearch();
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e,
-                    "updateSearchParameter", "Unable to update search parameters.");
-        }
-    }
-
-    private String translateFiltersParam() {
-        int thisSelection = PrefsHelper.getIntPrefs("lastSearchFiltersSpinner", this);
-        switch (thisSelection) {
-            case 0:
-                return "all";
-            case 1:
-                return "apple68k";
-            case 2:
-                return "appleppc";
-            case 3:
-                return "appleintel";
-            case 4:
-                return "applearm";
-            default:
-                ExceptionHelper.handleException(this, null,
-                        "translateFilterParam",
-                        "Not a Valid Manufacturer Selection, This should NOT happen!!");
-                return "all";
-        }
-    }
-
-    private String[] translateOptionsParam() {
-        int thisSelection = PrefsHelper.getIntPrefs("lastSearchOptionsSpinner", this);
-        switch (thisSelection) {
-            case 0:
-                return new String[]{"sname"};
-            case 1:
-                return new String[]{"smodel", "sident", "sgestalt", "sorder", "semc"};
-            default:
-                ExceptionHelper.handleException(this, null,
-                        "translateOptionsParam",
-                        "Not a Valid Search Column Selection, This should NOT happen!!");
-                return new String[]{"sname"};
-        }
-    }
-
-    private boolean translateMatchParam() {
-        int thisSelection = PrefsHelper.getIntPrefs("lastSearchOptionsSpinner", this);
-        switch (thisSelection) {
-            case 0:
-                return false;
-            case 1:
-                return true;
-            default:
-                ExceptionHelper.handleException(this, null,
-                        "translateMatchParam",
-                        "Not a Valid Search Column Selection, This should NOT happen!!");
-                return false;
-        }
-    }
-
-    /* Logic was improved since 4.8.2. disableCheck, lengthCheck, and strictCheck were removed. 8/30/2021 */
-
-    private void initSearch() {
-        searchText = findViewById(R.id.searchInput);
-        textResult = findViewById(R.id.textResult);
-        resultList = findViewById(R.id.resultList);
-
+    private void initSearchBox() {
         searchText.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 searchText.clearFocus();
-                return startSearch(query, true);
+                return startSearch(query);
             }
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                // TRIM to get the correct validation result.
-                String searchInput = newText.trim();
-                // Initialize on-the-fly validation.
-                resetSearchPrompt();
-                if (!searchInput.equals("")) {
-                    validateSearchInput(searchInput, translateMatchParam());
-                } else {
-                    // No input
-                    cancelSearch();
+                if (settingQuery) {
+                    return true;
                 }
+                hasSubmittedSearch = false;
+                selectedScope = SearchScope.ALL;
+                clearResults();
+                resetSearchPrompt();
                 return false;
             }
         });
+    }
 
-        // Set auto-sizing
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            textResult.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+    private void restoreQuery() {
+        if (restorationState == null) {
+            return;
+        }
+        final String query = restorationState.getString(STATE_QUERY, "");
+        final boolean submitted = restorationState.getBoolean(STATE_SUBMITTED, false);
+        final String scopeName = restorationState.getString(
+                STATE_SCOPE, SearchScope.ALL.name());
+        restorationState = null;
+        try {
+            selectedScope = SearchScope.valueOf(scopeName);
+        } catch (IllegalArgumentException ignored) {
+            Log.w("SearchState", "Ignoring an invalid restored search scope.");
+            selectedScope = SearchScope.ALL;
+        }
+        setQuery(query);
+        if (submitted && !MachineCatalog.isBlankSearchText(query)) {
+            hasSubmittedSearch = true;
+            performSearch(query.trim());
+        }
+    }
+
+    private void setQuery(final String query) {
+        settingQuery = true;
+        try {
+            searchText.setQuery(query, false);
+        } finally {
+            settingQuery = false;
+        }
+    }
+
+    private boolean startSearch(final String rawInput) {
+        final String input = rawInput.trim();
+        if (MachineCatalog.isBlankSearchText(input)) {
+            hasSubmittedSearch = false;
+            selectedScope = SearchScope.ALL;
+            clearResults();
+            resetSearchPrompt();
+            return false;
+        }
+        hasSubmittedSearch = true;
+        performSearch(input);
+        return true;
+    }
+
+    private void performSearch(final String input) {
+        if (catalog == null || preferences == null) {
+            textResult.setText(R.string.search_loading);
+            textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
+            return;
+        }
+        final SearchScope requestedScope = selectedScope;
+        SearchResponse response = catalog.search(input, requestedScope);
+        if (requestedScope != SearchScope.ALL
+                && !responseContainsScope(response, requestedScope)) {
+            response = catalog.search(input, SearchScope.ALL);
+        }
+        selectedScope = response.scope();
+        renderResults(input, response);
+    }
+
+    private static boolean responseContainsScope(final SearchResponse response,
+                                                 final SearchScope scope) {
+        final SearchHit.Field field = scope.field();
+        if (field == null) {
+            return true;
+        }
+        // A refinement is useful only while the query still has a visible choice between
+        // fields. Never restore a hidden one-field filter after the indexed catalog changes.
+        if (response.facets().size() < 2) {
+            return false;
+        }
+        for (Facet facet : response.facets()) {
+            if (facet.field() == field) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void renderResults(final String input, final SearchResponse response) {
+        resultListAdapter = new SearchResultAdapter(
+                response.hits(), favouriteUids, this, this::openMachine);
+        final int resultCount = resultListAdapter.getCount();
+        if (resultCount == 0) {
+            textResult.setText(getString(R.string.search_noResult, input));
         } else {
-            TextViewCompat.setAutoSizeTextTypeWithDefaults(textResult, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+            textResult.setText(getResources().getQuantityString(
+                    R.plurals.search_results, resultCount, resultCount));
         }
+        textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
+        renderFacetChips(response);
+        resultList.setAdapter(resultListAdapter);
     }
 
-    private void clearSearch() {
+    private void clearResults() {
         resultListAdapter = null;
-        resultList.setAdapter(null);
-    }
-
-    private void cancelSearch() {
-        userStopped = true;
-        searchRequestID++;
-        if (searchThread != null) {
-            searchThread.interrupt();
-            searchThread = null;
+        if (resultList != null) {
+            resultList.setAdapter(null);
         }
-        if (waitDialog != null && waitDialog.isShowing()) {
-            waitDialog.dismiss();
-        }
-        positions = null;
-        clearSearch();
+        hideFacetChips();
     }
 
     private void resetSearchPrompt() {
         textResult.setText(R.string.search_prompt);
-        textResult.setTextColor(getColor(R.color.colorDefaultText));
+        textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
     }
 
-    private void changeTips() {
-        try {
-            int thisSelection = PrefsHelper.getIntPrefs("lastSearchOptionsSpinner", this);
-            String[] searchTips = getResources().getStringArray(R.array.search_Tips);
-            if (thisSelection >= searchTips.length) {
-                throw new IllegalStateException();
+    private void openMachine(final Machine machine) {
+        final List<Machine> navigation;
+        if (preferences.getFixedNavigation()) {
+            navigation = catalog.sequenceForProductType(machine.productTypeKey());
+        } else {
+            navigation = resultListAdapter.navigationMachines();
+        }
+        startActivity(NavigationContract.machineSpecsIntent(this,
+                NavigationContract.MachineRequest.create(
+                        machine, navigation, false)));
+    }
+
+    private void initFacetControls() {
+        bindFacetButton(R.id.searchFacetAll, SearchScope.ALL);
+        bindFacetButton(R.id.searchFacetName, SearchScope.NAME);
+        bindFacetButton(R.id.searchFacetCodename, SearchScope.CODENAME);
+        bindFacetButton(R.id.searchFacetModelNumber, SearchScope.MODEL_NUMBER);
+        bindFacetButton(R.id.searchFacetModelIdentifier, SearchScope.MODEL_IDENTIFIER);
+        bindFacetButton(R.id.searchFacetGestaltId, SearchScope.GESTALT_ID);
+        bindFacetButton(R.id.searchFacetPartNumber, SearchScope.PART_NUMBER);
+        bindFacetButton(R.id.searchFacetEmcNumber, SearchScope.EMC_NUMBER);
+    }
+
+    private void bindFacetButton(final int viewId, final SearchScope scope) {
+        searchFacetGroup.findViewById(viewId).setOnClickListener(unused -> {
+            if (!hasSubmittedSearch || scope == selectedScope) {
+                return;
             }
-            searchText.setQueryHint(searchTips[thisSelection]);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "changeTips", "Invalid Search Tips Configuration.");
+            selectedScope = scope;
+            final String input = searchText.getQuery().toString().trim();
+            if (!MachineCatalog.isBlankSearchText(input)) {
+                performSearch(input);
+            }
+        });
+    }
+
+    private void renderFacetChips(final SearchResponse response) {
+        final List<Facet> facets = response.facets();
+        if (facets.size() < 2) {
+            hideFacetChips();
+            return;
+        }
+        hideFacetButtons();
+        showFacetChip(R.id.searchFacetAll,
+                R.string.search_facet_all, response.allCount());
+        for (Facet facet : facets) {
+            final SearchScope scope = SearchScope.forField(facet.field());
+            showFacetChip(facetViewId(scope),
+                    MachineRowBinder.fieldLabel(facet.field()), facet.count());
+        }
+        final int selectedId = facetViewId(selectedScope);
+        final View selectedChip = searchFacetGroup.findViewById(selectedId);
+        if (selectedChip == null || selectedChip.getVisibility() != View.VISIBLE) {
+            selectedScope = SearchScope.ALL;
+            searchFacetGroup.check(R.id.searchFacetAll);
+        } else {
+            searchFacetGroup.check(selectedId);
+        }
+        searchFacetContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void showFacetChip(final int viewId,
+                               final int labelResource,
+                               final int count) {
+        final RadioButton chip = searchFacetGroup.findViewById(viewId);
+        chip.setText(getString(R.string.search_facet_with_count,
+                getString(labelResource), count));
+        chip.setVisibility(View.VISIBLE);
+    }
+
+    private void hideFacetChips() {
+        if (searchFacetGroup == null || searchFacetContainer == null) {
+            return;
+        }
+        searchFacetGroup.clearCheck();
+        hideFacetButtons();
+        searchFacetContainer.setVisibility(View.GONE);
+    }
+
+    private void hideFacetButtons() {
+        for (int index = 0; index < searchFacetGroup.getChildCount(); index++) {
+            searchFacetGroup.getChildAt(index).setVisibility(View.GONE);
         }
     }
 
-    private boolean startSearch(final String s, final boolean allowDirectOpen) {
-        try {
-            String searchInput = s.trim();
-            if (!searchInput.equals("")) {
-                if (validateSearchInput(searchInput, translateMatchParam())) {
-                    // Remove Results only before actual search starts.
-                    performSearch(searchInput, true, allowDirectOpen);
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                // No input
-                resetSearchPrompt();
-                return false;
-            }
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, null, null);
-            return false;
+    private static int facetViewId(final SearchScope scope) {
+        switch (scope) {
+            case ALL:
+                return R.id.searchFacetAll;
+            case NAME:
+                return R.id.searchFacetName;
+            case CODENAME:
+                return R.id.searchFacetCodename;
+            case MODEL_NUMBER:
+                return R.id.searchFacetModelNumber;
+            case MODEL_IDENTIFIER:
+                return R.id.searchFacetModelIdentifier;
+            case GESTALT_ID:
+                return R.id.searchFacetGestaltId;
+            case PART_NUMBER:
+                return R.id.searchFacetPartNumber;
+            case EMC_NUMBER:
+                return R.id.searchFacetEmcNumber;
+            default:
+                throw new IllegalStateException("Unknown search scope " + scope);
         }
     }
 
-    private boolean validateSearchInput(final String validateInput, final boolean exactMatch) {
-        // Check the length first
-        if ((exactMatch && validateInput.length() > 20)
-                || (!exactMatch && validateInput.length() > 60)) {
-            DebugHelper.log("validate", "Overlength Detected!");
-            // Set the overlength prompt here..
-            textResult.setText(R.string.search_overlength);
-            textResult.setTextColor(ContextCompat.getColor(this, R.color.colorError));
-            return false;
+    private static Set<String> collectFavouriteUids(final UserState state) {
+        final Set<String> result = new HashSet<>();
+        for (FavouriteFolder folder : state.getLibrary().getFavouriteFolders()) {
+            result.addAll(folder.getMachineUids());
         }
-
-        for (int i = 0; i < validateInput.length(); i++) {
-            if (Character.isISOControl(validateInput.charAt(i))) {
-                DebugHelper.log("validate", "Control Character Detected!");
-                textResult.setText(R.string.search_control_character);
-                textResult.setTextColor(ContextCompat.getColor(this, R.color.colorError));
-                return false;
-            }
-        }
-        return true;
+        return result;
     }
 
-    private void performSearch(final String searchInput, final boolean reloadPositions,
-                               final boolean allowDirectOpen) {
-        try {
-            final int requestID = ++searchRequestID;
-            if (searchThread != null) {
-                searchThread.interrupt();
-            }
-            if (waitDialog != null && waitDialog.isShowing()) {
-                waitDialog.dismiss();
-            }
-            DebugHelper.log("performSearch", "Reload Flag: " + reloadPositions);
-            userStopped = false;
-            if (reloadPositions) {
-                waitDialog.show();
-
-                // Rewrite negative button
-                waitDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(view -> {
-                    Log.e("Search", "Terminated due to the user.");
-                    userStopped = true;
-                    searchRequestID++;
-                    if (searchThread != null) {
-                        searchThread.interrupt();
-                        searchThread = null;
-                    }
-                    waitDialog.dismiss();
-                });
-            }
-            final String[] searchColumnsForRequest = translateOptionsParam();
-            final String manufacturerForRequest = translateFiltersParam();
-            final boolean exactMatchForRequest = translateMatchParam();
-            searchThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        int[] positionsForRequest = positions;
-                        if (reloadPositions) {
-                            final String[] searchColumns = searchColumnsForRequest;
-                            int[][] subPositions = new int[searchColumns.length][];
-                            String rawSearchInput;
-                            boolean rawMatchParam;
-                            int resultCount = 0;
-
-                            // Search by translated columns
-                            for (int i = 0; i < searchColumns.length; i++) {
-                                // For order number: use the part before the regional suffix.
-                                if (searchColumns[i].equals("sorder")) {
-                                    if (searchInput.length() < 5) {
-                                        // omit this
-                                        subPositions[i] = new int[0];
-                                        continue;
-                                    }
-                                    // Overwrite input
-                                    rawSearchInput = searchInput.substring(0,
-                                            Math.min(5, searchInput.length()));
-                                    // Overwrite match param.
-                                    rawMatchParam = false;
-                                } else {
-                                    rawSearchInput = searchInput;
-                                    rawMatchParam = exactMatchForRequest;
-                                }
-                                subPositions[i] = MainActivity.getMachineHelper().searchHelper(searchColumns[i], rawSearchInput,
-                                        manufacturerForRequest, rawMatchParam, true);
-                                resultCount += subPositions[i].length;
-                            }
-
-                            // Add raw results
-                            int[] newPositions = new int[resultCount];
-                            int previousCount = 0;
-                            for (int i = 0; i < searchColumns.length; i++) {
-                                for (int j = 0; j < subPositions[i].length; j++) {
-                                    newPositions[previousCount] = subPositions[i][j];
-                                    previousCount++;
-                                }
-                            }
-                            // A model-number search can match the same machine in multiple columns.
-                            newPositions = MainActivity.getMachineHelper().checkDuplicate(newPositions);
-
-                            positionsForRequest = newPositions;
-                        }
-                        if (Thread.currentThread().isInterrupted() || requestID != searchRequestID) {
-                            return;
-                        }
-                        final int[] finalPositionsForRequest = positionsForRequest;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (requestID != searchRequestID || isFinishing()
-                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed())) {
-                                    return;
-                                }
-                                try {
-                                    positions = finalPositionsForRequest;
-                                    if (reloadPositions) {
-                                        waitDialog.dismiss();
-                                    }
-                                    if (!userStopped) {
-                                        DebugHelper.log("Search", "Terminated normally.");
-                                        userStopped = true;
-                                        clearSearch();
-                                        // NullSafe
-                                        if (positions != null) {
-                                            DebugHelper.log("performSearchLoad", "Position Length: "
-                                                    + positions.length + ", Reload Flag: " + reloadPositions);
-                                            if (positions.length == 0) {
-                                                textResult.setText(R.string.search_noResult);
-                                                textResult.setTextColor(getColor(R.color.colorDefaultText));
-                                            } else {
-                                                textResult.setText(getResources().getQuantityString(
-                                                        R.plurals.search_results, positions.length,
-                                                        positions.length));
-                                                textResult.setTextColor(getColor(R.color.colorDefaultText));
-                                            }
-                                            resultListAdapter = new MachineListAdapter(positions, SearchActivity.this);
-                                            resultList.setAdapter(resultListAdapter);
-
-                                            // Open directly only after an explicit search submission.
-                                            if (allowDirectOpen && reloadPositions && positions.length == 1
-                                                    && PrefsHelper.getBooleanPrefs("isOpenDirectly", SearchActivity.this)) {
-                                                SpecsIntentHelper.openMachine(positions, positions[0],
-                                                        SearchActivity.this);
-                                            }
-                                        }
-                                    } else {
-                                        Log.w("Search", "Terminated Abnormally.");
-                                    }
-                                } catch (final Exception e) {
-                                    ExceptionHelper.handleException(SearchActivity.this, e, null, null);
-                                }
-                            }
-                        });
-                    } catch (CancellationException ignored) {
-                        // Replaced by a newer search or cancelled by the user.
-                    } catch (final Exception e) {
-                        runOnUiThread(() -> {
-                            if (requestID != searchRequestID || isFinishing()
-                                    || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                                    && isDestroyed())) {
-                                return;
-                            }
-                            if (waitDialog != null && waitDialog.isShowing()) {
-                                waitDialog.dismiss();
-                            }
-                            userStopped = true;
-                            clearSearch();
-                            ExceptionHelper.handleException(SearchActivity.this, e,
-                                    "SearchThread", "Unable to search the machine index.");
-                        });
-                    }
-                }
-            };
-            searchThread.start();
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, null, null);
-        }
-    }
 }

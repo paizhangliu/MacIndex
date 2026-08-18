@@ -1,0 +1,70 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000115"
+name = "Power Macintosh 5500"
+introductions = [
+  { year = 1997, month = 2, qualifier = "225 MHz" },
+  { year = 1997, month = 9, qualifier = "250 MHz" },
+]
+
+gestalt_ids = [{ value = "512" }]
+order_numbers = [
+  { value = "M6148", revisions = ["B"], qualifier = "5500/225" },
+  { value = "M6149", revisions = ["A"], qualifier = "5500/250" },
+]
+
+codenames = [{ value = "Phoenix" }, { value = "Gazelle", qualifier = "logic board" }]
+
+processor = '''
+**PowerPC 603e (PID7v)** 225 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus
+**PowerPC 603e (PID7t)** 250 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus
+**PowerPC 603e (PID7t)** 275 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, or 512 KB L2 cache on selected configuration, 50 MHz system bus'''
+processor_family_keys = ["603"]
+
+graphics = "**ATI 3D RAGE II (ATI264GT)** 2 MB SGRAM"
+graphics_logo_keys = ["ati"]
+
+display = '''
+15-inch color display, 832x624
+External display support via DB-15, up to 800x600 at 24-bit color; up to 1152x870 at 16-bit color; up to 1280x1024 at 8-bit color'''
+ram = '''
+16 or 32 MB standard
+128 MB maximum
+2 - 168-pin EDO DIMM slots, 60 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.5 (System Enabler 411)
+Mac OS 9.1 Maximum'''
+storage = '''
+2 GB ATA hard drive standard
+4 GB ATA hard drive on selected configurations
+12x or 24x CD-ROM drive
+1.44 MB floppy drive
+ATA hard drive interface'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers'''
+expansion = '''
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+2 - 3.5-mm analog output jacks
+1 - 6.88-inch PCI 2.0 slot
+1 - Comm II slot (preinstalled with Ethernet card)
+1 - Video input slot
+1 - Optional Apple Video-In Card with S-video, RCA composite video, and stereo RCA audio input
+1 - Optional Apple TV/FM Radio System (requires Apple Video-In Card)'''
+design = '''
+Platinum or Black
+47 lbs.
+17.5" H x 15.1" W x 16" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 5500/225", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5500_225.html" },
+  { label = "Power Macintosh 5500/250", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5500_250.html" },
+  { label = "Power Macintosh 5500/275", url = "https://everymac.com/systems/apple/powermac/specs/powermac_5500_275.html" },
+]

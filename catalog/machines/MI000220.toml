@@ -1,0 +1,66 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000220"
+name = "PowerBook G4"
+introductions = [{ year = 2001, month = 1 }]
+
+model_numbers = [{ value = "M5884" }]
+identifiers = [{ value = "PowerBook3,2" }]
+order_numbers = [
+  { value = "M7952", revisions = ["A"], qualifier = "400 MHz" },
+  { value = "M7710", revisions = ["A"], qualifier = "500 MHz" },
+]
+emc_numbers = [{ value = "1854" }]
+
+codenames = [{ value = "Mercury" }, { value = "103" }, { value = "P12" }]
+
+processor = '''
+**PowerPC 7410 (G4)** 400 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus
+**PowerPC 7410 (G4)** 500 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7410"]
+
+graphics = "**ATI Rage Mobility 128** 8 MB"
+graphics_logo_keys = ["ati"]
+
+display = '''
+15.2-inch active-matrix widescreen LCD, 1152x768
+Dual display and video mirroring up to 1280x960'''
+ram = '''
+128 MB standard (400 MHz)
+256 MB standard (500 MHz)
+1 GB maximum
+2 - PC100 SO-DIMM slots, 10 ns'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.1
+Mac OS X 10.4.11 Maximum'''
+storage = '''
+10 GB Ultra ATA/66 hard drive standard (400 MHz)
+20 GB Ultra ATA/66 hard drive standard (500 MHz)
+30 GB Ultra ATA/66 hard drive configurable
+Slot-loading DVD-ROM drive'''
+features = '''
+Optional AirPort (802.11b)
+1 - Built-in microphone
+2 - Built-in stereo speakers
+Infrared, up to 4 Mbps'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.90 modem
+2 - USB 1.1 ports
+1 - FireWire 400 port
+1 - VGA port
+1 - S-video output
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+1 - Type I/II CardBus slot'''
+design = '''
+5.3 lbs.
+1" H x 13.4" W x 9.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G4 400 (Original - Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_400.html" },
+  { label = "PowerBook G4 500 (Original - Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_500.html" },
+]

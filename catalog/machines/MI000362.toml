@@ -1,0 +1,83 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000359"
+name = "MacBook Pro (15-inch, 2017)"
+introductions = [{ year = 2017, month = 6 }]
+
+model_numbers = [{ value = "A1707" }]
+identifiers = [{ value = "MacBookPro14,3" }]
+order_numbers = [
+  { value = "MPTU2", revisions = ["A"], qualifier = "2.8 GHz Silver" },
+  { value = "MPTV2", revisions = ["A"], qualifier = "2.9 GHz Silver" },
+  { value = "MPTR2", revisions = ["A"], qualifier = "2.8 GHz Space Gray" },
+  { value = "MPTT2", revisions = ["A"], qualifier = "2.9 GHz Space Gray" },
+  { value = "MPTW2", revisions = ["A"] },
+  { value = "MPTX2", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3162" }]
+
+processor = '''
+**Intel Core i7 (7700HQ) ("Kaby Lake")** 2.8 GHz, up to 3.8 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (7820HQ) ("Kaby Lake")** 2.9 GHz, up to 3.9 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+**Intel Core i7 (7920HQ) ("Kaby Lake")** 3.1 GHz, up to 4.1 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel Direct Media Interface (DMI) 3.0 at 8 GT/s
+**Apple T1 (APL1023)**'''
+processor_family_keys = ["kabylake"]
+processor_logo_keys = [
+  "corei7_7",
+  "t1",
+]
+
+graphics = '''
+**AMD Radeon Pro 555** 2 GB GDDR5 (2.8 GHz)
+**AMD Radeon Pro 560** 4 GB GDDR5 (2.9 GHz; configurable with 2.8 GHz)
+**Intel HD Graphics 630** up to 1.5 GB shared with main memory'''
+graphics_logo_keys = [
+  "amdradeon2016",
+  "intelhd",
+]
+
+display = '''
+15.4-inch (diagonal) LED-backlit display with IPS technology, 2880x1800, 220 ppi, 500 nits, wide color gamut (P3)
+Up to two external displays at 5120x2880 at 60 Hz
+Up to four external displays at 4096x2304 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+16 GB standard
+16 GB maximum
+PC3-17000 (2133 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.12.5 (16F2073)
+macOS 13.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB standard (2.8 GHz)
+512 GB standard (2.9 GHz)
+512 GB, 1 TB, or 2 TB configurable (2.8 GHz)
+1 or 2 TB configurable (2.9 GHz)
+8.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.2
+3 - Built-in microphones
+2 - Built-in stereo speakers with high dynamic range
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+4 - Thunderbolt 3 ports (up to 40 Gbps; USB 3.1 Gen 2 up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+4.02 lbs.
+0.61" H x 13.75" W x 9.48" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 15\" \"Core i7\" 2.8 Touch/Mid-2017", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.8-15-mid-2017-retina-display-touch-bar-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 2.9 Touch/Mid-2017", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.9-15-mid-2017-retina-display-touch-bar-specs.html" },
+  { label = "MacBook Pro 15\" \"Core i7\" 3.1 Touch/Mid-2017", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-3.1-15-mid-2017-retina-display-touch-bar-specs.html" },
+]

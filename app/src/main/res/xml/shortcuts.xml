@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="25">
     <shortcut
         android:shortcutId="search"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_search_24_bb"
+        android:icon="@drawable/ic_shortcut_search"
         android:shortcutShortLabel="@string/menu_search">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="com.macindex.macindex.action.OPEN_SEARCH"
             android:targetPackage="com.macindex.macindex"
-            android:targetClass="com.macindex.macindex.SearchActivity" />
+            android:targetClass="com.macindex.macindex.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="random"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_random"
+        android:shortcutShortLabel="@string/menu_random">
+        <intent
+            android:action="com.macindex.macindex.action.OPEN_RANDOM"
+            android:targetPackage="com.macindex.macindex"
+            android:targetClass="com.macindex.macindex.MainActivity" />
     </shortcut>
     <shortcut
         android:shortcutId="favourite"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_star_border_24_bb"
+        android:icon="@drawable/ic_shortcut_favourite"
         android:shortcutShortLabel="@string/menu_favourite">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="com.macindex.macindex.action.OPEN_FAVOURITES"
             android:targetPackage="com.macindex.macindex"
-            android:targetClass="com.macindex.macindex.FavouriteActivity" />
+            android:targetClass="com.macindex.macindex.MainActivity" />
     </shortcut>
     <shortcut
         android:shortcutId="comment"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_sticky_note_2_24_bb"
+        android:icon="@drawable/ic_shortcut_comment"
         android:shortcutShortLabel="@string/menu_comment">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="com.macindex.macindex.action.OPEN_COMMENTS"
             android:targetPackage="com.macindex.macindex"
-            android:targetClass="com.macindex.macindex.CommentActivity" />
+            android:targetClass="com.macindex.macindex.MainActivity" />
     </shortcut>
 </shortcuts>

@@ -1,0 +1,60 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000106"
+name = "Power Macintosh 8200"
+introductions = [{ year = 1996, month = 4 }]
+
+gestalt_ids = [{ value = "108" }]
+
+codenames = [{ value = "Catalyst" }]
+
+processor = '''
+**PowerPC 601v** 100 MHz, 0.5 µm process, 32-bit, 32 KB unified L1 cache, optional 256 KB L2 cache, 40 MHz system bus
+**PowerPC 601v** 120 MHz, 0.5 µm process, 32-bit, 32 KB unified L1 cache, 256 KB L2 cache, 40 MHz system bus'''
+processor_family_keys = ["601"]
+
+graphics = "**Apple Platinum/Iridium video subsystem** 1 MB VRAM standard, expandable to 2 or 4 MB"
+
+display = '''
+External display support via DB-15
+1 MB VRAM: up to 832x624 at 16-bit color; up to 1152x870 at 8-bit color
+2 MB VRAM: up to 832x624 at 24-bit color; up to 1152x870 at 16-bit color; up to 1280x1024 at 8-bit color
+4 MB VRAM: up to 1024x768 at 24-bit color; up to 1152x870 or 1280x1024 at 16-bit color'''
+ram = '''
+8 MB standard (100 MHz)
+16 MB standard (120 MHz)
+256 MB Apple-tested maximum
+512 MB actual maximum
+4 - 168-pin FPM DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.3
+Mac OS 9.1 Maximum'''
+storage = '''
+1.2 GB SCSI hard drive
+4x CD-ROM drive (100 MHz)
+4x or 8x CD-ROM drive (120 MHz)
+1.44 MB floppy drive
+SCSI hard drive interface'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+3 - PCI slots
+1 - Additional 3.5-inch hard-drive bay'''
+design = '''
+Platinum
+25 lbs.
+14" H x 7.7" W x 15.75" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 8200/100", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8200_100.html" },
+  { label = "Power Macintosh 8200/120", url = "https://everymac.com/systems/apple/powermac/specs/powermac_8200_120.html" },
+]

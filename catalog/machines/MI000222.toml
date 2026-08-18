@@ -1,0 +1,68 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000220"
+name = "PowerBook G4 (DVI)"
+introductions = [{ year = 2002, month = 4 }]
+
+model_numbers = [{ value = "A1001" }]
+identifiers = [{ value = "PowerBook3,4" }]
+order_numbers = [
+  { value = "M8591", revisions = ["A"], qualifier = "667 MHz" },
+  { value = "M8592", revisions = ["A"], qualifier = "800 MHz" },
+]
+emc_numbers = [{ value = "1913" }]
+
+codenames = [{ value = "Ivory" }, { value = "P59" }]
+
+processor = '''
+**PowerPC 7455 (G4)** 667 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB DDR L3 cache, 133 MHz system bus
+**PowerPC 7455 (G4)** 800 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB DDR L3 cache, 133 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = "**ATI Mobility Radeon 7500** 32 MB DDR VRAM"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+15.2-inch active-matrix widescreen LCD, 1280x854
+Dual display and video mirroring up to 2048x1536'''
+ram = '''
+256 MB standard (667 MHz)
+512 MB standard (800 MHz)
+1 GB maximum
+2 - PC133 SO-DIMM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.2
+Mac OS X 10.1.4 (5R60)
+Mac OS X 10.4.11 Maximum'''
+storage = '''
+30 GB 4200-rpm Ultra ATA/66 hard drive standard (667 MHz)
+40 GB 4200-rpm Ultra ATA/66 hard drive standard (800 MHz)
+60 GB 5400-rpm Ultra ATA/66 hard drive configurable
+Slot-loading Combo drive (DVD-ROM/CD-RW)'''
+features = '''
+Optional AirPort (802.11b; 667 MHz)
+Built-in AirPort (802.11b; 800 MHz)
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T)
+1 - 56 Kbps V.90 modem
+2 - USB 1.1 ports
+1 - FireWire 400 port
+1 - DVI port
+1 - S-video output
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+1 - Type I/II CardBus slot'''
+design = '''
+5.4 lbs.
+1" H x 13.4" W x 9.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G4 667 (DVI - Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_667_dvi.html" },
+  { label = "PowerBook G4 800 (DVI - Ti)", url = "https://everymac.com/systems/apple/powerbook_g4/specs/powerbook_g4_800_dvi.html" },
+]

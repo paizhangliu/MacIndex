@@ -1,0 +1,91 @@
+category = "power_mac"
+picture_asset_key = "MI000163"
+name = "Power Mac G4 (FW 800)"
+introductions = [{ year = 2003, month = 1 }]
+
+model_numbers = [{ value = "M8570" }]
+identifiers = [{ value = "PowerMac3,6" }]
+order_numbers = [
+  { value = "M8839", revisions = ["A"], qualifier = "1.0 GHz" },
+  { value = "M8840", revisions = ["A"], qualifier = "dual 1.25 GHz" },
+  { value = "M8841", revisions = ["A"], qualifier = "dual 1.42 GHz" },
+]
+emc_numbers = [{ value = "1914" }]
+
+codenames = [{ value = "P58" }]
+
+processor = '''
+**PowerPC 7455 (G4)** 1.0 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 1 MB DDR L3 cache, 133 MHz system bus
+**Dual PowerPC 7455 (G4)** 1.25 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 256 KB on-chip L2 cache per processor, 1 MB DDR L3 cache per processor, 167 MHz system bus
+**Dual PowerPC 7455 (G4)** 1.42 GHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 256 KB on-chip L2 cache per processor, 2 MB DDR L3 cache per processor, 167 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = '''
+**NVIDIA GeForce4 MX** 64 MB DDR VRAM standard (single 1.0 GHz)
+**ATI Radeon 9000 Pro** 64 MB DDR VRAM standard (dual 1.25 GHz or 1.42 GHz)
+**NVIDIA GeForce4 Ti** 128 MB DDR VRAM build-to-order
+**ATI Radeon 9700 Pro** 128 MB DDR VRAM build-to-order'''
+graphics_logo_keys = [
+  "nvgeforce4",
+  "atiradeon2000",
+]
+
+display = '''
+Digital resolution up to 1920x1200
+Analog resolution up to 1600x1200
+Dual display extended and video mirroring'''
+ram = '''
+256 MB standard (single 1.0 GHz or dual 1.25 GHz)
+512 MB standard (dual 1.42 GHz)
+2 GB maximum
+4 - PC2100 184-pin DDR SDRAM slots (single 1.0 GHz)
+4 - PC2700 184-pin DDR SDRAM slots (dual 1.25 GHz or 1.42 GHz)'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.2.3 (6H58)
+Mac OS X 10.5.8 Maximum
+AHT (Power Mac) 2.0.1'''
+storage = '''
+60 GB 7200-rpm hard drive standard (single 1.0 GHz)
+80 GB 7200-rpm hard drive standard (dual 1.25 GHz)
+120 GB 7200-rpm hard drive standard (dual 1.42 GHz)
+180 GB 7200-rpm hard drive configurable
+Combo drive (DVD-ROM/CD-RW) standard (single 1.0 GHz or dual 1.25 GHz)
+SuperDrive (DVD-R/CD-RW) standard (dual 1.42 GHz)
+Combo drive or SuperDrive configurable
+1 - ATA/100 (ATA-6) hard drive interface
+1 - Ultra ATA/66 (ATA-5) hard drive interface
+EIDE (ATA-3) optical drive interface'''
+features = '''
+1 - Optional AirPort Extreme card (802.11b/g)
+Optional Bluetooth 1.1
+1 - Built-in speaker (16-bit, 44.1 kHz sample rate)'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - 56 Kbps V.92 modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - FireWire 800 port
+15 W total FireWire bus power
+1 - DVI port
+1 - ADC port
+1 - 3.5-mm analog input jack (16-bit, 44.1 kHz sample rate)
+2 - 3.5-mm analog output jacks
+4 - 64-bit 33 MHz PCI slots
+1 - AGP 4x slot
+4 - Internal 3.5-inch ATA drive bays (2 ATA/100 and 2 ATA/66)
+2 - Optical drive bays
+1 - Apple Pro Speaker minijack'''
+design = '''
+QuickSilver
+42 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G4 1.0 (FW 800)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_1.0_mdd.html" },
+  { label = "Power Macintosh G4 1.25 DP (FW 800)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_1.25_dp_mdd_fw800.html" },
+  { label = "Power Macintosh G4 1.42 DP (FW 800)", url = "https://everymac.com/systems/apple/powermac_g4/specs/powermac_g4_1.42_dp_mdd.html" },
+]

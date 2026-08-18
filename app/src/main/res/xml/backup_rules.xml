@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- User preferences and JSON records remain eligible for backup. -->
+    <!-- A restored 4.9.1 install may still contain these obsolete runtime files. -->
     <exclude domain="database" path="specs.db" />
     <exclude domain="database" path="specs.db-journal" />
     <exclude domain="database" path="specs.db-shm" />
     <exclude domain="database" path="specs.db-wal" />
+    <exclude domain="database" path="specs.db.tmp" />
 </full-backup-content>

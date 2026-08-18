@@ -1,43 +1,33 @@
 package com.macindex.macindex;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
-/**
- * MacIndex View Image Activity
- * Jul. 6, 2021
- */
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.macindex.macindex.catalog.Machine;
+import com.macindex.macindex.catalog.MachineCatalog;
+
+/** Displays the full machine image resolved from a stable catalog UID. */
 public class ViewImageActivity extends AppCompatActivity {
 
+    private LifecycleMachineImageLoader imageLoader;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
-        WindowInsetsHelper.apply(this);
+        ContentInsetsHelper.apply(this);
+        imageLoader = new LifecycleMachineImageLoader(this, getAssets());
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        if (!MainActivity.validateOperation(this)) {
-            return;
-        }
-
-        try {
-            final Intent intent = getIntent();
-            final String machineUID = intent.getStringExtra("machineUID");
-            if (machineUID == null) {
-                throw new IllegalArgumentException();
-            }
-            final int machineID = MainActivity.getMachineHelper().getMachineID(machineUID);
-            init(machineID);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, "ViewImageActivity", "Illegal Machine ID.");
-        }
+        StartupUiGate.bind(this,
+                (catalog, userState) -> initializeFromRequest(catalog));
     }
 
     @Override
@@ -46,18 +36,31 @@ public class ViewImageActivity extends AppCompatActivity {
         return true;
     }
 
-    private void init(final int machineID) {
-        try {
-            setTitle(MainActivity.getMachineHelper().getName(machineID));
-            final ImageView image = findViewById(R.id.pic);
-            final Bitmap picture = MainActivity.getMachineHelper().getPicture(machineID,
-                    getResources().getDisplayMetrics().widthPixels,
-                    getResources().getDisplayMetrics().heightPixels);
-            DebugHelper.log("SpecsAct", "Image exists");
-            image.setImageBitmap(picture);
-            ThemeHelper.applyMachineImage(this, image);
-        } catch (Exception e) {
-            ExceptionHelper.handleException(this, e, null, null);
+    private void initializeFromRequest(@NonNull final MachineCatalog catalog) {
+        final String machineUID = getIntent().getStringExtra(
+                NavigationContract.EXTRA_MACHINE_UID);
+        if (machineUID == null) {
+            throw new IllegalArgumentException("Missing machine image UID");
         }
+        init(catalog.requireByUid(machineUID));
     }
+
+    private void init(@NonNull final Machine machine) {
+        setTitle(machine.name());
+        final ImageView image = findViewById(R.id.pic);
+        imageLoader.load("full-picture", machine,
+                getResources().getDisplayMetrics().widthPixels,
+                getResources().getDisplayMetrics().heightPixels,
+                picture -> {
+                    DebugHelper.log("ViewImage", "Loaded image for " + machine.uid());
+                    image.setImageBitmap(picture);
+                    ThemeHelper.applyMachineImage(this, image);
+                },
+                error -> {
+                    Log.e("MachineImage", "Unable to load image for " + machine.uid(), error);
+                    ExceptionHelper.showToast(this, R.string.machine_image_unavailable);
+                    finish();
+                });
+    }
+
 }

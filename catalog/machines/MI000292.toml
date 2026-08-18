@@ -1,0 +1,65 @@
+category = "imac_intel"
+picture_asset_key = "MI000279"
+name = "iMac (Retina 5K, 27-inch, Mid 2015)"
+introductions = [{ year = 2015, month = 5 }]
+
+model_numbers = [{ value = "A1419" }]
+identifiers = [{ value = "iMac15,1" }]
+order_numbers = [{ value = "MF885", revisions = ["A"] }]
+emc_numbers = [{ value = "2806" }]
+
+processor = '''
+**Intel Core i5 (4590) ("Haswell")** 3.3 GHz, up to 3.7 GHz, 22 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["haswell"]
+processor_logo_keys = ["corei5_4"]
+
+graphics = "**AMD Radeon R9 M290** 2 GB GDDR5"
+graphics_logo_keys = ["amdradeon2013"]
+
+display = '''
+27-inch (diagonal) Retina 5K display with IPS technology, 5120x2880, 218 ppi
+Up to two external Thunderbolt displays
+External resolution up to 3840x2160
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 or 32 GB configurable
+32 GB maximum
+4 - 204-pin PC3-12800 (1600 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.10.2 (14C500)
+macOS 11.7.11 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+1 TB 7200-rpm SATA hard drive standard
+3 TB 7200-rpm SATA hard drive configurable
+1 or 3 TB Fusion Drive configurable
+256 or 512 GB, or 1 TB flash storage configurable
+Optional Apple USB SuperDrive
+1 - 5.0 GT/s PCIe x2 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 2 ports (up to 20 Gbps; digital video output)
+1 - 3.5-mm analog/optical combo output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+21 lbs.
+20.3" H x 25.6" W x 8" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [{ label = "iMac 27-Inch \"Core i5\" 3.3 (5K, Mid-2015)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-3.3-27-inch-aluminum-retina-5k-mid-2015-specs.html" }]

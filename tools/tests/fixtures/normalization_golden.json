@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "cases": [
+    {
+      "raw": "  ＭａｃＩＮＴＯＳＨ  ",
+      "normalized": "macintosh"
+    },
+    {
+      "raw": "\u0000\tMac Pro\r\n",
+      "normalized": "mac pro"
+    },
+    {
+      "raw": " Mac mini ",
+      "normalized": "mac mini"
+    },
+    {
+      "raw": " MacBook Air ",
+      "normalized": "macbook air"
+    },
+    {
+      "raw": "​Mac Studio​",
+      "normalized": "​mac studio​"
+    },
+    {
+      "raw": "KELVIN",
+      "normalized": "kelvin"
+    },
+    {
+      "raw": "İMAC",
+      "normalized": "i̇mac"
+    },
+    {
+      "raw": "Straße",
+      "normalized": "straße"
+    }
+  ]
+}

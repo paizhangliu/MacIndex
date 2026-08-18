@@ -1,0 +1,82 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000358"
+name = "MacBook Pro (13-inch, 2020, Four TB3 Ports)"
+aliases = ["MacBook Pro (13-inch, 2020, Four Thunderbolt 3 Ports)"]
+introductions = [{ year = 2020, month = 5 }]
+
+codenames = [{ value = "J214K" }]
+
+model_numbers = [{ value = "A2251" }]
+identifiers = [{ value = "MacBookPro16,2" }]
+order_numbers = [
+  { value = "MWP72", revisions = ["A"], qualifier = "2.0 GHz with 512 GB storage, Silver" },
+  { value = "MWP82", revisions = ["A"], qualifier = "2.0 GHz with 1 TB storage, Silver" },
+  { value = "MWP42", revisions = ["A"], qualifier = "2.0 GHz with 512 GB storage, Space Gray" },
+  { value = "MWP52", revisions = ["A"], qualifier = "2.0 GHz with 1 TB storage, Space Gray" },
+  { value = "MWP62", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3348" }]
+
+processor = '''
+**Intel Core i5 (1038NG7) ("Ice Lake")** 2.0 GHz, up to 3.8 GHz, 10 nm process, 64-bit, 4 cores, 32 KB instruction and 48 KB data L1 cache per core, 512 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (1068NG7) ("Ice Lake")** 2.3 GHz, up to 4.1 GHz, 10 nm process, 64-bit, 4 cores, 32 KB instruction and 48 KB data L1 cache per core, 512 KB L2 cache per core, 8 MB shared L3 cache
+Intel On-Package Interface (OPI) at 4 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["icelake"]
+processor_logo_keys = [
+  "corei5_10",
+  "corei7_10",
+  "t2",
+]
+
+graphics = "**Intel Iris Plus Graphics** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["inteliris2020"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit display with IPS technology, 2560x1600, 227 ppi, 500 nits, wide color gamut (P3)
+One external 6K display up to 6016x3384 at 60 Hz
+One external 5K display up to 5120x2880 at 60 Hz
+Up to two external 4K displays at 4096x2304 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+16 GB standard
+32 GB configurable
+32 GB maximum
+PC4-29800 (3733 MHz) LPDDR4X onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.15.4 (19E2265)
+macOS 26 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB standard
+1, 2, or 4 TB configurable (512 GB configuration)
+1 TB standard
+2 or 4 TB configurable (1 TB configuration)
+8.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0
+3 - Built-in microphones with directional beamforming
+2 - Built-in stereo speakers with high dynamic range
+Wide stereo sound
+Support for Dolby Atmos playback
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+4 - Thunderbolt 3 ports (up to 40 Gbps; USB 3.1 Gen 2 up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+3.1 lbs.
+0.61" H x 11.97" W x 8.36" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 13\" \"Core i5\" 2.0 2020 4 TB 3", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i5-2.0-quad-core-13-2020-4-thunderbolt-3-ports-scissor-specs.html" },
+  { label = "MacBook Pro 13\" \"Core i7\" 2.3 2020 4 TB 3", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.3-quad-core-13-2020-4-thunderbolt-3-ports-scissor-specs.html" },
+]

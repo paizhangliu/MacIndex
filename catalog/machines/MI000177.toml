@@ -1,0 +1,76 @@
+category = "imac_ppc"
+picture_asset_key = "MI000177"
+name = "iMac (Flat Panel)"
+introductions = [{ year = 2002, month = 1 }]
+
+model_numbers = [{ value = "M6498" }]
+identifiers = [{ value = "PowerMac4,2" }]
+order_numbers = [
+  { value = "M8672", revisions = ["B"], qualifier = "700 MHz CD-RW" },
+  { value = "M7677", revisions = ["B"], qualifier = "700 MHz Combo" },
+  { value = "M8535", revisions = ["B"], qualifier = "800 MHz" },
+]
+emc_numbers = [{ value = "1873" }]
+
+codenames = [{ value = "Tessera" }, { value = "P80" }, { value = "Insp" }]
+
+processor = '''
+**PowerPC 7441 (G4)** 700 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus
+**PowerPC 7445 (G4)** 800 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 100 MHz system bus'''
+processor_family_keys = ["g4"]
+processor_logo_keys = [
+  "7440",
+  "7450",
+]
+
+graphics = "**NVIDIA GeForce2 MX** 32 MB DDR VRAM"
+graphics_logo_keys = ["nvgeforce2mx"]
+
+display = '''
+15-inch active-matrix LCD, 1024x768
+Video mirroring via Mini-VGA'''
+ram = '''
+128 MB standard (700 MHz CD-RW)
+256 MB standard (700 MHz Combo drive and 800 MHz SuperDrive)
+1 GB maximum
+1 - PC133 144-pin SO-DIMM slot
+1 - PC133 168-pin SDRAM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS 9.2.2 (Mac OS ROM 9.0.1)
+Mac OS X 10.1.2 (5P63)
+Mac OS X 10.4.11 Maximum
+AHT (iMac/eMac) 1.2.2'''
+storage = '''
+40 GB 5400-rpm Ultra ATA/66 hard drive (700 MHz)
+60 GB 5400-rpm Ultra ATA/66 hard drive (800 MHz)
+Tray-loading CD-RW drive (700 MHz, 128 MB)
+Tray-loading Combo drive (DVD-ROM/CD-RW) (700 MHz, 256 MB)
+Tray-loading SuperDrive (DVD-R/CD-RW) (800 MHz)
+Ultra ATA/66 (shared with optical drive) hard drive interface
+Ultra ATA/66 (shared with hard drive) optical drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in microphone
+1 - Built-in speaker (24-bit, 48 kHz sample rate)
+2 - Apple Pro Speakers (included with Combo and SuperDrive configurations; optional with CD-RW configuration)'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.92 modem
+3 - USB 1.1 ports
+2 - FireWire 400 ports
+1 - Mini-VGA port
+Composite and S-video output via adapter
+1 - 3.5-mm audio output jack
+1 - Apple Pro Speaker minijack'''
+design = '''
+White
+21.2 lbs.
+12.95–20.0" H x 15.1–16.3" W x 10.6–16.3" D; base diameter: 10.6"'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iMac G4/700 (Flat Panel)", url = "https://everymac.com/systems/apple/imac/specs/imac_700_fp.html" },
+  { label = "iMac G4/800 (Flat Panel)", url = "https://everymac.com/systems/apple/imac/specs/imac_800_fp.html" },
+]

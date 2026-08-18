@@ -1,0 +1,56 @@
+category = "mac_mini_arm"
+picture_asset_key = "MI000409"
+name = "Mac mini (M1, 2020)"
+introductions = [{ year = 2020, month = 11 }]
+
+model_numbers = [{ value = "A2348" }]
+identifiers = [{ value = "Macmini9,1" }]
+order_numbers = [
+  { value = "MGNR3", revisions = ["A"], qualifier = "256 GB storage" },
+  { value = "MGNT3", revisions = ["A"], qualifier = "512 GB storage" },
+]
+emc_numbers = [{ value = "3569" }]
+
+codenames = [{ value = "J274" }]
+
+processor = '''
+**Apple M1 "Tonga" (APL1102)** 3.2 GHz (performance) and 2.1 GHz (efficiency), TSMC N5 process, 64-bit, 8 cores (4 "Firestorm" P-cores, 4 "Icestorm" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 12 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 8 MB system-level cache, 16-core Neural Engine, Secure Enclave, 68.25 GB/s memory bandwidth'''
+processor_family_keys = ["m1"]
+processor_logo_keys = ["m1"]
+
+graphics = "**Apple 8-core GPU** unified memory architecture"
+
+display = "M1: up to two external displays simultaneously: one display up to 6016x3384 at 60 Hz via Thunderbolt and one display up to 4096x2160 at 60 Hz via HDMI"
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+4266 MT/s LPDDR4X unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 11.0 (20A2411)
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB SSD standard
+512 GB, 1 TB, or 2 TB SSD configurable
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6 (802.11ax)
+Bluetooth 5.0
+1 - Built-in speaker'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45), configurable to 10Gb Ethernet (NBASE-T at 1, 2.5, 5, or 10 Gbps; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+2 - Thunderbolt 3 / USB 4 ports (up to 40 Gbps)
+1 - HDMI 2.0 port (up to 4096x2160 at 60 Hz)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver
+2.6 lbs.
+1.4" H x 7.7" W x 7.7" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [{ label = "Mac mini \"M1\" 8-Core 3.2 (2020)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-m1-8-core-2020-specs.html" }]

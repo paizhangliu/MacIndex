@@ -1,0 +1,82 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000118"
+name = "Power Macintosh 6500"
+introductions = [
+  { year = 1997, month = 2, qualifier = "225 and 250 MHz" },
+  { year = 1997, month = 4, qualifier = "275 and 300 MHz" },
+]
+
+model_numbers = [{ value = "M3548" }]
+gestalt_ids = [{ value = "513" }]
+order_numbers = [
+  { value = "M5611", revisions = ["A"], qualifier = "6500/225 Home" },
+  { value = "M6189", revisions = ["A"], qualifier = "6500/250 Home" },
+  { value = "M6191", revisions = ["A"], qualifier = "6500/275 Home" },
+  { value = "M6190", revisions = ["A"], qualifier = "6500/275 Small Business" },
+  { value = "M5854", revisions = ["A"], qualifier = "6500/275 Creative Studio" },
+  { value = "M6192", revisions = ["A"], qualifier = "6500/300 Home" },
+]
+
+codenames = [{ value = "Gazelle" }]
+
+processor = '''
+**PowerPC 603e (PID7v)** 225 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus
+**PowerPC 603e (PID7t)** 250 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus
+**PowerPC 603e (PID7t)** 275 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus
+**PowerPC 603e (PID7t)** 300 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus'''
+processor_family_keys = ["603"]
+
+graphics = "**ATI 3D RAGE II (ATI264GT)** 2 MB SGRAM"
+graphics_logo_keys = ["ati"]
+
+display = "External display support via DB-15, up to 800x600 at 24-bit color; up to 1152x870 at 16-bit color; up to 1280x1024 at 8-bit color"
+ram = '''
+32, 48, or 64 MB standard
+128 MB maximum
+2 - 168-pin EDO DIMM slots, 60 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.5 (System Enabler 411)
+Mac OS 9.1 Maximum'''
+storage = '''
+2, 3, 4, or 6 GB IDE hard drive
+12x or 24x CD-ROM drive
+Optional Zip 100 drive
+1.44 MB floppy drive
+IDE hard drive interface'''
+features = '''
+1 - Built-in speaker
+1 - Built-in subwoofer
+1 - Infrared receiver for Apple TV/FM Radio System remote'''
+expansion = '''
+1 - Optional Ethernet port (10BASE-T)
+1 - Optional 33.6 or 56 Kbps modem
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - TV tuner
+1 - FM tuner (F-type connector) with optional Apple TV/FM Radio System
+1 - 3.5-mm analog input jack
+2 - 3.5-mm analog output jacks
+1 - S-video input
+1 - RCA video input
+2 - RCA audio input jacks with optional Apple Video System card
+2 - 7-inch PCI 2.0 slots
+1 - Comm II slot
+1 - Video input slot
+1 - Optional Apple TV/FM Radio System card
+1 - 5.25-inch SCSI drive bay (used by optional Zip drive)'''
+design = '''
+Platinum
+44.5 lbs.
+16" H x 7.8" W x 16.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 6500/225", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6500_225.html" },
+  { label = "Power Macintosh 6500/250", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6500_250.html" },
+  { label = "Power Macintosh 6500/275", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6500_275.html" },
+  { label = "Power Macintosh 6500/300", url = "https://everymac.com/systems/apple/powermac/specs/powermac_6500_300.html" },
+]

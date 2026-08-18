@@ -1,0 +1,75 @@
+category = "macbook_air_intel"
+picture_asset_key = "MI000401"
+name = "MacBook Air (Retina, 13-inch, 2018)"
+introductions = [{ year = 2018, month = 10 }]
+
+codenames = [{ value = "J140K" }]
+
+model_numbers = [{ value = "A1932" }]
+identifiers = [{ value = "MacBookAir8,1" }]
+order_numbers = [
+  { value = "MRE82", revisions = ["A"], qualifier = "128 GB Space Gray" },
+  { value = "MREA2", revisions = ["A"], qualifier = "128 GB Silver" },
+  { value = "MREE2", revisions = ["A"], qualifier = "128 GB Gold" },
+  { value = "MRE92", revisions = ["A"], qualifier = "256 GB Space Gray" },
+  { value = "MREC2", revisions = ["A"], qualifier = "256 GB Silver" },
+  { value = "MREF2", revisions = ["A"], qualifier = "256 GB Gold" },
+  { value = "MUQT2", revisions = ["A"] },
+  { value = "MUQU2", revisions = ["A"] },
+  { value = "MUQV2", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3184" }]
+
+processor = '''
+**Intel Core i5 (8210Y) ("Amber Lake")** 1.6 GHz, up to 3.6 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache, Intel On-Package Interface (OPI) at 4 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["amberlake"]
+processor_logo_keys = [
+  "corei5_8",
+  "t2",
+]
+
+graphics = "**Intel UHD Graphics 617** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit display with IPS technology, 2560x1600, 227 ppi
+One external display up to 5120x2880 at 60 Hz
+Up to two external displays at 4096x2304 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+PC3-17000 (2133 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.14.1 (18B2084)
+macOS 14.8.8 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+128 or 256 GB SSD standard (depending on configuration)
+256 or 512 GB, or 1.5 TB SSD configurable (128 GB base configuration)
+512 GB or 1.5 TB SSD configurable (256 GB base configuration)
+8.0 GT/s NVMe PCIe x4'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.2
+3 - Built-in microphones
+2 - Built-in speakers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+Optional Apple USB Ethernet Adapter or Thunderbolt to Gigabit Ethernet Adapter
+2 - Thunderbolt 3 ports (up to 40 Gbps; USB 3.1 Gen 2 up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Precision aluminum unibody
+2.75 lbs.
+0.16–0.61" H x 11.97" W x 8.36" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [{ label = "MacBook Air \"Core i5\" 1.6 13\" (Late 2018)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-i5-1.6-13-retina-display-late-2018-specs.html" }]

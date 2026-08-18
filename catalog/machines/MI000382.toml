@@ -1,0 +1,71 @@
+category = "macbook_intel"
+picture_asset_key = "MI000382"
+name = "MacBook (Retina, 12-inch, Early 2015)"
+introductions = [{ year = 2015, month = 4 }]
+
+codenames = [{ value = "Stealth" }]
+
+model_numbers = [{ value = "A1534" }]
+identifiers = [{ value = "MacBook8,1" }]
+order_numbers = [
+  { value = "MF855", revisions = ["A"], qualifier = "1.1 GHz with 256 GB storage, Silver" },
+  { value = "MK4M2", revisions = ["A"], qualifier = "1.1 GHz with 256 GB storage, Gold" },
+  { value = "MJY32", revisions = ["A"], qualifier = "1.1 GHz with 256 GB storage, Space Gray" },
+  { value = "MF865", revisions = ["A"], qualifier = "1.2 GHz with 512 GB storage, Silver" },
+  { value = "MK4N2", revisions = ["A"], qualifier = "1.2 GHz with 512 GB storage, Gold" },
+  { value = "MJY42", revisions = ["A"], qualifier = "1.2 GHz with 512 GB storage, Space Gray" },
+]
+emc_numbers = [{ value = "2746" }]
+
+processor = '''
+**Intel Core M (M-5Y31) ("Broadwell")** 1.1 GHz, up to 2.4 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+**Intel Core M (M-5Y51) ("Broadwell")** 1.2 GHz, up to 2.6 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+**Intel Core M (M-5Y71) ("Broadwell")** 1.3 GHz, up to 2.9 GHz, 14 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel On-Package Interface (OPI) at 4 GT/s'''
+processor_family_keys = ["broadwell"]
+processor_logo_keys = ["corem"]
+
+graphics = "**Intel HD Graphics 5300** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+12-inch (diagonal) LED-backlit display with IPS technology, 2304x1440, 226 ppi
+One external display up to 3840x2160 at 30 Hz or 4096x2160 at 24 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+8 GB maximum
+PC3-12800 (1600 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.10.2 (14C2061)
+macOS 11.7.11 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 GB flash storage standard (1.1 GHz)
+512 GB flash storage standard (1.2 GHz)
+5.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in speakers
+Built-in 480p FaceTime camera'''
+expansion = '''
+1 - USB 3.1 Gen 1 port (up to 5 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Precision aluminum unibody
+2.03 lbs.
+0.14–0.52" H x 11.04" W x 7.74" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [
+  { label = "MacBook \"Core M\" 1.1 12\" (Early 2015)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-m-1.1-12-early-2015-specs.html" },
+  { label = "MacBook \"Core M\" 1.2 12\" (Early 2015)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-m-1.2-12-early-2015-specs.html" },
+  { label = "MacBook \"Core M\" 1.3 12\" (Early 2015)", url = "https://everymac.com/systems/apple/macbook/specs/macbook-core-m-1.3-12-early-2015-specs.html" },
+]

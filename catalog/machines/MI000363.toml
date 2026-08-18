@@ -1,0 +1,78 @@
+category = "macbook_pro_intel"
+picture_asset_key = "MI000358"
+name = "MacBook Pro (13-inch, 2018, Four TB3 Ports)"
+aliases = ["MacBook Pro (13-inch, 2018, Four Thunderbolt 3 Ports)"]
+introductions = [{ year = 2018, month = 7 }]
+
+codenames = [{ value = "J132" }]
+
+model_numbers = [{ value = "A1989" }]
+identifiers = [{ value = "MacBookPro15,2" }]
+order_numbers = [
+  { value = "MR9U2", revisions = ["A"], qualifier = "2.3 GHz with 256 GB storage, Silver" },
+  { value = "MR9V2", revisions = ["A"], qualifier = "2.3 GHz with 512 GB storage, Silver" },
+  { value = "MR9Q2", revisions = ["A"], qualifier = "2.3 GHz with 256 GB storage, Space Gray" },
+  { value = "MR9R2", revisions = ["A"], qualifier = "2.3 GHz with 512 GB storage, Space Gray" },
+  { value = "MR9T2", revisions = ["A"] },
+]
+emc_numbers = [{ value = "3214" }]
+
+processor = '''
+**Intel Core i5 (8259U) ("Coffee Lake")** 2.3 GHz, up to 3.8 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 6 MB shared L3 cache
+**Intel Core i7 (8559U) ("Coffee Lake")** 2.7 GHz, up to 4.5 GHz, 14 nm process, 64-bit, 4 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 8 MB shared L3 cache
+Intel On-Package Interface (OPI) at 4 GT/s
+**Apple T2 (APL1027)**'''
+processor_family_keys = ["coffeelake"]
+processor_logo_keys = [
+  "corei5_8",
+  "corei7_8",
+  "t2",
+]
+
+graphics = "**Intel Iris Plus Graphics 655** up to 1.5 GB shared with main memory"
+graphics_logo_keys = ["inteliris"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit display with IPS technology, 2560x1600, 227 ppi, 500 nits, wide color gamut (P3)
+One external display up to 5120x2880 at 60 Hz
+Up to two external displays at 4096x2304 at 60 Hz
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+8 GB standard
+16 GB configurable
+16 GB maximum
+PC3-17000 (2133 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+macOS 10.13.6 (17G2112)
+macOS 15.7.8 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+256 or 512 GB standard (depending on configuration)
+512 GB, 1 TB, or 2 TB configurable (256 GB configuration)
+1 or 2 TB configurable (512 GB configuration)
+8.0 GT/s NVMe PCIe x4 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0
+3 - Built-in microphones
+2 - Built-in stereo speakers with high dynamic range
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+4 - Thunderbolt 3 ports (up to 40 Gbps; USB 3.1 Gen 2 up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+3.02 lbs.
+0.59" H x 11.97" W x 8.36" D'''
+
+support_status = "Vintage"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro 13\" \"Core i5\" 2.3 Touch/2018", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i5-2.3-13-mid-2018-true-tone-display-touch-bar-specs.html" },
+  { label = "MacBook Pro 13\" \"Core i7\" 2.7 Touch/2018", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i7-2.7-13-mid-2018-true-tone-display-touch-bar-specs.html" },
+]

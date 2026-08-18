@@ -1,0 +1,66 @@
+category = "powerbook_68k"
+picture_asset_key = "MI000083"
+name = "Macintosh PowerBook 540, 540c"
+aliases = [
+  "Macintosh PowerBook 540",
+  "Macintosh PowerBook 540c",
+]
+introductions = [{ year = 1994, month = 5 }]
+
+model_numbers = [{ value = "M4880" }]
+gestalt_ids = [{ value = "72" }]
+
+codenames = [{ value = "BlackBird" }, { value = "SR-71" }, { value = "Spruce Goose" }]
+
+processor = "**Motorola 68LC040** 33 MHz, 0.8 µm HCMOS process, 32-bit, 4 KB instruction and 4 KB data L1 cache, 33 MHz system bus"
+processor_family_keys = ["68040"]
+
+graphics = '''
+**Chips and Technologies 65220 CSC** 512 KB VRAM for the built-in display
+**Apple Keystone video controller with Ariel DAC** 512 KB VRAM for external video'''
+
+display = '''
+9.5-inch 8-bit grayscale active-matrix display, 640x480 (540)
+9.5-inch 16-bit color active-matrix display, 640x480 (540c)
+External display up to 832x624
+Video mirroring and extended desktop'''
+ram = '''
+4 or 12 MB standard
+36 MB maximum
+4 MB built-in
+1 - PowerBook 5xx memory slot, 70 ns'''
+rom = "2 MB Macintosh ROM"
+software = '''
+System 7.1.1 (PowerBook 500 Series Enabler)
+Mac OS 8.1 Maximum'''
+storage = '''
+240 MB SCSI hard drive (540)
+320 MB or 500 MB SCSI hard drive (540c)
+SCSI hard drive interface
+1.44 MB floppy drive'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers'''
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - ADB port
+1 - Serial port
+1 - HDI-30 SCSI port
+1 - Mini-15 video port
+1 - 3.5-mm analog audio input jack
+1 - 3.5-mm stereo audio output jack
+1 - Optional 19.2 Kbps modem
+1 - Optional PowerBook PCMCIA Expansion Module supporting 2 - Type II PC Cards or 1 - Type III PC Card
+1 - PowerBook expansion bay
+1 - 90-pin PDS slot'''
+design = '''
+7.1 lbs. (540)
+7.3 lbs. (540c)
+2.3" H x 11.5" W x 9.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [
+  { label = "PowerBook 540", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook540.html" },
+  { label = "PowerBook 540c", url = "https://everymac.com/systems/apple/powerbook/specs/mac_powerbook540c.html" },
+]

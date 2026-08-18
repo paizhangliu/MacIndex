@@ -1,0 +1,85 @@
+category = "mac_server_ppc"
+picture_asset_key = "MI000197"
+name = "Macintosh Server G3"
+introductions = [
+  { year = 1998, month = 3, qualifier = "233, 266, 300 MHz" },
+  { year = 1998, month = 9, qualifier = "333 MHz" },
+]
+
+model_numbers = [{ value = "M4405" }]
+gestalt_ids = [{ value = "510" }]
+order_numbers = [
+  { value = "M6389", revisions = ["A"], qualifier = "233 MHz" },
+  { value = "M6462", revisions = ["A"], qualifier = "266 MHz" },
+  { value = "M6579", revisions = ["A"], qualifier = "300 MHz" },
+  { value = "M6704", revisions = ["A"], qualifier = "333 MHz" },
+]
+
+codenames = [{ value = "Gossamer" }, { value = "Moses", qualifier = "266 MHz" }]
+
+processor = '''
+**PowerPC 750 (G3)** 233 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 266 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 300 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 333 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 66 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = '''
+**ATI 3D Rage II+DVD** 2 MB VRAM, expandable to 6 MB
+**ATI 3D Rage Pro PCI** 2 MB VRAM, expandable to 6 MB'''
+graphics_logo_keys = ["ati"]
+
+display = "Single display support via DB-15, up to 1280x1024 at 8-bit color with 2 MB VRAM; up to 1600x1200 at 16-bit color with 6 MB VRAM"
+ram = '''
+64 MB standard (233 MHz or selected 300 MHz)
+128 MB standard (266, selected 300, or 333 MHz)
+384 MB maximum on Revision 1 and 2 logic boards
+768 MB maximum on Revision 3 logic boards
+3 - PC66 168-pin SDRAM slots, 10 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+Mac OS 8.1
+AppleShare IP 5.0 or 6.0
+Mac OS X 10.2.8 Maximum'''
+storage = '''
+1 - 4 GB Ultra/Wide SCSI hard drive standard (233 MHz or selected 300 MHz)
+2 - 4 GB Ultra/Wide SCSI hard drives standard (266 MHz or selected 300 MHz)
+2 - 9 GB Ultra2 SCSI hard drives standard (333 MHz)
+24x CD-ROM drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (10BASE-T; RJ-45)
+1 - Ethernet PCI card (10/100BASE-T; RJ-45)
+1 - Optional 56 Kbps modem
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack (all cards)
+1 - 3.5-mm analog output jack (all cards)
+2 - RCA input (Audio/Video Input/Output Card or DVD-Video and Audio/Video Card)
+2 - RCA output (Audio/Video Input/Output Card or DVD-Video and Audio/Video Card)
+1 - S-video input
+1 - RCA video input with optional Audio/Video Input/Output Card or DVD-Video and Audio/Video Card
+1 - S-video output
+1 - RCA video output with optional Audio/Video Input/Output Card or DVD-Video and Audio/Video Card
+3 - PCI slots
+1 - 182-pin PERCH (PERCH slot supports Audio Input/Output Card "Whisper", Audio/Video Input/Output Card "Wings", or DVD-Video and Audio/Video Card "Bordeaux")
+1 - Modem connector on PERCH cards
+1 - 5.25-inch or 3.5-inch SCSI, ATA, or ATAPI bay
+1 - ATAPI bay'''
+design = '''
+Platinum
+33.1 lbs.
+15.2" H x 9.6" W x 17.8" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Macintosh Server G3 233", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_233_mt.html" },
+  { label = "Macintosh Server G3 266", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_266_mt.html" },
+  { label = "Macintosh Server G3 300", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_300_mt.html" },
+  { label = "Macintosh Server G3 333", url = "https://everymac.com/systems/apple/mac_server_g3/specs/macserver_g3_333_mt.html" },
+]

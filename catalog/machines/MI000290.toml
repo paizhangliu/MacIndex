@@ -1,0 +1,65 @@
+category = "imac_intel"
+picture_asset_key = "MI000278"
+name = "iMac (21.5-inch, Mid 2014)"
+introductions = [{ year = 2014, month = 6 }]
+
+model_numbers = [{ value = "A1418" }]
+identifiers = [{ value = "iMac14,4" }]
+order_numbers = [
+  { value = "MF883", revisions = ["A"] },
+  { value = "MG022", revisions = ["A"] },
+]
+emc_numbers = [{ value = "2805" }]
+
+processor = "**Intel Core i5 (4260U) (\"Haswell\")** 1.4 GHz, up to 2.7 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache, Intel Direct Media Interface (DMI) at 5 GT/s"
+processor_family_keys = ["haswell"]
+processor_logo_keys = ["corei5_4"]
+
+graphics = "**Intel HD Graphics 5000** up to 1.5 GB LPDDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+21.5-inch (diagonal) LED-backlit display with IPS technology, 1920x1080
+Up to two external Thunderbolt displays
+External resolution up to 2560x1600
+Dual display extended, video mirroring, AirPlay Mirroring, and Target Display'''
+ram = '''
+8 GB standard
+8 GB maximum
+PC3-12800 (1600 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.9.3 (13D2061)
+macOS 11.7.11 Maximum
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+500 GB 5400-rpm SATA hard drive standard
+1 TB 5400-rpm SATA hard drive configurable
+1 TB Fusion Drive configurable
+256 GB flash storage configurable
+Optional Apple USB SuperDrive
+1 - 5.0 GT/s PCIe x2 flash storage interface
+1 - 6.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in stereo speakers
+Built-in FaceTime HD camera'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+4 - USB 3.0 ports (up to 5 Gbps)
+2 - Thunderbolt 1 ports (up to 10 Gbps; digital video output)
+1 - 3.5-mm analog/optical combo output jack
+1 - Kensington security slot
+1 - Secure Digital (SDXC) card slot'''
+design = '''
+Silver
+12.5 lbs.
+17.7" H x 20.8" W x 6.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [{ label = "iMac 21.5-Inch \"Core i5\" 1.4 (Mid-2014)", url = "https://everymac.com/systems/apple/imac/specs/imac-core-i5-1.4-21-inch-aluminum-mid-2014-specs.html" }]

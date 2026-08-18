@@ -1,0 +1,41 @@
+category = "mac_mini_arm"
+picture_asset_key = "MI000316"
+name = "Developer Transition Kit (2020)"
+introductions = [{ year = 2020, month = 6 }]
+
+model_numbers = [{ value = "A2330" }]
+identifiers = [{ value = "ADP3,2" }]
+order_numbers = [{ value = "MYAL2", revisions = ["A"] }]
+emc_numbers = [{ value = "3568" }]
+
+codenames = [{ value = "J273a" }]
+
+processor = '''
+**Apple A12Z Bionic "Aruba"** 2.4 GHz, TSMC N7 process, 64-bit, 8 cores (4 "Vortex" P-cores, 4 "Tempest" E-cores), 128 KB instruction and 128 KB data L1 cache per performance core, 8 MB shared L2 cache for the performance core cluster, 32 KB instruction and 32 KB data L1 cache per efficiency core, 2 MB shared L2 cache for the efficiency core cluster, Neural Engine, Secure Enclave'''
+processor_family_keys = ["a12z"]
+
+graphics = "**Apple 8-core GPU**"
+
+display = "One external display up to 4K"
+ram = '''
+16 GB standard
+16 GB maximum
+16 GB onboard memory'''
+rom = "Apple iBoot"
+software = "macOS 11 (20A5299w)"
+storage = "512 GB onboard SSD standard"
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 5.0'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+2 - USB-A ports (up to 5 Gbps)
+2 - USB-C ports (up to 10 Gbps)
+1 - HDMI 2.0 port (up to 4K)'''
+design = '''
+Space Gray
+2.54 lbs.
+1.4" H x 7.7" W x 7.7" D'''
+
+support_status = "N/A"
+links = [{ label = "Mac mini Developer Transition Kit (DTK)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-developer-transition-kit-dtk-specs.html" }]

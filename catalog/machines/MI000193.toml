@@ -1,0 +1,67 @@
+category = "emac"
+picture_asset_key = "MI000190"
+name = "eMac (USB 2.0)"
+introductions = [{ year = 2004, month = 4 }]
+
+model_numbers = [{ value = "A1002" }]
+identifiers = [{ value = "PowerMac6,4" }]
+order_numbers = [
+  { value = "M9425", revisions = ["A"], qualifier = "Combo drive" },
+  { value = "M9461", revisions = ["A"], qualifier = "SuperDrive" },
+]
+
+codenames = [{ value = "Topsearch" }, { value = "Q86" }]
+
+processor = '''
+**PowerPC 7447A (G4)** 1.0 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus (education configurations)
+**PowerPC 7447A (G4)** 1.25 GHz, 0.13 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB on-chip L2 cache, 167 MHz system bus (retail configurations)'''
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7447"]
+
+graphics = "**ATI Radeon 9200** 32 MB DDR VRAM"
+graphics_logo_keys = ["atiradeon2000"]
+
+display = '''
+17-inch CRT, 16-inch viewable, 1280x960 at 72 Hz
+Video mirroring via Mini-VGA'''
+ram = '''
+256 MB standard
+1 GB Apple-supported maximum
+2 GB actual maximum
+2 - PC2700 DDR SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.3.3 (7G21)
+Mac OS X 10.5.8 Maximum
+AHT (eMac) 2.2, 2.5.1
+AHT (iMac G5/eMac) 2.5.3'''
+storage = '''
+40 GB 7200-rpm Ultra ATA/100 hard drive (1.0 GHz education and 1.25 GHz Combo drive)
+80 GB 7200-rpm Ultra ATA/100 hard drive (1.25 GHz SuperDrive)
+160 GB 7200-rpm Ultra ATA/100 hard drive configurable (1.25 GHz retail)
+No optical drive or CD-ROM drive (1.0 GHz education)
+Combo drive (DVD-ROM/CD-RW) (1.25 GHz, 40 GB)
+SuperDrive (DVD-R/CD-RW) (1.25 GHz, 80 GB)
+Ultra ATA/100 (ATA-6) hard drive interface
+ATA/ATAPI-3 optical drive interface'''
+features = '''
+Optional AirPort Extreme (802.11b/g)
+Optional Bluetooth
+1 - Built-in microphone
+2 - Built-in stereo speakers'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - Built-in 56 Kbps V.92 modem (M9425 and M9461 retail configurations)
+3 - USB 2.0 ports
+2 - FireWire 400 ports
+1 - Mini-VGA port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack'''
+design = '''
+White
+50 lbs.
+15.8" H x 15.8" W x 17.1" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [{ label = "eMac G4/1.25 (USB 2.0)", url = "https://everymac.com/systems/apple/emac/specs/emac_1.25.html" }]

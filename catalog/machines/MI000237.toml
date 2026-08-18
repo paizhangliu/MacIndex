@@ -1,0 +1,70 @@
+category = "ibook"
+picture_asset_key = "MI000237"
+name = "iBook"
+introductions = [
+  { year = 1999, month = 7, qualifier = "300 MHz, 32 MB, 3.2 GB" },
+  { year = 2000, month = 2, qualifier = "300 or 366 MHz, 64 MB, 6 GB" },
+]
+
+model_numbers = [{ value = "M2453" }]
+identifiers = [{ value = "PowerBook2,1" }]
+order_numbers = [
+  { value = "M7707", revisions = ["A"], qualifier = "Blueberry 3.2 GB" },
+  { value = "M7619", revisions = ["A"], qualifier = "Tangerine 3.2 GB" },
+  { value = "M7717", revisions = ["A"], qualifier = "Blueberry 6 GB" },
+  { value = "M7718", revisions = ["A"], qualifier = "Tangerine 6 GB" },
+  { value = "M7716", revisions = ["A"], qualifier = "Graphite 6 GB" },
+]
+
+codenames = [
+  { value = "P1" },
+  { value = "Student Notebook", qualifier = "pre-release project" },
+  { value = "School Book", qualifier = "pre-release project" },
+]
+
+processor = '''
+**PowerPC 750 (G3)** 300 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 366 MHz, 0.20–0.22 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**ATI Rage Mobility** 4 MB VRAM"
+graphics_logo_keys = ["ati"]
+
+display = "12.1-inch active-matrix color LCD, 800x600"
+ram = '''
+32 MB standard and built-in (early 300 MHz)
+64 MB standard and built-in (late 300 MHz and 366 MHz)
+288 MB Apple-supported maximum (32 MB built-in)
+320 MB Apple-supported maximum (64 MB built-in)
+544 MB actual maximum (32 MB built-in)
+576 MB actual maximum (64 MB built-in)
+1 - PC66 144-pin SO-DIMM slot'''
+rom = "New World ROM"
+software = '''
+Mac OS 8.6 (Mac OS ROM 2.3.1)
+Mac OS X 10.3.9 Maximum'''
+storage = '''
+3.2 GB ATA hard drive (early 300 MHz)
+6 GB ATA hard drive (late 300 MHz and 366 MHz)
+Tray-loading CD-ROM drive'''
+features = '''
+Optional AirPort (802.11b)
+1 - Built-in speaker
+45 Wh lithium-ion battery'''
+expansion = '''
+1 - Ethernet port (10/100BASE-T)
+1 - 56 Kbps V.90 modem
+1 - USB 1.1 port
+1 - 3.5-mm audio output jack'''
+design = '''
+Blueberry, Tangerine, or Graphite
+6.7 lbs.
+1.8" H x 13.5" W x 11.6" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "iBook G3/300 (Original/Clamshell)", url = "https://everymac.com/systems/apple/ibook/specs/ibook.html" },
+  { label = "iBook G3/366 SE (Original/Clamshell)", url = "https://everymac.com/systems/apple/ibook/specs/ibook_se.html" },
+]

@@ -1,0 +1,50 @@
+category = "mac_performa_ppc"
+picture_asset_key = "MI000101"
+name = "Macintosh Performa 6360"
+introductions = [{ year = 1996, month = 10 }]
+
+gestalt_ids = [{ value = "58" }]
+
+codenames = [{ value = "Elixir", qualifier = "system project" }, { value = "Alchemy", qualifier = "logic board" }]
+
+processor = "**PowerPC 603e (PID7v)** 160 MHz, 0.35 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, optional 256 KB L2 cache, 40 MHz system bus"
+processor_family_keys = ["603"]
+
+graphics = "**Apple Valkyrie-AR video controller** 1 MB display DRAM"
+
+display = "External display support via DB-15, up to 800x600 at 16-bit color; up to 1024x768 at 8-bit color"
+ram = '''
+16 MB standard
+136 MB maximum
+8 MB built-in
+2 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.3 (System Enabler 410)
+Mac OS 9.1 Maximum'''
+storage = '''
+1.2 GB IDE hard drive
+8x CD-ROM drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm audio input jack
+2 - 3.5-mm audio output jacks
+1 - PCI slot
+1 - Comm II slot
+1 - TV tuner slot
+1 - Video input slot
+1 - Video output slot
+1 - Optional PC Compatibility Card'''
+design = '''
+Platinum
+17 lbs.
+4.3" H x 12.6" W x 16.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [{ label = "Macintosh Performa 6360/160", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_6360_160.html" }]

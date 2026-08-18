@@ -1,0 +1,58 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000215"
+name = "PowerBook G3"
+introductions = [{ year = 1997, month = 11 }]
+
+model_numbers = [{ value = "M3553" }]
+gestalt_ids = [{ value = "313" }]
+order_numbers = [{ value = "M5994", revisions = ["A"] }]
+codenames = [
+  { value = "Kanga" },
+  { value = "PowerBook 3500", qualifier = "pre-release product name" },
+  { value = "PowerStar", qualifier = "PSX platform" },
+]
+
+processor = "**PowerPC 750 (G3)** 250 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside (1:2.5) L2 cache, 50 MHz system bus"
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = "**Chips and Technologies 65554** 2 MB VRAM"
+
+display = '''
+12.1-inch active-matrix color LCD, 800x600 at 16-bit color
+External display support via HDI-15'''
+ram = '''
+32 MB standard
+160 MB maximum
+1 - PowerBook G3 memory slot, 60 ns'''
+rom = "3 MB PCI Old World ROM"
+software = '''
+Mac OS 8.0
+Mac OS 9.1 Maximum'''
+storage = '''
+5 GB ATA hard drive
+1.44 MB floppy drive
+Tray-loading 20x CD-ROM drive'''
+features = '''
+1 - Built-in microphone
+4 - Built-in speakers
+Infrared, up to 1.152 Mbps'''
+expansion = '''
+1 - Ethernet port (10BASE-T)
+1 - 33.6 Kbps modem
+1 - ADB port
+1 - GeoPort serial port
+1 - HDI-30 SCSI port
+1 - HDI-15 video port
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+2 - Type II PC Card slots or 1 - Type III PC Card slot
+1 - 5.25-inch expansion bay'''
+design = '''
+7.5 lbs.
+2.4" H x 11.5" W x 9.5" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWERBOOK"
+links = [{ label = "PowerBook G3 250 (Original/Kanga/3500)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_1st.html" }]

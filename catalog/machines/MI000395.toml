@@ -1,0 +1,71 @@
+category = "macbook_air_intel"
+picture_asset_key = "MI000389"
+name = "MacBook Air (13-inch, Mid 2013)"
+introductions = [{ year = 2013, month = 6 }]
+
+model_numbers = [{ value = "A1466" }]
+identifiers = [{ value = "MacBookAir6,2" }]
+order_numbers = [
+  { value = "MD760", revisions = ["A"], qualifier = "128 GB storage" },
+  { value = "MD761", revisions = ["A"], qualifier = "256 GB storage" },
+]
+emc_numbers = [{ value = "2632" }]
+
+processor = '''
+**Intel Core i5 (4250U) ("Haswell")** 1.3 GHz, up to 2.6 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 3 MB shared L3 cache
+**Intel Core i7 (4650U) ("Haswell")** 1.7 GHz, up to 3.3 GHz, 22 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 256 KB L2 cache per core, 4 MB shared L3 cache
+Intel Direct Media Interface (DMI) at 5 GT/s'''
+processor_family_keys = ["haswell"]
+processor_logo_keys = [
+  "corei5_4",
+  "corei7_4",
+]
+
+graphics = "**Intel HD Graphics 5000** up to 1.5 GB LPDDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["intelhd"]
+
+display = '''
+13.3-inch (diagonal) LED-backlit glossy widescreen display, 1440x900
+One external display up to 2560x1600
+Dual display extended, video mirroring, and AirPlay Mirroring'''
+ram = '''
+4 GB standard
+8 GB configurable
+8 GB maximum
+PC3-12800 (1600 MHz) LPDDR3 onboard memory'''
+rom = "64-bit EFI"
+software = '''
+OS X 10.8.4 (12E3067)
+macOS 11.7.11 Maximum
+AirDrop Supported
+Handoff Supported
+Power Nap Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+128 or 256 GB flash storage standard (depending on configuration)
+512 GB flash storage configurable
+Optional external USB MacBook Air SuperDrive
+5.0 GT/s PCIe x2 flash storage interface'''
+features = '''
+Wi-Fi (802.11ac)
+Bluetooth 4.0
+2 - Built-in microphones
+2 - Built-in speakers
+Built-in 720p FaceTime HD camera'''
+expansion = '''
+Optional Apple USB Ethernet Adapter or Thunderbolt to Gigabit Ethernet Adapter
+2 - USB 3.0 ports (up to 5 Gbps)
+1 - Thunderbolt 1 port (up to 10 Gbps; digital video output)
+1 - 3.5-mm headphone jack
+1 - Secure Digital (SD) card slot'''
+design = '''
+Precision aluminum unibody
+2.96 lbs.
+0.11–0.68" H x 12.8" W x 8.94" D'''
+
+support_status = "Obsolete"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Air \"Core i5\" 1.3 13\" (Mid-2013)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-i5-1.3-13-mid-2013-specs.html" },
+  { label = "MacBook Air \"Core i7\" 1.7 13\" (Mid-2013)", url = "https://everymac.com/systems/apple/macbook-air/specs/macbook-air-core-i7-1.7-13-mid-2013-specs.html" },
+]

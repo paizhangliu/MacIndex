@@ -1,0 +1,64 @@
+category = "compact_mac"
+picture_asset_key = "MI000001"
+name = "Macintosh 512K, 512Ke"
+aliases = [
+  "Macintosh 512K",
+  "Macintosh 512Ke",
+]
+introductions = [
+  { year = 1984, month = 9, qualifier = "512K" },
+  { year = 1986, month = 4, qualifier = "512Ke" },
+]
+
+model_numbers = [
+  { value = "M0001W" },
+  { value = "M0001WP", qualifier = "512K" },
+  { value = "M0001E", qualifier = "512Ke" },
+  { value = "M0001D", qualifier = "512K/800" },
+  { value = "M0001ED", qualifier = "EDU 512Ke" },
+]
+gestalt_ids = [
+  { value = "1", qualifier = "512K" },
+  { value = "3", qualifier = "512Ke" },
+]
+
+codenames = [{ value = "Fat Mac" }]
+
+processor = "**Motorola 68000** 8 MHz, 3.5 µm HMOS process, 16/32-bit, no on-chip cache, 8 MHz system bus"
+processor_family_keys = ["68000"]
+
+graphics = "**Apple 1-bit framebuffer** 22 KB shared system memory"
+
+display = "9-inch monochrome display, 512x342, 72 ppi"
+ram = '''
+512 KB standard and built-in
+512 KB maximum'''
+rom = '''
+64 KB Macintosh ROM (512K)
+128 KB Macintosh ROM (512Ke)'''
+software = '''
+Macintosh System Software 0.1 (System 1.1, Finder 1.1g) (512K)
+Macintosh System Software 0.7 (System 3.0, Finder 5.1) (512Ke)
+System Software 2.0.1 (System 4.1, Finder 5.5) (512K) Maximum
+System 6.0.8 (512Ke) Maximum'''
+storage = '''
+400 KB floppy drive (512K)
+800 KB floppy drive (512Ke)'''
+features = "1 - Built-in speaker (8-bit, 22 kHz)"
+expansion = '''
+1 - Printer serial port
+1 - Modem serial port
+1 - DE-9 mouse port
+1 - DB-19 external floppy port
+1 - 3.5-mm mono audio output jack'''
+design = '''
+Beige
+16.5 lbs.
+13.6" H x 9.6" W x 10.9" D'''
+
+support_status = "Obsolete"
+sound_profile = "MACINTOSH_128K"
+links = [
+  { label = "Macintosh 512k", url = "https://everymac.com/systems/apple/mac_classic/specs/mac_512k.html" },
+  { label = "Macintosh 512ke (ED)", url = "https://everymac.com/systems/apple/mac_classic/specs/mac_512ke.html" },
+]

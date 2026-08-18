@@ -1,0 +1,63 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000121"
+name = "Twentieth Anniversary Macintosh"
+aliases = ["TAM"]
+introductions = [{ year = 1997, month = 6 }]
+
+gestalt_ids = [{ value = "512" }]
+order_numbers = [{ value = "M3459", revisions = ["A"] }]
+
+codenames = [
+  { value = "Spartacus" },
+  { value = "Pomona" },
+  { value = "Smoke & Mirrors" },
+  { value = "Alchemy", qualifier = "logic-board family" },
+  { value = "Gazelle", qualifier = "logic board" },
+]
+
+processor = "**PowerPC 603e (PID7t)** 250 MHz, 0.29 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 256 KB L2 cache, 50 MHz system bus"
+processor_family_keys = ["603"]
+
+graphics = "**ATI 3D RAGE II (ATI264GT)** 2 MB SGRAM"
+graphics_logo_keys = ["ati"]
+
+display = "12.1-inch active-matrix color LCD, 800x600"
+ram = '''
+32 MB standard
+128 MB maximum
+2 - 168-pin DIMM slots, 60 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+Mac OS 7.6.1 (System Enabler 704)
+Mac OS 9.1 Maximum'''
+storage = '''
+2 GB ATA hard drive
+4x CD-ROM drive
+1.44 MB floppy drive
+ATA hard drive interface'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers
+Bose custom sound system'''
+expansion = '''
+1 - External 33.6 Kbps modem
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - TV tuner
+1 - FM tuner (F-type connector)
+2 - 3.5-mm analog input jacks
+1 - 3.5-mm analog output jack
+1 - S-video input
+1 - Security lock slot
+1 - 6.88-inch PCI 2.0 slot
+1 - Comm II slot
+1 - Video Expansion slot (preinstalled with video input card)'''
+design = '''
+Dark Grey
+14.9 lbs.
+17.25" H x 16.5" W x 10" D'''
+
+support_status = "Obsolete"
+sound_profile = "TWENTIETH_ANNIVERSARY"
+links = [{ label = "20th Anniv. Mac", url = "https://everymac.com/systems/apple/20th_mac/specs/20th-anniversary-mac.html" }]

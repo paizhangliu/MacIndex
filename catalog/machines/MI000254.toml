@@ -1,0 +1,91 @@
+category = "mac_pro_intel"
+picture_asset_key = "MI000253"
+name = "Mac Pro"
+introductions = [
+  { year = 2006, month = 8, qualifier = "up to 2 TB" },
+  { year = 2007, month = 4, qualifier = "up to 3 TB" },
+]
+
+model_numbers = [{ value = "A1186" }]
+identifiers = [{ value = "MacPro1,1" }]
+order_numbers = [{ value = "MA356", revisions = ["A"], qualifier = "two 2.66 GHz" }]
+emc_numbers = [{ value = "2113" }]
+
+processor = '''
+**Dual Intel Xeon 5130 ("Woodcrest")** 2.0 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor
+**Dual Intel Xeon 5150 ("Woodcrest")** 2.66 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor
+**Dual Intel Xeon 5160 ("Woodcrest")** 3.0 GHz, 65 nm process, 64-bit, 2 cores per processor (4 cores total), 32 KB instruction and 32 KB data L1 cache per core, 4 MB shared L2 cache per processor
+Two independent 1.33 GHz frontside buses'''
+processor_family_keys = ["core"]
+processor_logo_keys = ["xeon_a"]
+
+graphics = '''
+**NVIDIA GeForce 7300 GT** 256 MB
+**NVIDIA GeForce 8800 GT** 512 MB (Apple upgrade kit)
+**NVIDIA Quadro FX 4500** 512 MB
+**ATI Radeon X1900 XT** 512 MB'''
+graphics_logo_keys = [
+  "nvgeforce7",
+  "nvgeforce2008",
+  "nvquadro",
+  "atiradeon2004",
+]
+
+display = "Dual display extended and video mirroring"
+ram = '''
+1 GB standard
+16 GB Apple-supported maximum
+32 GB actual maximum
+8 - 240-pin PC2-5300 (667 MHz) DDR2 ECC fully-buffered DIMM (FB-DIMM) slots (matched pairs)'''
+rom = "32-bit EFI"
+software = '''
+Mac OS X 10.4.7 (8K1079; August 2006)
+Mac OS X 10.4.9 (April 2007)
+Mac OS X 10.5 (later configurations)
+Mac OS X 10.7.5 Maximum
+AHT 3A109, 3A119, 3A120, 3A133, 3A141'''
+storage = '''
+250 GB 7200-rpm SATA hard drive standard (August 2006)
+500 GB 7200-rpm SATA hard drives configurable (August 2006)
+2 TB maximum internal storage (August 2006)
+250, 500, or 750 GB 7200-rpm SATA hard drives configurable (April 2007)
+3 TB maximum internal storage (April 2007)
+SuperDrive (DVD+R DL/DVD±RW/CD-RW)
+4 - 3.0 Gbps Serial ATA (SATA) hard drive interfaces
+2 - Ultra ATA/100 optical drive interfaces
+2 - 3.0 Gbps Serial ATA (SATA) connectors on logic board'''
+features = '''
+1 - Optional AirPort Extreme card (802.11g; 802.11n capable with optional 802.11n Enabler)
+Optional Bluetooth 2.0 + EDR
+1 - Built-in speaker (24-bit, 44.1 kHz sample rate)'''
+expansion = '''
+2 - Gigabit Ethernet ports (10/100/1000BASE-T; jumbo frame support)
+Optional Apple USB Modem (MA034Z/A)
+5 - USB 2.0 ports
+2 - FireWire 400 ports
+2 - FireWire 800 ports
+Optional Fibre Channel cards (MA462G/A or MA465G/A)
+1 - DVI port (GeForce 7300 GT)
+1 - Dual-link DVI port (GeForce 7300 GT)
+2 - Dual-link DVI ports (Quadro FX 4500)
+1 - Stereo 3D port (Quadro FX 4500)
+2 - Dual-link DVI ports (Radeon X1900 XT)
+1 - 3.5-mm analog input jack
+2 - 3.5-mm analog output jacks
+1 - Optical S/PDIF input (Toslink; 24-bit, 44.1 kHz)
+1 - Optical S/PDIF output (Toslink)
+4 - PCI Express slots (bandwidth configurable)
+4 - Internal 3.5-inch SATA drive bays
+2 - Optical drive bays
+1 - Optional Mac Pro RAID Card (256 MB cache; 72-hour cache battery backup)'''
+design = '''
+42.4 lbs.
+20.1" H x 8.1" W x 18.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Mac Pro \"Quad Core\" 2.0 (Original)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-quad-2.0-specs.html" },
+  { label = "Mac Pro \"Quad Core\" 2.66 (Original)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-quad-2.66-specs.html" },
+  { label = "Mac Pro \"Quad Core\" 3.0 (Original)", url = "https://everymac.com/systems/apple/mac_pro/specs/mac-pro-quad-3.0-specs.html" },
+]

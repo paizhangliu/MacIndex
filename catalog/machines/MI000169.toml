@@ -1,0 +1,98 @@
+category = "power_mac"
+picture_asset_key = "MI000166"
+name = "Power Mac G5 (Early 2005)"
+introductions = [{ year = 2005, month = 4 }]
+
+model_numbers = [{ value = "A1047" }]
+identifiers = [
+  { value = "PowerMac7,2", qualifier = "dual 2.0 GHz" },
+  { value = "PowerMac7,3", qualifier = "dual 2.3 or 2.7 GHz" },
+]
+order_numbers = [
+  { value = "M9747", revisions = ["A"], qualifier = "dual 2.0 GHz" },
+  { value = "M9748", revisions = ["A"], qualifier = "dual 2.3 GHz" },
+  { value = "M9749", revisions = ["A"], qualifier = "dual 2.7 GHz" },
+]
+emc_numbers = [{ value = "2061" }]
+
+codenames = [{ value = "Q37", qualifier = "dual 2.0 GHz" }, { value = "Q77", qualifier = "dual 2.3/2.7 GHz" }]
+
+processor = '''
+**Dual PowerPC 970FX (G5)** 2.0 GHz, 90 nm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, dual 1.0 GHz system buses
+**Dual PowerPC 970FX (G5)** 2.3 GHz, 90 nm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, dual 1.15 GHz system buses
+**Dual PowerPC 970FX (G5)** 2.7 GHz, 90 nm process, 64-bit, 64 KB instruction and 32 KB data L1 cache per processor, 512 KB on-chip L2 cache per processor, dual 1.35 GHz system buses'''
+processor_family_keys = ["g5"]
+processor_logo_keys = ["970fx"]
+
+graphics = '''
+**ATI Radeon 9600** 128 MB DDR VRAM standard (dual 2.0 GHz and dual 2.3 GHz)
+**ATI Radeon 9650** 256 MB DDR VRAM standard (dual 2.7 GHz)
+**NVIDIA GeForce 6800 Ultra DDL** 256 MB GDDR3 VRAM configurable'''
+graphics_logo_keys = [
+  "atiradeon2000",
+  "nvgeforce6",
+  "atiradeon2004",
+]
+
+display = '''
+Two displays up to 1920x1200 each (Radeon 9600)
+One display up to 2560x1600 and one display up to 1920x1200 (Radeon 9650)
+Two displays up to 2560x1600 each (GeForce 6800 Ultra DDL)
+Analog resolution up to 1600x1200
+Dual display extended desktop and video mirroring'''
+ram = '''
+512 MB standard
+4 GB maximum (dual 2.0 GHz model)
+8 GB maximum (dual 2.3 and 2.7 GHz models)
+4 - PC3200 DDR SDRAM slots installed in pairs (dual 2.0 GHz)
+8 - PC3200 DDR SDRAM slots installed in pairs (dual 2.3 GHz or 2.7 GHz)'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.4 (8A428)
+Mac OS X 10.5.8 Maximum
+AHT (Power Mac) 2.5, 2.5.2'''
+storage = '''
+160 GB 7200-rpm SATA hard drive standard (dual 2.0 GHz)
+250 GB 7200-rpm SATA hard drive standard (dual 2.3 GHz and dual 2.7 GHz)
+400 GB 7200-rpm SATA hard drive configurable
+SuperDrive (DVD+R DL/DVD±RW/CD-RW)
+2 - 1.5 Gbps Serial ATA (SATA) controllers
+Ultra ATA/100 optical drive interface'''
+features = '''
+1 - Optional AirPort Extreme card (802.11b/g) (external antenna)
+Optional Bluetooth 1.1
+1 - Built-in speaker (24-bit, 44.1 kHz sample rate)'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - 56 Kbps V.92 modem
+3 - USB 2.0 ports
+2 - USB 1.1 ports on the keyboard
+2 - FireWire 400 ports
+1 - FireWire 800 port
+15 W total FireWire bus power
+2 - Single-link DVI ports (Radeon 9600)
+1 - Single-link DVI port and 1 - dual-link DVI port (Radeon 9650)
+2 - Dual-link DVI ports (GeForce 6800 Ultra DDL)
+1 - 3.5-mm analog audio input jack
+1 - 3.5-mm analog audio output jack
+1 - Front 3.5-mm headphone jack
+1 - Optical S/PDIF input (Toslink)
+1 - Optical S/PDIF output (Toslink)
+3 - 33 MHz 64-bit PCI slots (dual 2.0 GHz)
+2 - 100 MHz 64-bit PCI-X slots (dual 2.3 GHz and faster)
+1 - 133 MHz 64-bit PCI-X slot (dual 2.3 GHz and faster)
+1 - AGP 8x Pro slot
+2 - Internal 3.5-inch SATA drive bays
+1 - Optical drive bay'''
+design = '''
+Aluminum
+44.4 lbs.
+20.1" H x 8.1" W x 18.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Power Macintosh G5 2.0 DP (PCI)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_2.0_dp_pci.html" },
+  { label = "Power Macintosh G5 2.3 DP (PCI-X)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_2.3_dp.html" },
+  { label = "Power Macintosh G5 2.7 DP (PCI-X)", url = "https://everymac.com/systems/apple/powermac_g5/specs/powermac_g5_2.7_dp.html" },
+]

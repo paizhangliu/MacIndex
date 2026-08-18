@@ -1,0 +1,64 @@
+category = "mac_mini_intel"
+picture_asset_key = "MI000309"
+name = "Mac mini (Mid 2010)"
+introductions = [{ year = 2010, month = 6 }]
+
+model_numbers = [{ value = "A1347" }]
+identifiers = [{ value = "Macmini4,1" }]
+order_numbers = [{ value = "MC270", revisions = ["A"] }]
+emc_numbers = [{ value = "2364" }]
+
+processor = '''
+**Intel Core 2 Duo (P8600) ("Penryn")** 2.4 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus
+**Intel Core 2 Duo (P8800) ("Penryn")** 2.66 GHz, 45 nm process, 64-bit, 2 cores, 32 KB instruction and 32 KB data L1 cache per core, 3 MB shared L2 cache, 1066 MHz system bus'''
+processor_family_keys = ["penryn"]
+processor_logo_keys = ["core2duo"]
+
+graphics = "**NVIDIA GeForce 320M** 256 MB DDR3 SDRAM shared with main memory"
+graphics_logo_keys = ["nvgeforce2008"]
+
+display = '''
+External resolution up to 2560x1600 via Mini DisplayPort or 1920x1200 via HDMI
+Dual display extended and video mirroring'''
+ram = '''
+2 GB standard
+4 or 8 GB configurable
+8 GB Apple-supported maximum
+16 GB actual maximum
+2 - 204-pin PC3-8500 (1066 MHz) DDR3 SO-DIMM slots'''
+rom = "64-bit EFI"
+software = '''
+Mac OS X 10.6.3 (10D2235)
+macOS 10.13.6 Maximum
+AirDrop Supported
+AHT 3A191'''
+storage = '''
+320 GB 5400-rpm SATA hard drive standard
+500 GB 5400-rpm SATA hard drive configurable
+Slot-loading SuperDrive (DVD±R DL/DVD±RW/CD-RW)
+3.0 Gbps Serial ATA (SATA) hard drive interface'''
+features = '''
+1 - Built-in AirPort Extreme card (802.11a/b/g/n)
+Built-in Bluetooth 2.1 + EDR
+1 - Built-in speaker
+1 - Infrared receiver for Apple Remote'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45; jumbo frame support)
+4 - USB 2.0 ports
+1 - FireWire 800 port
+1 - Mini DisplayPort connector
+1 - HDMI port (up to 1920x1200)
+1 - 3.5-mm analog/optical input jack
+1 - 3.5-mm analog/optical combo output jack
+1 - Secure Digital (SD) card slot'''
+design = '''
+Silver
+3.0 lbs.
+1.4" H x 7.7" W x 7.7" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "Mac mini \"Core 2 Duo\" 2.4 (Mid-2010)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-2-duo-2.4-mid-2010-specs.html" },
+  { label = "Mac mini \"Core 2 Duo\" 2.66 (Mid-2010)", url = "https://everymac.com/systems/apple/mac_mini/specs/mac-mini-core-2-duo-2.66-mid-2010-specs.html" },
+]

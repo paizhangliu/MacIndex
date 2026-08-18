@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/searchResetItem"
-        android:title="@string/submenu_search_reset" />
-    <item
         android:id="@+id/searchAppleSNItem"
         android:title="@string/submenu_search_SN" />
     <item

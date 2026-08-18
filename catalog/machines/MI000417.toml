@@ -1,0 +1,93 @@
+category = "macbook_pro_arm"
+picture_asset_key = "MI000414"
+name = "MacBook Pro (16-inch, 2023)"
+introductions = [{ year = 2023, month = 1 }]
+
+model_numbers = [{ value = "A2780" }]
+identifiers = [
+  { value = "Mac14,10", qualifier = "M2 Pro" },
+  { value = "Mac14,6", qualifier = "M2 Max" },
+]
+order_numbers = [
+  { value = "MNWG3", revisions = ["A"] },
+  { value = "MNW93", revisions = ["A"] },
+  { value = "MNWK3", revisions = ["A"] },
+  { value = "MNWD3", revisions = ["A"] },
+  { value = "MNWF3", revisions = ["A"] },
+  { value = "MNW83", revisions = ["A"] },
+  { value = "MNWJ3", revisions = ["A"] },
+  { value = "MNWC3", revisions = ["A"] },
+]
+emc_numbers = [{ value = "8103" }]
+
+codenames = [{ value = "J416s", qualifier = "M2 Pro" }, { value = "J416c", qualifier = "M2 Max" }]
+
+processor = '''
+**Apple M2 Pro "Rhodes Chop"** TSMC N5P process, 64-bit, 12 cores (8 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 24 MB system-level cache, 16-core Neural Engine, Secure Enclave, 200 GB/s memory bandwidth (19-core GPU)
+**Apple M2 Max "Rhodes 1C"** TSMC N5P process, 64-bit, 12 cores (8 "Avalanche" P-cores, 4 "Blizzard" E-cores), 192 KB instruction and 128 KB data L1 cache per performance core, 16 MB shared L2 cache per performance core cluster, 128 KB instruction and 64 KB data L1 cache per efficiency core, 4 MB shared L2 cache for the efficiency core cluster, 48 MB system-level cache, 16-core Neural Engine, Secure Enclave, 400 GB/s memory bandwidth'''
+processor_family_keys = ["m2"]
+processor_logo_keys = [
+  "m2pro",
+  "m2max",
+]
+
+graphics = '''
+**Apple 19-core GPU** unified memory architecture (M2 Pro)
+**Apple 30-core GPU** unified memory architecture (M2 Max)
+**Apple 38-core GPU** unified memory architecture (M2 Max)'''
+
+display = '''
+16.2-inch (diagonal) Liquid Retina XDR display, 3456x2234, 254 ppi, XDR brightness: 1000 nits sustained full-screen and 1600 nits peak (HDR content only), 500 nits SDR brightness, wide color gamut (P3), up to 120 Hz ProMotion
+M2 Pro: up to two external displays: two 6K displays at 60 Hz via Thunderbolt, or one 6K display at 60 Hz via Thunderbolt and one 4K display at 144 Hz via HDMI
+M2 Pro: alternatively, one external display up to 8K at 60 Hz or 4K at 240 Hz via HDMI
+M2 Max: up to four external displays: three 6K displays at 60 Hz via Thunderbolt and one 4K display at 144 Hz via HDMI
+M2 Max: alternatively, up to three external displays: two 6K displays at 60 Hz via Thunderbolt and one 8K display at 60 Hz or 4K display at 240 Hz via HDMI
+Dual display extended, video mirroring, AirPlay Mirroring, and Sidecar'''
+ram = '''
+16 GB standard (M2 Pro)
+32 GB standard (M2 Max)
+32 GB configurable (M2 Pro or M2 Max)
+64 GB configurable (M2 Max)
+96 GB configurable (M2 Max with 38-core GPU)
+32 GB maximum (M2 Pro)
+64 GB maximum (M2 Max with 30-core GPU)
+96 GB maximum (M2 Max with 38-core GPU)
+LPDDR5 unified memory'''
+rom = "Apple iBoot"
+software = '''
+macOS 13.2
+AirDrop Supported
+Handoff Supported
+Unlock with Apple Watch Supported'''
+storage = '''
+512 GB SSD standard (M2 Pro)
+1, 2, 4, or 8 TB SSD configurable (M2 Pro)
+1 TB SSD standard (M2 Max)
+2, 4, or 8 TB SSD configurable (M2 Max)
+Apple Fabric storage interface'''
+features = '''
+Wi-Fi 6E (802.11ax)
+Bluetooth 5.3
+3 - Built-in studio-quality microphones
+6 - Built-in high-fidelity speakers with force-cancelling woofers
+Built-in 1080p FaceTime HD camera'''
+expansion = '''
+3 - Thunderbolt 4 / USB 4 ports (up to 40 Gbps)
+1 - HDMI port (up to 8K at 60 Hz or 4K at 240 Hz)
+1 - MagSafe 3 port
+1 - 3.5-mm headphone jack (advanced support for high-impedance headphones)
+1 - SDXC card slot'''
+design = '''
+Silver or Space Gray
+Precision aluminum unibody
+4.7 lbs. (M2 Pro)
+4.8 lbs. (M2 Max)
+0.66" H x 14.01" W x 9.77" D'''
+
+support_status = "Supported"
+sound_profile = "T2"
+links = [
+  { label = "MacBook Pro \"M2 Pro\" 12 CPU/19 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m2-pro-12-core-cpu-19-core-gpu-16-2023-specs.html" },
+  { label = "MacBook Pro \"M2 Max\" 12 CPU/30 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m2-max-12-core-cpu-30-core-gpu-16-2023-specs.html" },
+  { label = "MacBook Pro \"M2 Max\" 12 CPU/38 GPU 16\"", url = "https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-m2-max-12-core-cpu-38-core-gpu-16-2023-specs.html" },
+]

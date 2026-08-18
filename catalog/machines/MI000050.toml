@@ -1,0 +1,49 @@
+category = "mac_performa_68k"
+picture_asset_key = "MI000022"
+name = "Macintosh Performa 460"
+introductions = [{ year = 1993, month = 10 }]
+
+model_numbers = [{ value = "M1254" }]
+gestalt_ids = [{ value = "62" }]
+
+codenames = [{ value = "Vail" }]
+
+processor = '''
+**Motorola 68030** 33 MHz, 1.3 µm HCMOS process, 32-bit, 0.25 KB instruction and 0.25 KB data L1 cache, 33 MHz system bus
+**Optional Motorola 68882 FPU**'''
+processor_family_keys = ["68030"]
+
+graphics = "**Apple Sonora video controller** 512 KB VRAM standard, 768 KB maximum"
+
+display = '''
+External display required
+512x384 or 640x400 at 16-bit color
+640x480 or 832x624 at 8-bit color with 512 KB VRAM; at 16-bit color with 768 KB VRAM'''
+ram = '''
+4 MB standard and built-in
+36 MB maximum
+1 - 72-pin SIMM slot, 80 ns'''
+rom = "1 MB Macintosh ROM"
+software = '''
+System 7.1P3 (System Enabler 308)
+Mac OS 7.6.1 Maximum'''
+storage = '''
+80 MB or 160 MB SCSI hard drive
+1.44 MB floppy drive'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - ADB port
+2 - Serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm mono input jack
+1 - 3.5-mm mono output jack
+1 - LC III PDS slot'''
+design = '''
+Platinum
+8.8 lbs.
+2.9" H x 12.2" W x 15.3" D'''
+
+support_status = "Obsolete"
+sound_profile = "QUADRA"
+links = [{ label = "Macintosh Performa 460", url = "https://everymac.com/systems/apple/mac_performa/specs/mac_performa_460.html" }]

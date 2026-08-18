@@ -1,0 +1,87 @@
+category = "power_mac_classic"
+picture_asset_key = "MI000102"
+name = "Power Macintosh 9500"
+aliases = [
+  "Power Macintosh 9515",
+  "Power Macintosh 9515/132",
+]
+introductions = [
+  { year = 1995, month = 5, qualifier = "120 and 132 MHz" },
+  { year = 1995, month = 10, qualifier = "9515/132" },
+  { year = 1996, month = 4, qualifier = "150 MHz" },
+  { year = 1996, month = 8, qualifier = "180 MP and 200 MHz" },
+]
+
+model_numbers = [{ value = "M3098" }]
+gestalt_ids = [{ value = "67" }]
+order_numbers = [
+  { value = "M5399", revisions = ["A"], qualifier = "9500/180MP" },
+  { value = "M5397", revisions = ["A"], qualifier = "9500/200" },
+]
+
+codenames = [{ value = "Tsunami" }, { value = "Autobahn" }]
+
+processor = '''
+**PowerPC 604** 120 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 40 MHz system bus
+**PowerPC 604** 132 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 44 MHz system bus
+**PowerPC 604** 150 MHz, 0.5 µm process, 32-bit, 16 KB instruction and 16 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus
+**Dual PowerPC 604e (PID9v)** 180 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache per processor, 512 KB L2 cache per processor, 45 MHz system bus
+**PowerPC 604e (PID9v)** 200 MHz, 0.35 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB L2 cache, 50 MHz system bus'''
+processor_family_keys = ["604"]
+
+graphics = '''
+**ATI mach64 Apple Accelerated PCI Graphics Card** 2 MB VRAM standard, 4 MB maximum (120, dual 180, and 200 MHz; selected 150 MHz)
+No graphics card included; third-party PCI graphics card required (132 MHz, 9515/132, and selected 150 MHz)'''
+
+display = '''
+External display support via DB-15 on supplied ATI graphics card, up to 1280x1024 (120, dual 180, and 200 MHz; selected 150 MHz)
+External display support depends on third-party PCI graphics card (132 MHz, 9515/132, and selected 150 MHz)'''
+ram = '''
+16 or 32 MB standard (120 or 132 MHz)
+8 MB standard (9515/132)
+8 or 32 MB standard (150 MHz, depending on configuration or region)
+32 MB standard (dual 180 MHz)
+16 or 32 MB standard (200 MHz, depending on region)
+768 MB Apple-tested maximum
+1.5 GB actual maximum
+12 - 168-pin DIMM slots, 70 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+System 7.5.2 (System Enabler 701 v1.0)
+Mac OS 9.1 Maximum'''
+storage = '''
+1 GB SCSI hard drive; 4x CD-ROM drive (120 MHz)
+2 GB SCSI hard drive; 4x CD-ROM drive (132 MHz)
+No hard drive; 4x CD-ROM drive (9515/132)
+No hard drive or 2 GB SCSI hard drive; 4x CD-ROM drive (150 MHz)
+2 GB SCSI hard drive; 8x CD-ROM drive (dual 180 and 200 MHz)
+1.44 MB floppy drive
+Internal Fast SCSI bus (up to 10 MB/s)
+External SCSI bus (up to 5 MB/s)'''
+features = "1 - Built-in speaker"
+expansion = '''
+1 - Ethernet port (AAUI-15)
+1 - Ethernet port (10BASE-T)
+1 - ADB port
+2 - GeoPort serial ports
+1 - DB-25 SCSI port
+1 - DB-15 video port
+1 - 3.5-mm analog input jack
+1 - 3.5-mm analog output jack
+6 - PCI 2.0 slots
+1 - Additional 3.5-inch hard-drive bay'''
+design = '''
+Platinum
+28 lbs.
+16.9" H x 7.7" W x 15.75" D'''
+
+support_status = "Obsolete"
+sound_profile = "POWER_MAC"
+links = [
+  { label = "Power Macintosh 9500/120", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9500_120.html" },
+  { label = "Power Macintosh 9500/132", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9500_132.html" },
+  { label = "Power Macintosh 9500/150", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9500_150.html" },
+  { label = "Power Macintosh 9500/180MP", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9500_180mp.html" },
+  { label = "Power Macintosh 9500/200", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9500_200.html" },
+  { label = "Power Macintosh 9515/132", url = "https://everymac.com/systems/apple/powermac/specs/powermac_9515_132.html" },
+]

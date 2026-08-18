@@ -1,0 +1,85 @@
+category = "powerbook_ppc"
+picture_asset_key = "MI000216"
+name = "PowerBook G3 Series (September 1998)"
+introductions = [
+  { year = 1998, month = 9, qualifier = "14.1-inch" },
+  { year = 1998, month = 10, qualifier = "12.1-inch" },
+]
+
+model_numbers = [{ value = "M4753" }]
+gestalt_ids = [
+  { value = "314", qualifier = "12.1-inch" },
+  { value = "312", qualifier = "14.1-inch" },
+]
+order_numbers = [
+  { value = "M7229", revisions = ["A"], qualifier = "12.1-inch, 233 MHz" },
+  { value = "M7109", revisions = ["A"], qualifier = "14.1-inch, 233 MHz" },
+  { value = "M7110", revisions = ["A"], qualifier = "14.1-inch, 266 MHz, CD-ROM" },
+  { value = "M7310", revisions = ["A"], qualifier = "14.1-inch, 300 MHz, CD-ROM" },
+  { value = "M7111", revisions = ["A"], qualifier = "14.1-inch, 300 MHz, DVD-ROM" },
+]
+codenames = [{ value = "PDQ" }, { value = "Wallstreet II" }]
+
+processor = '''
+**PowerPC 750 (G3)** 233 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 512 KB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 266 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 66 MHz system bus
+**PowerPC 750 (G3)** 300 MHz, 0.25 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 1 MB backside L2 cache, 66 MHz system bus'''
+processor_family_keys = ["g3"]
+processor_logo_keys = ["750"]
+
+graphics = '''
+**ATI Rage LT Pro** 2 MB VRAM (12.1-inch)
+**ATI Rage LT Pro** 4 MB VRAM (14.1-inch)'''
+graphics_logo_keys = ["ati"]
+
+display = '''
+12.1-inch active-matrix color LCD, 800x600
+14.1-inch active-matrix color LCD, 1024x768
+External display mirroring up to 1024x768'''
+ram = '''
+32 MB standard (233 MHz)
+64 MB standard (266/300 MHz)
+192 MB Apple-supported maximum
+512 MB actual maximum
+2 - SO-DIMM slots, 10 ns'''
+rom = "4 MB PCI Old World ROM"
+software = '''
+Mac OS 8.1
+Mac OS X 10.2.8 Maximum'''
+storage = '''
+2 GB ATA-2 hard drive (233 MHz)
+4 GB ATA-2 hard drive (266 MHz)
+8 GB ATA-2 hard drive (300 MHz)
+1.44 MB floppy drive
+Tray-loading CD-ROM drive (233 MHz, 266 MHz, and selected 300 MHz)
+Tray-loading DVD-ROM drive (selected 300 MHz)'''
+features = '''
+1 - Built-in microphone
+2 - Built-in speakers
+Infrared, up to 4 Mbps'''
+expansion = '''
+1 - Ethernet port (10BASE-T)
+1 - Optional or standard 56 Kbps modem
+1 - ADB port
+1 - GeoPort serial port
+1 - HDI-30 SCSI port
+1 - VGA port
+1 - S-video output
+1 - 3.5-mm audio input jack
+1 - 3.5-mm audio output jack
+1 - Kensington security slot
+2 - Type II CardBus slots or 1 - Type III CardBus slot
+1 - 3.5-inch media bay
+1 - 5.25-inch media bay'''
+design = '''
+7.2 lbs. (12.1-inch)
+7.8 lbs. (14.1-inch)
+2.0" H x 12.7" W x 10.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
+links = [
+  { label = "PowerBook G3 233 (PDQ - Late 1998)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_233_pdq.html" },
+  { label = "PowerBook G3 266 (PDQ - Late 1998)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_266.html" },
+  { label = "PowerBook G3 300 (PDQ - Late 1998)", url = "https://everymac.com/systems/apple/powerbook_g3/specs/powerbook_g3_300.html" },
+]

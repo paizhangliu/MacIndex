@@ -1,0 +1,60 @@
+category = "power_mac"
+picture_asset_key = "MI000160"
+name = "Power Mac G4 (QuickSilver 2002ED)"
+introductions = [{ year = 2002, month = 8 }]
+
+model_numbers = [{ value = "M8493" }]
+identifiers = [{ value = "PowerMac3,5" }]
+emc_numbers = [{ value = "1896" }]
+
+codenames = [{ value = "Nichrome" }, { value = "P57" }]
+
+processor = "**PowerPC 7455 (G4)** 867 MHz, 0.18 µm process, 32-bit, 32 KB instruction and 32 KB data L1 cache, 256 KB on-chip L2 cache, 133 MHz system bus"
+processor_family_keys = ["g4"]
+processor_logo_keys = ["7455"]
+
+graphics = "**NVIDIA GeForce4 MX** 32 MB"
+graphics_logo_keys = ["nvgeforce4"]
+
+display = '''
+Dual display support up to 1920x1200
+Extended desktop and video mirroring'''
+ram = '''
+256 MB standard
+1.5 GB maximum
+3 - PC133 168-pin SDRAM slots'''
+rom = "New World ROM"
+software = '''
+Mac OS X 10.2
+Mac OS 9.2.2
+Mac OS X 10.5.8 Maximum
+AHT (Power Mac) 1.2.7'''
+storage = '''
+40 GB 7200-rpm hard drive
+CD-RW drive
+Ultra ATA/66 (ATA-5) hard drive interface
+EIDE (ATA-3) optical drive interface'''
+features = '''
+1 - Optional AirPort card (802.11b)
+1 - Built-in speaker (16-bit, 44.1 kHz sample rate)'''
+expansion = '''
+1 - Gigabit Ethernet port (10/100/1000BASE-T; RJ-45)
+1 - 56 Kbps V.92 modem
+2 - USB 1.1 ports
+2 - FireWire 400 ports (15 W total power)
+1 - VGA port
+1 - ADC port
+1 - 3.5-mm analog output jack
+4 - 64-bit 33 MHz PCI slots
+1 - AGP 4x slot
+4 - Internal 3.5-inch ATA drive bays
+1 - Optical drive bay
+1 - Zip 250 bay
+1 - Apple Pro Speaker minijack'''
+design = '''
+QuickSilver
+30 lbs.
+17" H x 8.9" W x 18.4" D'''
+
+support_status = "Obsolete"
+sound_profile = "NEW_WORLD"
