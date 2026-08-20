@@ -150,8 +150,10 @@ class CatalogSourceTest(unittest.TestCase):
         self.assertIn("mbp", lexicon["compact_name_aliases"])
         self.assertEqual(("mc700",), lexicon["part_number_stems"])
 
-        older = dict(machine, uid="MI000002",
-                     introductions=({"year": 2019, "month": 1},))
+        older = dict(machine, uid="MI000002", introductions=(
+            {"year": 2019, "month": 1},
+            {"year": 2020, "month": 12},
+        ))
         taxonomy = {"browse_definitions": {
             "names": {"groups": ({
                 "key": "notebook", "label": "Notebook", "section_key": None,
@@ -164,6 +166,13 @@ class CatalogSourceTest(unittest.TestCase):
         self.assertEqual(
             ("MI000002", "MI000001"),
             definitions[0]["groups"][0]["machine_uids"],
+        )
+        year_2020 = next(
+            group for group in definitions[-1]["groups"] if group["key"] == "2020"
+        )
+        self.assertEqual(
+            ("MI000001", "MI000002"),
+            year_2020["machine_uids"],
         )
 
 

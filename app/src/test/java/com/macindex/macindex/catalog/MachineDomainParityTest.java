@@ -45,9 +45,13 @@ public final class MachineDomainParityTest {
         for (int index = 0; index < source.getIntroductionsCount(); index++) {
             assertEquals(source.getIntroductions(index).getYear(),
                     machine.introductions().get(index).year());
+            assertEquals(introductionDate(source.getIntroductions(index)),
+                    machine.introductions().get(index).dateText());
             assertEquals(introductionDisplay(source.getIntroductions(index)),
                     machine.introductions().get(index).displayText());
         }
+        assertEquals(introductionDateDisplayText(source), machine.introductionDateDisplayText());
+        assertEquals(introductionDisplayText(source), machine.introductionDisplayText());
 
         assertEquals(identityDisplayText(source.getModelNumbersList()),
                 machine.modelNumbers());
@@ -126,8 +130,25 @@ public final class MachineDomainParityTest {
 
     private static String introductionDisplay(
             final com.macindex.macindex.catalog.proto.CatalogIntroduction value) {
-        final String date = value.getYear() + "." + value.getMonth();
+        final String date = introductionDate(value);
         return value.hasQualifier() ? date + " (" + value.getQualifier() + ")" : date;
+    }
+
+    private static String introductionDate(
+            final com.macindex.macindex.catalog.proto.CatalogIntroduction value) {
+        return value.getYear() + "." + value.getMonth();
+    }
+
+    private static String introductionDateDisplayText(final CatalogMachine source) {
+        return source.getIntroductionsList().stream()
+                .map(MachineDomainParityTest::introductionDate)
+                .collect(java.util.stream.Collectors.joining("\n"));
+    }
+
+    private static String introductionDisplayText(final CatalogMachine source) {
+        return source.getIntroductionsList().stream()
+                .map(MachineDomainParityTest::introductionDisplay)
+                .collect(java.util.stream.Collectors.joining("\n"));
     }
 
     private static void assertRanges(final List<CatalogTextRange> source,

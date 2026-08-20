@@ -54,11 +54,12 @@ import java.util.Set;
  * https://macindex.paizhang.info/
  * https://github.com/paizhangliu/MacIndex
  *
- * Basic functionality was finished on 16:12 CST, Dec 2, 2019.
- * 3.0 Update May 12, 2020 at Champaign, Illinois, U.S.A.
- * 4.0 Update June 13, 2020 at Shenyang, Liaoning, China.
- * 4.5 Update January 7, 2021 at Jinzhong, Shanxi, China.
- * 4.9 Update July 22, 2026 at Jinzhong, Shanxi, China.
+ * First Version 16:12 CST, Dec 2, 2019 in Champaign, Illinois, U.S.A.
+ * 3.0 Update May 12, 2020 in Champaign, Illinois, U.S.A.
+ * 4.0 Update June 13, 2020 in Shenyang, Liaoning, China.
+ * 4.5 Update January 7, 2021 in Jinzhong, Shanxi, China.
+ * 4.9 Update July 22, 2026 in Jinzhong, Shanxi, China.
+ * 5.0 Update August 20, 2026 in Austin, Texas, U.S.A.
  */
 public class MainActivity extends AppCompatActivity {
 

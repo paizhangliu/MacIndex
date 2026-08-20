@@ -91,15 +91,20 @@ def browse_definitions(taxonomy, machines):
         for machine in machines
         for introduction in machine["introductions"]
     })
+    year_groups = []
+    for year in years:
+        year_machines = [
+            machine for machine in ordered_machines
+            if _matches_browse_group(machine, "years", str(year))
+        ]
+        year_machines.sort(key=lambda machine: _earliest_introduction_month(machine, year))
+        year_groups.append({
+            "key": str(year), "label": str(year), "section_key": None,
+            "machine_uids": tuple(machine["uid"] for machine in year_machines),
+        })
     definitions.append({
         "key": "years",
-        "groups": tuple({
-            "key": str(year), "label": str(year), "section_key": None,
-            "machine_uids": tuple(
-                machine["uid"] for machine in ordered_machines
-                if _matches_browse_group(machine, "years", str(year))
-            ),
-        } for year in years),
+        "groups": tuple(year_groups),
     })
     return tuple(definitions)
 
@@ -108,6 +113,14 @@ def _earliest_introduction(machine):
     return min(
         (introduction["year"], introduction["month"])
         for introduction in machine["introductions"]
+    )
+
+
+def _earliest_introduction_month(machine, year):
+    return min(
+        introduction["month"]
+        for introduction in machine["introductions"]
+        if introduction["year"] == year
     )
 
 

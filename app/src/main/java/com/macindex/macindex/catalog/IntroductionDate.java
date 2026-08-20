@@ -19,8 +19,12 @@ public final class IntroductionDate implements Comparable<IntroductionDate> {
         return year;
     }
 
+    public String dateText() {
+        return year + "." + month;
+    }
+
     public String displayText() {
-        final String date = year + "." + month;
+        final String date = dateText();
         return qualifier == null ? date : date + " (" + qualifier + ")";
     }
 

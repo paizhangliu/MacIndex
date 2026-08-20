@@ -168,6 +168,17 @@ public final class Machine {
         return introductions;
     }
 
+    public String introductionDateDisplayText() {
+        final StringBuilder result = new StringBuilder();
+        for (IntroductionDate introduction : introductions) {
+            if (result.length() > 0) {
+                result.append('\n');
+            }
+            result.append(introduction.dateText());
+        }
+        return result.toString();
+    }
+
     public String introductionDisplayText() {
         final StringBuilder result = new StringBuilder();
         for (IntroductionDate introduction : introductions) {

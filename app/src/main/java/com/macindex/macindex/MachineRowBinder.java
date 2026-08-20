@@ -54,7 +54,7 @@ final class MachineRowBinder {
                                    final Machine machine,
                                    final boolean favourite,
                                    final SelectionListener selectionListener) {
-        bind(row, machine, machine.name(), oneLine(machine.introductionDisplayText()), favourite,
+        bind(row, machine, machine.name(), oneLine(machine.introductionDateDisplayText()), favourite,
                 1, selectionListener);
     }
 
