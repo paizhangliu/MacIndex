@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.SystemClock;
 
 import androidx.lifecycle.Observer;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -81,6 +84,23 @@ public final class ApplicationFoundationInstrumentationTest {
         final Intent deepLink = new Intent(Intent.ACTION_VIEW,
                 Uri.parse("https://macindex.paizhang.info/share?code=MI000001"));
         assertFalse(MainActivity.restoreExternalRequestConsumed(true, deepLink));
+    }
+
+    @Test
+    public void staleInternalMachineNavigationFinishesSafely() {
+        final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        final Context context = instrumentation.getTargetContext();
+
+        final Intent legacySpecs = new Intent(context, SpecsActivity.class)
+                .putExtra("machineID", 0)
+                .putExtra("thisCategory", new int[]{0})
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertActivityFinishes(instrumentation, legacySpecs);
+
+        final Intent invalidImage = new Intent(context, ViewImageActivity.class)
+                .putExtra(NavigationContract.EXTRA_MACHINE_UID, "not-a-machine-uid")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertActivityFinishes(instrumentation, invalidImage);
     }
 
     @Test
@@ -165,6 +185,23 @@ public final class ApplicationFoundationInstrumentationTest {
                 output.write(buffer, 0, length);
             }
             return output.toString(StandardCharsets.UTF_8.name());
+        }
+    }
+
+    private static void assertActivityFinishes(final Instrumentation instrumentation,
+                                               final Intent intent) {
+        final Activity activity = instrumentation.startActivitySync(intent);
+        try {
+            final long deadline = SystemClock.uptimeMillis() + 10_000;
+            while (!activity.isFinishing() && SystemClock.uptimeMillis() < deadline) {
+                instrumentation.waitForIdleSync();
+                SystemClock.sleep(20);
+            }
+            assertTrue("Stale internal navigation did not close", activity.isFinishing());
+        } finally {
+            if (!activity.isFinishing()) {
+                instrumentation.runOnMainSync(activity::finish);
+            }
         }
     }
 }

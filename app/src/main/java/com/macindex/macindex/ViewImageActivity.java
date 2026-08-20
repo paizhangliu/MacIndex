@@ -37,12 +37,20 @@ public class ViewImageActivity extends AppCompatActivity {
     }
 
     private void initializeFromRequest(@NonNull final MachineCatalog catalog) {
-        final String machineUID = getIntent().getStringExtra(
-                NavigationContract.EXTRA_MACHINE_UID);
-        if (machineUID == null) {
-            throw new IllegalArgumentException("Missing machine image UID");
+        final Machine machine;
+        try {
+            final String machineUID = getIntent().getStringExtra(
+                    NavigationContract.EXTRA_MACHINE_UID);
+            if (machineUID == null) {
+                throw new IllegalArgumentException("Missing machine image UID");
+            }
+            machine = catalog.requireByUid(machineUID);
+        } catch (IllegalArgumentException staleRequest) {
+            Log.w("ImageNavigation", "Closing a stale machine image request.", staleRequest);
+            finish();
+            return;
         }
-        init(catalog, catalog.requireByUid(machineUID));
+        init(catalog, machine);
     }
 
     private void init(@NonNull final MachineCatalog catalog,

@@ -174,23 +174,30 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void initializeFromRequest(@NonNull final MachineCatalog readyCatalog) {
-        final NavigationContract.MachineRequest request =
-                NavigationContract.MachineRequest.from(getIntent());
-        catalog = readyCatalog;
-        navigationUIDs = request.getNavigationUIDs();
-        final String requestedUID = request.getMachineUID();
-        forceNavigationButtons = request.shouldForceNavigationButtons();
-        machine = catalog.requireByUid(requestedUID);
+        try {
+            final NavigationContract.MachineRequest request =
+                    NavigationContract.MachineRequest.from(getIntent());
+            catalog = readyCatalog;
+            navigationUIDs = request.getNavigationUIDs();
+            final String requestedUID = request.getMachineUID();
+            forceNavigationButtons = request.shouldForceNavigationButtons();
+            machine = catalog.requireByUid(requestedUID);
 
-        for (int index = 0; index < navigationUIDs.length; index++) {
-            catalog.requireByUid(navigationUIDs[index]);
-            if (navigationUIDs[index].equals(requestedUID)) {
-                navigationPosition = index;
+            for (int index = 0; index < navigationUIDs.length; index++) {
+                catalog.requireByUid(navigationUIDs[index]);
+                if (navigationUIDs[index].equals(requestedUID)) {
+                    navigationPosition = index;
+                }
             }
-        }
-        if (navigationPosition == -1) {
-            throw new IllegalArgumentException(
-                    "Navigation request does not contain " + requestedUID);
+            if (navigationPosition == -1) {
+                throw new IllegalArgumentException(
+                        "Navigation request does not contain " + requestedUID);
+            }
+        } catch (IllegalArgumentException staleRequest) {
+            Log.w("SpecsNavigation", "Closing a stale machine navigation request.",
+                    staleRequest);
+            finish();
+            return;
         }
 
         initialize();
