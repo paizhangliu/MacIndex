@@ -2,6 +2,7 @@ package com.macindex.macindex.userstate
 
 import com.macindex.macindex.catalog.BrowseGrouping
 import com.macindex.macindex.catalog.BrowseScope
+import com.macindex.macindex.catalog.MachineCatalog
 
 enum class Appearance {
     FOLLOW_SYSTEM,
@@ -73,11 +74,30 @@ data class UserState(
     val uiMemory: UiMemory = UiMemory(),
     val library: UserLibrary = UserLibrary(),
     val pendingNotice: PendingUserNotice? = null,
+    val registeredAppVersionCode: Int = 0,
 )
 
-fun interface MachineNameResolver {
-    /** Returns the current display name, or null when the UID no longer exists. */
-    fun resolveDisplayName(uid: String): String?
+data class MachineUidResolution(
+    val currentUid: String?,
+    val displayName: String,
+)
+
+fun interface MachineUidResolver {
+    /** Resolves an active UID, a retired UID replacement, or a permanent retirement. */
+    fun resolve(uid: String): MachineUidResolution
+}
+
+fun MachineCatalog.uidResolver() = MachineUidResolver { uid ->
+    val active = findByUid(uid)
+    if (active != null) {
+        MachineUidResolution(active.uid(), active.name())
+    } else {
+        val retired = retiredMachine(uid)
+        MachineUidResolution(
+            retired?.replacementUid(),
+            retired?.previousName() ?: uid,
+        )
+    }
 }
 
 class PreparedUserDataImport internal constructor(

@@ -50,7 +50,7 @@ final class StartupUiGate {
         if (activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
-        if (failureKind == AppStartupState.FailureKind.CATALOG_ASSET) {
+        if (failureKind == AppStartupState.FailureKind.CATALOG) {
             ExceptionHelper.showCatalogStartupFailure(activity, failure);
         } else if (failureKind == AppStartupState.FailureKind.USER_STATE) {
             ExceptionHelper.showUserStateStartupFailure(activity, failure);

@@ -43,5 +43,4 @@ design = '''
 1.73" H x 17.6" W x 28" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [{ label = "Xserve G5/2.0 DP Cluster Node", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g5_2.0_dp_node.html" }]

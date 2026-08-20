@@ -25,7 +25,7 @@ final class ExceptionHelper {
     }
 
     static void showCatalogStartupFailure(final Context context, final Exception failure) {
-        Log.e("AppStartup", "The bundled machine catalog is unavailable.", failure);
+        Log.e("AppStartup", "The machine catalog is unavailable.", failure);
         showFatalDialog(context, R.string.startup_failure_title,
                 R.string.startup_catalog_failure_information, false);
     }
@@ -169,11 +169,7 @@ final class ExceptionHelper {
             Log.w(LOG_TAG, "Information dialog skipped because its Activity is no longer active.");
             return null;
         }
-        final LayoutInflater inflater = (LayoutInflater) context.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        if (inflater == null) {
-            throw new IllegalStateException("LayoutInflater is unavailable");
-        }
+        final LayoutInflater inflater = LayoutInflater.from(context);
         final View content = inflater.inflate(R.layout.chunk_exception_dialog, null);
         final TextView informationView = content.findViewById(R.id.exceptionInfo);
         informationView.setText(information);

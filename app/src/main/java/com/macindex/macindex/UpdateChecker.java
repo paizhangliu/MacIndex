@@ -129,7 +129,7 @@ final class UpdateChecker {
         }
     }
 
-    static int compareVersions(final String firstVersion, final String secondVersion) {
+    private static int compareVersions(final String firstVersion, final String secondVersion) {
         final int[] first = parseVersion(firstVersion);
         final int[] second = parseVersion(secondVersion);
         for (int i = 0; i < first.length; i++) {
@@ -140,7 +140,7 @@ final class UpdateChecker {
         return 0;
     }
 
-    static String normalizeVersion(final String rawVersion) {
+    private static String normalizeVersion(final String rawVersion) {
         if (rawVersion == null) {
             throw new IllegalArgumentException("Missing version");
         }
@@ -152,9 +152,10 @@ final class UpdateChecker {
         return version;
     }
 
-    static String normalizeReleasePage(final String rawPage,
-                                       final String expectedHost,
-                                       final String expectedPath) throws URISyntaxException {
+    private static String normalizeReleasePage(final String rawPage,
+                                               final String expectedHost,
+                                               final String expectedPath)
+            throws URISyntaxException {
         if (rawPage == null) {
             throw new IllegalArgumentException("Missing release page");
         }

@@ -11,7 +11,6 @@ import com.macindex.macindex.catalog.SearchHit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +27,9 @@ final class SearchResultAdapter extends BaseAdapter {
                         final Context sourceContext,
                         final MachineRowBinder.SelectionListener sourceSelectionListener) {
         layoutInflater = LayoutInflater.from(sourceContext);
-        favouriteUids = immutableFavouriteCopy(sourceFavouriteUids);
+        favouriteUids = sourceFavouriteUids;
         selectionListener = sourceSelectionListener;
-
-        hits = Collections.unmodifiableList(new ArrayList<>(sourceHits));
+        hits = sourceHits;
     }
 
     List<Machine> navigationMachines() {
@@ -43,7 +41,7 @@ final class SearchResultAdapter extends BaseAdapter {
     }
 
     void setFavouriteUids(final Set<String> sourceFavouriteUids) {
-        favouriteUids = immutableFavouriteCopy(sourceFavouriteUids);
+        favouriteUids = sourceFavouriteUids;
         notifyDataSetChanged();
     }
 
@@ -78,9 +76,4 @@ final class SearchResultAdapter extends BaseAdapter {
                 resultView, hit, favourite, selectionListener::onSelected);
         return resultView;
     }
-
-    private static Set<String> immutableFavouriteCopy(final Set<String> source) {
-        return Collections.unmodifiableSet(new HashSet<>(source));
-    }
-
 }

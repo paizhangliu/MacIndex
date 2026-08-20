@@ -42,17 +42,17 @@ public class ViewImageActivity extends AppCompatActivity {
         if (machineUID == null) {
             throw new IllegalArgumentException("Missing machine image UID");
         }
-        init(catalog.requireByUid(machineUID));
+        init(catalog, catalog.requireByUid(machineUID));
     }
 
-    private void init(@NonNull final Machine machine) {
+    private void init(@NonNull final MachineCatalog catalog,
+                      @NonNull final Machine machine) {
         setTitle(machine.name());
         final ImageView image = findViewById(R.id.pic);
         imageLoader.load("full-picture", machine,
                 getResources().getDisplayMetrics().widthPixels,
                 getResources().getDisplayMetrics().heightPixels,
                 picture -> {
-                    DebugHelper.log("ViewImage", "Loaded image for " + machine.uid());
                     image.setImageBitmap(picture);
                     ThemeHelper.applyMachineImage(this, image);
                 },

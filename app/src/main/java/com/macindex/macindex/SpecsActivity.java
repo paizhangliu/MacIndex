@@ -32,7 +32,7 @@ import java.util.Set;
 import com.macindex.macindex.catalog.Machine;
 import com.macindex.macindex.catalog.MachineCatalog;
 import com.macindex.macindex.resources.LogoAsset;
-import com.macindex.macindex.resources.MachineResourceRegistry;
+import com.macindex.macindex.resources.MachineResourceLoader;
 import com.macindex.macindex.userstate.FavouriteFolder;
 import com.macindex.macindex.userstate.UserComment;
 import com.macindex.macindex.userstate.UserState;
@@ -114,7 +114,8 @@ public class SpecsActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(final Menu menu) {
         final boolean isReady = machine != null;
         for (int index = 0; index < menu.size(); index++) {
-            menu.getItem(index).setEnabled(isReady);
+            final MenuItem item = menu.getItem(index);
+            item.setEnabled(isReady || item.getItemId() == R.id.specsHelpItem);
         }
         if (isReady) {
             initCompareCheckBox();
@@ -125,7 +126,9 @@ public class SpecsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         final int itemID = item.getItemId();
-        if (itemID == R.id.shareItem) {
+        if (itemID == R.id.specsHelpItem) {
+            showSpecsHelp();
+        } else if (itemID == R.id.shareItem) {
             copySpecification();
         } else if (itemID == R.id.shareLinkItem) {
             generateShareLink();
@@ -141,6 +144,14 @@ public class SpecsActivity extends AppCompatActivity {
         return true;
     }
 
+    private void showSpecsHelp() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.specs_help_title)
+                .setMessage(R.string.specs_help_content)
+                .setPositiveButton(R.string.help_confirm, null)
+                .show();
+    }
+
     @Override
     protected void onStop() {
         release();
@@ -149,12 +160,11 @@ public class SpecsActivity extends AppCompatActivity {
 
     @Override
     protected void onRestart() {
-        // Restart Sound System.
         super.onRestart();
         if (machine == null) {
             return;
         }
-        initImage();
+        initSound();
     }
 
     @Override
@@ -189,7 +199,6 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        DebugHelper.log("SpecsInitialize", "Machine UID " + machine.uid());
         if ((forceNavigationButtons
                 || currentState.getPreferences().getUseNavigationButtons())
                 && navigationUIDs.length > 1) {
@@ -295,13 +304,13 @@ public class SpecsActivity extends AppCompatActivity {
         final HorizontalScrollView processorImageScrollView = findViewById(R.id.processorImageScrollView);
         final LinearLayout processorImages = findViewById(R.id.processorImageLayout);
         final LogoAsset[] processorImageAssets =
-                MachineResourceRegistry.processorLogos(machine);
+                MachineResourceLoader.processorLogos(catalog, machine);
 
         // The type logo is independent from the model-specific logo strip.
         processorTypeImageLayout.setVisibility(View.GONE);
 
         final LogoAsset processorTypeAsset =
-                MachineResourceRegistry.processorTypeLogo(machine);
+                MachineResourceLoader.processorTypeLogo(catalog, machine);
         if (processorTypeAsset != null) {
             // Got type image. Now loading.
             processorTypeImageLayout.setVisibility(View.VISIBLE);
@@ -320,7 +329,7 @@ public class SpecsActivity extends AppCompatActivity {
         final HorizontalScrollView graphicsImageScrollView = findViewById(R.id.graphicsImageScrollView);
         final LinearLayout graphicsImages = findViewById(R.id.graphicsImageLayout);
         final LogoAsset[] graphicsImageAssets =
-                MachineResourceRegistry.graphicsLogos(machine);
+                MachineResourceLoader.graphicsLogos(catalog, machine);
 
         bindLogoStrip(graphicsImageLayoutContainer, graphicsImageScrollView,
                 graphicsImages, graphicsImageAssets);
@@ -450,7 +459,6 @@ public class SpecsActivity extends AppCompatActivity {
                 getResources().getDisplayMetrics().widthPixels,
                 Math.round(150 * getResources().getDisplayMetrics().density),
                 picture -> {
-                    DebugHelper.log("SpecsAct", "Image exists");
                     ThemeHelper.applyMachineImage(this, image);
                     image.setImageBitmap(picture);
                 },
@@ -460,11 +468,7 @@ public class SpecsActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 });
 
-        final TextView informationLabel = findViewById(R.id.information);
-        specsHelper.initSound(machine, image, informationLabel,
-                currentState.getPreferences().getPlayDeathSound(),
-                currentState.getPreferences().getEnableVolumeWarning(),
-                volumeWarningSession);
+        initSound();
 
         // Set a long click listener
         image.setOnLongClickListener(v -> {
@@ -474,6 +478,14 @@ public class SpecsActivity extends AppCompatActivity {
         });
     }
 
+    private void initSound() {
+        final ImageView image = findViewById(R.id.pic);
+        specsHelper.initSound(machine, image,
+                currentState.getPreferences().getPlayDeathSound(),
+                currentState.getPreferences().getEnableVolumeWarning(),
+                volumeWarningSession);
+    }
+
     private void initLinks() {
         final ImageView link = findViewById(R.id.everymac);
         specsHelper.initLinks(machine, link);
@@ -481,7 +493,6 @@ public class SpecsActivity extends AppCompatActivity {
     }
 
     private void initButtons() {
-        DebugHelper.log("SpecNavButtons", "Loading");
         // Reset the padding
         final LinearLayout basicInfoLayout = findViewById(R.id.basicInfoLayout);
         final float density = getResources().getDisplayMetrics().density;
@@ -564,12 +575,8 @@ public class SpecsActivity extends AppCompatActivity {
         commentDialog.setTitle(R.string.submenu_specs_comment);
         commentDialog.setMessage(R.string.comment_tips);
         commentDialog.setView(commentChunk);
-        commentDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-            // To be overwritten...
-        });
-        commentDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-            // Do nothing
-        });
+        commentDialog.setPositiveButton(R.string.link_confirm, null);
+        commentDialog.setNegativeButton(R.string.link_cancel, null);
 
         final AlertDialog commentDialogCreated = commentDialog.create();
         commentDialogCreated.show();
@@ -650,7 +657,7 @@ public class SpecsActivity extends AppCompatActivity {
                                 error -> ExceptionHelper.showUserStateEditFailure(this, error,
                                         R.string.submenu_specs_favourite,
                                         R.string.favourite_membership_save_failed)))
-                .setNegativeButton(R.string.link_cancel, (dialog, which) -> { })
+                .setNegativeButton(R.string.link_cancel, null)
                 .show();
     }
 
@@ -664,7 +671,7 @@ public class SpecsActivity extends AppCompatActivity {
                     .setTitle(R.string.submenu_favourite_add)
                     .setMessage(getString(R.string.favourites_error_limit,
                             UserStateLimits.MAX_FOLDERS))
-                    .setPositiveButton(R.string.link_confirm, (dialog, which) -> { })
+                    .setPositiveButton(R.string.link_confirm, null)
                     .show();
             return;
         }
@@ -674,12 +681,8 @@ public class SpecsActivity extends AppCompatActivity {
         newFolderDialog.setTitle(R.string.submenu_favourite_add);
         newFolderDialog.setMessage(R.string.favourites_new_folder);
         newFolderDialog.setView(newFolderChunk);
-        newFolderDialog.setPositiveButton(R.string.link_confirm, (dialogInterface, i) -> {
-            // To be overwritten...
-        });
-        newFolderDialog.setNegativeButton(R.string.link_cancel, (dialogInterface, i) -> {
-            // Do nothing
-        });
+        newFolderDialog.setPositiveButton(R.string.link_confirm, null);
+        newFolderDialog.setNegativeButton(R.string.link_cancel, null);
 
         final AlertDialog folderCreationDialog = newFolderDialog.create();
         folderCreationDialog.show();

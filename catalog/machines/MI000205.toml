@@ -61,7 +61,6 @@ design = '''
 1.73" H x 17.6" W x 28" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Xserve G4/1.0", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g4_1ghz.html" },
   { label = "Xserve G4/1.0 DP", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g4_1ghz_dp.html" },

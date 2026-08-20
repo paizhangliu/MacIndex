@@ -2,17 +2,17 @@ package com.macindex.macindex;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Typeface;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -26,8 +26,9 @@ import androidx.core.content.ContextCompat;
 import com.macindex.macindex.catalog.Machine;
 import com.macindex.macindex.catalog.SupportStatus;
 import com.macindex.macindex.catalog.TextRange;
-import com.macindex.macindex.resources.MachineResourceRegistry;
+import com.macindex.macindex.resources.MachineResourceLoader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +39,13 @@ import java.util.Locale;
  * Extracted from SpecsActivity on July 22, 2026.
  */
 class SpecsHelper {
+    private static final int[] SPECIFICATION_LABEL_IDS = {
+            R.string.year, R.string.model, R.string.id, R.string.gestalt,
+            R.string.order, R.string.codename, R.string.emc, R.string.processor,
+            R.string.graphics, R.string.display, R.string.maxram, R.string.type,
+            R.string.software, R.string.storage, R.string.features, R.string.expansion,
+            R.string.design, R.string.support, R.string.comment
+    };
 
     private final Context thisContext;
 
@@ -47,15 +55,11 @@ class SpecsHelper {
 
     private MediaPlayer deathSound = null;
 
-    private final Vibrator vibrator;
-
     SpecsHelper(final Context thisContext) {
         this.thisContext = thisContext;
-        vibrator = (Vibrator) thisContext.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     void initSound(final Machine machine, final ImageView image,
-                   final TextView informationLabel,
                    final boolean playDeathSound,
                    final boolean enableVolumeWarning,
                    final VolumeWarningSession volumeWarningSession) {
@@ -63,41 +67,33 @@ class SpecsHelper {
         startup = true;
 
         // Init startup and death sound
-        final int[] sound = MachineResourceRegistry.soundResources(machine);
-        final int startupID = sound[0];
-        final int deathID = sound[1];
+        final String startupFile = MachineResourceLoader.startupSoundAsset(machine);
+        final String deathFile = MachineResourceLoader.deathSoundAsset(machine);
 
-        if (startupID != 0 || deathID != 0) {
+        if (startupFile != null || deathFile != null) {
             // Set Sound accordingly
-            if (startupID != 0 && deathID != 0
+            if (startupFile != null && deathFile != null
                     && playDeathSound) {
                 // Startup sound exists, death sound exists, and user prefers both
-                if (informationLabel != null) {
-                    informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_full));
-                }
-                startupSound = MediaPlayer.create(thisContext, startupID);
-                deathSound = MediaPlayer.create(thisContext, deathID);
-                DebugHelper.log("InitSound", "Startup and death sound loaded");
+                startupSound = createSoundPlayer(startupFile);
+                deathSound = createSoundPlayer(deathFile);
             } else {
                 // Startup sound exists, death sound not exist
                 // Fix IllegalStateException
-                if (informationLabel != null) {
-                    informationLabel.setText(thisContext.getResources().getString(R.string.information_specs_no_death));
-                }
-                startupSound = MediaPlayer.create(thisContext, startupID);
+                startupSound = createSoundPlayer(startupFile);
                 deathSound = null;
-                DebugHelper.log("InitSound", "Startup sound loaded");
             }
-            if (startupSound == null || (deathID != 0 && playDeathSound && deathSound == null)) {
+            if (startupSound == null
+                    || (deathFile != null && playDeathSound && deathSound == null)) {
                 Log.w("SpecsHelper", "Android could not create the machine sound player.");
                 release();
-                configureUnavailableSound(image, informationLabel);
+                configureUnavailableSound(image);
                 return;
             }
 
             // Should set a listener
             image.setOnClickListener(unused -> {
-                vibrate();
+                performHapticFeedback(image);
                 if (soundIsPlayingOrUnavailable()) {
                     return;
                 }
@@ -109,7 +105,6 @@ class SpecsHelper {
                         for (AudioDeviceInfo deviceInfo : audioManager.getDevices(
                                 AudioManager.GET_DEVICES_OUTPUTS)) {
                             final int thisType = deviceInfo.getType();
-                            DebugHelper.log("VolWarning", "Get type " + thisType);
                             if (thisType == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
                                     || thisType == AudioDeviceInfo.TYPE_WIRED_HEADSET
                                     || thisType == AudioDeviceInfo.TYPE_USB_HEADSET
@@ -118,7 +113,6 @@ class SpecsHelper {
                                     || thisType == AudioDeviceInfo.TYPE_HEARING_AID
                                     || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                                     && thisType == AudioDeviceInfo.TYPE_BLE_HEADSET)) {
-                                DebugHelper.log("VolWarning", "Earphone detected");
                                 currentOutputDevice = true;
                                 break;
                             }
@@ -133,11 +127,7 @@ class SpecsHelper {
                             return;
                         }
                         final int currentVolumePercentage = 100 * currentVolume / maxVolume;
-                        DebugHelper.log("VolWarning", "Enabled, current percentage "
-                                + currentVolumePercentage + " current output device "
-                                + currentOutputDevice);
                         if (currentVolumePercentage >= 60 && currentOutputDevice) {
-                            DebugHelper.log("VolWarning", "Armed");
                             new AlertDialog.Builder(thisContext)
                                     .setMessage(R.string.information_specs_high_vol_warning)
                                     .setPositiveButton(R.string.action_play_anyway,
@@ -148,7 +138,6 @@ class SpecsHelper {
                                     .setNegativeButton(R.string.link_cancel, null)
                                     .show();
                         } else {
-                            DebugHelper.log("VolWarning", "Unarmed");
                             playSoundWithFeedback();
                         }
                     } else {
@@ -157,12 +146,28 @@ class SpecsHelper {
                         playSoundWithFeedback();
                     }
                 } else {
-                    DebugHelper.log("VolWarning", "Disabled");
                     playSoundWithFeedback();
                 }
             });
         } else {
-            configureUnavailableSound(image, informationLabel);
+            configureUnavailableSound(image);
+        }
+    }
+
+    private MediaPlayer createSoundPlayer(final String assetPath) {
+        if (assetPath == null) {
+            return null;
+        }
+        final MediaPlayer player = new MediaPlayer();
+        try (AssetFileDescriptor asset = thisContext.getAssets().openFd(assetPath)) {
+            player.setDataSource(asset.getFileDescriptor(),
+                    asset.getStartOffset(), asset.getLength());
+            player.prepare();
+            return player;
+        } catch (IOException | RuntimeException error) {
+            Log.w("SpecsHelper", "Unable to prepare Catalog sound " + assetPath, error);
+            releaseSound(player, assetPath);
+            return null;
         }
     }
 
@@ -325,8 +330,7 @@ class SpecsHelper {
                         }
             } else if (which == 2) {
                         // User choose info
-                        final View selectChunk = ((LayoutInflater) thisContext
-                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                        final View selectChunk = LayoutInflater.from(thisContext)
                                 .inflate(R.layout.chunk_favourites_select, null);
                         final LinearLayout selectLayout = selectChunk.findViewById(R.id.selectLayout);
                         final String[] selectableSpecs = getSpecificationLabels(entryCount);
@@ -350,12 +354,8 @@ class SpecsHelper {
                         final AlertDialog.Builder selectDialog = new AlertDialog.Builder(thisContext);
                         selectDialog.setTitle(shareEntries[which]);
                         selectDialog.setView(selectChunk);
-                        selectDialog.setPositiveButton(R.string.link_confirm, (dialog2, which2) -> {
-                            // To be overwritten...
-                        });
-                        selectDialog.setNegativeButton(R.string.link_cancel, ((dialog2, which2) -> {
-                            // Cancelled, do nothing
-                        }));
+                        selectDialog.setPositiveButton(R.string.link_confirm, null);
+                        selectDialog.setNegativeButton(R.string.link_cancel, null);
                         final AlertDialog selectDialogCreated = selectDialog.create();
                         selectDialogCreated.show();
 
@@ -383,19 +383,14 @@ class SpecsHelper {
         shareDialog.show();
     }
 
-    private void configureUnavailableSound(final ImageView image,
-                                           final TextView informationLabel) {
+    private void configureUnavailableSound(final ImageView image) {
         startupSound = null;
         deathSound = null;
-        DebugHelper.log("InitSound", "Startup and death sound are unavailable");
         image.setOnClickListener(v -> {
-            vibrate();
+            performHapticFeedback(image);
             Toast.makeText(thisContext, R.string.information_specs_no_sound,
                     Toast.LENGTH_SHORT).show();
         });
-        if (informationLabel != null) {
-            informationLabel.setText(R.string.information_specs_no_sound);
-        }
     }
 
     void generateShareLink(final String machineUID) {
@@ -428,7 +423,6 @@ class SpecsHelper {
             Log.w("SpecsHelper", "Unable to release " + label + " sound.", error);
             return;
         }
-        DebugHelper.log("releaseSound", label + " sound released");
     }
 
     private void playSound() {
@@ -505,20 +499,19 @@ class SpecsHelper {
     }
 
     private String[] getSpecificationLabels(final int entryCount) {
-        final int[] labelIDs = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
-                R.string.order, R.string.codename, R.string.emc, R.string.processor,
-                R.string.graphics,
-                R.string.display, R.string.maxram, R.string.type, R.string.software,
-                R.string.storage, R.string.features, R.string.expansion, R.string.design,
-                R.string.support, R.string.comment};
-        if (entryCount <= 0 || entryCount > labelIDs.length) {
-            throw new IllegalArgumentException();
-        }
+        final int[] labelIDs = specificationLabelIds(entryCount);
         final String[] labels = new String[entryCount];
         for (int i = 0; i < entryCount; i++) {
             labels[i] = thisContext.getString(labelIDs[i]);
         }
         return labels;
+    }
+
+    static int[] specificationLabelIds(final int entryCount) {
+        if (entryCount <= 0 || entryCount > SPECIFICATION_LABEL_IDS.length) {
+            throw new IllegalArgumentException();
+        }
+        return Arrays.copyOf(SPECIFICATION_LABEL_IDS, entryCount);
     }
 
     static List<Integer> modelIdentifierEntries(final int entryCount) {
@@ -598,19 +591,10 @@ class SpecsHelper {
         return ExceptionHelper.copyText(thisContext, clipLabel, thisInfo, toastMessage);
     }
 
-    private void vibrate() {
-        if (vibrator == null) {
-            return;
-        }
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(
-                        50, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                vibrator.vibrate(50);
-            }
-        } catch (SecurityException denied) {
-            Log.w("SpecsHelper", "Android denied optional vibration.", denied);
-        }
+    private static void performHapticFeedback(final View view) {
+        final int feedback = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                ? HapticFeedbackConstants.CONFIRM
+                : HapticFeedbackConstants.VIRTUAL_KEY;
+        view.performHapticFeedback(feedback);
     }
 }

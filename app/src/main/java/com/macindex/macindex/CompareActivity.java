@@ -24,7 +24,7 @@ import androidx.core.widget.TextViewCompat;
 import com.macindex.macindex.catalog.Machine;
 import com.macindex.macindex.catalog.MachineCatalog;
 import com.macindex.macindex.resources.LogoAsset;
-import com.macindex.macindex.resources.MachineResourceRegistry;
+import com.macindex.macindex.resources.MachineResourceLoader;
 import com.macindex.macindex.userstate.AppStateRepository;
 import com.macindex.macindex.userstate.CompareSelection;
 import com.macindex.macindex.userstate.UserState;
@@ -144,7 +144,9 @@ public class CompareActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final int itemID = item.getItemId();
-        if (itemID == R.id.initCompareItem) {
+        if (itemID == R.id.compareHelpItem) {
+            showCompareHelp();
+        } else if (itemID == R.id.initCompareItem) {
             showSelectionDialog();
         } else if (itemID == R.id.clearColumnCompareItem) {
             clearDisplayedComparison();
@@ -176,6 +178,14 @@ public class CompareActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void showCompareHelp() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.compare_help_title)
+                .setMessage(R.string.compare_help_content)
+                .setPositiveButton(R.string.help_confirm, null)
+                .show();
     }
 
     @Override
@@ -337,14 +347,9 @@ public class CompareActivity extends AppCompatActivity {
         nameRight.setOnClickListener(view -> UserLibraryViewAdapter.openMachine(
                 this, catalog, fixedNavigation, Collections.singletonList(right), right));
 
-        final int[] labels = {R.string.year, R.string.model, R.string.id, R.string.gestalt,
-                R.string.order, R.string.codename, R.string.emc, R.string.processor,
-                R.string.graphics,
-                R.string.display, R.string.maxram, R.string.type, R.string.software,
-                R.string.storage, R.string.features, R.string.expansion, R.string.design,
-                R.string.support};
         final String[] leftSpecification = specsHelperLeft.specification(left);
         final String[] rightSpecification = specsHelperRight.specification(right);
+        final int[] labels = SpecsHelper.specificationLabelIds(leftSpecification.length);
         final boolean isLeftClassic = isClassic(left);
         final boolean isRightClassic = isClassic(right);
 
@@ -402,11 +407,11 @@ public class CompareActivity extends AppCompatActivity {
         final ImageView imageRight = findViewById(R.id.picRight);
         final VolumeWarningSession volumeWarningSession =
                 ((MacIndexApplication) getApplication()).volumeWarningSession();
-        specsHelperLeft.initSound(left, imageLeft, null,
+        specsHelperLeft.initSound(left, imageLeft,
                 state.getPreferences().getPlayDeathSound(),
                 state.getPreferences().getEnableVolumeWarning(),
                 volumeWarningSession);
-        specsHelperRight.initSound(right, imageRight, null,
+        specsHelperRight.initSound(right, imageRight,
                 state.getPreferences().getPlayDeathSound(),
                 state.getPreferences().getEnableVolumeWarning(),
                 volumeWarningSession);
@@ -470,7 +475,7 @@ public class CompareActivity extends AppCompatActivity {
     private void setProcessorTypeImage(final int imageID,
                                        final int layoutID,
                                        @NonNull final Machine machine) {
-        final LogoAsset asset = MachineResourceRegistry.processorTypeLogo(machine);
+        final LogoAsset asset = MachineResourceLoader.processorTypeLogo(catalog, machine);
         final View layout = findViewById(layoutID);
         final ImageView image = findViewById(imageID);
         if (asset == null) {

@@ -136,9 +136,7 @@ public class FavouriteActivity extends AppCompatActivity {
                             error -> ExceptionHelper.showUserStateWriteFailure(this, error,
                                     R.string.submenu_favourite_clear,
                                     R.string.favourites_clear_failed)));
-            clearFoldersDialog.setNegativeButton(R.string.link_cancel, (dialog, which) -> {
-                // Cancelled.
-            });
+            clearFoldersDialog.setNegativeButton(R.string.link_cancel, null);
             clearFoldersDialog.show();
         } else {
             return super.onOptionsItemSelected(item);
@@ -281,7 +279,7 @@ public class FavouriteActivity extends AppCompatActivity {
                         .setTitle(R.string.submenu_favourite_add)
                         .setMessage(getString(R.string.favourites_error_limit,
                                 UserStateLimits.MAX_FOLDERS))
-                        .setPositiveButton(R.string.link_confirm, (dialog, which) -> { })
+                        .setPositiveButton(R.string.link_confirm, null)
                         .show();
                 return;
             }
@@ -294,7 +292,7 @@ public class FavouriteActivity extends AppCompatActivity {
                     .setMessage(R.string.favourites_new_folder)
                     .setView(newFolderChunk)
                     .setPositiveButton(R.string.link_confirm, null)
-                    .setNegativeButton(R.string.link_cancel, (unused, which) -> { })
+                    .setNegativeButton(R.string.link_cancel, null)
                     .create();
             dialog.setOnShowListener(unused -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     .setOnClickListener(view -> {
@@ -345,7 +343,7 @@ public class FavouriteActivity extends AppCompatActivity {
                                     error -> ExceptionHelper.showUserStateEditFailure(this, error,
                                             R.string.submenu_favourite_delete,
                                             R.string.favourites_delete_failed)))
-                    .setNegativeButton(R.string.link_cancel, (dialog, which) -> { })
+                    .setNegativeButton(R.string.link_cancel, null)
                 .show();
     }
 
@@ -373,7 +371,7 @@ public class FavouriteActivity extends AppCompatActivity {
                         if (folderIndex < 0 || folderIndex >= folders.size()) return;
                         showRenameInput(folders.get(folderIndex), folders);
                     })
-                    .setNegativeButton(R.string.link_cancel, (dialog, which) -> { })
+                    .setNegativeButton(R.string.link_cancel, null)
                 .show();
     }
 
@@ -388,7 +386,7 @@ public class FavouriteActivity extends AppCompatActivity {
                 .setMessage(R.string.favourites_new_folder)
                 .setView(newFolderChunk)
                 .setPositiveButton(R.string.link_confirm, null)
-                .setNegativeButton(R.string.link_cancel, (unused, which) -> { })
+                .setNegativeButton(R.string.link_cancel, null)
                 .create();
         dialog.setOnShowListener(unused -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(view -> {
@@ -415,7 +413,6 @@ public class FavouriteActivity extends AppCompatActivity {
     }
 
     private void setAbleToManage(final boolean newStatus) {
-        DebugHelper.log("FavouriteActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         if (renameFolderItem != null && manageFolderItem != null && clearFolderItem != null) {
             renameFolderItem.setEnabled(newStatus);

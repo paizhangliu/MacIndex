@@ -10,6 +10,7 @@ message AppState {
   UiMemory ui_memory = 2;
   UserLibrary library = 3;
   PendingNotice pending_notice = 4;
+  uint32 registered_app_version_code = 5;
 }
 
 message UserPreferences {
@@ -19,20 +20,16 @@ message UserPreferences {
   bool use_navigation_buttons = 4;
   bool fixed_navigation = 5;
   bool limit_random_to_current_browse = 6;
-  reserved 7, 9;
-  reserved "open_single_search_result", "remember_search_state";
-  bool remember_main_state = 8;
-  bool remember_compare_state = 10;
-  bool highlight_compare_differences = 11;
-  bool automatically_check_updates = 12;
-  string skipped_update_version = 13;
+  bool remember_main_state = 7;
+  bool remember_compare_state = 8;
+  bool highlight_compare_differences = 9;
+  bool automatically_check_updates = 10;
+  string skipped_update_version = 11;
 }
 
 message UiMemory {
   ManufacturerScope main_manufacturer = 1;
   MainGrouping main_grouping = 2;
-  reserved 3, 4;
-  reserved "search_manufacturer", "search_field";
 }
 
 enum ManufacturerScope {

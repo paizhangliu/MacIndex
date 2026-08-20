@@ -109,6 +109,7 @@ internal object V491StateConverter {
             pendingNotice = removed.takeIf { it.isNotEmpty() }?.let {
                 PendingUserNotice(removedContent = it)
             },
+            registeredAppVersionCode = values.int("lastKnownVersion", 0),
         )
     }
 
@@ -323,6 +324,7 @@ internal object V491StateConverter {
     }
 
     private fun Map<String, *>.boolean(key: String, default: Boolean) = this[key] as? Boolean ?: default
+    private fun Map<String, *>.int(key: String, default: Int) = this[key] as? Int ?: default
     private fun Map<String, *>.string(key: String) = this[key] as? String ?: ""
     private fun Map<String, *>.legacyRecord(key: String): LegacyRecord {
         val stored = this[key] ?: return LegacyRecord("")

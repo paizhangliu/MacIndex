@@ -9,7 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.macindex.macindex.catalog.MachineCatalog
 import com.macindex.macindex.userstate.AppStateRepository
 import com.macindex.macindex.userstate.InvalidUserDataException
-import com.macindex.macindex.userstate.MachineNameResolver
+import com.macindex.macindex.userstate.MachineUidResolver
+import com.macindex.macindex.userstate.uidResolver
 import com.macindex.macindex.userstate.PreparedUserDataImport
 import com.macindex.macindex.userstate.UserStateCommands
 import com.macindex.macindex.userstate.UserStateLimits
@@ -77,7 +78,7 @@ class SettingsAboutViewModel(application: Application) : AndroidViewModel(applic
 
     private val mutableState = MutableLiveData(State.of(Status.IDLE))
     private var repository: AppStateRepository? = null
-    private var resolver: MachineNameResolver? = null
+    private var resolver: MachineUidResolver? = null
     private var pendingTransfer: PendingTransfer? = null
 
     val state: LiveData<State> get() = mutableState
@@ -88,9 +89,7 @@ class SettingsAboutViewModel(application: Application) : AndroidViewModel(applic
             throw IllegalStateException("Transfer ViewModel was rebound to another repository")
         }
         this.repository = repository
-        resolver = MachineNameResolver { uid ->
-            catalog.findByUid(uid)?.name()
-        }
+        resolver = catalog.uidResolver()
         startPendingTransferIfReady()
     }
 
@@ -194,21 +193,25 @@ class SettingsAboutViewModel(application: Application) : AndroidViewModel(applic
 
     private fun read(uri: Uri): String {
         val resolver = getApplication<Application>().contentResolver
-        val bytes = resolver.openInputStream(uri)?.use { input ->
-            val output = ByteArrayOutputStream()
-            val buffer = ByteArray(8192)
-            var total = 0
-            while (true) {
-                val length = input.read(buffer)
-                if (length < 0) break
-                total += length
-                if (total > UserStateLimits.MAX_IMPORT_BYTES) {
-                    throw InvalidUserDataException("User data file is too large")
+        val bytes = try {
+            resolver.openInputStream(uri)?.use { input ->
+                val output = ByteArrayOutputStream()
+                val buffer = ByteArray(8192)
+                var total = 0
+                while (true) {
+                    val length = input.read(buffer)
+                    if (length < 0) break
+                    total += length
+                    if (total > UserStateLimits.MAX_IMPORT_BYTES) {
+                        throw InvalidUserDataException("User data file is too large")
+                    }
+                    output.write(buffer, 0, length)
                 }
-                output.write(buffer, 0, length)
-            }
-            output.toByteArray()
-        } ?: throw IOException("Unable to open user data")
+                output.toByteArray()
+            } ?: throw IOException("Unable to open user data")
+        } catch (failure: SecurityException) {
+            throw IOException("Unable to open user data", failure)
+        }
         return try {
             StandardCharsets.UTF_8.newDecoder()
                 .onMalformedInput(CodingErrorAction.REPORT)
@@ -221,10 +224,14 @@ class SettingsAboutViewModel(application: Application) : AndroidViewModel(applic
 
     private fun write(uri: Uri, json: String) {
         val resolver = getApplication<Application>().contentResolver
-        resolver.openOutputStream(uri, "wt")?.use { output ->
-            output.write(json.toByteArray(StandardCharsets.UTF_8))
-            output.flush()
-        } ?: throw IOException("Unable to open user data")
+        try {
+            resolver.openOutputStream(uri, "wt")?.use { output ->
+                output.write(json.toByteArray(StandardCharsets.UTF_8))
+                output.flush()
+            } ?: throw IOException("Unable to open user data")
+        } catch (failure: SecurityException) {
+            throw IOException("Unable to open user data", failure)
+        }
     }
 
     companion object {

@@ -64,7 +64,6 @@ design = '''
 1.73" H x 17.6" W x 30" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Xserve Xeon Nehalem 2.26 GHz Quad Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.26-2009-quad-specs.html" },
   { label = "Xserve Xeon Nehalem 2.26 GHz Eight Core", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-nehalem-xeon-2.26-2009-eight-core-specs.html" },

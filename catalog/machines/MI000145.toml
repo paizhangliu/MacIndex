@@ -65,7 +65,6 @@ Network Server tower
 24.5" H x 16.5" W x 18" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Network Server 700/150", url = "https://everymac.com/systems/apple/network_server/specs/networkserver_700_150.html" },
   { label = "Network Server 700/200", url = "https://everymac.com/systems/apple/network_server/specs/networkserver_700_200.html" },

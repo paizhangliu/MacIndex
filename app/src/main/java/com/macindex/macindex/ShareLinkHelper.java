@@ -1,8 +1,7 @@
 package com.macindex.macindex;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
+import android.net.Uri;
+
 import java.util.regex.Pattern;
 
 /**
@@ -59,20 +58,13 @@ class ShareLinkHelper {
     }
 
     private static String getQueryValue(final String link, final String name) {
-        final String rawQuery = URI.create(link).getRawQuery();
-        if (rawQuery == null) {
+        if (link == null) {
             throw new IllegalArgumentException("Share link has no query");
         }
-        for (String entry : rawQuery.split("&")) {
-            final String[] pair = entry.split("=", 2);
-            if (pair.length == 2 && pair[0].equals(name)) {
-                try {
-                    return URLDecoder.decode(pair[1], "UTF-8");
-                } catch (UnsupportedEncodingException impossible) {
-                    throw new AssertionError(impossible);
-                }
-            }
+        final Uri uri = Uri.parse(link);
+        if (uri.getQuery() == null) {
+            throw new IllegalArgumentException("Share link has no query");
         }
-        return null;
+        return uri.getQueryParameter(name);
     }
 }

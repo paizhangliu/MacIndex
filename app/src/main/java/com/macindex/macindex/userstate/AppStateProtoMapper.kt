@@ -50,7 +50,13 @@ internal object AppStateProtoMapper {
         } else {
             null
         }
-        return UserState(preferences, uiMemory, library, pendingNotice)
+        return UserState(
+            preferences = preferences,
+            uiMemory = uiMemory,
+            library = library,
+            pendingNotice = pendingNotice,
+            registeredAppVersionCode = proto.registeredAppVersionCode,
+        )
     }
 
     fun toProto(state: UserState): AppState {
@@ -59,6 +65,7 @@ internal object AppStateProtoMapper {
             .setPreferences(state.preferences.toProto())
             .setUiMemory(state.uiMemory.toProto())
             .setLibrary(state.library.toProto())
+            .setRegisteredAppVersionCode(state.registeredAppVersionCode)
             .also { builder -> state.pendingNotice?.let { builder.setPendingNotice(it.toProto()) } }
             .build()
     }

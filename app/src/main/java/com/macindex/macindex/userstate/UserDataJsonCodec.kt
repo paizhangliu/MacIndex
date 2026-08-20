@@ -2,7 +2,6 @@ package com.macindex.macindex.userstate
 
 import org.json.JSONArray
 import org.json.JSONObject
-import java.nio.charset.StandardCharsets
 
 /** The stable external schema-1 UID protocol. Internal Proto messages never cross this boundary. */
 object UserDataJsonCodec {
@@ -35,10 +34,7 @@ object UserDataJsonCodec {
             .toString(2)
     }
 
-    fun prepareImport(raw: String, resolver: MachineNameResolver): PreparedUserDataImport {
-        if (raw.toByteArray(StandardCharsets.UTF_8).size > UserStateLimits.MAX_IMPORT_BYTES) {
-            throw InvalidUserDataException("User data file is too large")
-        }
+    fun prepareImport(raw: String, resolver: MachineUidResolver): PreparedUserDataImport {
         val parsed = parse(raw)
         val reconciled = UserStateReconciler.reconcile(UserState(library = parsed), resolver)
         return PreparedUserDataImport(

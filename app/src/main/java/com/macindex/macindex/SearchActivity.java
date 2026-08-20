@@ -1,5 +1,6 @@
 package com.macindex.macindex;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,7 +39,6 @@ import java.util.Set;
 public class SearchActivity extends AppCompatActivity {
 
     private static final String STATE_QUERY = "searchQuery";
-    private static final String STATE_SUBMITTED = "searchSubmitted";
     private static final String STATE_SCOPE = "searchScope";
 
     private SearchView searchText;
@@ -54,7 +54,6 @@ public class SearchActivity extends AppCompatActivity {
     private Set<String> favouriteUids = Collections.emptySet();
     private boolean initialized;
     private boolean settingQuery;
-    private boolean hasSubmittedSearch;
     private SearchScope selectedScope = SearchScope.ALL;
     private Bundle restorationState;
 
@@ -77,7 +76,7 @@ public class SearchActivity extends AppCompatActivity {
         resultList = findViewById(R.id.resultList);
         initSearchBox();
         initFacetControls();
-        resetSearchPrompt();
+        showSearchLoading();
 
         StartupUiGate.bind(this, (readyCatalog, repository) -> {
             catalog = readyCatalog;
@@ -110,7 +109,9 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
         final String query = searchText.getQuery().toString();
-        if (hasSubmittedSearch && !MachineCatalog.isBlankSearchText(query)) {
+        if (MachineCatalog.isBlankSearchText(query)) {
+            resetSearchPrompt();
+        } else {
             performSearch(query.trim());
         }
     }
@@ -125,7 +126,9 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.searchAppleSNItem) {
+        if (itemId == R.id.searchHelpItem) {
+            showSearchHelp();
+        } else if (itemId == R.id.searchAppleSNItem) {
             LinkLoadingHelper.startBrowser("https://checkcoverage.apple.com/", this);
         } else if (itemId == R.id.searchEveryMacItem) {
             LinkLoadingHelper.startBrowser("https://everymac.com/ultimate-mac-lookup/", this);
@@ -135,12 +138,19 @@ public class SearchActivity extends AppCompatActivity {
         return true;
     }
 
+    private void showSearchHelp() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.search_help_title)
+                .setMessage(R.string.search_help_content)
+                .setPositiveButton(R.string.help_confirm, null)
+                .show();
+    }
+
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_QUERY,
                 searchText == null ? "" : searchText.getQuery().toString());
-        outState.putBoolean(STATE_SUBMITTED, hasSubmittedSearch);
         outState.putString(STATE_SCOPE, selectedScope.name());
     }
 
@@ -155,7 +165,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 searchText.clearFocus();
-                return startSearch(query);
+                return true;
             }
 
             @Override
@@ -163,11 +173,19 @@ public class SearchActivity extends AppCompatActivity {
                 if (settingQuery) {
                     return true;
                 }
-                hasSubmittedSearch = false;
-                selectedScope = SearchScope.ALL;
-                clearResults();
-                resetSearchPrompt();
-                return false;
+                final String input = newText.trim();
+                if (MachineCatalog.isBlankSearchText(input)) {
+                    selectedScope = SearchScope.ALL;
+                    clearResults();
+                    if (initialized) {
+                        resetSearchPrompt();
+                    } else {
+                        showSearchLoading();
+                    }
+                } else {
+                    performSearch(input);
+                }
+                return true;
             }
         });
     }
@@ -177,7 +195,6 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
         final String query = restorationState.getString(STATE_QUERY, "");
-        final boolean submitted = restorationState.getBoolean(STATE_SUBMITTED, false);
         final String scopeName = restorationState.getString(
                 STATE_SCOPE, SearchScope.ALL.name());
         restorationState = null;
@@ -188,8 +205,11 @@ public class SearchActivity extends AppCompatActivity {
             selectedScope = SearchScope.ALL;
         }
         setQuery(query);
-        if (submitted && !MachineCatalog.isBlankSearchText(query)) {
-            hasSubmittedSearch = true;
+        if (MachineCatalog.isBlankSearchText(query)) {
+            selectedScope = SearchScope.ALL;
+            clearResults();
+            resetSearchPrompt();
+        } else {
             performSearch(query.trim());
         }
     }
@@ -203,24 +223,9 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private boolean startSearch(final String rawInput) {
-        final String input = rawInput.trim();
-        if (MachineCatalog.isBlankSearchText(input)) {
-            hasSubmittedSearch = false;
-            selectedScope = SearchScope.ALL;
-            clearResults();
-            resetSearchPrompt();
-            return false;
-        }
-        hasSubmittedSearch = true;
-        performSearch(input);
-        return true;
-    }
-
     private void performSearch(final String input) {
         if (catalog == null || preferences == null) {
-            textResult.setText(R.string.search_loading);
-            textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
+            showSearchLoading();
             return;
         }
         final SearchScope requestedScope = selectedScope;
@@ -269,14 +274,17 @@ public class SearchActivity extends AppCompatActivity {
 
     private void clearResults() {
         resultListAdapter = null;
-        if (resultList != null) {
-            resultList.setAdapter(null);
-        }
+        resultList.setAdapter(null);
         hideFacetChips();
     }
 
     private void resetSearchPrompt() {
         textResult.setText(R.string.search_prompt);
+        textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
+    }
+
+    private void showSearchLoading() {
+        textResult.setText(R.string.search_loading);
         textResult.setTextColor(ContextCompat.getColor(this, R.color.colorDefaultText));
     }
 
@@ -301,11 +309,13 @@ public class SearchActivity extends AppCompatActivity {
         bindFacetButton(R.id.searchFacetGestaltId, SearchScope.GESTALT_ID);
         bindFacetButton(R.id.searchFacetPartNumber, SearchScope.PART_NUMBER);
         bindFacetButton(R.id.searchFacetEmcNumber, SearchScope.EMC_NUMBER);
+        bindFacetButton(R.id.searchFacetProcessor, SearchScope.PROCESSOR);
+        bindFacetButton(R.id.searchFacetIntroduction, SearchScope.INTRODUCTION);
     }
 
     private void bindFacetButton(final int viewId, final SearchScope scope) {
         searchFacetGroup.findViewById(viewId).setOnClickListener(unused -> {
-            if (!hasSubmittedSearch || scope == selectedScope) {
+            if (scope == selectedScope) {
                 return;
             }
             selectedScope = scope;
@@ -351,9 +361,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void hideFacetChips() {
-        if (searchFacetGroup == null || searchFacetContainer == null) {
-            return;
-        }
         searchFacetGroup.clearCheck();
         hideFacetButtons();
         searchFacetContainer.setVisibility(View.GONE);
@@ -383,6 +390,10 @@ public class SearchActivity extends AppCompatActivity {
                 return R.id.searchFacetPartNumber;
             case EMC_NUMBER:
                 return R.id.searchFacetEmcNumber;
+            case PROCESSOR:
+                return R.id.searchFacetProcessor;
+            case INTRODUCTION:
+                return R.id.searchFacetIntroduction;
             default:
                 throw new IllegalStateException("Unknown search scope " + scope);
         }

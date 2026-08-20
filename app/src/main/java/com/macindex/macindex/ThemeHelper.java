@@ -12,7 +12,10 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 
 import com.macindex.macindex.resources.LogoAsset;
+import com.macindex.macindex.catalog.CatalogFormatException;
 import com.macindex.macindex.userstate.Appearance;
+
+import java.io.IOException;
 
 class ThemeHelper {
 
@@ -36,8 +39,19 @@ class ThemeHelper {
     /** Catalog logos must be sampled; direct resource inflation can exhaust the API 23 heap. */
     static void setLogo(final Context context, final ImageView image,
                         final LogoAsset asset) {
-        image.setImageBitmap(BitmapLoadingHelper.decodeSampledBitmapFromResource(
-                context.getResources(), asset.drawableRes(), 200, 200));
+        final android.graphics.Bitmap logo;
+        try {
+            logo = BitmapLoadingHelper.decodeSampledBitmapFromAsset(
+                    context.getAssets(), asset.assetPath(), 200, 200);
+        } catch (IOException error) {
+            throw new CatalogFormatException(
+                    "Unable to open Catalog logo " + asset.assetPath(), error);
+        }
+        if (logo == null) {
+            throw new CatalogFormatException(
+                    "Unable to decode Catalog logo " + asset.assetPath());
+        }
+        image.setImageBitmap(logo);
         image.clearColorFilter();
         if (!isNight(context)) {
             return;

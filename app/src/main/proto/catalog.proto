@@ -4,11 +4,24 @@ package macindex.catalog;
 
 option java_package = "com.macindex.macindex.catalog.proto";
 option java_multiple_files = true;
-option optimize_for = LITE_RUNTIME;
 
 message CatalogPayload {
   repeated CatalogMachine machines = 1;
   repeated CatalogBrowseDefinition browse_definitions = 2;
+  repeated CatalogRetiredMachine retired_machines = 3;
+  repeated CatalogLogoAsset logo_assets = 4;
+  CatalogSearchLexicon search_lexicon = 5;
+}
+
+message CatalogRetiredMachine {
+  string uid = 1;
+  string previous_name = 2;
+  optional string replacement_uid = 3;
+}
+
+message CatalogLogoAsset {
+  string key = 1;
+  CatalogLogoNightTreatment night_treatment = 2;
 }
 
 message CatalogBrowseDefinition {
@@ -20,6 +33,15 @@ message CatalogBrowseGroup {
   string key = 1;
   string label = 2;
   optional string section_key = 3;
+  repeated string machine_uids = 4;
+}
+
+// Catalog-derived query vocabulary. Clients still own generic matching and ranking.
+message CatalogSearchLexicon {
+  repeated string phrase_candidates = 1;
+  repeated string atomic_phrases = 2;
+  repeated string compact_name_aliases = 3;
+  repeated string part_number_stems = 4;
 }
 
 message CatalogMachine {
@@ -55,8 +77,11 @@ message CatalogMachine {
   optional string expansion = 26;
   string design = 27;
   CatalogSupportStatus support_status = 28;
-  CatalogSoundProfile sound_profile = 29;
-  repeated CatalogExternalLink links = 30;
+  optional string startup_sound_key = 29;
+  optional string death_sound_key = 30;
+  repeated CatalogExternalLink links = 31;
+  string type_logo_key = 32;
+  repeated CatalogSearchValue derived_search_values = 33;
 }
 
 // One authored fact. The qualifier is displayed but is not part of search matching.
@@ -78,6 +103,18 @@ message CatalogTextRange {
   uint32 end_exclusive = 2;
 }
 
+// A search-only value compiled from Catalog facts and the finite alias tables.
+// It is generated, never maintained alongside the authored machine facts.
+message CatalogSearchValue {
+  string value = 1;
+  CatalogSearchField field = 2;
+  bool exact_token_only = 3;
+  CatalogSearchDisplayMapping display_mapping = 4;
+  optional string display_value = 5;
+  optional CatalogTextRange fixed_display_range = 6;
+  bool canonical_name = 7;
+}
+
 message CatalogExternalLink {
   string label = 1;
   string url = 2;
@@ -91,19 +128,23 @@ enum CatalogSupportStatus {
   CATALOG_SUPPORT_STATUS_NOT_APPLICABLE = 4;
 }
 
-enum CatalogSoundProfile {
-  CATALOG_SOUND_PROFILE_UNSPECIFIED = 0;
-  CATALOG_SOUND_PROFILE_MACINTOSH_128K = 1;
-  CATALOG_SOUND_PROFILE_MACINTOSH_II = 2;
-  CATALOG_SOUND_PROFILE_MACINTOSH_LC = 3;
-  CATALOG_SOUND_PROFILE_QUADRA = 4;
-  CATALOG_SOUND_PROFILE_QUADRA_AV = 5;
-  CATALOG_SOUND_PROFILE_POWER_MAC_6100 = 6;
-  CATALOG_SOUND_PROFILE_POWER_MAC_5000 = 7;
-  CATALOG_SOUND_PROFILE_POWER_MAC = 8;
-  CATALOG_SOUND_PROFILE_NEW_WORLD = 9;
-  CATALOG_SOUND_PROFILE_TWENTIETH_ANNIVERSARY = 10;
-  CATALOG_SOUND_PROFILE_POWERBOOK = 11;
-  CATALOG_SOUND_PROFILE_T2 = 12;
-  CATALOG_SOUND_PROFILE_NONE = 13;
+enum CatalogLogoNightTreatment {
+  CATALOG_LOGO_NIGHT_TREATMENT_UNSPECIFIED = 0;
+  CATALOG_LOGO_NIGHT_TREATMENT_DARKEN = 1;
+  CATALOG_LOGO_NIGHT_TREATMENT_WHITE_TINT = 2;
+  CATALOG_LOGO_NIGHT_TREATMENT_MONOCHROME = 3;
+}
+
+enum CatalogSearchField {
+  CATALOG_SEARCH_FIELD_UNSPECIFIED = 0;
+  CATALOG_SEARCH_FIELD_NAME = 1;
+  CATALOG_SEARCH_FIELD_INTRODUCTION = 2;
+  CATALOG_SEARCH_FIELD_PROCESSOR = 3;
+}
+
+enum CatalogSearchDisplayMapping {
+  CATALOG_SEARCH_DISPLAY_MAPPING_UNSPECIFIED = 0;
+  CATALOG_SEARCH_DISPLAY_MAPPING_DIRECT = 1;
+  CATALOG_SEARCH_DISPLAY_MAPPING_COMPACT_WHITESPACE = 2;
+  CATALOG_SEARCH_DISPLAY_MAPPING_FIXED = 3;
 }

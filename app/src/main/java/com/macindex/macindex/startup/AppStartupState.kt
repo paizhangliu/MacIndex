@@ -18,7 +18,7 @@ sealed interface AppStartupState {
     ) : AppStartupState
 
     enum class FailureKind {
-        CATALOG_ASSET,
+        CATALOG,
         USER_STATE,
     }
 }

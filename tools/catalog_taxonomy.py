@@ -50,8 +50,8 @@ def load_catalog_taxonomy(path):
     except (OSError, ValueError) as error:
         fail(f"Unable to read catalog taxonomy: {error}")
     if not isinstance(raw, dict) or set(raw) != {
-            "schema", "categories", "browse_definitions"
-    } or raw["schema"] != 2:
+            "categories", "browse_definitions"
+    }:
         fail("Illegal catalog taxonomy document")
 
     categories = raw["categories"]

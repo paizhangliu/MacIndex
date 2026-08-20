@@ -106,10 +106,7 @@ public class CommentActivity extends AppCompatActivity {
                             error -> ExceptionHelper.showUserStateWriteFailure(this, error,
                                     R.string.submenu_comments_clear,
                                     R.string.comments_clear_failed)));
-            clearWarningDialog.setNegativeButton(R.string.link_cancel,
-                    (dialogInterface, i) -> {
-                        // Cancelled, nothing to do.
-                    });
+            clearWarningDialog.setNegativeButton(R.string.link_cancel, null);
             clearWarningDialog.show();
         } else {
             return super.onOptionsItemSelected(item);
@@ -142,8 +139,6 @@ public class CommentActivity extends AppCompatActivity {
                 comments, catalog, sortByIntroduction, fixedNavigation, this));
         setAbleToManage(true);
         emptyLayout.setVisibility(View.GONE);
-        DebugHelper.log("CommentActivity", comments.size()
-                + " Machines loaded in the container.");
     }
 
     private void deleteComments() {
@@ -177,14 +172,11 @@ public class CommentActivity extends AppCompatActivity {
                             error -> ExceptionHelper.showUserStateWriteFailure(this, error,
                                     R.string.submenu_comments_delete,
                                     R.string.comments_delete_failed)));
-            deleteDialog.setNegativeButton(R.string.link_cancel, (dialog, which) -> {
-                // Cancelled, do nothing.
-            });
+            deleteDialog.setNegativeButton(R.string.link_cancel, null);
         deleteDialog.show();
     }
 
     private void setAbleToManage(final boolean newStatus) {
-        DebugHelper.log("CommentActivity", "isAbleToManage set to " + newStatus);
         isAbleToManage = newStatus;
         if (manageCommentsItem != null && clearCommentsItem != null) {
             manageCommentsItem.setEnabled(newStatus);

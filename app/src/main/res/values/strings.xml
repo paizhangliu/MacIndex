@@ -1,13 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">MacIndex</string>
     <string name="brand_everymac" translatable="false">EveryMac</string>
-    <string name="information_specs_full">Tap the top image to play the startup and death sounds</string>
-    <string name="information_specs_no_death">Tap the top image to play the startup sound</string>
     <string name="information_specs_no_sound">This machine has no startup or death sounds</string>
-    <string name="information_specs_view_image">Press and hold the top image to view it full size</string>
-    <string name="information_specs_copy_info">Press and hold any entry to copy its information</string>
-    <string name="information_specs_everymac">Tap below to access more specifications</string>
-    <string name="information_compare_open_specs">Tap a machine name to open its Specifications page</string>
     <string name="information_specs_high_vol_warning">The current volume is high. Continue playback?\nTap \"Play Anyway\" to dismiss this warning temporarily.\nYou can disable this warning in Preferences.</string>
     <string name="setting_sort_comment">Bookmark/Comment Sorting</string>
     <string name="setting_sort_comment_description">Sort bookmarks and comments by introduction date rather than by the order in which they were added.</string>
@@ -22,8 +16,27 @@
     <string name="user_data_export_failed">Unable to export user data</string>
     <string name="user_data_import_invalid">This is not a valid MacIndex user data file</string>
     <string name="user_data_import_failed">Unable to read user data</string>
-    <string name="user_data_import_information">This file contains %1$d comments, %2$d bookmarks in %3$d folders, and %4$d machines in the compare list. Importing will replace the corresponding user data currently stored on this device.</string>
-    <string name="user_data_import_removed">%1$d items no longer match the current machine catalog and will be removed during import.</string>
+    <string name="user_data_import_information">This file contains %1$s, %2$s in %3$s, and %4$s in the compare list. Importing will replace the corresponding user data currently stored on this device.</string>
+    <plurals name="user_data_import_comment_count">
+        <item quantity="one">%1$d comment</item>
+        <item quantity="other">%1$d comments</item>
+    </plurals>
+    <plurals name="user_data_import_bookmark_count">
+        <item quantity="one">%1$d bookmark</item>
+        <item quantity="other">%1$d bookmarks</item>
+    </plurals>
+    <plurals name="user_data_import_folder_count">
+        <item quantity="one">%1$d folder</item>
+        <item quantity="other">%1$d folders</item>
+    </plurals>
+    <plurals name="user_data_import_machine_count">
+        <item quantity="one">%1$d machine</item>
+        <item quantity="other">%1$d machines</item>
+    </plurals>
+    <plurals name="user_data_import_removed">
+        <item quantity="one">%1$d item no longer matches the current machine catalog and will be removed during import.</item>
+        <item quantity="other">%1$d items no longer match the current machine catalog and will be removed during import.</item>
+    </plurals>
     <string name="user_data_import_success">User data imported</string>
     <string name="user_data_choose_location">Choose Another Location</string>
     <string name="user_data_choose_file">Choose Another File</string>
@@ -56,7 +69,7 @@
     <string name="setting_section_browsing">Browsing</string>
     <string name="setting_section_sound">Sound</string>
     <string name="setting_section_data">Data &amp; State</string>
-    <string name="search_hint">Machine name, codename, or identifiers</string>
+    <string name="search_hint">Tap ? in the top-right for search help</string>
     <string name="search_noResult">No results for “%1$s”</string>
     <plurals name="search_results">
         <item quantity="one">%d result</item>
@@ -70,13 +83,22 @@
     <string name="search_field_gestalt_id">Gestalt ID</string>
     <string name="search_field_part_number">Part Number</string>
     <string name="search_field_emc_number">EMC Number</string>
+    <string name="search_field_processor">Processor</string>
+    <string name="search_field_introduction">Introduction</string>
     <string name="search_result_field_prefix">%1$s:\u0020</string>
     <string name="search_facet_all">All</string>
     <string name="search_facet_with_count">%1$s (%2$d)</string>
     <string name="machine_row_accessibility">%1$s. %2$s</string>
     <string name="machine_row_accessibility_favourite">%1$s. Bookmarked. %2$s</string>
-    <string name="search_prompt">Tap the Search key to search</string>
+    <string name="search_prompt">Start typing to search</string>
     <string name="search_loading">Loading…</string>
+    <string name="search_help_title">Search Help</string>
+    <string name="search_help_content">You can search for:\n\n• Machine names, common abbreviations, and compact forms, such as MacBook Pro, MBP, and MBP2014\n• Codenames, such as Gossamer and J185\n• Model Numbers, Model Identifiers, Gestalt IDs, Part Numbers, and EMC Numbers, such as A1278, MacBookPro18,3, 313, MC700CH/A, and 3442\n• Processor families, generations, Intel codenames, and models, such as M1 Pro, Haswell, SNB, 4960HQ, and T7700\n• Complete introduction years, such as 2014\n\nYou can combine multiple terms, such as iMac M4, MacBook Air M2, and J185 iMac20,1.</string>
+    <string name="specs_help_title">Specifications Help</string>
+    <string name="specs_help_content">• Tap the top image to play available startup or death sounds\n• Press and hold the top image to view it full size\n• Press and hold any specification to copy it\n• Tap the EveryMac logo for more information</string>
+    <string name="compare_help_title">Compare Help</string>
+    <string name="compare_help_content">• Tap a machine name to open its Specifications page\n• Tap a machine image to play available startup or death sounds\n• Press and hold a machine image to view it full size\n• Press and hold any specification to copy the comparison\n• Tap the EveryMac logo for more information</string>
+    <string name="help_confirm">OK</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
     <string name="menu_random_limited_label">I\'m Feeling Lucky (Limited)</string>
@@ -164,7 +186,7 @@
     <string name="link_message">Multiple configurations are available for this machine. Select one to continue.</string>
     <string name="link_not_available">EveryMac information is unavailable for this machine, possibly because it was region-specific or built to order.</string>
     <string name="startup_failure_title">MacIndex Could Not Start</string>
-    <string name="startup_catalog_failure_information">The built-in machine catalog could not be loaded. Update or reinstall MacIndex. Your saved data was not changed.</string>
+    <string name="startup_catalog_failure_information">The machine catalog could not be loaded. Restart MacIndex. If the problem continues, update or reinstall the app.</string>
     <string name="startup_user_state_failure_information">Your saved data could not be read. It was not deleted. Restart MacIndex and check available device storage if the problem continues.</string>
     <string name="user_state_unavailable_title">Saved Data Unavailable</string>
     <string name="user_state_read_failure_information">MacIndex can no longer access your saved data. Restart MacIndex before making further changes.</string>
@@ -172,7 +194,7 @@
     <string name="copy_failed_information">The text could not be copied to the clipboard. Please try again.</string>
     <string name="copy_not_available">Nothing available to copy</string>
     <string name="upgrade_report_title">Saved Data Updated</string>
-    <string name="upgrade_report_information">Some saved data was invalid or no longer matched the current machine catalog and was removed. You can copy the details below for your records.</string>
+    <string name="upgrade_report_information">Some saved data could not be moved to the current machine catalog and was removed. You can copy the details below for your records.</string>
     <string name="upgrade_report_copy_button">Copy Details</string>
     <string name="upgrade_report_copy_information">Removed items copied</string>
     <string name="upgrade_report_empty_entry">(Empty entry)</string>
@@ -238,7 +260,6 @@
     <string name="main_browse_save_failed">MacIndex could not save the main page state. Check available device storage, then try again.</string>
     <string name="setting_appearance_save_failed">MacIndex could not save the appearance setting. Check available device storage, then try again.</string>
     <string name="setting_save_failed">MacIndex could not save this setting. Check available device storage, then try again.</string>
-    <string name="viewimage_rotate">Image for reference only\nRotate your device to change the orientation</string>
     <string-array name="share_menu">
         <item>Copy Model Identifiers</item>
         <item>Copy All Specifications</item>

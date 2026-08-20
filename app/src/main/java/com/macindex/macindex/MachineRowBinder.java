@@ -246,6 +246,10 @@ final class MachineRowBinder {
                 return R.string.search_field_part_number;
             case EMC_NUMBER:
                 return R.string.search_field_emc_number;
+            case PROCESSOR:
+                return R.string.search_field_processor;
+            case INTRODUCTION:
+                return R.string.search_field_introduction;
             default:
                 throw new IllegalStateException("Unknown search field " + field);
         }

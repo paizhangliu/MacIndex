@@ -29,6 +29,7 @@ android {
     }
 
     androidResources {
+        // MediaPlayer.openFd() requires catalog audio to remain uncompressed in the APK.
         noCompress += ['flac']
     }
 
@@ -64,83 +65,90 @@ dependencies {
 
 def catalogMachines = rootProject.file('catalog/machines')
 def catalogUidSequence = rootProject.file('catalog/machine_uid_sequence')
-def catalogAssets = file('src/main/assets')
+def retiredCatalogMachines = rootProject.file('catalog/retired_machines.toml')
+def catalogResources = rootProject.file('catalog/resources')
 def generatedCatalogAssets = file("${layout.buildDirectory.get()}/generated/catalog/assets")
-def generatedCatalog = new File(generatedCatalogAssets, 'catalog.pb')
 def generatedCatalogSource = file("${layout.buildDirectory.get()}/generated/catalog/source")
 def generatedCatalogTextProto = new File(generatedCatalogSource, 'catalog.textproto')
+def generatedCatalog = new File(generatedCatalogSource, 'catalog.pb')
 def protoSources = file('src/main/proto')
 def catalogProto = file('src/main/proto/catalog.proto')
 def generatedProtoJava = file("${layout.buildDirectory.get()}/generated/source/proto/main/java")
 def resourceManifest = rootProject.file('catalog/resource_manifest.json')
 def catalogTaxonomy = rootProject.file('catalog/taxonomy.json')
+def catalogSearchAliases = rootProject.file('catalog/search_aliases.json')
 def normalizationGolden = rootProject.file('tools/tests/fixtures/normalization_golden.json')
-def textRangeGolden = rootProject.file('tools/tests/fixtures/text_range_golden.json')
 def legacyMachineNames = rootProject.file('catalog/old_machine_names.json')
-def generatedResourceJava = file("${layout.buildDirectory.get()}/generated/source/catalogResources/main/java")
-def generatedResourceRegistry = new File(generatedResourceJava,
-        'com/macindex/macindex/resources/MachineResourceRegistry.java')
 
 def normalizedOs = System.getProperty('os.name').toLowerCase(Locale.ROOT)
 def normalizedArch = System.getProperty('os.arch').toLowerCase(Locale.ROOT)
 def configuredPython = findProperty('macindexPython') ?: System.getenv('MACINDEX_PYTHON')
-def pythonCandidates = configuredPython ? [configuredPython.toString()] : []
-if (!configuredPython && normalizedOs.contains('mac')) {
-    pythonCandidates.addAll(['/opt/homebrew/bin/python3', '/usr/local/bin/python3'])
-}
-if (!configuredPython) {
-    pythonCandidates.addAll(['python3', 'python'])
-}
-def pythonExecutable = pythonCandidates.find { candidate ->
-    try {
-        def check = new ProcessBuilder(candidate, '-c',
-                'import sys, tomllib; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)')
-                .redirectErrorStream(true)
-                .start()
-        check.inputStream.text
-        return check.waitFor() == 0
-    } catch (IOException ignored) {
-        return false
+def resolvedPythonExecutable
+def requirePythonExecutable = {
+    if (resolvedPythonExecutable != null) {
+        return resolvedPythonExecutable
     }
-}
-if (pythonExecutable == null) {
-    def configurationHint = configuredPython
-            ? "Configured Python is unavailable or older than 3.11: ${configuredPython}"
-            : 'No Python 3.11+ interpreter was found'
-    throw new GradleException("${configurationHint}. Set -PmacindexPython=/path/to/python3 "
-            + 'or the MACINDEX_PYTHON environment variable.')
+    def candidates = configuredPython ? [configuredPython.toString()] : []
+    if (!configuredPython && normalizedOs.contains('mac')) {
+        candidates.addAll(['/opt/homebrew/bin/python3', '/usr/local/bin/python3'])
+    }
+    if (!configuredPython) {
+        candidates.addAll(['python3', 'python'])
+    }
+    resolvedPythonExecutable = candidates.find { candidate ->
+        try {
+            def check = new ProcessBuilder(candidate, '-c',
+                    'import sys, tomllib; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)')
+                    .redirectErrorStream(true)
+                    .start()
+            check.inputStream.text
+            return check.waitFor() == 0
+        } catch (IOException ignored) {
+            return false
+        }
+    }
+    if (resolvedPythonExecutable == null) {
+        def configurationHint = configuredPython
+                ? "Configured Python is unavailable or older than 3.11: ${configuredPython}"
+                : 'No Python 3.11+ interpreter was found'
+        throw new GradleException("${configurationHint}. Set -PmacindexPython=/path/to/python3 "
+                + 'or the MACINDEX_PYTHON environment variable.')
+    }
+    return resolvedPythonExecutable
 }
 def protocOs = normalizedOs.contains('mac') ? 'osx' :
         (normalizedOs.contains('win') ? 'windows' :
                 (normalizedOs.contains('linux') ? 'linux' : null))
 def protocArch = (normalizedArch == 'aarch64' || normalizedArch == 'arm64') ? 'aarch_64' :
         ((normalizedArch == 'x86_64' || normalizedArch == 'amd64') ? 'x86_64' : null)
-if (protocOs == null || protocArch == null) {
-    throw new GradleException("Unsupported protoc host ${normalizedOs}/${normalizedArch}")
-}
-def protocClassifier = "${protocOs}-${protocArch}"
+def protocClassifier = protocOs != null && protocArch != null
+        ? "${protocOs}-${protocArch}" : null
 
 configurations {
     protocCompiler
 }
 
 dependencies {
-    protocCompiler "com.google.protobuf:protoc:${protobufVersion}:${protocClassifier}@exe"
+    if (protocClassifier != null) {
+        protocCompiler "com.google.protobuf:protoc:${protobufVersion}:${protocClassifier}@exe"
+    }
 }
 
-def catalogResourceFiles = files(
-        fileTree('src/main/res/drawable-nodpi') { include '*.webp' },
-        fileTree('src/main/res/raw') { include '*.flac' })
+def requireProtocCompiler = {
+    if (protocClassifier == null) {
+        throw new GradleException("Unsupported protoc host ${normalizedOs}/${normalizedArch}")
+    }
+    return configurations.protocCompiler.singleFile
+}
 
 android.sourceSets.main.assets.srcDir(generatedCatalogAssets)
 android.sourceSets.main.java.srcDir(generatedProtoJava)
-android.sourceSets.main.java.srcDir(generatedResourceJava)
 
 def generateProtoLite = tasks.register('generateProtoLite', Exec) {
     inputs.files(fileTree(protoSources) { include '**/*.proto' })
     outputs.dir(generatedProtoJava)
     doFirst {
-        def compiler = configurations.protocCompiler.singleFile
+        def compiler = requireProtocCompiler()
         if (!normalizedOs.contains('win') && !compiler.setExecutable(true)) {
             throw new GradleException("Unable to make protoc executable: ${compiler}")
         }
@@ -153,42 +161,33 @@ def generateProtoLite = tasks.register('generateProtoLite', Exec) {
     }
 }
 
-def generateMachineResourceRegistry = tasks.register(
-        'generateMachineResourceRegistry', Exec) {
-    inputs.file(resourceManifest)
-    inputs.file(rootProject.file('tools/generate_resource_registry.py'))
-    inputs.files(catalogResourceFiles)
-    outputs.file(generatedResourceRegistry)
-    doFirst {
-        commandLine pythonExecutable, rootProject.file('tools/generate_resource_registry.py'),
-                '--manifest', resourceManifest,
-                '--resources-root', file('src/main/res'),
-                '--output', generatedResourceRegistry
-    }
-}
-
 def generateCatalogTextProto = tasks.register('generateCatalogTextProto', Exec) {
     inputs.dir(catalogMachines)
     inputs.file(catalogUidSequence)
+    inputs.file(retiredCatalogMachines)
     inputs.file(rootProject.file('tools/generate_catalog.py'))
     inputs.file(rootProject.file('tools/catalog_source.py'))
-    inputs.file(rootProject.file('tools/generate_resource_registry.py'))
+    inputs.file(rootProject.file('tools/catalog_resources.py'))
+    inputs.file(rootProject.file('tools/catalog_search.py'))
     inputs.file(rootProject.file('tools/catalog_taxonomy.py'))
     inputs.file(resourceManifest)
     inputs.file(catalogTaxonomy)
+    inputs.file(catalogSearchAliases)
     inputs.file(legacyMachineNames)
-    inputs.dir(file('src/main/assets/machines'))
+    inputs.dir(catalogResources)
     outputs.file(generatedCatalogTextProto)
     doFirst {
         generatedCatalogSource.mkdirs()
+        commandLine requirePythonExecutable(), rootProject.file('tools/generate_catalog.py'),
+                '--machines', catalogMachines,
+                '--assets-root', catalogResources,
+                '--retired-machines', retiredCatalogMachines,
+                '--resource-manifest', resourceManifest,
+                '--taxonomy', catalogTaxonomy,
+                '--legacy-names', legacyMachineNames,
+                '--search-aliases', catalogSearchAliases,
+                '--output', generatedCatalogTextProto
     }
-    commandLine pythonExecutable, rootProject.file('tools/generate_catalog.py'),
-            '--machines', catalogMachines,
-            '--assets-root', catalogAssets,
-            '--resource-manifest', resourceManifest,
-            '--taxonomy', catalogTaxonomy,
-            '--legacy-names', legacyMachineNames,
-            '--output', generatedCatalogTextProto
 }
 
 def generateCatalog = tasks.register('generateCatalog') {
@@ -199,15 +198,15 @@ def generateCatalog = tasks.register('generateCatalog') {
     inputs.property('protobufVersion', protobufVersion)
     outputs.file(generatedCatalog)
     doLast {
-        generatedCatalogAssets.mkdirs()
-        def compiler = configurations.protocCompiler.singleFile
+        generatedCatalogSource.mkdirs()
+        def compiler = requireProtocCompiler()
         if (!normalizedOs.contains('win') && !compiler.setExecutable(true)) {
             throw new GradleException("Unable to make protoc executable: ${compiler}")
         }
         def temporaryCatalog = File.createTempFile(
-                '.catalog.pb.', '.tmp', generatedCatalogAssets)
+                '.catalog.pb.', '.tmp', generatedCatalogSource)
         def diagnosticOutput = File.createTempFile(
-                '.catalog.pb.stderr.', '.tmp', generatedCatalogAssets)
+                '.catalog.pb.stderr.', '.tmp', generatedCatalogSource)
         try {
             def command = [
                     compiler.absolutePath,
@@ -238,31 +237,48 @@ def generateCatalog = tasks.register('generateCatalog') {
                         temporaryCatalog.toPath(), generatedCatalog.toPath(),
                         java.nio.file.StandardCopyOption.REPLACE_EXISTING)
             }
-            def digest = java.security.MessageDigest.getInstance('SHA-256')
-                    .digest(payload).encodeHex().toString()
             println("Encoded catalog with pinned protoc ${protobufVersion}, "
-                    + "${payload.length} bytes, SHA-256 ${digest}.")
+                    + "${payload.length} bytes.")
         } finally {
             delete(temporaryCatalog, diagnosticOutput)
         }
     }
 }
 
+def prepareCatalogAssets = tasks.register('prepareCatalogAssets', Sync) {
+    dependsOn generateCatalog
+    inputs.file(generatedCatalog)
+    inputs.dir(catalogResources)
+    into generatedCatalogAssets
+    from(generatedCatalog) {
+        into 'catalog'
+    }
+    from(catalogResources) {
+        into 'catalog'
+        include 'machines/*.webp'
+        include 'logos/*.webp'
+        include 'sounds/*.flac'
+    }
+}
+
 def testCatalogTools = tasks.register('testCatalogTools', Exec) {
     inputs.files(rootProject.file('tools/catalog_source.py'),
             rootProject.file('tools/catalog_taxonomy.py'),
-            rootProject.file('tools/generate_resource_registry.py'))
+            rootProject.file('tools/catalog_resources.py'),
+            rootProject.file('tools/catalog_search.py'))
     inputs.files(fileTree(rootProject.file('tools/tests')) {
         include '**/*.py'
         include '**/*.json'
     })
-    commandLine pythonExecutable, '-m', 'unittest', 'discover',
-            '-s', rootProject.file('tools/tests'), '-p', 'test_*.py'
+    doFirst {
+        commandLine requirePythonExecutable(), '-m', 'unittest', 'discover',
+                '-s', rootProject.file('tools/tests'), '-p', 'test_*.py'
+    }
 }
 
 tasks.configureEach {
     if (name == 'preDebugBuild' || name == 'preReleaseBuild') {
-        dependsOn generateCatalog, generateProtoLite, generateMachineResourceRegistry
+        dependsOn prepareCatalogAssets, generateProtoLite
     }
     if (name == 'check') {
         dependsOn testCatalogTools
@@ -271,9 +287,8 @@ tasks.configureEach {
 
 tasks.withType(Test).configureEach {
     dependsOn generateCatalog
-    inputs.files(normalizationGolden, textRangeGolden)
+    inputs.file(normalizationGolden)
     systemProperty 'macindex.catalog.path', generatedCatalog.absolutePath
     systemProperty 'macindex.catalog.legacyNames.path', legacyMachineNames.absolutePath
     systemProperty 'macindex.catalog.normalization.path', normalizationGolden.absolutePath
-    systemProperty 'macindex.catalog.textRange.path', textRangeGolden.absolutePath
 }

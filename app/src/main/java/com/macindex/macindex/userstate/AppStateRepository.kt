@@ -294,11 +294,10 @@ class AppStateRepository(
 
     suspend fun prepareImport(
         raw: String,
-        resolver: MachineNameResolver,
+        resolver: MachineUidResolver,
     ): PreparedUserDataImport = UserDataJsonCodec.prepareImport(raw, resolver)
 
     suspend fun applyImport(imported: PreparedUserDataImport): UserState {
-        UserStateValidator.validateLibrary(imported.library)
         return update { state ->
             var nextFolderId = state.library.nextFavouriteFolderId
             val rekeyedFolders = imported.library.favouriteFolders.map { folder ->
@@ -318,9 +317,19 @@ class AppStateRepository(
 
     suspend fun exportJson(): String = UserDataJsonCodec.export(snapshot())
 
-    suspend fun reconcile(resolver: MachineNameResolver) {
+    suspend fun registerAppVersion(
+        appVersionCode: Int,
+        resolver: MachineUidResolver,
+    ) {
+        require(appVersionCode > 0)
         update { state ->
-            UserStateReconciler.reconcile(state, resolver).state
+            if (state.registeredAppVersionCode >= appVersionCode) {
+                state
+            } else {
+                UserStateReconciler.reconcile(state, resolver).state.copy(
+                    registeredAppVersionCode = appVersionCode,
+                )
+            }
         }
     }
 

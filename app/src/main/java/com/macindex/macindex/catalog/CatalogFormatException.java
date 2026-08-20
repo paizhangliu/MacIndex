@@ -1,6 +1,6 @@
 package com.macindex.macindex.catalog;
 
-/** Indicates that the trusted catalog bundled with the application is invalid. */
+/** Indicates that the Catalog bundled with this app cannot be used. */
 public final class CatalogFormatException extends IllegalStateException {
 
     public CatalogFormatException(final String message) {

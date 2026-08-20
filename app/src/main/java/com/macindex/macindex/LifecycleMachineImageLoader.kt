@@ -8,7 +8,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.macindex.macindex.catalog.Machine
 import com.macindex.macindex.catalog.CatalogFormatException
-import com.macindex.macindex.resources.MachineAssetLoader
+import com.macindex.macindex.resources.MachineResourceLoader
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
@@ -49,11 +50,18 @@ class LifecycleMachineImageLoader(
                 var bitmap: Bitmap? = null
                 var decodeFailure: CatalogFormatException? = null
                 try {
-                    bitmap = MachineAssetLoader.loadPicture(
+                    val pictureAsset = MachineResourceLoader.pictureAsset(machine)
+                    bitmap = BitmapLoadingHelper.decodeSampledBitmapFromAsset(
                         assets,
-                        machine,
+                        pictureAsset,
                         requestedWidth,
                         requestedHeight,
+                    ) ?: throw CatalogFormatException(
+                        "Unable to decode picture for ${machine.uid()} at $pictureAsset",
+                    )
+                } catch (error: IOException) {
+                    decodeFailure = CatalogFormatException(
+                        "Unable to open picture for ${machine.uid()}", error,
                     )
                 } catch (error: CatalogFormatException) {
                     decodeFailure = error

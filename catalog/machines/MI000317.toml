@@ -61,7 +61,6 @@ design = '''
 1.73" H x 17.6" W x 30" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Xserve Xeon 2 GHz Quad Core (Late 2006)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.0-quad-specs.html" },
   { label = "Xserve Xeon 2.66 GHz Quad Core (Late 2006)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.66-quad-specs.html" },

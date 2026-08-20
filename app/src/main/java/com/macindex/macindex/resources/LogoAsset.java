@@ -1,32 +1,24 @@
 package com.macindex.macindex.resources;
 
-import androidx.annotation.DrawableRes;
+import com.macindex.macindex.catalog.LogoNightTreatment;
 
-/** Generated-registry value describing one logo resource and its night rendering policy. */
+/** One logo asset and its Catalog-authored night rendering policy. */
 public final class LogoAsset {
 
-    public enum NightTreatment {
-        DARKEN,
-        WHITE_TINT,
-        MONOCHROME
+    private final String assetPath;
+    private final LogoNightTreatment nightTreatment;
+
+    LogoAsset(final String thisAssetPath,
+              final LogoNightTreatment thisNightTreatment) {
+        assetPath = thisAssetPath;
+        nightTreatment = thisNightTreatment;
     }
 
-    @DrawableRes
-    private final int drawableRes;
-    private final NightTreatment nightTreatment;
-
-    LogoAsset(@DrawableRes final int drawableRes,
-              final NightTreatment nightTreatment) {
-        this.drawableRes = drawableRes;
-        this.nightTreatment = nightTreatment;
+    public String assetPath() {
+        return assetPath;
     }
 
-    @DrawableRes
-    public int drawableRes() {
-        return drawableRes;
-    }
-
-    public NightTreatment nightTreatment() {
+    public LogoNightTreatment nightTreatment() {
         return nightTreatment;
     }
 }

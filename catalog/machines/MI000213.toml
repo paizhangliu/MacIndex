@@ -61,7 +61,6 @@ design = '''
 1.73" H x 17.6" W x 28" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Xserve G5/2.0 (January 2005)", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g5_2.0.html" },
   { label = "Xserve G5/2.3 DP", url = "https://everymac.com/systems/apple/xserve/specs/xserve_g5_2.3_dp.html" },

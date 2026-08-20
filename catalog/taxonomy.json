@@ -1,5 +1,4 @@
 {
-  "schema": 2,
   "categories": [
     {"key": "compact_mac", "manufacturer": "apple68k", "product_type": "compact_mac"},
     {"key": "mac_ii", "manufacturer": "apple68k", "product_type": "mac_ii"},

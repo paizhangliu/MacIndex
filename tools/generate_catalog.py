@@ -3,19 +3,28 @@
 """Compile human-owned machine TOML files into deterministic catalog textproto."""
 
 import argparse
-import hashlib
 import json
 import tempfile
 from pathlib import Path
 
+try:
+    import tomllib
+except ModuleNotFoundError as error:
+    raise SystemExit("MacIndex catalog tooling requires Python 3.11 or newer.") from error
+
 from catalog_taxonomy import load_catalog_taxonomy
 from catalog_source import (
+    MACHINE_UID,
     load_picture_assets,
     load_validated_machines,
-    normalize_search_text,
     validate_legacy_machine_names,
 )
-from generate_resource_registry import load_resource_manifest
+from catalog_resources import load_resource_manifest, validate_catalog_resources
+from catalog_search import (
+    compile_derived_search_values,
+    compile_search_lexicon,
+    load_search_aliases,
+)
 
 
 SUPPORT_ENUMS = {
@@ -25,6 +34,11 @@ SUPPORT_ENUMS = {
     "N/A": "CATALOG_SUPPORT_STATUS_NOT_APPLICABLE",
 }
 
+LOGO_NIGHT_ENUMS = {
+    "DARKEN": "CATALOG_LOGO_NIGHT_TREATMENT_DARKEN",
+    "WHITE_TINT": "CATALOG_LOGO_NIGHT_TREATMENT_WHITE_TINT",
+    "MONOCHROME": "CATALOG_LOGO_NIGHT_TREATMENT_MONOCHROME",
+}
 
 def fail(message):
     raise RuntimeError(message)
@@ -57,6 +71,7 @@ class TextProtoWriter:
 
 
 def browse_definitions(taxonomy, machines):
+    ordered_machines = sorted(machines, key=_earliest_introduction)
     definitions = []
     for grouping_key, definition in taxonomy["browse_definitions"].items():
         definitions.append({
@@ -65,6 +80,10 @@ def browse_definitions(taxonomy, machines):
                 "key": group["key"],
                 "label": group["label"],
                 "section_key": group["section_key"],
+                "machine_uids": tuple(
+                    machine["uid"] for machine in ordered_machines
+                    if _matches_browse_group(machine, grouping_key, group["key"])
+                ),
             } for group in definition["groups"]),
         })
     years = sorted({
@@ -76,9 +95,30 @@ def browse_definitions(taxonomy, machines):
         "key": "years",
         "groups": tuple({
             "key": str(year), "label": str(year), "section_key": None,
+            "machine_uids": tuple(
+                machine["uid"] for machine in ordered_machines
+                if _matches_browse_group(machine, "years", str(year))
+            ),
         } for year in years),
     })
     return tuple(definitions)
+
+
+def _earliest_introduction(machine):
+    return min(
+        (introduction["year"], introduction["month"])
+        for introduction in machine["introductions"]
+    )
+
+
+def _matches_browse_group(machine, grouping, key):
+    if grouping == "names":
+        return machine["product_type_key"] == key
+    if grouping == "processors":
+        return key in machine["processor_family_keys"]
+    if grouping == "years":
+        return any(str(value["year"]) == key for value in machine["introductions"])
+    fail(f'Unknown browse grouping "{grouping}"')
 
 
 def write_strings(writer, indent, field_name, values):
@@ -120,11 +160,30 @@ def write_identity_values(writer, indent, field_name, entries):
         )
 
 
+def write_search_value(writer, indent, value):
+    writer.string(indent, "value", value["value"])
+    writer.scalar(indent, "field", value["field"])
+    if value["exact_token_only"]:
+        writer.scalar(indent, "exact_token_only", "true")
+    writer.scalar(indent, "display_mapping", value["display_mapping"])
+    if value["display_value"] is not None:
+        writer.string(indent, "display_value", value["display_value"])
+    if value["fixed_display_range"] is not None:
+        start, end = value["fixed_display_range"]
+        writer.message(
+            indent, "fixed_display_range",
+            lambda child_indent: write_range(writer, child_indent, start, end),
+        )
+    if value["canonical_name"]:
+        writer.scalar(indent, "canonical_name", "true")
+
+
 def write_machine(writer, indent, machine):
     writer.string(indent, "uid", machine["uid"])
     writer.string(indent, "manufacturer_key", machine["manufacturer_key"])
     writer.string(indent, "product_type_key", machine["product_type_key"])
     writer.string(indent, "picture_asset_key", machine["picture_asset_key"])
+    writer.string(indent, "type_logo_key", machine["type_logo_key"])
     write_identity_values(writer, indent, "names", machine["names"])
     for introduction in machine["introductions"]:
         writer.message(
@@ -175,15 +234,21 @@ def write_machine(writer, indent, machine):
             writer.string(indent, field_name, machine[field_name])
     writer.string(indent, "design", machine["design"])
     writer.scalar(indent, "support_status", SUPPORT_ENUMS[machine["support_status"]])
-    if machine["sound_profile"] is not None:
-        writer.scalar(
-            indent, "sound_profile",
-            "CATALOG_SOUND_PROFILE_" + machine["sound_profile"],
-        )
+    if machine["startup_sound_key"] is not None:
+        writer.string(indent, "startup_sound_key", machine["startup_sound_key"])
+    if machine["death_sound_key"] is not None:
+        writer.string(indent, "death_sound_key", machine["death_sound_key"])
     for link in machine["links"]:
         writer.message(
             indent, "links",
             lambda child_indent, value=link: write_link(writer, child_indent, value),
+        )
+    for value in machine["derived_search_values"]:
+        writer.message(
+            indent, "derived_search_values",
+            lambda child_indent, item=value: write_search_value(
+                writer, child_indent, item
+            ),
         )
 
 
@@ -192,6 +257,7 @@ def write_browse_group(writer, indent, group):
     writer.string(indent, "label", group["label"])
     if group["section_key"]:
         writer.string(indent, "section_key", group["section_key"])
+    write_strings(writer, indent, "machine_uids", group["machine_uids"])
 
 
 def write_browse_definition(writer, indent, definition):
@@ -205,20 +271,115 @@ def write_browse_definition(writer, indent, definition):
         )
 
 
-def compile_catalog_textproto(machines_root, assets_root,
+def load_retired_machines(path, active_uids):
+    try:
+        document = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        fail(f"Unable to read retired machine table: {error}")
+    if not isinstance(document, dict) or set(document) != {"retired_machines"}:
+        fail("Illegal retired machine document")
+
+    retired = document["retired_machines"]
+    if not isinstance(retired, list):
+        fail("Illegal retired machine table")
+    retired_uids = set()
+    normalized_retired = []
+    for index, entry in enumerate(retired):
+        if not isinstance(entry, dict) or set(entry) not in (
+                {"uid", "previous_name"},
+                {"uid", "previous_name", "replacement_uid"}):
+            fail(f"Illegal retired machine {index}")
+        uid = entry["uid"]
+        previous_name = entry["previous_name"]
+        replacement_uid = entry.get("replacement_uid")
+        if not isinstance(uid, str) or MACHINE_UID.fullmatch(uid) is None \
+                or uid in active_uids or uid in retired_uids:
+            fail(f'Illegal retired machine UID "{uid}"')
+        if not isinstance(previous_name, str) or not previous_name \
+                or previous_name != previous_name.strip():
+            fail(f"Illegal retired machine name for {uid}")
+        if replacement_uid is not None and (
+                not isinstance(replacement_uid, str)
+                or replacement_uid not in active_uids):
+            fail(f"Illegal replacement UID for {uid}")
+        retired_uids.add(uid)
+        normalized_retired.append({
+            "uid": uid,
+            "previous_name": previous_name,
+            "replacement_uid": replacement_uid,
+        })
+    return tuple(normalized_retired)
+
+
+def resolve_machine_resources(machine, resource_manifest):
+    resolved = dict(machine)
+    resolved["type_logo_key"] = resource_manifest["manufacturer_type_logos"][
+        machine["manufacturer_key"]
+    ]
+    resolved["processor_logo_keys"] = tuple(
+        resource
+        for semantic_key in machine["processor_logo_keys"]
+        for resource in resource_manifest["processor_logos"][semantic_key]
+    )
+    resolved["graphics_logo_keys"] = tuple(
+        resource
+        for semantic_key in machine["graphics_logo_keys"]
+        for resource in resource_manifest["graphics_logos"][semantic_key]
+    )
+    sound_profile = machine["sound_profile"]
+    sounds = resource_manifest["sound_profiles"].get(sound_profile, {
+        "startup": None, "death": None,
+    })
+    resolved["startup_sound_key"] = sounds["startup"]
+    resolved["death_sound_key"] = sounds["death"]
+    return resolved
+
+
+def write_retired_machine(writer, indent, retired):
+    writer.string(indent, "uid", retired["uid"])
+    writer.string(indent, "previous_name", retired["previous_name"])
+    if retired["replacement_uid"] is not None:
+        writer.string(indent, "replacement_uid", retired["replacement_uid"])
+
+
+def write_logo_asset(writer, indent, key, treatment):
+    writer.string(indent, "key", key)
+    writer.scalar(indent, "night_treatment", LOGO_NIGHT_ENUMS[treatment])
+
+
+def write_search_lexicon(writer, indent, lexicon):
+    for field_name in (
+            "phrase_candidates", "atomic_phrases",
+            "compact_name_aliases", "part_number_stems"):
+        write_strings(writer, indent, field_name, lexicon[field_name])
+
+
+def compile_catalog_textproto(machines_root, assets_root, retired_machines_path,
                               resource_manifest_path, taxonomy_path,
-                              legacy_names_path):
+                              legacy_names_path, search_aliases_path):
     resource_manifest = load_resource_manifest(resource_manifest_path)
+    validate_catalog_resources(resource_manifest, assets_root)
     taxonomy = load_catalog_taxonomy(taxonomy_path)
     picture_assets = load_picture_assets(assets_root)
-    machines = load_validated_machines(
+    source_machines = load_validated_machines(
         machines_root, resource_manifest, taxonomy, picture_assets
     )
-    validate_legacy_machine_names(
-        machines, legacy_names_path, normalize_search_text
+    validate_legacy_machine_names(source_machines, legacy_names_path)
+    search_aliases = load_search_aliases(search_aliases_path, source_machines)
+    retired_machines = load_retired_machines(
+        retired_machines_path, {machine["uid"] for machine in source_machines}
     )
+    machines = []
+    for machine in source_machines:
+        resolved = resolve_machine_resources(machine, resource_manifest)
+        resolved["derived_search_values"] = compile_derived_search_values(
+            machine, search_aliases
+        )
+        machines.append(resolved)
+    machines = tuple(machines)
 
     definitions = browse_definitions(taxonomy, machines)
+    search_lexicon = compile_search_lexicon(machines)
     writer = TextProtoWriter()
     for machine in machines:
         writer.message(
@@ -232,6 +393,34 @@ def compile_catalog_textproto(machines_root, assets_root,
                 writer, indent, value
             ),
         )
+    for retired in retired_machines:
+        writer.message(
+            0, "retired_machines",
+            lambda indent, value=retired: write_retired_machine(
+                writer, indent, value
+            ),
+        )
+    referenced_logos = {
+        machine["type_logo_key"] for machine in machines
+    } | {
+        key
+        for machine in machines
+        for key in machine["processor_logo_keys"] + machine["graphics_logo_keys"]
+    }
+    for key in sorted(referenced_logos):
+        treatment = resource_manifest["logo_night_treatment_overrides"].get(
+            key, resource_manifest["default_logo_night_treatment"]
+        )
+        writer.message(
+            0, "logo_assets",
+            lambda indent, asset_key=key, value=treatment: write_logo_asset(
+                writer, indent, asset_key, value
+            ),
+        )
+    writer.message(
+        0, "search_lexicon",
+        lambda indent: write_search_lexicon(writer, indent, search_lexicon),
+    )
     return writer.finish(), len(machines)
 
 
@@ -257,9 +446,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--machines", type=Path, required=True)
     parser.add_argument("--assets-root", type=Path, required=True)
+    parser.add_argument("--retired-machines", type=Path, required=True)
     parser.add_argument("--resource-manifest", type=Path, required=True)
     parser.add_argument("--taxonomy", type=Path, required=True)
     parser.add_argument("--legacy-names", type=Path, required=True)
+    parser.add_argument("--search-aliases", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     arguments = parser.parse_args()
 
@@ -272,14 +463,15 @@ def main():
         fail(f"Catalog assets root does not exist: {assets_root}")
 
     payload, machine_count = compile_catalog_textproto(
-        machines_root, assets_root, arguments.resource_manifest.resolve(),
+        machines_root, assets_root, arguments.retired_machines.resolve(),
+        arguments.resource_manifest.resolve(),
         arguments.taxonomy.resolve(), arguments.legacy_names.resolve(),
+        arguments.search_aliases.resolve(),
     )
     action = "Generated" if write_if_changed(output_path, payload) else "Verified"
-    digest = hashlib.sha256(payload).hexdigest()
     print(
         f"{action} catalog textproto with {machine_count} machines, "
-        f"{len(payload)} bytes, SHA-256 {digest}."
+        f"{len(payload)} bytes."
     )
 
 

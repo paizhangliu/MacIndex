@@ -37,11 +37,7 @@ class LinkLoadingHelper {
         }
 
         final AlertDialog.Builder linkDialog = new AlertDialog.Builder(context);
-        final LayoutInflater inflater = (LayoutInflater) linkDialog.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (inflater == null) {
-            throw new IllegalStateException("LayoutInflater is unavailable");
-        }
+        final LayoutInflater inflater = LayoutInflater.from(linkDialog.getContext());
         final View linkChunk = inflater.inflate(R.layout.chunk_compare_links, null);
             ((TextView) linkChunk.findViewById(R.id.leftMachineName))
                     .setText(leftMachine.name());
@@ -76,9 +72,7 @@ class LinkLoadingHelper {
                 startLink(rightLinks.get(getCheckedIndex(rightOptions)), context);
             }
         });
-        linkDialog.setNegativeButton(R.string.link_cancel, (dialog, which) -> {
-            // Cancelled.
-        });
+        linkDialog.setNegativeButton(R.string.link_cancel, null);
         linkDialog.show();
     }
 
@@ -97,20 +91,14 @@ class LinkLoadingHelper {
         final AlertDialog.Builder linkDialog = new AlertDialog.Builder(context);
         linkDialog.setTitle(machine.name());
         linkDialog.setMessage(R.string.link_message);
-        final LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (inflater == null) {
-            throw new IllegalStateException("LayoutInflater is unavailable");
-        }
+        final LayoutInflater inflater = LayoutInflater.from(context);
         final View linkChunk = inflater.inflate(R.layout.chunk_links, null);
         final RadioGroup linkOptions = linkChunk.findViewById(R.id.option);
         initLinkOptions(linkOptions, links, true, context);
         linkDialog.setView(linkChunk);
         linkDialog.setPositiveButton(R.string.link_confirm, (dialog, which) ->
                 startLink(links.get(getCheckedIndex(linkOptions)), context));
-        linkDialog.setNegativeButton(R.string.link_cancel, (dialog, which) -> {
-            // Cancelled.
-        });
+        linkDialog.setNegativeButton(R.string.link_cancel, null);
         linkDialog.show();
     }
 

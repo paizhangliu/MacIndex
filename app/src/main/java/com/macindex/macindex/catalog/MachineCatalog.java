@@ -4,12 +4,15 @@ import androidx.annotation.Nullable;
 
 import com.macindex.macindex.catalog.proto.CatalogBrowseDefinition;
 import com.macindex.macindex.catalog.proto.CatalogBrowseGroup;
+import com.macindex.macindex.catalog.proto.CatalogLogoAsset;
+import com.macindex.macindex.catalog.proto.CatalogLogoNightTreatment;
 import com.macindex.macindex.catalog.proto.CatalogMachine;
 import com.macindex.macindex.catalog.proto.CatalogPayload;
+import com.macindex.macindex.catalog.proto.CatalogRetiredMachine;
+import com.macindex.macindex.catalog.proto.CatalogSearchLexicon;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -22,11 +25,7 @@ import java.util.Set;
 /** Immutable, process-owned catalog and its UID/search indexes. */
 public final class MachineCatalog {
 
-    private static final Comparator<Machine> INTRODUCTION_ORDER =
-            (left, right) -> Integer.compare(
-                    left.introductionSortKey(), right.introductionSortKey());
     private static final SearchHit.Field[] SEARCH_FIELDS = SearchHit.Field.values();
-    private static final Comparator<SearchHit> SEARCH_ORDER = MachineCatalog::compareSearchHits;
     private static final Set<SearchHit.Field> ALL_SEARCH_FIELDS = Collections.unmodifiableSet(
             EnumSet.allOf(SearchHit.Field.class));
     private static final Set<SearchHit.Field> IDENTIFIER_SEARCH_FIELDS =
@@ -42,20 +41,74 @@ public final class MachineCatalog {
     private final List<Machine> machines;
     private final Map<String, Machine> machinesByUid;
     private final Map<BrowseGrouping, BrowseDefinition> browseDefinitions;
+    private final SearchLexicon searchLexicon;
+    private final Map<String, RetiredMachine> retiredMachines;
+    private final Map<String, LogoNightTreatment> logoTreatments;
 
     MachineCatalog(final CatalogPayload payload) {
         final List<Machine> loadedMachines = new ArrayList<>(payload.getMachinesCount());
         final Map<String, Machine> loadedByUid = new HashMap<>();
         for (CatalogMachine record : payload.getMachinesList()) {
             final Machine machine = new Machine(record);
-            if (loadedByUid.put(machine.uid(), machine) != null) {
-                throw new CatalogFormatException("Duplicate machine UID " + machine.uid());
-            }
+            loadedByUid.put(machine.uid(), machine);
             loadedMachines.add(machine);
         }
         machines = Collections.unmodifiableList(loadedMachines);
         machinesByUid = Collections.unmodifiableMap(loadedByUid);
-        browseDefinitions = loadBrowseDefinitions(payload.getBrowseDefinitionsList());
+        browseDefinitions = loadBrowseDefinitions(
+                payload.getBrowseDefinitionsList(), machinesByUid);
+        searchLexicon = new SearchLexicon(payload.getSearchLexicon());
+        retiredMachines = loadRetiredMachines(payload.getRetiredMachinesList());
+        logoTreatments = loadLogoTreatments(payload.getLogoAssetsList());
+    }
+
+    private static Map<String, RetiredMachine> loadRetiredMachines(
+            final List<CatalogRetiredMachine> source) {
+        final Map<String, RetiredMachine> loaded = new HashMap<>();
+        for (CatalogRetiredMachine raw : source) {
+            final String uid = raw.getUid();
+            final String replacement = raw.hasReplacementUid()
+                    ? raw.getReplacementUid() : null;
+            loaded.put(uid, new RetiredMachine(raw.getPreviousName(), replacement));
+        }
+        return Collections.unmodifiableMap(loaded);
+    }
+
+    private static Map<String, LogoNightTreatment> loadLogoTreatments(
+            final List<CatalogLogoAsset> source) {
+        final Map<String, LogoNightTreatment> loaded = new HashMap<>();
+        for (CatalogLogoAsset raw : source) {
+            final LogoNightTreatment treatment = convertLogoTreatment(raw.getNightTreatment());
+            loaded.put(raw.getKey(), treatment);
+        }
+        return Collections.unmodifiableMap(loaded);
+    }
+
+    private static LogoNightTreatment convertLogoTreatment(
+            final CatalogLogoNightTreatment raw) {
+        switch (raw) {
+            case CATALOG_LOGO_NIGHT_TREATMENT_DARKEN:
+                return LogoNightTreatment.DARKEN;
+            case CATALOG_LOGO_NIGHT_TREATMENT_WHITE_TINT:
+                return LogoNightTreatment.WHITE_TINT;
+            case CATALOG_LOGO_NIGHT_TREATMENT_MONOCHROME:
+                return LogoNightTreatment.MONOCHROME;
+            default:
+                throw new CatalogFormatException("Missing logo night treatment");
+        }
+    }
+
+    @Nullable
+    public RetiredMachine retiredMachine(@Nullable final String uid) {
+        return uid == null ? null : retiredMachines.get(uid.toUpperCase(Locale.ROOT));
+    }
+
+    public LogoNightTreatment logoNightTreatment(final String key) {
+        final LogoNightTreatment treatment = logoTreatments.get(key);
+        if (treatment == null) {
+            throw new CatalogFormatException("Unknown logo " + key);
+        }
+        return treatment;
     }
 
     public List<Machine> machines() {
@@ -77,7 +130,51 @@ public final class MachineCatalog {
 
     /** Uses the catalog's own normalization contract to classify an empty UI query. */
     public static boolean isBlankSearchText(@Nullable final String text) {
-        return text == null || Machine.normalize(text).isEmpty();
+        return text == null || normalizeSearchText(text).isEmpty();
+    }
+
+    private static String normalizeSearchText(final String text) {
+        final String normalized = Machine.normalize(text);
+        final StringBuilder result = new StringBuilder(normalized.length());
+        int offset = 0;
+        while (offset < normalized.length()) {
+            final int codePoint = normalized.codePointAt(offset);
+            final int width = Character.charCount(codePoint);
+            if (isQuerySeparator(normalized, offset, codePoint, width)) {
+                result.append(' ');
+            } else {
+                result.appendCodePoint(codePoint);
+            }
+            offset += width;
+        }
+        return result.toString().trim();
+    }
+
+    private static boolean isNumericComma(final String value, final int offset,
+                                          final int width) {
+        return offset > 0 && offset + width < value.length()
+                && Character.isDigit(value.codePointBefore(offset))
+                && Character.isDigit(value.codePointAt(offset + width));
+    }
+
+    private static boolean isQuerySeparator(final String value, final int offset,
+                                            final int codePoint, final int width) {
+        if (codePoint == '/' || codePoint == '-'
+                || codePoint == ',' && isNumericComma(value, offset, width)) {
+            return false;
+        }
+        switch (Character.getType(codePoint)) {
+            case Character.CONNECTOR_PUNCTUATION:
+            case Character.DASH_PUNCTUATION:
+            case Character.START_PUNCTUATION:
+            case Character.END_PUNCTUATION:
+            case Character.INITIAL_QUOTE_PUNCTUATION:
+            case Character.FINAL_QUOTE_PUNCTUATION:
+            case Character.OTHER_PUNCTUATION:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /** Resolves one historical preference/share name through the existing exact search names. */
@@ -100,7 +197,7 @@ public final class MachineCatalog {
         return null;
     }
 
-    /** Temporary result scope selected from the facets of one submitted query. */
+    /** Temporary result scope selected from the facets of the current query. */
     public enum SearchScope {
         ALL(null),
         NAME(SearchHit.Field.NAME),
@@ -109,7 +206,9 @@ public final class MachineCatalog {
         MODEL_IDENTIFIER(SearchHit.Field.MODEL_IDENTIFIER),
         GESTALT_ID(SearchHit.Field.GESTALT_ID),
         PART_NUMBER(SearchHit.Field.PART_NUMBER),
-        EMC_NUMBER(SearchHit.Field.EMC_NUMBER);
+        EMC_NUMBER(SearchHit.Field.EMC_NUMBER),
+        PROCESSOR(SearchHit.Field.PROCESSOR),
+        INTRODUCTION(SearchHit.Field.INTRODUCTION);
 
         @Nullable
         private final SearchHit.Field field;
@@ -127,24 +226,12 @@ public final class MachineCatalog {
             if (field == null) {
                 throw new NullPointerException("Search field is required");
             }
-            switch (field) {
-                case NAME:
-                    return NAME;
-                case CODENAME:
-                    return CODENAME;
-                case MODEL_NUMBER:
-                    return MODEL_NUMBER;
-                case MODEL_IDENTIFIER:
-                    return MODEL_IDENTIFIER;
-                case GESTALT_ID:
-                    return GESTALT_ID;
-                case PART_NUMBER:
-                    return PART_NUMBER;
-                case EMC_NUMBER:
-                    return EMC_NUMBER;
-                default:
-                    throw new IllegalStateException("Unknown search field " + field);
+            for (SearchScope scope : values()) {
+                if (scope.field == field) {
+                    return scope;
+                }
             }
+            throw new IllegalStateException("Unknown search field " + field);
         }
     }
 
@@ -217,7 +304,7 @@ public final class MachineCatalog {
         }
         final boolean recognizedPartNumber = partNumber != null;
         final QueryPlan query = QueryPlan.from(
-                recognizedPartNumber ? partNumber.stem : text);
+                recognizedPartNumber ? partNumber.stem : text, searchLexicon);
         final Set<SearchHit.Field> allowedFields = !recognizedPartNumber
                 ? ALL_SEARCH_FIELDS
                 : partNumber.hasSuffix
@@ -270,18 +357,8 @@ public final class MachineCatalog {
         if (text == null) {
             return null;
         }
-        final String normalized = Machine.normalize(text);
-        String stem = null;
-        for (Machine machine : machines) {
-            for (SearchValue value : machine.searchValues()) {
-                if (value.field() == SearchHit.Field.PART_NUMBER
-                        && normalized.startsWith(value.normalizedValue())
-                        && (stem == null
-                            || value.normalizedValue().length() > stem.length())) {
-                    stem = value.normalizedValue();
-                }
-            }
-        }
+        final String normalized = normalizeSearchText(text);
+        final String stem = searchLexicon.partNumberStem(normalized);
         if (stem == null) {
             return null;
         }
@@ -318,9 +395,9 @@ public final class MachineCatalog {
         return true;
     }
 
-    private static List<SearchHit> sortAndFreeze(final List<SearchHit> matches) {
+    private List<SearchHit> sortAndFreeze(final List<SearchHit> matches) {
         if (matches.size() > 1) {
-            Collections.sort(matches, SEARCH_ORDER);
+            Collections.sort(matches, this::compareSearchHits);
         }
         return Collections.unmodifiableList(matches);
     }
@@ -331,7 +408,7 @@ public final class MachineCatalog {
         while (index < value.length()) {
             while (index < value.length()) {
                 final int codePoint = value.codePointAt(index);
-                if (!isSearchSpace(codePoint)) {
+                if (!Machine.isSearchSpace(codePoint)) {
                     break;
                 }
                 index += Character.charCount(codePoint);
@@ -339,7 +416,7 @@ public final class MachineCatalog {
             final int start = index;
             while (index < value.length()) {
                 final int codePoint = value.codePointAt(index);
-                if (isSearchSpace(codePoint)) {
+                if (Machine.isSearchSpace(codePoint)) {
                     break;
                 }
                 index += Character.charCount(codePoint);
@@ -349,10 +426,6 @@ public final class MachineCatalog {
             }
         }
         return tokens;
-    }
-
-    private static boolean isSearchSpace(final int codePoint) {
-        return Character.isWhitespace(codePoint) || Character.isSpaceChar(codePoint);
     }
 
     /** Returns every machine in a browse scope exactly once, in authored catalog order. */
@@ -387,14 +460,12 @@ public final class MachineCatalog {
                 activeSection = group.sectionKey;
             }
             final List<Machine> matches = new ArrayList<>();
-            for (Machine machine : machines) {
-                if (scope.includes(machine.manufacturerKey())
-                        && matchesBrowseGroup(machine, grouping, group.key)) {
+            for (Machine machine : group.machines) {
+                if (scope.includes(machine.manufacturerKey())) {
                     matches.add(machine);
                 }
             }
             if (!matches.isEmpty()) {
-                Collections.sort(matches, INTRODUCTION_ORDER);
                 result.add(new BrowseGroup(
                         group.key, group.label,
                         activeSection != null && emittedSections.add(activeSection)
@@ -418,80 +489,77 @@ public final class MachineCatalog {
         throw new IllegalArgumentException("Unknown product type key " + productTypeKey);
     }
 
-    private static MachineMatch matchMachine(final Machine machine, final QueryPlan query,
-                                             @Nullable final SearchHit.Field selectedField,
-                                             final Set<SearchHit.Field> allowedFields,
-                                             @Nullable final PartNumberQuery partNumber) {
-        final EnumMap<SearchHit.Field, CandidateMatch> wholeByField =
-                new EnumMap<>(SearchHit.Field.class);
-        final boolean singleTokenIsWholeQuery = query.tokens.size() == 1
-                && query.whole.normalized.equals(query.tokens.get(0).normalized);
-        final List<EnumMap<SearchHit.Field, CandidateMatch>> tokensByField =
-                singleTokenIsWholeQuery ? Collections.emptyList()
-                        : new ArrayList<>(query.tokens.size());
-        for (int index = 0; index < query.tokens.size() && !singleTokenIsWholeQuery; index++) {
-            tokensByField.add(new EnumMap<>(SearchHit.Field.class));
-        }
-
+    private MachineMatch matchMachine(final Machine machine, final QueryPlan query,
+                                      @Nullable final SearchHit.Field selectedField,
+                                      final Set<SearchHit.Field> allowedFields,
+                                      @Nullable final PartNumberQuery partNumber) {
         final List<SearchValue> values = machine.searchValues();
-        for (int index = 0; index < values.size(); index++) {
-            final SearchValue value = values.get(index);
-            if (!allowedFields.contains(value.field())) {
-                continue;
+        final EnumSet<SearchHit.Field> matchingFields =
+                EnumSet.noneOf(SearchHit.Field.class);
+        SearchHit bestAll = null;
+        SearchHit selectedHit = null;
+        for (List<QueryToken> alternative : query.tokenAlternatives) {
+            final List<EnumMap<SearchHit.Field, CandidateMatch>> tokensByField =
+                    matchTokensByField(values, alternative, allowedFields, partNumber);
+
+            final List<CandidateMatch> allEvidence = tokenEvidence(tokensByField);
+            if (allEvidence != null) {
+                bestAll = preferredHit(bestAll,
+                        buildHit(machine, allEvidence, partNumber));
             }
-            if (partNumber != null && partNumber.revision != null
+            for (SearchHit.Field field : SEARCH_FIELDS) {
+                final List<CandidateMatch> fieldEvidence =
+                        fieldTokenEvidence(tokensByField, field);
+                if (fieldEvidence == null) {
+                    continue;
+                }
+                matchingFields.add(field);
+                if (field == selectedField) {
+                    selectedHit = preferredHit(selectedHit,
+                            buildHit(machine, fieldEvidence, partNumber));
+                }
+            }
+        }
+        return new MachineMatch(bestAll, selectedHit, matchingFields);
+    }
+
+    private static List<EnumMap<SearchHit.Field, CandidateMatch>> matchTokensByField(
+            final List<SearchValue> values, final List<QueryToken> tokens,
+            final Set<SearchHit.Field> allowedFields,
+            @Nullable final PartNumberQuery partNumber) {
+        final List<EnumMap<SearchHit.Field, CandidateMatch>> result =
+                new ArrayList<>(tokens.size());
+        for (int tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
+            result.add(new EnumMap<>(SearchHit.Field.class));
+        }
+        for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+            final SearchValue value = values.get(valueIndex);
+            if (!allowedFields.contains(value.field())
+                    || partNumber != null && partNumber.revision != null
                     && value.field() == SearchHit.Field.PART_NUMBER
                     && !value.supportsRevision(partNumber.revision)) {
                 continue;
             }
-            if (!query.hasRepeatedTokens || query.tokens.size() != 1) {
-                putBest(wholeByField, matchCandidate(value, index, query.whole));
-            }
-            for (int tokenIndex = 0; tokenIndex < tokensByField.size(); tokenIndex++) {
-                putBest(tokensByField.get(tokenIndex),
-                        matchCandidate(value, index, query.tokens.get(tokenIndex)));
+            for (int tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
+                putBest(result.get(tokenIndex),
+                        matchCandidate(value, valueIndex, tokens.get(tokenIndex)));
             }
         }
+        return result;
+    }
 
-        final EnumSet<SearchHit.Field> matchingFields =
-                EnumSet.noneOf(SearchHit.Field.class);
-        SearchHit selectedHit = null;
-        for (SearchHit.Field field : SEARCH_FIELDS) {
-            final CandidateMatch whole = wholeByField.get(field);
-            final List<CandidateMatch> tokens = fieldTokenEvidence(tokensByField, field);
-            if (whole == null && tokens == null) {
-                continue;
+    @Nullable
+    private static List<CandidateMatch> tokenEvidence(
+            final List<EnumMap<SearchHit.Field, CandidateMatch>> tokenMatches) {
+        final List<CandidateMatch> evidence = new ArrayList<>(tokenMatches.size());
+        for (EnumMap<SearchHit.Field, CandidateMatch> matches : tokenMatches) {
+            final CandidateMatch candidate = bestCandidate(matches);
+            if (candidate == null) {
+                return null;
             }
-            matchingFields.add(field);
-            final boolean useWhole = whole != null
-                    && (tokens == null || compareFieldWholeToTokens(whole, tokens) <= 0);
-            if (field == selectedField) {
-                selectedHit = useWhole
-                        ? buildHit(machine, true, whole, partNumber)
-                        : buildHit(machine, false, tokens, partNumber);
-            }
+            evidence.add(candidate);
         }
-
-        final CandidateMatch bestWhole = bestCandidate(wholeByField);
-        final SearchHit wholeHit = bestWhole == null
-                ? null : buildHit(machine, true, bestWhole, partNumber);
-        SearchHit tokenHit = null;
-        if (!tokensByField.isEmpty()) {
-            final List<CandidateMatch> tokenEvidence = new ArrayList<>(tokensByField.size());
-            for (EnumMap<SearchHit.Field, CandidateMatch> matches : tokensByField) {
-                final CandidateMatch bestToken = bestCandidate(matches);
-                if (bestToken == null) {
-                    tokenEvidence.clear();
-                    break;
-                }
-                tokenEvidence.add(bestToken);
-            }
-            if (!tokenEvidence.isEmpty()) {
-                tokenHit = buildHit(machine, false, tokenEvidence, partNumber);
-            }
-        }
-        return new MachineMatch(preferredHit(wholeHit, tokenHit), selectedHit,
-                matchingFields);
+        return evidence;
     }
 
     @Nullable
@@ -512,25 +580,9 @@ public final class MachineCatalog {
         return evidence;
     }
 
-    private static int compareFieldWholeToTokens(
-            final CandidateMatch whole, final List<CandidateMatch> tokens) {
-        int tokenWorstRelation = 0;
-        int tokenRelationPenalty = 0;
-        for (CandidateMatch token : tokens) {
-            tokenWorstRelation = Math.max(tokenWorstRelation, token.relation.ordinal());
-            tokenRelationPenalty += token.relation.ordinal();
-        }
-        int comparison = Integer.compare(whole.relation.ordinal(), tokenWorstRelation);
-        if (comparison != 0) {
-            return comparison;
-        }
-        comparison = Integer.compare(whole.relation.ordinal(), tokenRelationPenalty);
-        return comparison != 0 ? comparison : comparePreferredBoolean(true, false);
-    }
-
     @Nullable
-    private static SearchHit preferredHit(@Nullable final SearchHit left,
-                                          @Nullable final SearchHit right) {
+    private SearchHit preferredHit(@Nullable final SearchHit left,
+                                   @Nullable final SearchHit right) {
         if (left == null) {
             return right;
         }
@@ -541,6 +593,9 @@ public final class MachineCatalog {
     private static CandidateMatch matchCandidate(final SearchValue value, final int index,
                                                  final QueryToken query) {
         final String candidate = value.normalizedValue();
+        if (value.isExactTokenOnly() && !candidate.equals(query.normalized)) {
+            return null;
+        }
 
         int occurrence = candidate.indexOf(query.normalized);
         CandidateMatch best = null;
@@ -584,11 +639,11 @@ public final class MachineCatalog {
         return best;
     }
 
-    private static SearchHit buildHit(final Machine machine, final boolean wholeQueryMatch,
+    private static SearchHit buildHit(final Machine machine,
                                       final List<CandidateMatch> tokenEvidence,
                                       @Nullable final PartNumberQuery partNumber) {
         if (tokenEvidence.size() == 1) {
-            return buildHit(machine, wholeQueryMatch, tokenEvidence.get(0), partNumber);
+            return buildHit(machine, tokenEvidence.get(0), partNumber);
         }
         int primaryIndex = 0;
         for (int index = 1; index < tokenEvidence.size(); index++) {
@@ -604,21 +659,24 @@ public final class MachineCatalog {
                 evidence.add(toEvidence(tokenEvidence.get(index), partNumber));
             }
         }
-        return new SearchHit(machine, wholeQueryMatch, evidence);
+        return new SearchHit(machine, evidence);
     }
 
-    private static SearchHit buildHit(final Machine machine, final boolean wholeQueryMatch,
+    private static SearchHit buildHit(final Machine machine,
                                       final CandidateMatch evidence,
                                       @Nullable final PartNumberQuery partNumber) {
-        return new SearchHit(machine, wholeQueryMatch,
+        return new SearchHit(machine,
                 Collections.singletonList(toEvidence(evidence, partNumber)));
     }
 
     private static SearchHit.Evidence toEvidence(
             final CandidateMatch candidate, @Nullable final PartNumberQuery partNumber) {
+        final String candidateValue = candidate.value.normalizedValue();
+        final int candidateCodePointCount = candidateValue.codePointCount(
+                0, candidateValue.length());
         if (partNumber != null
                 && candidate.value.field() == SearchHit.Field.PART_NUMBER
-                && candidate.value.normalizedValue().equals(partNumber.stem)) {
+                && candidateValue.equals(partNumber.stem)) {
             final String matchedValue = candidate.value.partNumberEvidenceValue(
                     partNumber.revision);
             int matchEnd = partNumber.stem.length();
@@ -634,7 +692,8 @@ public final class MachineCatalog {
             return new SearchHit.Evidence(
                     candidate.relation, candidate.value.field(), matchedValue,
                     0, matchEnd, candidate.query.codePointCount,
-                    candidate.unitCodePointCount, candidate.matchPosition);
+                    candidate.unitCodePointCount, candidateCodePointCount,
+                    candidate.matchPosition, candidate.query.sourceTokenCount);
         }
         final TextRange range = candidate.value.displayRange(
                 candidate.normalizedStart,
@@ -642,7 +701,8 @@ public final class MachineCatalog {
         return new SearchHit.Evidence(
                 candidate.relation, candidate.value.field(), candidate.value.displayValue(),
                 range.startInclusive(), range.endExclusive(), candidate.query.codePointCount,
-                candidate.unitCodePointCount, candidate.matchPosition);
+                candidate.unitCodePointCount, candidateCodePointCount,
+                candidate.matchPosition, candidate.query.sourceTokenCount);
     }
 
     private static int compareCandidateMatches(final CandidateMatch left,
@@ -678,9 +738,7 @@ public final class MachineCatalog {
         if (comparison != 0) {
             return comparison;
         }
-        comparison = Integer.compare(left.index, right.index);
-        return comparison != 0 ? comparison
-                : left.value.field().compareTo(right.value.field());
+        return Integer.compare(left.index, right.index);
     }
 
     private static int compareOccurrenceMatches(final CandidateMatch left,
@@ -696,7 +754,7 @@ public final class MachineCatalog {
                 : Integer.compare(left.normalizedStart, right.normalizedStart);
     }
 
-    static int compareSearchHits(final SearchHit left, final SearchHit right) {
+    private int compareSearchHits(final SearchHit left, final SearchHit right) {
         int comparison = Integer.compare(left.worstRelation(), right.worstRelation());
         if (comparison != 0) {
             return comparison;
@@ -705,8 +763,13 @@ public final class MachineCatalog {
         if (comparison != 0) {
             return comparison;
         }
-        comparison = comparePreferredBoolean(
-                left.isWholeQueryMatch(), right.isWholeQueryMatch());
+        comparison = Integer.compare(
+                right.longestPhraseTokenCount(), left.longestPhraseTokenCount());
+        if (comparison != 0) {
+            return comparison;
+        }
+        comparison = Integer.compare(
+                right.mostTokensInOneValue(), left.mostTokensInOneValue());
         if (comparison != 0) {
             return comparison;
         }
@@ -719,12 +782,31 @@ public final class MachineCatalog {
             return comparison;
         }
         comparison = Integer.compare(
-                explanationPreference(left.field()), explanationPreference(right.field()));
+                explanationPreference(left.evidence().get(0).field()),
+                explanationPreference(right.evidence().get(0).field()));
+        if (comparison != 0) {
+            return comparison;
+        }
+        final long leftCandidateCoverage = (long) left.totalQueryCodePointCount()
+                * right.totalCandidateCodePointCount();
+        final long rightCandidateCoverage = (long) right.totalQueryCodePointCount()
+                * left.totalCandidateCodePointCount();
+        comparison = Long.compare(rightCandidateCoverage, leftCandidateCoverage);
         if (comparison != 0) {
             return comparison;
         }
         comparison = Integer.compare(
                 left.totalNormalizedMatchPosition(), right.totalNormalizedMatchPosition());
+        if (comparison != 0) {
+            return comparison;
+        }
+        comparison = Integer.compare(
+                homepageCategoryRank(left.machine()), homepageCategoryRank(right.machine()));
+        if (comparison != 0) {
+            return comparison;
+        }
+        comparison = Integer.compare(
+                left.machine().introductionSortKey(), right.machine().introductionSortKey());
         if (comparison != 0) {
             return comparison;
         }
@@ -739,6 +821,19 @@ public final class MachineCatalog {
             return comparison;
         }
         return left.machine().uid().compareTo(right.machine().uid());
+    }
+
+    private int homepageCategoryRank(final Machine machine) {
+        final BrowseDefinition definition = browseDefinitions.get(BrowseGrouping.NAMES);
+        if (definition == null) {
+            return Integer.MAX_VALUE;
+        }
+        for (int index = 0; index < definition.groups.size(); index++) {
+            if (machine.productTypeKey().equals(definition.groups.get(index).key)) {
+                return index;
+            }
+        }
+        return Integer.MAX_VALUE;
     }
 
     private static int comparePreferredBoolean(final boolean left, final boolean right) {
@@ -812,16 +907,14 @@ public final class MachineCatalog {
     private static int compareDigitRuns(
             final String left, final int leftStart, final int leftEnd,
             final String right, final int rightStart, final int rightEnd) {
-        final int leftSignificant = skipLeadingZeroes(left, leftStart, leftEnd);
-        final int rightSignificant = skipLeadingZeroes(right, rightStart, rightEnd);
-        final int leftSignificantLength = left.codePointCount(leftSignificant, leftEnd);
-        final int rightSignificantLength = right.codePointCount(rightSignificant, rightEnd);
+        final int leftSignificantLength = left.codePointCount(leftStart, leftEnd);
+        final int rightSignificantLength = right.codePointCount(rightStart, rightEnd);
         int comparison = Integer.compare(leftSignificantLength, rightSignificantLength);
         if (comparison != 0) {
             return comparison;
         }
-        int leftIndex = leftSignificant;
-        int rightIndex = rightSignificant;
+        int leftIndex = leftStart;
+        int rightIndex = rightStart;
         while (leftIndex < leftEnd && rightIndex < rightEnd) {
             final int leftDigit = Character.digit(left.codePointAt(leftIndex), 10);
             final int rightDigit = Character.digit(right.codePointAt(rightIndex), 10);
@@ -832,102 +925,247 @@ public final class MachineCatalog {
             leftIndex += Character.charCount(left.codePointAt(leftIndex));
             rightIndex += Character.charCount(right.codePointAt(rightIndex));
         }
-        return Integer.compare(
-                left.codePointCount(leftStart, leftEnd),
-                right.codePointCount(rightStart, rightEnd));
-    }
-
-    private static int skipLeadingZeroes(final String value, final int start, final int end) {
-        int index = start;
-        while (index < end) {
-            final int codePoint = value.codePointAt(index);
-            if (Character.digit(codePoint, 10) != 0) {
-                break;
-            }
-            index += Character.charCount(codePoint);
-        }
-        return index;
+        return 0;
     }
 
     private static Map<BrowseGrouping, BrowseDefinition> loadBrowseDefinitions(
-            final List<CatalogBrowseDefinition> rawDefinitions) {
+            final List<CatalogBrowseDefinition> rawDefinitions,
+            final Map<String, Machine> machinesByUid) {
         final EnumMap<BrowseGrouping, BrowseDefinition> converted =
                 new EnumMap<>(BrowseGrouping.class);
         for (CatalogBrowseDefinition rawDefinition : rawDefinitions) {
             final BrowseGrouping grouping = BrowseGrouping.fromCatalogKey(rawDefinition.getKey());
             final List<BrowseGroupDefinition> groups = new ArrayList<>();
             for (CatalogBrowseGroup rawGroup : rawDefinition.getGroupsList()) {
+                final List<Machine> groupMachines = new ArrayList<>();
+                for (String uid : rawGroup.getMachineUidsList()) {
+                    final Machine machine = machinesByUid.get(uid);
+                    if (machine == null) {
+                        throw new CatalogFormatException(
+                                "Unknown browse machine UID " + uid);
+                    }
+                    groupMachines.add(machine);
+                }
                 groups.add(new BrowseGroupDefinition(
                         rawGroup.getKey(), rawGroup.getLabel(),
-                        rawGroup.hasSectionKey() ? rawGroup.getSectionKey() : null));
+                        rawGroup.hasSectionKey() ? rawGroup.getSectionKey() : null,
+                        Collections.unmodifiableList(groupMachines)));
             }
-            if (converted.put(grouping,
-                    new BrowseDefinition(Collections.unmodifiableList(groups))) != null) {
-                throw new CatalogFormatException(
-                        "Duplicate browse definition " + rawDefinition.getKey());
-            }
+            converted.put(grouping,
+                    new BrowseDefinition(Collections.unmodifiableList(groups)));
         }
         return Collections.unmodifiableMap(converted);
     }
 
-    private static boolean matchesBrowseGroup(final Machine machine,
-                                              final BrowseGrouping grouping,
-                                              final String key) {
-        switch (grouping) {
-            case NAMES:
-                return machine.productTypeKey().equals(key);
-            case PROCESSORS:
-                return machine.processorFamilyKeys().contains(key);
-            case YEARS:
-                for (IntroductionDate introduction : machine.introductions()) {
-                    if (Integer.toString(introduction.year()).equals(key)) {
-                        return true;
-                    }
-                }
-                return false;
-            default:
-                throw new IllegalStateException("Unknown browse grouping " + grouping);
-        }
-    }
-
     private static final class QueryPlan {
-        private final QueryToken whole;
-        private final List<QueryToken> tokens;
-        private final boolean hasRepeatedTokens;
+        private final List<List<QueryToken>> tokenAlternatives;
 
-        private QueryPlan(final QueryToken whole, final List<QueryToken> tokens,
-                          final boolean hasRepeatedTokens) {
-            this.whole = whole;
-            this.tokens = tokens;
-            this.hasRepeatedTokens = hasRepeatedTokens;
+        private QueryPlan(final List<List<QueryToken>> tokenAlternatives) {
+            this.tokenAlternatives = tokenAlternatives;
         }
 
-        private static QueryPlan from(final String rawText) {
-            final String normalizedText = Machine.normalize(rawText);
+        private static QueryPlan from(final String rawText,
+                                      final SearchLexicon lexicon) {
+            final String normalizedText = normalizeSearchText(rawText);
             if (normalizedText.isEmpty()) {
                 throw new IllegalArgumentException("Search text is empty");
             }
-            final List<QueryToken> tokens = new ArrayList<>();
-            final Set<String> seen = new LinkedHashSet<>();
+            final List<String> rawTokens = splitSearchTokens(normalizedText);
+            if (rawTokens.isEmpty()) {
+                throw new IllegalArgumentException("Search text is empty");
+            }
+            final List<PhraseSpan> phrases = findSemanticPhrases(rawTokens, lexicon);
+            final List<PhraseSpan> atomicPhrases = new ArrayList<>();
+            for (PhraseSpan phrase : phrases) {
+                if (phrase.atomic) {
+                    atomicPhrases.add(phrase);
+                }
+            }
+            final List<QueryToken> base = bestPhraseSegmentation(rawTokens, atomicPhrases);
             final StringBuilder normalizedWhole = new StringBuilder();
-            boolean hasRepeatedTokens = false;
-            for (String normalizedToken : splitSearchTokens(normalizedText)) {
+            int wholeSourceTokenCount = 0;
+            for (QueryToken token : base) {
                 if (normalizedWhole.length() > 0) {
                     normalizedWhole.append(' ');
                 }
-                normalizedWhole.append(normalizedToken);
-                if (seen.add(normalizedToken)) {
-                    tokens.add(new QueryToken(normalizedToken));
-                } else {
-                    hasRepeatedTokens = true;
+                normalizedWhole.append(token.normalized);
+                wholeSourceTokenCount += token.sourceTokenCount;
+            }
+            final List<List<QueryToken>> alternatives = new ArrayList<>();
+            final Set<String> seenAlternatives = new LinkedHashSet<>();
+            addAlternative(alternatives, seenAlternatives, Collections.singletonList(
+                    new QueryToken(normalizedWhole.toString(), wholeSourceTokenCount)));
+            final List<PhraseSpan> compatiblePhrases = new ArrayList<>(atomicPhrases);
+            addAlternative(alternatives, seenAlternatives, base);
+            for (PhraseSpan phrase : phrases) {
+                if (!phrase.atomic && doesNotOverlap(phrase, atomicPhrases)) {
+                    compatiblePhrases.add(phrase);
+                    final List<PhraseSpan> selected = new ArrayList<>(atomicPhrases);
+                    selected.add(phrase);
+                    addAlternative(alternatives, seenAlternatives,
+                            segmentWithPhrases(rawTokens, selected));
                 }
             }
-            if (tokens.isEmpty()) {
-                throw new IllegalArgumentException("Search text is empty");
+            addAlternative(alternatives, seenAlternatives,
+                    bestPhraseSegmentation(rawTokens, compatiblePhrases));
+            addMachineAliasPrefixAlternatives(
+                    rawTokens, lexicon, alternatives, seenAlternatives);
+            return new QueryPlan(Collections.unmodifiableList(alternatives));
+        }
+
+        private static void addMachineAliasPrefixAlternatives(
+                final List<String> rawTokens, final SearchLexicon lexicon,
+                final List<List<QueryToken>> alternatives, final Set<String> seen) {
+            if (rawTokens.size() != 1) {
+                return;
             }
-            final QueryToken whole = new QueryToken(normalizedWhole.toString());
-            return new QueryPlan(whole, Collections.unmodifiableList(tokens),
-                    hasRepeatedTokens);
+            final String query = rawTokens.get(0);
+            for (String alias : lexicon.compactNameAliases()) {
+                if (query.length() <= alias.length()
+                        || !query.startsWith(alias)
+                        || digitRunEnd(query, alias.length()) != query.length()) {
+                    continue;
+                }
+                final List<QueryToken> split = new ArrayList<>(2);
+                split.add(new QueryToken(alias, 1));
+                split.add(new QueryToken(query.substring(alias.length()), 1));
+                addAlternative(alternatives, seen, split);
+            }
+        }
+
+        private static List<QueryToken> deduplicateTokens(
+                final List<QueryToken> source) {
+            final List<QueryToken> result = new ArrayList<>(source.size());
+            final Set<String> seen = new LinkedHashSet<>();
+            for (QueryToken token : source) {
+                if (seen.add(token.normalized)) {
+                    result.add(token);
+                }
+            }
+            return Collections.unmodifiableList(result);
+        }
+
+        private static List<PhraseSpan> findSemanticPhrases(
+                final List<String> rawTokens, final SearchLexicon lexicon) {
+            final List<PhraseSpan> result = new ArrayList<>();
+            for (int start = 0; start + 1 < rawTokens.size(); start++) {
+                final StringBuilder phrase = new StringBuilder(rawTokens.get(start));
+                final Set<String> terms = new LinkedHashSet<>();
+                terms.add(rawTokens.get(start));
+                for (int end = start + 1; end < rawTokens.size(); end++) {
+                    final String term = rawTokens.get(end);
+                    if (!terms.add(term)) {
+                        break;
+                    }
+                    phrase.append(' ').append(term);
+                    final QueryToken query = new QueryToken(
+                            phrase.toString(), end - start + 1);
+                    final int phraseKind = lexicon.phraseKind(query.normalized);
+                    if (phraseKind != 0) {
+                        result.add(new PhraseSpan(
+                                start, end + 1, query, phraseKind == 2));
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static boolean doesNotOverlap(
+                final PhraseSpan candidate, final List<PhraseSpan> selected) {
+            for (PhraseSpan phrase : selected) {
+                if (candidate.start < phrase.end && phrase.start < candidate.end) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static List<QueryToken> segmentWithPhrases(
+                final List<String> rawTokens, final List<PhraseSpan> selected) {
+            final List<QueryToken> result = new ArrayList<>();
+            int index = 0;
+            while (index < rawTokens.size()) {
+                PhraseSpan starting = null;
+                for (PhraseSpan phrase : selected) {
+                    if (phrase.start == index
+                            && (starting == null || phrase.end > starting.end)) {
+                        starting = phrase;
+                    }
+                }
+                if (starting == null) {
+                    result.add(new QueryToken(rawTokens.get(index++), 1));
+                } else {
+                    result.add(starting.query);
+                    index = starting.end;
+                }
+            }
+            return deduplicateTokens(result);
+        }
+
+        private static List<QueryToken> bestPhraseSegmentation(
+                final List<String> rawTokens, final List<PhraseSpan> phrases) {
+            final List<List<PhraseSpan>> phrasesByStart = new ArrayList<>(rawTokens.size());
+            for (int index = 0; index < rawTokens.size(); index++) {
+                phrasesByStart.add(new ArrayList<>());
+            }
+            for (PhraseSpan phrase : phrases) {
+                phrasesByStart.get(phrase.start).add(phrase);
+            }
+
+            final List<List<QueryToken>> bestFrom = new ArrayList<>(
+                    Collections.nCopies(rawTokens.size() + 1, null));
+            bestFrom.set(rawTokens.size(), Collections.emptyList());
+            for (int start = rawTokens.size() - 1; start >= 0; start--) {
+                List<QueryToken> best = prepend(
+                        new QueryToken(rawTokens.get(start), 1), bestFrom.get(start + 1));
+                for (PhraseSpan phrase : phrasesByStart.get(start)) {
+                    final List<QueryToken> candidate = prepend(
+                            phrase.query, bestFrom.get(phrase.end));
+                    if (candidate.size() < best.size()
+                            || candidate.size() == best.size()
+                            && candidate.get(0).sourceTokenCount
+                                    > best.get(0).sourceTokenCount) {
+                        best = candidate;
+                    }
+                }
+                bestFrom.set(start, best);
+            }
+            return deduplicateTokens(bestFrom.get(0));
+        }
+
+        private static List<QueryToken> prepend(
+                final QueryToken first, final List<QueryToken> rest) {
+            final List<QueryToken> result = new ArrayList<>(rest.size() + 1);
+            result.add(first);
+            result.addAll(rest);
+            return result;
+        }
+
+        private static void addAlternative(
+                final List<List<QueryToken>> destination,
+                final Set<String> seen, final List<QueryToken> candidate) {
+            final StringBuilder key = new StringBuilder();
+            for (QueryToken token : candidate) {
+                key.append(token.normalized).append('\u0001');
+            }
+            if (seen.add(key.toString())) {
+                destination.add(candidate);
+            }
+        }
+    }
+
+    private static final class PhraseSpan {
+        private final int start;
+        private final int end;
+        private final QueryToken query;
+        private final boolean atomic;
+
+        private PhraseSpan(final int start, final int end, final QueryToken query,
+                           final boolean atomic) {
+            this.start = start;
+            this.end = end;
+            this.query = query;
+            this.atomic = atomic;
         }
     }
 
@@ -953,10 +1191,12 @@ public final class MachineCatalog {
     private static final class QueryToken {
         private final String normalized;
         private final int codePointCount;
+        private final int sourceTokenCount;
 
-        private QueryToken(final String normalized) {
+        private QueryToken(final String normalized, final int sourceTokenCount) {
             this.normalized = normalized;
             codePointCount = normalized.codePointCount(0, normalized.length());
+            this.sourceTokenCount = sourceTokenCount;
         }
     }
 
@@ -1013,12 +1253,67 @@ public final class MachineCatalog {
         private final String key;
         private final String label;
         private final String sectionKey;
+        private final List<Machine> machines;
 
         private BrowseGroupDefinition(final String key, final String label,
-                                      @Nullable final String sectionKey) {
+                                      @Nullable final String sectionKey,
+                                      final List<Machine> machines) {
             this.key = key;
             this.label = label;
             this.sectionKey = sectionKey;
+            this.machines = machines;
+        }
+    }
+
+    private static final class SearchLexicon {
+        private final List<String> phraseCandidates;
+        private final List<String> atomicPhrases;
+        private final List<String> compactNameAliases;
+        private final List<String> partNumberStems;
+
+        private SearchLexicon(final CatalogSearchLexicon source) {
+            phraseCandidates = source.getPhraseCandidatesList();
+            atomicPhrases = source.getAtomicPhrasesList();
+            compactNameAliases = source.getCompactNameAliasesList();
+            partNumberStems = source.getPartNumberStemsList();
+        }
+
+        private int phraseKind(final String query) {
+            if (contains(atomicPhrases, query)) {
+                return 2;
+            }
+            return containsPrefix(phraseCandidates, query) ? 1 : 0;
+        }
+
+        private List<String> compactNameAliases() {
+            return compactNameAliases;
+        }
+
+        @Nullable
+        private String partNumberStem(final String query) {
+            for (int length = Math.min(5, query.length()); length >= 4; length--) {
+                final String candidate = query.substring(0, length);
+                if (contains(partNumberStems, candidate)) {
+                    return candidate;
+                }
+            }
+            return null;
+        }
+
+        private static boolean contains(final List<String> sortedValues,
+                                        final String value) {
+            return Collections.binarySearch(sortedValues, value) >= 0;
+        }
+
+        private static boolean containsPrefix(final List<String> sortedValues,
+                                              final String prefix) {
+            final int found = Collections.binarySearch(sortedValues, prefix);
+            if (found >= 0) {
+                return true;
+            }
+            final int insertion = -found - 1;
+            return insertion < sortedValues.size()
+                    && sortedValues.get(insertion).startsWith(prefix);
         }
     }
 }

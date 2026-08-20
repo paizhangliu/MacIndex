@@ -10,15 +10,29 @@ environment, package installation, or lock file is needed.
 
 The Android build performs three steps:
 
-1. `generateCatalogTextProto` validates every machine document, taxonomy, compatibility name, and
-   referenced asset, then compiles deterministic UTF-8 textproto using named schema fields and
-   enums. Machine order is the stable ascending UID file-name order. Each document names only its
-   category; taxonomy derives manufacturer, product type, browse membership, and browse order.
-2. `generateCatalog` uses the build's pinned `protoc` to deterministically encode
-   `build/generated/catalog/assets/catalog.pb`.
-3. `generateMachineResourceRegistry` validates catalog-referenced logo and sound resources,
-   then generates typed resource IDs and night treatment. Logo artwork is cropped once in the
-   source tree and stored in `drawable-nodpi`.
+1. `generateCatalogTextProto` validates every machine document, taxonomy, compatibility name,
+   search alias, and referenced asset, then compiles deterministic UTF-8 textproto using named
+   schema fields and enums. Machine order is the stable ascending UID file-name order. Each
+   document names only its category; taxonomy derives manufacturer, product type, browse
+   membership, and browse order.
+2. `generateCatalog` uses the build's pinned `protoc` to deterministically encode `catalog.pb`.
+3. `prepareCatalogAssets` stages that payload with every machine picture, catalog logo, and sound
+   under the APK's `assets/catalog/` directory.
+
+`retired_machines.toml` is the explicit UID migration table. A removed UID may name a current
+replacement, or may be permanently retired with no replacement. The table is cumulative across
+app releases: every retired UID stays listed, and any replacement points directly to a UID active
+in the bundled Catalog.
+
+The generated APK asset subtree has one fixed layout:
+
+```text
+assets/catalog/
+├── catalog.pb
+├── machines/MIxxxxxx.webp
+├── logos/<key>.webp
+└── sounds/<key>.flac
+```
 
 Each machine document owns its typed introduction values, catalog numbers, ordered `codenames`,
 links, resource keys, and lightly marked processor/graphics model names. The Codename field is
@@ -27,9 +41,10 @@ platform, logic-board, enclosure, or pre-release product name when that name is 
 identify the machine; every non-system value states its layer in the structured `qualifier` field.
 Machine codenames are authored as `{ value, optional qualifier }`, shown in authored order, and
 searchable only by `value`. The UI renders a qualifier in parentheses after its value; qualifier
-text is not part of the search index. Processor-layer
-codenames, including SoC and core codenames, are written inline in the `processor` prose inside
-ASCII double quotes and are not machine codenames or search terms. Values prefer direct
+text is not part of the search index. Processor-layer names are not machine codenames. Search
+projection is deliberately limited to marked processor headings: supported Intel processor
+codenames may be indexed, while Apple M-series development codenames and core codenames in
+surrounding prose remain display-only. Values prefer direct
 primary/archive evidence and
 independent corroboration, but one credible historical source may be sufficient when it maps the
 name to this exact machine or configuration. Conflicting sources are resolved by the most specific
@@ -70,11 +85,33 @@ input.
 offsets, including non-BMP input. It is not required to generate the production catalog.
 
 `taxonomy.json` is the only product/manufacturer/browse-order authority.
-`resource_manifest.json` is the only semantic catalog logo/sound registry. Unrelated UI resources
-remain owned by the Android resource tree and are outside the catalog pipeline.
+`resource_manifest.json` is the authoring registry for catalog logos and sounds. The compiler
+resolves it into the catalog payload, while the files under `catalog/resources/` are packaged
+beside that payload. Runtime code therefore opens every catalog-owned parameter, picture, logo,
+and sound through the bundled Catalog. Unrelated UI resources remain owned by the Android resource
+tree and are outside the catalog pipeline.
 
-Search normalization, browse membership, sorting, and navigation sequences are pure derived data.
-They are generated from the author documents and manifests and have no separately maintained
-authoring copy. Protobuf stores each name, alias, codename, and identifier once as a structured
-`{ value, optional qualifier }` entry; display text and normalized search text derive from that same
-entry rather than separate display and search fields.
+`search_aliases.json` is the finite authoring table for machine and processor abbreviations. Its
+selectors are limited to existing UID, product-type, and processor-family keys. During Catalog
+compilation, the same projection also extracts supported processor generations, families, Intel
+codenames, and models from the marked processor headings. The compiler resolves these definitions
+to concrete per-machine search values; clients do not parse processor prose or carry their own
+abbreviation tables.
+
+Browse membership, browse sorting, navigation sequences, derived search values, and the query
+vocabulary are compiler outputs with no separately maintained per-machine authoring copy. The
+query vocabulary contains the normalized semantic-phrase candidates, atomic processor phrases,
+finite machine abbreviations used by compact forms such as `MBP2014`, and Part Number stems. It is
+derived once from the same machine records and alias table; Android does not rediscover those facts
+by scanning every machine when the user types. Protobuf stores each authored
+name, alias, codename, and identifier once as a structured `{ value, optional qualifier }` entry.
+It additionally carries only the generated search projections that cannot be recovered from those
+fields without Catalog-specific knowledge: whitespace-free name mappings, introduction-year
+tokens, processor terms, and finite abbreviations. Marked Apple headings provide the searchable
+hardware terms `T1`, `T2`, `A12Z`, and `A18 Pro`, with `A18Pro` as a compact form. Processor
+projection never indexes Apple M-series development codenames, core codenames, frequency, cache,
+core-count, or other surrounding specification prose.
+
+Clients own generic query normalization, tokenization, matching, relevance ordering, facets, and
+presentation. The compiled vocabulary only removes Catalog-specific discovery work; it does not
+contain weights, ranking scripts, or an executable search-rule language.

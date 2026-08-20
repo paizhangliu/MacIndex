@@ -36,5 +36,4 @@ design = '''
 5.25" H x 17" W x 18.4" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [{ label = "Xserve RAID", url = "https://everymac.com/systems/apple/xserve/specs/xserve_raid.html" }]

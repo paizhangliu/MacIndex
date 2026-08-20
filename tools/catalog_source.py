@@ -2,7 +2,6 @@
 
 """Load and validate the human-owned TOML machine catalog."""
 
-import argparse
 import json
 import re
 import unicodedata
@@ -12,10 +11,6 @@ try:
     import tomllib
 except ModuleNotFoundError as error:
     raise SystemExit("MacIndex catalog tooling requires Python 3.11 or newer.") from error
-
-from catalog_taxonomy import load_catalog_taxonomy
-from generate_resource_registry import load_resource_manifest, validate_webp_file
-
 
 MACHINE_UID = re.compile(r"MI\d{6}")
 SOUND_PROFILE_KEY = re.compile(r"[A-Z][A-Z0-9_]*")
@@ -65,6 +60,8 @@ def normalize_search_text(value):
 
 def validate_search_offsets(value, label):
     """Keep normalized UTF-16 offsets usable for highlighting authored text."""
+    if any(unicodedata.category(character).startswith("M") for character in value):
+        fail(f"Combining marks require search boundary review in {label}")
     boundary = 0
     while boundary < len(value):
         boundary += 1
@@ -84,10 +81,8 @@ def validate_text(value, label, *, single_line=False):
     return value
 
 
-def read_string_array(document, key, machine_label, *, required=False):
+def read_string_array(document, key, machine_label):
     if key not in document:
-        if required:
-            fail(f"Missing {key} for {machine_label}")
         return ()
     values = document[key]
     if not isinstance(values, list) or not values:
@@ -497,7 +492,7 @@ def load_validated_machines(machines_root, resource_manifest, taxonomy,
     return tuple(machines)
 
 
-def validate_legacy_machine_names(machines, legacy_names_path, normalize_name):
+def validate_legacy_machine_names(machines, legacy_names_path):
     searchable_names_by_uid = {
         machine["uid"]: {
             entry["value"] for entry in machine["names"]
@@ -508,8 +503,7 @@ def validate_legacy_machine_names(machines, legacy_names_path, normalize_name):
     except (OSError, ValueError) as error:
         fail(f"Unable to read legacy machine names: {error}")
     if not isinstance(legacy_names, dict) \
-            or set(legacy_names) != {"schema", "names"} \
-            or legacy_names["schema"] != 1 \
+            or set(legacy_names) != {"names"} \
             or not isinstance(legacy_names["names"], list) \
             or not legacy_names["names"]:
         fail("Illegal legacy machine names document")
@@ -519,7 +513,7 @@ def validate_legacy_machine_names(machines, legacy_names_path, normalize_name):
             fail("Illegal legacy machine name entry")
         name = entry["name"]
         uid = entry["uid"]
-        normalized_name = normalize_name(name) if isinstance(name, str) else None
+        normalized_name = normalize_search_text(name) if isinstance(name, str) else None
         if not name or name != name.strip() or normalized_name in names \
                 or uid not in searchable_names_by_uid \
                 or name not in searchable_names_by_uid[uid]:
@@ -540,45 +534,18 @@ def load_picture_assets(assets_root):
     picture_assets = {picture.stem for picture in picture_directory.glob("*.webp")}
     if not picture_assets:
         fail("Machine picture assets are empty")
-    for picture in picture_directory.glob("*.webp"):
-        validate_webp_file(picture)
     return picture_assets
 
 
 def main():
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--allocate-uid", action="store_true")
-    parser.add_argument("--machines", type=Path)
-    parser.add_argument("--assets-root", type=Path)
-    parser.add_argument("--resource-manifest", type=Path)
-    parser.add_argument("--taxonomy", type=Path)
-    parser.add_argument("--legacy-names", type=Path)
     arguments = parser.parse_args()
-
-    if arguments.allocate_uid:
-        if any(value is not None for value in (
-                arguments.machines, arguments.assets_root, arguments.resource_manifest,
-                arguments.taxonomy, arguments.legacy_names)):
-            fail("UID allocation does not accept validation inputs")
-        allocate_machine_uid()
-        return
-    if any(value is None for value in (
-            arguments.machines, arguments.assets_root, arguments.resource_manifest,
-            arguments.taxonomy, arguments.legacy_names)):
-        fail("Machine source, assets, resource manifest, taxonomy, and legacy names are required")
-
-    machines_root = arguments.machines.resolve()
-    assets_root = arguments.assets_root.resolve()
-    resource_manifest = load_resource_manifest(arguments.resource_manifest.resolve())
-    taxonomy = load_catalog_taxonomy(arguments.taxonomy.resolve())
-    picture_assets = load_picture_assets(assets_root)
-    machines = load_validated_machines(
-        machines_root, resource_manifest, taxonomy, picture_assets
-    )
-    validate_legacy_machine_names(
-        machines, arguments.legacy_names.resolve(), normalize_search_text
-    )
-    print(f"Validated {len(machines)} machines from TOML authoring files.")
+    if not arguments.allocate_uid:
+        parser.error("--allocate-uid is required")
+    allocate_machine_uid()
 
 
 if __name__ == "__main__":

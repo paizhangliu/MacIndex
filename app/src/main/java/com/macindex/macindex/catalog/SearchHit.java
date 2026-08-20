@@ -22,7 +22,9 @@ public final class SearchHit {
         MODEL_IDENTIFIER,
         GESTALT_ID,
         PART_NUMBER,
-        EMC_NUMBER
+        EMC_NUMBER,
+        PROCESSOR,
+        INTRODUCTION
     }
 
     /** One query token and the exact UTF-16 display range which proves that it matched. */
@@ -34,23 +36,15 @@ public final class SearchHit {
         private final int matchEndExclusive;
         private final int queryCodePointCount;
         private final int unitCodePointCount;
+        private final int candidateCodePointCount;
         private final int normalizedMatchPosition;
+        private final int sourceTokenCount;
 
         Evidence(final Relation relation, final Field field, final String matchedValue,
                  final int matchStartInclusive, final int matchEndExclusive,
                  final int queryCodePointCount, final int unitCodePointCount,
-                 final int normalizedMatchPosition) {
-            validateMatchRange(matchedValue, matchStartInclusive, matchEndExclusive);
-            if (relation == null || field == null || queryCodePointCount <= 0
-                    || unitCodePointCount < queryCodePointCount
-                    || normalizedMatchPosition < 0
-                    || (relation == Relation.COMPLETE_UNIT
-                        && unitCodePointCount != queryCodePointCount)
-                    || (relation != Relation.UNIT_INTERNAL && normalizedMatchPosition != 0)) {
-                throw new IllegalArgumentException("Invalid search relevance "
-                        + queryCodePointCount + "/" + unitCodePointCount
-                        + " at " + normalizedMatchPosition);
-            }
+                 final int candidateCodePointCount,
+                 final int normalizedMatchPosition, final int sourceTokenCount) {
             this.relation = relation;
             this.field = field;
             this.matchedValue = matchedValue;
@@ -58,7 +52,9 @@ public final class SearchHit {
             this.matchEndExclusive = matchEndExclusive;
             this.queryCodePointCount = queryCodePointCount;
             this.unitCodePointCount = unitCodePointCount;
+            this.candidateCodePointCount = candidateCodePointCount;
             this.normalizedMatchPosition = normalizedMatchPosition;
+            this.sourceTokenCount = sourceTokenCount;
         }
 
         public Relation relation() {
@@ -91,102 +87,83 @@ public final class SearchHit {
             return unitCodePointCount;
         }
 
+        int candidateCodePointCount() {
+            return candidateCodePointCount;
+        }
+
         int normalizedMatchPosition() {
             return normalizedMatchPosition;
+        }
+
+        int sourceTokenCount() {
+            return sourceTokenCount;
         }
 
     }
 
     private final Machine machine;
-    private final boolean wholeQueryMatch;
     private final List<Evidence> evidence;
     private final int worstRelation;
     private final int relationPenalty;
     private final int totalQueryCodePointCount;
     private final int totalUnitCodePointCount;
+    private final int totalCandidateCodePointCount;
     private final int totalNormalizedMatchPosition;
+    private final int longestPhraseTokenCount;
+    private final int mostTokensInOneValue;
 
-    SearchHit(final Machine machine, final boolean wholeQueryMatch,
-              final List<Evidence> orderedEvidence) {
-        if (machine == null || orderedEvidence == null || orderedEvidence.isEmpty()) {
-            throw new IllegalArgumentException("A search hit requires machine evidence");
-        }
+    SearchHit(final Machine machine, final List<Evidence> orderedEvidence) {
         this.machine = machine;
-        this.wholeQueryMatch = wholeQueryMatch;
-        if (orderedEvidence.size() == 1) {
-            evidence = Collections.singletonList(orderedEvidence.get(0));
-        } else {
-            evidence = Collections.unmodifiableList(new ArrayList<>(orderedEvidence));
-        }
+        evidence = orderedEvidence.size() == 1
+                ? Collections.singletonList(orderedEvidence.get(0))
+                : Collections.unmodifiableList(new ArrayList<>(orderedEvidence));
 
         int computedWorstRelation = 0;
         int computedRelationPenalty = 0;
         int computedQueryCount = 0;
         int computedUnitCount = 0;
+        int computedCandidateCount = 0;
         int computedPosition = 0;
+        int computedLongestPhrase = 0;
         for (Evidence item : evidence) {
             computedWorstRelation = Math.max(computedWorstRelation, item.relation().ordinal());
             computedRelationPenalty += item.relation().ordinal();
             computedQueryCount += item.queryCodePointCount();
             computedUnitCount += item.unitCodePointCount();
+            computedCandidateCount += item.candidateCodePointCount();
             computedPosition += item.normalizedMatchPosition();
+            computedLongestPhrase = Math.max(
+                    computedLongestPhrase, item.sourceTokenCount());
         }
         worstRelation = computedWorstRelation;
         relationPenalty = computedRelationPenalty;
         totalQueryCodePointCount = computedQueryCount;
         totalUnitCodePointCount = computedUnitCount;
+        totalCandidateCodePointCount = computedCandidateCount;
         totalNormalizedMatchPosition = computedPosition;
-    }
-
-    private static void validateMatchRange(final String matchedValue,
-                                           final int matchStartInclusive,
-                                           final int matchEndExclusive) {
-        if (matchedValue == null || matchStartInclusive < 0
-                || matchStartInclusive >= matchEndExclusive
-                || matchEndExclusive > matchedValue.length()
-                || Character.isLowSurrogate(matchedValue.charAt(matchStartInclusive))
-                || (matchEndExclusive < matchedValue.length()
-                    && Character.isLowSurrogate(matchedValue.charAt(matchEndExclusive)))) {
-            throw new IllegalArgumentException("Invalid match range "
-                    + matchStartInclusive + ".." + matchEndExclusive
-                    + " for value of length "
-                    + (matchedValue == null ? -1 : matchedValue.length()));
+        longestPhraseTokenCount = computedLongestPhrase;
+        int computedMostTokensInOneValue = 0;
+        for (Evidence candidate : evidence) {
+            int tokensInValue = 0;
+            for (Evidence item : evidence) {
+                if (candidate.field() == item.field()
+                        && candidate.matchedValue().equals(item.matchedValue())) {
+                    tokensInValue += item.sourceTokenCount();
+                }
+            }
+            computedMostTokensInOneValue = Math.max(
+                    computedMostTokensInOneValue, tokensInValue);
         }
+        mostTokensInOneValue = computedMostTokensInOneValue;
     }
 
     public Machine machine() {
         return machine;
     }
 
-    /** Best single explanation, retained for simple one-token presentation code. */
-    public Relation relation() {
-        return evidence.get(0).relation();
-    }
-
-    /** Field of the best single explanation. */
-    public Field field() {
-        return evidence.get(0).field();
-    }
-
-    public String matchedValue() {
-        return evidence.get(0).matchedValue();
-    }
-
-    public int matchStartInclusive() {
-        return evidence.get(0).matchStartInclusive();
-    }
-
-    public int matchEndExclusive() {
-        return evidence.get(0).matchEndExclusive();
-    }
-
     /** All token evidence, with the best visible explanation first. */
     public List<Evidence> evidence() {
         return evidence;
-    }
-
-    boolean isWholeQueryMatch() {
-        return wholeQueryMatch;
     }
 
     int worstRelation() {
@@ -205,7 +182,20 @@ public final class SearchHit {
         return totalUnitCodePointCount;
     }
 
+    int totalCandidateCodePointCount() {
+        return totalCandidateCodePointCount;
+    }
+
     int totalNormalizedMatchPosition() {
         return totalNormalizedMatchPosition;
     }
+
+    int longestPhraseTokenCount() {
+        return longestPhraseTokenCount;
+    }
+
+    int mostTokensInOneValue() {
+        return mostTokensInOneValue;
+    }
+
 }

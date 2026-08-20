@@ -380,11 +380,18 @@ public class SettingsAboutActivity extends AppCompatActivity {
             return;
         }
         String information = getString(R.string.user_data_import_information,
-                imported.getCommentCount(), imported.getFavouriteCount(),
-                imported.getFolderCount(), imported.getCompareCount());
+                getResources().getQuantityString(R.plurals.user_data_import_comment_count,
+                        imported.getCommentCount(), imported.getCommentCount()),
+                getResources().getQuantityString(R.plurals.user_data_import_bookmark_count,
+                        imported.getFavouriteCount(), imported.getFavouriteCount()),
+                getResources().getQuantityString(R.plurals.user_data_import_folder_count,
+                        imported.getFolderCount(), imported.getFolderCount()),
+                getResources().getQuantityString(R.plurals.user_data_import_machine_count,
+                        imported.getCompareCount(), imported.getCompareCount()));
         if (imported.getRemovedCount() != 0) {
-            information += "\n\n" + getString(R.string.user_data_import_removed,
-                    imported.getRemovedCount());
+            information += "\n\n" + getResources().getQuantityString(
+                    R.plurals.user_data_import_removed,
+                    imported.getRemovedCount(), imported.getRemovedCount());
         }
         importConfirmationDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.user_data_import)

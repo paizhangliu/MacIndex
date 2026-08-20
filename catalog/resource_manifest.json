@@ -1,5 +1,4 @@
 {
-  "schema": 4,
   "default_logo_night_treatment": "DARKEN",
   "logo_night_treatment_overrides": {
     "applelogo": "WHITE_TINT",
@@ -129,7 +128,6 @@
     "NEW_WORLD": {"startup": "newmac", "death": null},
     "TWENTIETH_ANNIVERSARY": {"startup": "tam", "death": "powermac_death"},
     "POWERBOOK": {"startup": "powermac", "death": "maclc_death"},
-    "T2": {"startup": "bigsur", "death": null},
-    "NONE": {"startup": null, "death": null}
+    "T2": {"startup": "bigsur", "death": null}
   }
 }

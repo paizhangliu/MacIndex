@@ -55,7 +55,6 @@ design = '''
 1.73" H x 17.6" W x 30" D'''
 
 support_status = "Obsolete"
-sound_profile = "NONE"
 links = [
   { label = "Xserve Xeon 2.8 GHz Quad Core (Early 2008)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.8-quad-specs.html" },
   { label = "Xserve Xeon 2.8 GHz Eight Core (Early 2008)", url = "https://everymac.com/systems/apple/xserve/specs/xserve-intel-xeon-2.8-eight-core-specs.html" },

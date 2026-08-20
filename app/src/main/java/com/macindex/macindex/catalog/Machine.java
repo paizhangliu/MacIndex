@@ -6,7 +6,7 @@ import com.macindex.macindex.catalog.proto.CatalogExternalLink;
 import com.macindex.macindex.catalog.proto.CatalogIdentity;
 import com.macindex.macindex.catalog.proto.CatalogIntroduction;
 import com.macindex.macindex.catalog.proto.CatalogMachine;
-import com.macindex.macindex.catalog.proto.CatalogSoundProfile;
+import com.macindex.macindex.catalog.proto.CatalogSearchValue;
 import com.macindex.macindex.catalog.proto.CatalogSupportStatus;
 import com.macindex.macindex.catalog.proto.CatalogTextRange;
 
@@ -53,6 +53,9 @@ public final class Machine {
                 SearchHit.Field.PART_NUMBER);
         appendSearchValues(values, source.getEmcNumbersList(),
                 SearchHit.Field.EMC_NUMBER);
+        for (CatalogSearchValue value : source.getDerivedSearchValuesList()) {
+            values.add(new SearchValue(value));
+        }
         searchValues = Collections.unmodifiableList(values);
     }
 
@@ -106,41 +109,6 @@ public final class Machine {
         }
     }
 
-    private static SoundProfile convertSoundProfile(final CatalogSoundProfile raw) {
-        switch (raw) {
-            case CATALOG_SOUND_PROFILE_UNSPECIFIED:
-                return SoundProfile.UNSPECIFIED;
-            case CATALOG_SOUND_PROFILE_MACINTOSH_128K:
-                return SoundProfile.MACINTOSH_128K;
-            case CATALOG_SOUND_PROFILE_MACINTOSH_II:
-                return SoundProfile.MACINTOSH_II;
-            case CATALOG_SOUND_PROFILE_MACINTOSH_LC:
-                return SoundProfile.MACINTOSH_LC;
-            case CATALOG_SOUND_PROFILE_QUADRA:
-                return SoundProfile.QUADRA;
-            case CATALOG_SOUND_PROFILE_QUADRA_AV:
-                return SoundProfile.QUADRA_AV;
-            case CATALOG_SOUND_PROFILE_POWER_MAC_6100:
-                return SoundProfile.POWER_MAC_6100;
-            case CATALOG_SOUND_PROFILE_POWER_MAC_5000:
-                return SoundProfile.POWER_MAC_5000;
-            case CATALOG_SOUND_PROFILE_POWER_MAC:
-                return SoundProfile.POWER_MAC;
-            case CATALOG_SOUND_PROFILE_NEW_WORLD:
-                return SoundProfile.NEW_WORLD;
-            case CATALOG_SOUND_PROFILE_TWENTIETH_ANNIVERSARY:
-                return SoundProfile.TWENTIETH_ANNIVERSARY;
-            case CATALOG_SOUND_PROFILE_POWERBOOK:
-                return SoundProfile.POWERBOOK;
-            case CATALOG_SOUND_PROFILE_T2:
-                return SoundProfile.T2;
-            case CATALOG_SOUND_PROFILE_NONE:
-                return SoundProfile.NONE;
-            default:
-                throw new CatalogFormatException("Unknown sound profile");
-        }
-    }
-
     private static void appendSearchValues(
             final List<SearchValue> destination,
             final List<CatalogIdentity> source,
@@ -158,6 +126,10 @@ public final class Machine {
     static String normalize(final String value) {
         return Normalizer.normalize(value, Normalizer.Form.NFKC)
                 .trim().toLowerCase(Locale.ROOT);
+    }
+
+    static boolean isSearchSpace(final int codePoint) {
+        return Character.isWhitespace(codePoint) || Character.isSpaceChar(codePoint);
     }
 
     List<SearchValue> searchValues() {
@@ -182,6 +154,10 @@ public final class Machine {
 
     public String pictureAssetKey() {
         return source.getPictureAssetKey();
+    }
+
+    public String typeLogoKey() {
+        return source.getTypeLogoKey();
     }
 
     public String name() {
@@ -306,8 +282,14 @@ public final class Machine {
         return convertSupportStatus(source.getSupportStatus());
     }
 
-    public SoundProfile soundProfile() {
-        return convertSoundProfile(source.getSoundProfile());
+    @Nullable
+    public String startupSoundKey() {
+        return source.hasStartupSoundKey() ? source.getStartupSoundKey() : null;
+    }
+
+    @Nullable
+    public String deathSoundKey() {
+        return source.hasDeathSoundKey() ? source.getDeathSoundKey() : null;
     }
 
     public List<ExternalLink> links() {

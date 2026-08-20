@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -26,8 +28,6 @@ final class LastCrashReport {
     private static final String TAG = "LastCrashReport";
     private static final String FILE_NAME = "last_crash.txt";
     private static final int MAX_REPORT_CHARS = 64 * 1024;
-    private static final int MAX_STACK_FRAMES = 160;
-    private static final int MAX_CAUSES = 32;
 
     private final File reportFile;
     private boolean acknowledgedInProcess;
@@ -131,44 +131,11 @@ final class LastCrashReport {
         append(report, "Hardware Model: ", Build.BRAND + " " + Build.MODEL);
         append(report, "Thread: ", thread == null ? "unknown" : thread.getName());
         report.append("\nUnexpected exception:\n");
-        Throwable current = failure;
-        int frames = 0;
-        int causes = 0;
-        while (current != null && report.length() < MAX_REPORT_CHARS
-                && frames < MAX_STACK_FRAMES && causes < MAX_CAUSES) {
-            appendThrowable(report, current);
-            for (StackTraceElement element : current.getStackTrace()) {
-                if (report.length() >= MAX_REPORT_CHARS || frames >= MAX_STACK_FRAMES) {
-                    break;
-                }
-                appendLimited(report, "    at " + element + '\n');
-                frames++;
-            }
-            current = current.getCause();
-            causes++;
-            if (current != null) {
-                appendLimited(report, "Caused by: ");
-            }
-        }
-        return report.toString();
-    }
-
-    private static void appendThrowable(final StringBuilder target, final Throwable failure) {
-        appendLimited(target, failure.getClass().getName());
-        final String message = failure.getMessage();
-        if (message != null && !message.isEmpty()) {
-            appendLimited(target, ": ");
-            appendLimited(target, message);
-        }
-        appendLimited(target, "\n");
-    }
-
-    private static void appendLimited(final StringBuilder target, final CharSequence value) {
-        final int available = MAX_REPORT_CHARS - target.length();
-        if (available <= 0) {
-            return;
-        }
-        target.append(value, 0, Math.min(available, value.length()));
+        final StringWriter stackTrace = new StringWriter();
+        failure.printStackTrace(new PrintWriter(stackTrace));
+        report.append(stackTrace);
+        return report.length() <= MAX_REPORT_CHARS
+                ? report.toString() : report.substring(0, MAX_REPORT_CHARS);
     }
 
     private static void append(final StringBuilder target, final String label,

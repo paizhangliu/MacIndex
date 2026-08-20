@@ -1,7 +1,6 @@
 package com.macindex.macindex;
 
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -33,37 +32,18 @@ public class BitmapLoadingHelper {
         return inSampleSize;
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
-                                                         int reqWidth, int reqHeight) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions.
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options);
-
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        // Android 6 ignores WebP inSampleSize here when drawable density scaling is enabled.
-        options.inScaled = false;
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
-    }
-
-    public static Bitmap decodeSampledBitmapFromAsset(final AssetManager assetManager,
+    public static Bitmap decodeSampledBitmapFromAsset(final AssetManager assets,
                                                       final String assetPath,
-                                                      final int reqWidth, final int reqHeight)
-            throws IOException {
+                                                      final int reqWidth,
+                                                      final int reqHeight) throws IOException {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        try (InputStream inputStream = assetManager.open(assetPath)) {
-            BitmapFactory.decodeStream(inputStream, null, options);
+        try (InputStream input = assets.open(assetPath)) {
+            BitmapFactory.decodeStream(input, null, options);
         }
         if (options.outWidth <= 0 || options.outHeight <= 0) {
             return null;
         }
-
-        // ImageViews use fitCenter. Calculate the pixels which can actually be
-        // displayed before choosing the sample size, rather than decoding the
-        // complete source image into memory.
         if (reqWidth > 0 && reqHeight > 0) {
             final float displayScale = Math.min((float) reqWidth / options.outWidth,
                     (float) reqHeight / options.outHeight);
@@ -73,13 +53,13 @@ public class BitmapLoadingHelper {
             final int displayedHeight = displayScale < 1
                     ? Math.max(1, Math.round(options.outHeight * displayScale))
                     : options.outHeight;
-            options.inSampleSize = calculateInSampleSize(options,
-                    displayedWidth, displayedHeight);
+            options.inSampleSize = calculateInSampleSize(
+                    options, displayedWidth, displayedHeight);
         }
-
+        options.inScaled = false;
         options.inJustDecodeBounds = false;
-        try (InputStream inputStream = assetManager.open(assetPath)) {
-            return BitmapFactory.decodeStream(inputStream, null, options);
+        try (InputStream input = assets.open(assetPath)) {
+            return BitmapFactory.decodeStream(input, null, options);
         }
     }
 }

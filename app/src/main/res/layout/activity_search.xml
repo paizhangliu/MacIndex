@@ -82,6 +82,14 @@
                 android:id="@+id/searchFacetEmcNumber"
                 style="@style/SearchFacetChip" />
 
+            <RadioButton
+                android:id="@+id/searchFacetProcessor"
+                style="@style/SearchFacetChip" />
+
+            <RadioButton
+                android:id="@+id/searchFacetIntroduction"
+                style="@style/SearchFacetChip" />
+
         </RadioGroup>
 
     </HorizontalScrollView>

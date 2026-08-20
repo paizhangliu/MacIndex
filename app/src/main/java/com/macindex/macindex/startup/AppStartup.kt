@@ -4,12 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.macindex.macindex.BuildConfig
 import com.macindex.macindex.catalog.CatalogFormatException
 import com.macindex.macindex.catalog.CatalogLoader
-import com.macindex.macindex.catalog.MachineCatalog
 import com.macindex.macindex.userstate.AppStateStoreFactory
-import com.macindex.macindex.userstate.MachineNameResolver
 import com.macindex.macindex.userstate.UserStateUnavailableException
+import com.macindex.macindex.userstate.uidResolver
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -26,33 +26,34 @@ class AppStartup(application: Application) {
 
     init {
         processScope.launch {
-            cleanLegacyV491Artifacts(application)
             val catalog = try {
                 CatalogLoader.load(application.assets)
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (failure: IOException) {
                 mutableState.postValue(AppStartupState.Fatal(
-                    AppStartupState.FailureKind.CATALOG_ASSET,
+                    AppStartupState.FailureKind.CATALOG,
                     failure,
                 ))
                 return@launch
             } catch (failure: CatalogFormatException) {
                 mutableState.postValue(AppStartupState.Fatal(
-                    AppStartupState.FailureKind.CATALOG_ASSET,
+                    AppStartupState.FailureKind.CATALOG,
                     failure,
                 ))
                 return@launch
             }
+            cleanLegacyV491Artifacts(application)
             try {
                 val userState = AppStateStoreFactory.create(
                     application,
                     { name -> catalog.resolveLegacyName(name)?.uid() },
                     processScope,
                 )
-                // Reconcile's first atomic DataStore access completes the one supported 4.9.1
-                // migration; deleted UIDs and its notice then commit together.
-                userState.reconcile(catalog.asNameResolver())
+                userState.registerAppVersion(
+                    BuildConfig.VERSION_CODE,
+                    catalog.uidResolver(),
+                )
                 mutableState.postValue(AppStartupState.Ready(catalog, userState))
             } catch (cancelled: CancellationException) {
                 throw cancelled
@@ -63,10 +64,6 @@ class AppStartup(application: Application) {
                 ))
             }
         }
-    }
-
-    private fun MachineCatalog.asNameResolver() = MachineNameResolver { uid ->
-        findByUid(uid)?.name()
     }
 
 }

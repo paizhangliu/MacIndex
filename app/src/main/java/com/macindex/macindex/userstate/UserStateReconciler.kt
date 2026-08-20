@@ -6,66 +6,81 @@ internal class ReconciledUserState(
 )
 
 internal object UserStateReconciler {
-    fun reconcile(state: UserState, resolver: MachineNameResolver): ReconciledUserState {
+    fun reconcile(state: UserState, resolver: MachineUidResolver): ReconciledUserState {
         val removed = mutableListOf<RemovedUserContent>()
 
+        val occupiedCommentUids = state.library.comments.mapNotNull { comment ->
+            resolver.resolve(comment.machineUid).currentUid
+                ?.takeIf { it == comment.machineUid }
+        }.toMutableSet()
         val comments = state.library.comments.mapNotNull { comment ->
-            if (resolver.resolveDisplayName(comment.machineUid) == null) {
+            val resolution = resolver.resolve(comment.machineUid)
+            val currentUid = resolution.currentUid
+            if (currentUid == null || currentUid in occupiedCommentUids &&
+                currentUid != comment.machineUid
+            ) {
                 removed += RemovedUserContent(
                     RemovedContentKind.COMMENT,
-                    "${comment.machineUid}│${comment.text}",
+                    "${resolution.displayName} [${comment.machineUid}]│${comment.text}",
                 )
                 null
             } else {
-                comment
+                occupiedCommentUids += currentUid
+                if (currentUid == comment.machineUid) comment
+                else comment.copy(machineUid = currentUid)
             }
         }
 
         val folders = state.library.favouriteFolders.map { folder ->
             val machineUids = folder.machineUids.mapNotNull { uid ->
-                if (resolver.resolveDisplayName(uid) == null) {
+                val resolution = resolver.resolve(uid)
+                if (resolution.currentUid == null) {
                     removed += RemovedUserContent(
                         RemovedContentKind.FAVOURITE,
-                        "{${folder.name}}│[$uid]",
+                        "{${folder.name}}│${resolution.displayName} [$uid]",
                     )
                     null
                 } else {
-                    uid
+                    resolution.currentUid
                 }
-            }
+            }.distinct()
             folder.copy(machineUids = machineUids)
         }
 
         val compareMachines = state.library.compare.machineUids.mapNotNull { uid ->
-            if (resolver.resolveDisplayName(uid) == null) {
+            val resolution = resolver.resolve(uid)
+            if (resolution.currentUid == null) {
                 removed += RemovedUserContent(
                     RemovedContentKind.COMPARE,
-                    "[$uid]",
+                    "${resolution.displayName} [$uid]",
                 )
                 null
             } else {
-                uid
+                resolution.currentUid
             }
-        }
+        }.distinct()
         val oldCompare = state.library.compare
         val oldSelectionIsEmpty = oldCompare.leftUid.isEmpty() && oldCompare.rightUid.isEmpty()
-        val leftName = oldCompare.leftUid.takeIf { it.isNotEmpty() }
-            ?.let(resolver::resolveDisplayName)
-        val rightName = oldCompare.rightUid.takeIf { it.isNotEmpty() }
-            ?.let(resolver::resolveDisplayName)
+        val leftResolution = oldCompare.leftUid.takeIf { it.isNotEmpty() }
+            ?.let(resolver::resolve)
+        val rightResolution = oldCompare.rightUid.takeIf { it.isNotEmpty() }
+            ?.let(resolver::resolve)
+        val leftUid = leftResolution?.currentUid
+        val rightUid = rightResolution?.currentUid
         val selectionIsValid = oldSelectionIsEmpty ||
-            (leftName != null && rightName != null && oldCompare.leftUid != oldCompare.rightUid &&
-                oldCompare.leftUid in compareMachines && oldCompare.rightUid in compareMachines)
+            (leftUid != null && rightUid != null && leftUid != rightUid &&
+                leftUid in compareMachines && rightUid in compareMachines)
         if (!oldSelectionIsEmpty && !selectionIsValid) {
             removed += RemovedUserContent(
                 RemovedContentKind.COMPARE,
-                "[${leftName ?: oldCompare.leftUid}]│[${rightName ?: oldCompare.rightUid}]",
+                "[${leftResolution?.displayName ?: oldCompare.leftUid}]│" +
+                    "[${rightResolution?.displayName ?: oldCompare.rightUid}]",
             )
         }
         val compare = CompareSelection(
             machineUids = compareMachines,
-            leftUid = if (selectionIsValid) oldCompare.leftUid else "",
-            rightUid = if (selectionIsValid) oldCompare.rightUid else "",
+            leftUid = if (selectionIsValid && !oldSelectionIsEmpty) leftUid.orEmpty() else "",
+            rightUid = if (selectionIsValid && !oldSelectionIsEmpty) rightUid.orEmpty() else "",
         )
 
         val library = state.library.copy(
