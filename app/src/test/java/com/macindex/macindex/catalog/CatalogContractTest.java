@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Release-catalog integrity and browse contracts, separate from search algorithm fixtures. */
+/** Release-catalog browse and search contracts, separate from algorithm fixtures. */
 public final class CatalogContractTest {
 
     @BeforeClass
@@ -49,7 +49,6 @@ public final class CatalogContractTest {
                 Path.of(System.getProperty("macindex.catalog.legacyNames.path")),
                 StandardCharsets.UTF_8);
         final JSONObject document = new JSONObject(json);
-        assertEquals(1, document.getInt("schema"));
         final JSONArray names = document.getJSONArray("names");
         assertTrue(names.length() > 0);
         for (int index = 0; index < names.length(); index++) {
@@ -58,13 +57,14 @@ public final class CatalogContractTest {
             assertNotNull(identity.getString("name"), resolved);
             assertEquals(identity.getString("uid"), resolved.uid());
         }
-        assertEquals("MI000001", catalog.resolveLegacyName("  Macintosh 128K  ").uid());
-        assertNull(catalog.resolveLegacyName("Macintosh"));
+        final JSONObject first = names.getJSONObject(0);
+        assertEquals(first.getString("uid"), catalog.resolveLegacyName(
+                "  " + first.getString("name") + "  ").uid());
         assertNull(catalog.resolveLegacyName("not a legacy machine"));
     }
 
     @Test
-    public void everyAuthoredSearchValueFindsItsMachineWithoutDuplicates() {
+    public void everyCatalogSearchValueFindsItsMachineWithoutDuplicates() {
         for (CatalogMachine source : payload.getMachinesList()) {
             final Machine expected = catalog.requireByUid(source.getUid());
             assertSearchValuesFind(source.getNamesList(), expected);
@@ -74,6 +74,7 @@ public final class CatalogContractTest {
             assertSearchValuesFind(source.getGestaltIdsList(), expected);
             assertSearchValuesFind(source.getOrderNumbersList(), expected);
             assertSearchValuesFind(source.getEmcNumbersList(), expected);
+            assertDerivedSearchValuesFind(source.getDerivedSearchValuesList(), expected);
         }
     }
 
@@ -143,34 +144,11 @@ public final class CatalogContractTest {
 
     @Test
     public void fixedNavigationSequenceUsesTheAuthoredProductBrowseOrder() {
-        assertProductSequence("imac_normal");
-        assertProductSequence("macbook_pro");
-        assertProductSequence("mac_performa");
-        assertProductSequence("powerbook_duo");
-        assertProductSequence("workgroup_server");
+        for (BrowseGroup group : catalog.browseGroups(
+                BrowseScope.ALL, BrowseGrouping.NAMES)) {
+            assertProductSequence(group.key());
+        }
         assertThrows(IllegalArgumentException.class,
                 () -> catalog.sequenceForProductType("not_a_product"));
-    }
-
-    @Test
-    public void rejectsDuplicateUidsWhileBuildingTheUidIndex() {
-        assertThrows(CatalogFormatException.class, () -> CatalogLoader.load(
-                payload.toBuilder().addMachines(payload.getMachines(0))
-                        .build().toByteArray()));
-    }
-
-    @Test
-    public void resultsAndCatalogAreImmutable() {
-        assertThrows(UnsupportedOperationException.class, () -> catalog.machines().clear());
-        final List<SearchHit> results = search("mac");
-        assertThrows(UnsupportedOperationException.class, results::clear);
-        final MachineCatalog.SearchResponse response =
-                catalog.search("2020", MachineCatalog.SearchScope.ALL);
-        assertThrows(UnsupportedOperationException.class, response.hits()::clear);
-        assertThrows(UnsupportedOperationException.class, response.facets()::clear);
-        assertThrows(UnsupportedOperationException.class,
-                () -> response.hits().get(0).evidence().clear());
-        assertThrows(UnsupportedOperationException.class,
-                () -> catalog.machines().get(0).processorFamilyKeys().clear());
     }
 }

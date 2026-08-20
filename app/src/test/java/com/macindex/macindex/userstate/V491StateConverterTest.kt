@@ -30,6 +30,7 @@ class V491StateConverterTest {
                 "isAutoCheckUpdate" to false,
                 "isOpenEveryMac" to true,
                 "skippedUpdateVersion" to "4.9.2",
+                "lastKnownVersion" to 29,
                 "lastMainManufacturer" to "appleppc",
                 "lastMainFilter" to "years",
                 "userComments" to "Mac A│First││Mac B│Second",
@@ -52,6 +53,7 @@ class V491StateConverterTest {
         assertFalse(state.preferences.automaticallyCheckUpdates)
         assertTrue(state.preferences.highlightCompareDifferences)
         assertEquals("4.9.2", state.preferences.skippedUpdateVersion)
+        assertEquals(29, state.registeredAppVersionCode)
         assertEquals(BrowseScope.ALL, state.uiMemory.mainScope)
         assertEquals(BrowseGrouping.NAMES, state.uiMemory.mainGrouping)
         assertEquals(listOf("MI000001", "MI000002"), state.library.comments.map { it.machineUid })

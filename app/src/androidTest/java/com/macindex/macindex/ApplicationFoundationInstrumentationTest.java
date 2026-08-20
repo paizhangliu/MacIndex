@@ -79,7 +79,7 @@ public final class ApplicationFoundationInstrumentationTest {
         assertFalse(MainActivity.restoreExternalRequestConsumed(true, searchShortcut));
 
         final Intent deepLink = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://macindex.paizhang.info/MI000001"));
+                Uri.parse("https://macindex.paizhang.info/share?code=MI000001"));
         assertFalse(MainActivity.restoreExternalRequestConsumed(true, deepLink));
     }
 

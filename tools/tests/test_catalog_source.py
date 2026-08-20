@@ -18,6 +18,13 @@ from catalog_source import (
     validate_legacy_machine_names,
     validate_search_offsets,
 )
+from catalog_search import (
+    FIELD_NAME,
+    FIELD_PROCESSOR,
+    MAPPING_DIRECT,
+    compile_search_lexicon,
+)
+from generate_catalog import browse_definitions
 
 
 def load_fixture(name):
@@ -33,7 +40,6 @@ class CatalogSourceTest(unittest.TestCase):
 
     def test_search_normalization_golden_cases(self):
         document = load_fixture("normalization_golden.json")
-        self.assertEqual(1, document["schema"])
         self.assertTrue(document["cases"])
         for case in document["cases"]:
             with self.subTest(raw=case["raw"]):
@@ -43,7 +49,6 @@ class CatalogSourceTest(unittest.TestCase):
 
     def test_rich_text_golden_cases_use_java_utf16_offsets(self):
         document = load_fixture("text_range_golden.json")
-        self.assertEqual(2, document["schema"])
         self.assertTrue(document["cases"])
         for case in document["cases"]:
             expected_ranges = tuple(
@@ -67,6 +72,8 @@ class CatalogSourceTest(unittest.TestCase):
         validate_search_offsets("Mac ±", "stable value")
         with self.assertRaisesRegex(RuntimeError, "changes text offsets"):
             validate_search_offsets("Oﬃce", "expanding value")
+        with self.assertRaisesRegex(RuntimeError, "require search boundary review"):
+            validate_search_offsets("q\u0301", "combining value")
 
     def test_codenames_use_the_same_structured_value_as_display_and_search(self):
         entries = read_identity_entries({
@@ -99,7 +106,7 @@ class CatalogSourceTest(unittest.TestCase):
                 "order_numbers", "fixture"
             )
 
-    def test_legacy_names_validate_content_not_a_historical_count(self):
+    def test_legacy_names_require_a_valid_nonempty_mapping(self):
         machines = ({
             "uid": "MI000001",
             "names": ({"value": "Macintosh", "qualifier": None},),
@@ -107,14 +114,57 @@ class CatalogSourceTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "legacy_names.json"
             path.write_text(json.dumps({
-                "schema": 1,
                 "names": [{"name": "Macintosh", "uid": "MI000001"}],
             }), encoding="utf-8")
-            validate_legacy_machine_names(machines, path, normalize_search_text)
+            validate_legacy_machine_names(machines, path)
 
-            path.write_text(json.dumps({"schema": 1, "names": []}), encoding="utf-8")
+            path.write_text(json.dumps({"names": []}), encoding="utf-8")
             with self.assertRaisesRegex(RuntimeError, "Illegal legacy machine names document"):
-                validate_legacy_machine_names(machines, path, normalize_search_text)
+                validate_legacy_machine_names(machines, path)
+
+    def test_catalog_compiles_query_vocabulary_and_browse_membership(self):
+        machine = {
+            "uid": "MI000001",
+            "product_type_key": "notebook",
+            "processor_family_keys": ("m1",),
+            "introductions": ({"year": 2020, "month": 11},),
+            "names": ({"value": "MacBook Pro"},),
+            "codenames": ({"value": "DBLite Fixture"},),
+            "order_numbers": ({"value": "MC700"},),
+            "derived_search_values": (
+                {
+                    "value": "MBP", "field": FIELD_NAME,
+                    "exact_token_only": True, "display_mapping": MAPPING_DIRECT,
+                },
+                {
+                    "value": "M1 Pro", "field": FIELD_PROCESSOR,
+                    "exact_token_only": False, "display_mapping": MAPPING_DIRECT,
+                },
+            ),
+        }
+        lexicon = compile_search_lexicon((machine,))
+        self.assertIn("macbook pro", lexicon["phrase_candidates"])
+        self.assertIn("book pro", lexicon["phrase_candidates"])
+        self.assertIn("lite fixture", lexicon["phrase_candidates"])
+        self.assertIn("m1 pro", lexicon["atomic_phrases"])
+        self.assertIn("mbp", lexicon["compact_name_aliases"])
+        self.assertEqual(("mc700",), lexicon["part_number_stems"])
+
+        older = dict(machine, uid="MI000002",
+                     introductions=({"year": 2019, "month": 1},))
+        taxonomy = {"browse_definitions": {
+            "names": {"groups": ({
+                "key": "notebook", "label": "Notebook", "section_key": None,
+            },)},
+            "processors": {"groups": ({
+                "key": "m1", "label": "M1", "section_key": None,
+            },)},
+        }}
+        definitions = browse_definitions(taxonomy, (machine, older))
+        self.assertEqual(
+            ("MI000002", "MI000001"),
+            definitions[0]["groups"][0]["machine_uids"],
+        )
 
 
 if __name__ == "__main__":

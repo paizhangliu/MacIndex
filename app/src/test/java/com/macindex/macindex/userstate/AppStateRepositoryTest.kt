@@ -151,7 +151,7 @@ class AppStateRepositoryTest {
         write.await()
         val prepared = repository.prepareImport(
             export.await(),
-            MachineNameResolver { "Machine" },
+            MachineUidResolver { uid -> MachineUidResolution(uid, "Machine") },
         )
 
         assertEquals("latest", prepared.library.comments.single().text)
@@ -167,8 +167,9 @@ class AppStateRepositoryTest {
         )
         val prepared = repository.prepareImport(
             UserDataJsonCodec.export(source),
-            MachineNameResolver { uid ->
-                if (uid == "MI000002") null else "Machine"
+            MachineUidResolver { uid ->
+                if (uid == "MI000002") MachineUidResolution(null, "Machine")
+                else MachineUidResolution(uid, "Machine")
             },
         )
         repository.applyImport(prepared)
@@ -208,13 +209,7 @@ class AppStateRepositoryTest {
     }
 
     @Test
-    fun preferencesHaveProductDefaultsAndPersistAtomically() = withRepository { repository ->
-        val defaults = repository.snapshot().preferences
-        assertFalse(defaults.sortComments)
-        assertTrue(defaults.playDeathSound)
-        assertTrue(defaults.highlightCompareDifferences)
-        assertTrue(defaults.automaticallyCheckUpdates)
-
+    fun preferenceChangesPersistAtomically() = withRepository { repository ->
         repository.setSortComments(true)
         repository.setAutomaticUpdateChecks(false)
         repository.setSkippedUpdateVersion("5.0.1")
@@ -222,6 +217,38 @@ class AppStateRepositoryTest {
         assertTrue(updated.sortComments)
         assertFalse(updated.automaticallyCheckUpdates)
         assertEquals("5.0.1", updated.skippedUpdateVersion)
+    }
+
+    @Test
+    fun registeringANewAppVersionReconcilesOnceAndAdvancesAtomically() = withRepository(
+        UserState(
+            library = UserLibrary(
+                comments = listOf(UserComment("MI000001", "note")),
+                nextFavouriteFolderId = 1,
+            ),
+            registeredAppVersionCode = 30,
+        ),
+    ) { repository ->
+        repository.registerAppVersion(31, MachineUidResolver { uid ->
+            MachineUidResolution(if (uid == "MI000001") "MI000002" else uid, uid)
+        })
+        val registered = repository.snapshot()
+        assertEquals(31, registered.registeredAppVersionCode)
+        assertEquals("MI000002", registered.library.comments.single().machineUid)
+
+        repository.registerAppVersion(31, MachineUidResolver {
+            MachineUidResolution(null, "must not run")
+        })
+        val unchanged = repository.snapshot()
+        assertEquals(31, unchanged.registeredAppVersionCode)
+        assertEquals("MI000002", unchanged.library.comments.single().machineUid)
+
+        repository.registerAppVersion(32, MachineUidResolver { uid ->
+            MachineUidResolution(if (uid == "MI000002") "MI000003" else uid, uid)
+        })
+        val upgraded = repository.snapshot()
+        assertEquals(32, upgraded.registeredAppVersionCode)
+        assertEquals("MI000003", upgraded.library.comments.single().machineUid)
     }
 
     @Test

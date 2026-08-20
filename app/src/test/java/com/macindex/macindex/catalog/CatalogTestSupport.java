@@ -6,8 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import com.macindex.macindex.catalog.proto.CatalogIdentity;
 import com.macindex.macindex.catalog.proto.CatalogIntroduction;
+import com.macindex.macindex.catalog.proto.CatalogBrowseDefinition;
+import com.macindex.macindex.catalog.proto.CatalogBrowseGroup;
 import com.macindex.macindex.catalog.proto.CatalogMachine;
 import com.macindex.macindex.catalog.proto.CatalogPayload;
+import com.macindex.macindex.catalog.proto.CatalogSearchDisplayMapping;
+import com.macindex.macindex.catalog.proto.CatalogSearchField;
+import com.macindex.macindex.catalog.proto.CatalogSearchValue;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -28,7 +33,7 @@ final class CatalogTestSupport {
                 Path.of(System.getProperty("macindex.catalog.path")))) {
             payload = CatalogPayload.parseFrom(input);
         }
-        catalog = CatalogLoader.load(payload.toByteArray());
+        catalog = new MachineCatalog(payload);
     }
 
     static void assertSearchValuesFind(
@@ -43,6 +48,33 @@ final class CatalogTestSupport {
         }
     }
 
+    static void assertDerivedSearchValuesFind(
+            final List<CatalogSearchValue> searchValues,
+            final Machine expected) {
+        for (CatalogSearchValue entry : searchValues) {
+            final String value = entry.getValue();
+            final SearchHit.Field field;
+            switch (entry.getField()) {
+                case CATALOG_SEARCH_FIELD_NAME:
+                    field = SearchHit.Field.NAME;
+                    break;
+                case CATALOG_SEARCH_FIELD_INTRODUCTION:
+                    field = SearchHit.Field.INTRODUCTION;
+                    break;
+                case CATALOG_SEARCH_FIELD_PROCESSOR:
+                    field = SearchHit.Field.PROCESSOR;
+                    break;
+                default:
+                    throw new AssertionError("Unexpected derived search field");
+            }
+            final List<SearchHit> results = catalog.search(
+                    value, MachineCatalog.SearchScope.forField(field)).hits();
+            assertValidMatchRange(findHit(results, value, expected));
+            assertEquals(results.size(), results.stream()
+                    .map(result -> result.machine().uid()).distinct().count());
+        }
+    }
+
     static List<SearchHit> search(final String query) {
         return search(catalog, query);
     }
@@ -51,20 +83,17 @@ final class CatalogTestSupport {
             final String query, final Machine machine, final String display,
             final int expectedMatchEnd) {
         final SearchHit hit = findHit(query, machine);
-        assertEquals(SearchHit.Field.PART_NUMBER, hit.field());
-        assertEquals(display, hit.matchedValue());
-        assertEquals(0, hit.matchStartInclusive());
-        assertEquals(expectedMatchEnd, hit.matchEndExclusive());
+        final SearchHit.Evidence evidence = primaryEvidence(hit);
+        assertEquals(SearchHit.Field.PART_NUMBER, evidence.field());
+        assertEquals(display, evidence.matchedValue());
+        assertEquals(0, evidence.matchStartInclusive());
+        assertEquals(expectedMatchEnd, evidence.matchEndExclusive());
         assertValidMatchRange(hit);
     }
 
     static List<SearchHit> search(
             final MachineCatalog source, final String query) {
         return source.search(query, MachineCatalog.SearchScope.ALL).hits();
-    }
-
-    static List<Machine> searchOrder(final String query) {
-        return searchMachines(query);
     }
 
     static List<Machine> searchMachines(final String query) {
@@ -76,9 +105,10 @@ final class CatalogTestSupport {
                                     final SearchHit.Field field,
                                     final String matchedValue) {
         final SearchHit hit = findHit(query, catalog.requireByUid(uid));
-        assertEquals(relation, hit.relation());
-        assertEquals(field, hit.field());
-        assertEquals(matchedValue, hit.matchedValue());
+        final SearchHit.Evidence evidence = primaryEvidence(hit);
+        assertEquals(relation, evidence.relation());
+        assertEquals(field, evidence.field());
+        assertEquals(matchedValue, evidence.matchedValue());
         assertValidMatchRange(hit);
     }
 
@@ -86,26 +116,33 @@ final class CatalogTestSupport {
                                            final int start, final int end,
                                            final String expectedSubstring) {
         final SearchHit hit = findHit(query, catalog.requireByUid(uid));
-        assertEquals(start, hit.matchStartInclusive());
-        assertEquals(end, hit.matchEndExclusive());
+        final SearchHit.Evidence evidence = primaryEvidence(hit);
+        assertEquals(start, evidence.matchStartInclusive());
+        assertEquals(end, evidence.matchEndExclusive());
         assertEquals(expectedSubstring, matchedSubstring(hit));
         assertValidMatchRange(hit);
     }
 
     static String matchedSubstring(final SearchHit hit) {
-        return hit.matchedValue().substring(
-                hit.matchStartInclusive(), hit.matchEndExclusive());
+        final SearchHit.Evidence evidence = primaryEvidence(hit);
+        return evidence.matchedValue().substring(
+                evidence.matchStartInclusive(), evidence.matchEndExclusive());
     }
 
     static void assertValidMatchRange(final SearchHit hit) {
-        assertTrue(hit.matchStartInclusive() >= 0);
-        assertTrue(hit.matchStartInclusive() < hit.matchEndExclusive());
-        assertTrue(hit.matchEndExclusive() <= hit.matchedValue().length());
+        final SearchHit.Evidence evidence = primaryEvidence(hit);
+        assertTrue(evidence.matchStartInclusive() >= 0);
+        assertTrue(evidence.matchStartInclusive() < evidence.matchEndExclusive());
+        assertTrue(evidence.matchEndExclusive() <= evidence.matchedValue().length());
         assertFalse(Character.isLowSurrogate(
-                hit.matchedValue().charAt(hit.matchStartInclusive())));
-        assertFalse(hit.matchEndExclusive() < hit.matchedValue().length()
+                evidence.matchedValue().charAt(evidence.matchStartInclusive())));
+        assertFalse(evidence.matchEndExclusive() < evidence.matchedValue().length()
                 && Character.isLowSurrogate(
-                hit.matchedValue().charAt(hit.matchEndExclusive())));
+                evidence.matchedValue().charAt(evidence.matchEndExclusive())));
+    }
+
+    static SearchHit.Evidence primaryEvidence(final SearchHit hit) {
+        return hit.evidence().get(0);
     }
 
     static SearchHit findHit(final String query, final Machine machine) {
@@ -118,12 +155,6 @@ final class CatalogTestSupport {
                 .filter(hit -> hit.machine() == machine)
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(machine.uid() + ": " + query));
-    }
-
-    static Machine machineNamed(final String name) {
-        return catalog.machines().stream()
-                .filter(machine -> machine.name().equals(name))
-                .findFirst().orElseThrow(() -> new AssertionError(name));
     }
 
     static List<String> searchUids(
@@ -141,9 +172,10 @@ final class CatalogTestSupport {
     }
 
     static void assertFacetCountsMatchScopes(
-            final String query, final MachineCatalog.SearchResponse response) {
+            final MachineCatalog source, final String query,
+            final MachineCatalog.SearchResponse response) {
         for (MachineCatalog.Facet facet : response.facets()) {
-            assertEquals(facet.field().name(), facet.count(), catalog.search(
+            assertEquals(facet.field().name(), facet.count(), source.search(
                     query, MachineCatalog.SearchScope.forField(facet.field())).hits().size());
         }
     }
@@ -164,6 +196,13 @@ final class CatalogTestSupport {
                 .addIntroductions(CatalogIntroduction.newBuilder()
                         .setYear(year)
                         .setMonth(1))
+                .clearDerivedSearchValues()
+                .addDerivedSearchValues(CatalogSearchValue.newBuilder()
+                        .setValue(Integer.toString(year))
+                        .setField(CatalogSearchField.CATALOG_SEARCH_FIELD_INTRODUCTION)
+                        .setExactTokenOnly(true)
+                        .setDisplayMapping(CatalogSearchDisplayMapping
+                                .CATALOG_SEARCH_DISPLAY_MAPPING_DIRECT))
                 .clearNames()
                 .clearCodenames()
                 .clearModelNumbers()
@@ -178,11 +217,22 @@ final class CatalogTestSupport {
     }
 
     static MachineCatalog catalogOf(final CatalogMachine... machines) {
-        final CatalogPayload.Builder fixture = CatalogPayload.newBuilder();
+        final CatalogPayload.Builder fixture = payload.toBuilder()
+                .clearMachines()
+                .clearRetiredMachines()
+                .clearBrowseDefinitions();
+        for (CatalogBrowseDefinition definition : payload.getBrowseDefinitionsList()) {
+            final CatalogBrowseDefinition.Builder cleanDefinition = definition.toBuilder()
+                    .clearGroups();
+            for (CatalogBrowseGroup group : definition.getGroupsList()) {
+                cleanDefinition.addGroups(group.toBuilder().clearMachineUids());
+            }
+            fixture.addBrowseDefinitions(cleanDefinition);
+        }
         for (CatalogMachine machine : machines) {
             fixture.addMachines(machine);
         }
-        return CatalogLoader.load(fixture.build().toByteArray());
+        return new MachineCatalog(fixture.build());
     }
 
     static void assertProductSequence(final String productTypeKey) {

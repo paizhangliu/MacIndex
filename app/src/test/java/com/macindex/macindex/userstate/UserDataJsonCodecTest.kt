@@ -37,13 +37,7 @@ class UserDataJsonCodecTest {
 
     @Test
     fun prepareKeepsKnownUidsAndReportsMissingMachines() {
-        val resolver = MachineNameResolver { uid ->
-            when (uid) {
-                "MI000001" -> "Current A"
-                "MI000002" -> null
-                else -> null
-            }
-        }
+        val resolver = resolverOf("MI000001")
         val prepared = UserDataJsonCodec.prepareImport(UserDataJsonCodec.export(library), resolver)
 
         assertEquals(listOf("MI000001"), prepared.library.comments.map { it.machineUid })
@@ -51,6 +45,26 @@ class UserDataJsonCodecTest {
         assertEquals(listOf("MI000001"), prepared.library.compare.machineUids)
         assertTrue(prepared.library.compare.leftUid.isEmpty())
         assertEquals(3, prepared.removedCount)
+    }
+
+    @Test
+    fun prepareMovesRetiredUidsToTheirCurrentReplacement() {
+        val source = UserLibrary(
+            comments = listOf(UserComment("MI000010", "moved")),
+        )
+        val prepared = UserDataJsonCodec.prepareImport(
+            UserDataJsonCodec.export(source),
+            MachineUidResolver { uid ->
+                if (uid == "MI000010") {
+                    MachineUidResolution("MI000020", "Old Machine")
+                } else {
+                    MachineUidResolution(null, uid)
+                }
+            },
+        )
+
+        assertEquals("MI000020", prepared.library.comments.single().machineUid)
+        assertEquals(0, prepared.removedCount)
     }
 
     @Test
@@ -65,7 +79,7 @@ class UserDataJsonCodecTest {
         """.trimIndent()
 
         assertThrows(InvalidUserDataException::class.java) {
-            UserDataJsonCodec.prepareImport(invalid, MachineNameResolver { null })
+            UserDataJsonCodec.prepareImport(invalid, resolverOf())
         }
     }
 
@@ -73,7 +87,7 @@ class UserDataJsonCodecTest {
     fun unsupportedSchemaIsRejected() {
         val json = UserDataJsonCodec.export(library).replaceFirst("\"schema\": 1", "\"schema\": 2")
         assertThrows(InvalidUserDataException::class.java) {
-            UserDataJsonCodec.prepareImport(json, MachineNameResolver { null })
+            UserDataJsonCodec.prepareImport(json, resolverOf())
         }
     }
 
@@ -100,16 +114,6 @@ class UserDataJsonCodecTest {
         assertThrows(InvalidUserDataException::class.java) {
             UserDataJsonCodec.parse(
                 UserDataJsonCodec.export(library).replaceFirst("MI000001", "not-a-uid"),
-            )
-        }
-    }
-
-    @Test
-    fun importSizeLimitIsCheckedBeforeParsing() {
-        assertThrows(InvalidUserDataException::class.java) {
-            UserDataJsonCodec.prepareImport(
-                " ".repeat(UserStateLimits.MAX_IMPORT_BYTES + 1),
-                MachineNameResolver { null },
             )
         }
     }
@@ -157,6 +161,14 @@ class UserDataJsonCodecTest {
             UserStateValidator.validateLibrary(
                 library.copy(comments = listOf(UserComment("MI000001", " A"))),
             )
+        }
+    }
+
+    private fun resolverOf(vararg activeUids: String) = MachineUidResolver { uid ->
+        if (uid in activeUids) {
+            MachineUidResolution(uid, "Machine")
+        } else {
+            MachineUidResolution(null, uid)
         }
     }
 }

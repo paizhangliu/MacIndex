@@ -24,7 +24,7 @@ public final class MachineDomainParityTest {
     public void loadedModelPreservesEveryCatalogField() throws Exception {
         final byte[] bytes = Files.readAllBytes(requiredPath("macindex.catalog.path"));
         final CatalogPayload payload = CatalogPayload.parseFrom(bytes);
-        final MachineCatalog catalog = CatalogLoader.load(bytes);
+        final MachineCatalog catalog = new MachineCatalog(payload);
 
         assertEquals(payload.getMachinesCount(), catalog.machines().size());
         for (int index = 0; index < payload.getMachinesCount(); index++) {
@@ -38,6 +38,7 @@ public final class MachineDomainParityTest {
         assertEquals(source.getManufacturerKey(), machine.manufacturerKey());
         assertEquals(source.getProductTypeKey(), machine.productTypeKey());
         assertEquals(source.getPictureAssetKey(), machine.pictureAssetKey());
+        assertEquals(source.getTypeLogoKey(), machine.typeLogoKey());
         assertEquals(source.getNames(0).getValue(), machine.name());
 
         assertEquals(source.getIntroductionsCount(), machine.introductions().size());
@@ -79,8 +80,10 @@ public final class MachineDomainParityTest {
         assertEquals(source.getDesign(), machine.design());
         assertEquals(stripPrefix(source.getSupportStatus().name(), "CATALOG_SUPPORT_STATUS_"),
                 machine.supportStatus().name());
-        assertEquals(stripPrefix(source.getSoundProfile().name(), "CATALOG_SOUND_PROFILE_"),
-                machine.soundProfile().name());
+        assertEquals(nullable(source.hasStartupSoundKey(), source.getStartupSoundKey()),
+                machine.startupSoundKey());
+        assertEquals(nullable(source.hasDeathSoundKey(), source.getDeathSoundKey()),
+                machine.deathSoundKey());
 
         final List<ExternalLink> links = new ArrayList<>();
         for (CatalogExternalLink link : source.getLinksList()) {

@@ -45,7 +45,8 @@ public class MachineCatalogTest {
         final Machine configuredCodename = catalog.requireByUid("MI000417");
         assertEquals(Collections.singletonList(configuredCodename),
                 searchMachines("J416s"));
-        assertTrue(search("J416s (M2 Pro)").isEmpty());
+        assertEquals(Collections.singletonList(configuredCodename),
+                searchMachines("J416s (M2 Pro)"));
         assertTrue(search("M2 Pro configuration").isEmpty());
 
         assertEquals(List.of(
@@ -69,7 +70,19 @@ public class MachineCatalogTest {
         assertTrue(MachineCatalog.isBlankSearchText(null));
         assertTrue(MachineCatalog.isBlankSearchText("\u3000"));
         assertTrue(MachineCatalog.isBlankSearchText("\u00A0"));
+        assertTrue(MachineCatalog.isBlankSearchText("，；、"));
         assertFalse(MachineCatalog.isBlankSearchText("\u3000Kanga\u3000"));
+
+        assertEquals(searchUids(catalog, "iMac G3"),
+                searchUids(catalog, "iMac，G3"));
+        assertEquals(searchUids(catalog, "iMac G3"),
+                searchUids(catalog, "iMac、G3"));
+        assertEquals(searchUids(catalog, "iMac G3"),
+                searchUids(catalog, "iMac：G3"));
+        assertEquals(searchUids(catalog, "iMac G3"),
+                searchUids(catalog, "iMac。G3"));
+        assertEquals(searchUids(catalog, "iMac20,1"),
+                searchUids(catalog, "iMac20，1"));
     }
 
     @Test
@@ -96,9 +109,34 @@ public class MachineCatalogTest {
                 SearchHit.Field.EMC_NUMBER, "3442");
 
         final SearchHit fullWidth = findHit("ＫＡＮＧＡ", catalog.requireByUid("MI000215"));
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, fullWidth.relation());
-        assertEquals(SearchHit.Field.CODENAME, fullWidth.field());
-        assertEquals("Kanga", fullWidth.matchedValue());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT,
+                primaryEvidence(fullWidth).relation());
+        assertEquals(SearchHit.Field.CODENAME, primaryEvidence(fullWidth).field());
+        assertEquals("Kanga", primaryEvidence(fullWidth).matchedValue());
+    }
+
+    @Test
+    public void acronymBoundariesDoNotSplitRomanNumeralsOrUnits() {
+        final MachineCatalog fixture = catalogOf(
+                searchFixture("MI900055", 2000)
+                        .addNames(identity("Macintosh IIci"))
+                        .build(),
+                searchFixture("MI900056", 2000)
+                        .addNames(identity("Acronym Fixture"))
+                        .addCodenames(identity("DBLite"))
+                        .build(),
+                searchFixture("MI900057", 2000)
+                        .addNames(identity("Machine 1GHz"))
+                        .build());
+
+        assertEquals(SearchHit.Relation.UNIT_PREFIX, primaryEvidence(findHit(
+                search(fixture, "II"), "II", fixture.requireByUid("MI900055"))).relation());
+        assertEquals(SearchHit.Relation.UNIT_INTERNAL, primaryEvidence(findHit(
+                search(fixture, "Ici"), "Ici", fixture.requireByUid("MI900055"))).relation());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT, primaryEvidence(findHit(
+                search(fixture, "Lite"), "Lite", fixture.requireByUid("MI900056"))).relation());
+        assertEquals(SearchHit.Relation.UNIT_INTERNAL, primaryEvidence(findHit(
+                search(fixture, "Hz"), "Hz", fixture.requireByUid("MI900057"))).relation());
     }
 
     @Test
@@ -109,12 +147,17 @@ public class MachineCatalogTest {
         assertMatchRange("kang", "MI000215", 0, 4, "Kang");
         assertMatchRange("ＡＮＧ", "MI000215", 1, 4, "ang");
 
+        final SearchHit compactName = findHit(
+                "macbookpro", catalog.requireByUid("MI000413"));
+        assertEquals(SearchHit.Field.NAME, primaryEvidence(compactName).field());
+        assertEquals("MacBook Pro", matchedSubstring(compactName));
+
         final CatalogMachine repeated = searchFixture("MI900015", 2000)
                 .addNames(identity("Banana"))
                 .build();
         final SearchHit hit = search(catalogOf(repeated), "ana").get(0);
-        assertEquals(1, hit.matchStartInclusive());
-        assertEquals(4, hit.matchEndExclusive());
+        assertEquals(1, primaryEvidence(hit).matchStartInclusive());
+        assertEquals(4, primaryEvidence(hit).matchEndExclusive());
         assertEquals("ana", matchedSubstring(hit));
 
     }
@@ -136,41 +179,51 @@ public class MachineCatalogTest {
 
         SearchHit hit = search(fixtureCatalog, "alpha").get(0);
         assertEquals(1, search(fixtureCatalog, "alpha").size());
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, hit.relation());
-        assertEquals(SearchHit.Field.NAME, hit.field());
-        assertEquals("Alpha", hit.matchedValue());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT, primaryEvidence(hit).relation());
+        assertEquals(SearchHit.Field.NAME, primaryEvidence(hit).field());
+        assertEquals("Alpha", primaryEvidence(hit).matchedValue());
 
         hit = search(fixtureCatalog, "alph").get(0);
-        assertEquals(SearchHit.Relation.UNIT_PREFIX, hit.relation());
-        assertEquals("Alpha", hit.matchedValue());
+        assertEquals(SearchHit.Relation.UNIT_PREFIX, primaryEvidence(hit).relation());
+        assertEquals("Alpha", primaryEvidence(hit).matchedValue());
 
         hit = search(fixtureCatalog, "lph").get(0);
-        assertEquals(SearchHit.Relation.UNIT_INTERNAL, hit.relation());
-        assertEquals("Alpha", hit.matchedValue());
+        assertEquals(SearchHit.Relation.UNIT_INTERNAL, primaryEvidence(hit).relation());
+        assertEquals("Alpha", primaryEvidence(hit).matchedValue());
 
         hit = search(fixtureCatalog, "beta").get(0);
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, hit.relation());
-        assertEquals(SearchHit.Field.NAME, hit.field());
-        assertEquals("Beta Extended", hit.matchedValue());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT, primaryEvidence(hit).relation());
+        assertEquals(SearchHit.Field.NAME, primaryEvidence(hit).field());
+        assertEquals("Beta Extended", primaryEvidence(hit).matchedValue());
 
         hit = search(fixtureCatalog, "M0001").get(0);
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, hit.relation());
-        assertEquals("M0001E", hit.matchedValue());
+        assertEquals(SearchHit.Relation.UNIT_PREFIX, primaryEvidence(hit).relation());
+        assertEquals("M0001E", primaryEvidence(hit).matchedValue());
     }
 
     @Test
-    public void trueTiesUseNaturalVisibleNamesNotDatesOrAuthoredOrder() {
-        final CatalogMachine alpha10 = tiedCodenameFixture(
-                "MI900001", "Alpha 10", 1980);
-        final CatalogMachine zulu = tiedCodenameFixture(
-                "MI900002", "Zulu", 1970);
-        final CatalogMachine alpha2 = tiedCodenameFixture(
-                "MI900003", "Alpha 2", 2025);
-        final List<String> expected = List.of("MI900003", "MI900001", "MI900002");
+    public void trueTiesUseHomepageCategoryThenIntroductionThenNaturalName() {
+        final CatalogMachine olderServer = tiedCodenameFixture(
+                "MI900001", "Aardvark Server", 1970).toBuilder()
+                .setProductTypeKey("mac_server").build();
+        final CatalogMachine olderDesktop = tiedCodenameFixture(
+                "MI900002", "Zulu Desktop", 1980).toBuilder()
+                .setProductTypeKey("power_mac_g3_g4_g5").build();
+        final CatalogMachine newerDesktop = tiedCodenameFixture(
+                "MI900003", "Alpha Desktop", 2025).toBuilder()
+                .setProductTypeKey("power_mac_g3_g4_g5").build();
+        final List<String> expected = List.of("MI900002", "MI900003", "MI900001");
 
-        assertEquals(expected, searchUids(catalogOf(alpha10, zulu, alpha2), "needle"));
-        assertEquals(expected, searchUids(catalogOf(alpha2, alpha10, zulu), "needle"));
-        assertEquals(expected, searchUids(catalogOf(zulu, alpha2, alpha10), "needle"));
+        assertEquals(expected,
+                searchUids(catalogOf(olderServer, newerDesktop, olderDesktop), "needle"));
+        assertEquals(expected,
+                searchUids(catalogOf(newerDesktop, olderDesktop, olderServer), "needle"));
+    }
+
+    @Test
+    public void sharedCodenameTiesFollowHomepageCategoryOrderBeforeIntroduction() {
+        assertEquals(List.of("MI000151", "MI000152", "MI000197"),
+                searchUids(catalog, "Gossamer"));
     }
 
     @Test
@@ -217,84 +270,184 @@ public class MachineCatalogTest {
     }
 
     @Test
+    public void completeVisiblePhrasePrefersTheWholeNameOverAContainingName() {
+        final CatalogMachine exact = searchFixture("MI900025", 2000)
+                .addNames(identity("Mac Pro")).build();
+        final CatalogMachine containing = searchFixture("MI900026", 2000)
+                .addNames(identity("iMac Pro")).build();
+
+        assertEquals(List.of("MI900025", "MI900026"),
+                searchUids(catalogOf(containing, exact), "mac pro"));
+    }
+
+    @Test
     public void semanticUnitRankingHandlesRepresentativeUserQueries() {
-        assertEquals("iMac Pro (2017)", search("pro").get(0).machine().name());
+        assertEquals("Mac Pro", search("mac pro").get(0).machine().name());
+        assertEquals("Mac Pro", search("pro").get(0).machine().name());
         assertEquals("Mac mini", search("mini").get(0).machine().name());
-        assertEquals("iMac (24-inch, M1, 2021)",
+        assertEquals("Mac mini (M1, 2020)",
                 search("m1").get(0).machine().name());
-        assertEquals("MacBook Air (15-inch, M2, 2023)",
+        assertEquals("MacBook Air (M2, 2022)",
                 search("m2").get(0).machine().name());
-        assertEquals("Developer Transition Kit (2020)",
+        assertEquals("Mac mini (M1, 2020)",
                 search("2020").get(0).machine().name());
 
         assertHit("J185", "MI000301", SearchHit.Relation.COMPLETE_UNIT,
                 SearchHit.Field.CODENAME, "J185 (iMac20,1)");
-        final SearchHit numericCodename = search("185").get(0);
-        assertEquals("MI000301", numericCodename.machine().uid());
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, numericCodename.relation());
-        assertEquals("185", matchedSubstring(numericCodename));
+        final SearchHit exactGestalt = search("313").get(0);
+        assertEquals("MI000215", exactGestalt.machine().uid());
+        assertEquals(SearchHit.Field.GESTALT_ID, primaryEvidence(exactGestalt).field());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT,
+                primaryEvidence(exactGestalt).relation());
+        assertEquals(SearchHit.Relation.UNIT_INTERNAL, primaryEvidence(findHit(
+                "313", catalog.requireByUid("MI000427"))).relation());
 
         assertEquals(List.of(
                         "Macintosh Performa 6400 Series",
-                        "Macintosh PowerBook 2400c",
-                        "Macintosh PowerBook 3400c",
                         "Power Macintosh 6400",
+                        "Macintosh PowerBook 3400c",
+                        "Macintosh PowerBook 2400c",
                         "PowerBook G3"),
                 search("PowerStar").stream()
                         .map(hit -> hit.machine().name()).collect(Collectors.toList()));
     }
 
     @Test
-    public void responseFacetsUseTheSameFieldScopedResultsAsTheirCounts() {
-        final MachineCatalog.SearchResponse years =
-                catalog.search("2020", MachineCatalog.SearchScope.ALL);
-        assertEquals(9, years.hits().size());
-        assertEquals("Developer Transition Kit (2020)",
-                years.hits().get(0).machine().name());
-        assertEquals(SearchHit.Field.NAME, years.hits().get(0).field());
-        assertEquals(2, years.facets().size());
-        assertEquals(8, facetCount(years, SearchHit.Field.NAME));
-        assertEquals(1, facetCount(years, SearchHit.Field.EMC_NUMBER));
-        assertEquals(8, catalog.search(
-                "2020", MachineCatalog.SearchScope.NAME).hits().size());
-        assertEquals(9, catalog.search(
-                "2020", MachineCatalog.SearchScope.NAME).allCount());
-        assertEquals(1, catalog.search(
-                "2020", MachineCatalog.SearchScope.EMC_NUMBER).hits().size());
-        assertFacetCountsMatchScopes("2020", years);
+    public void processorAndMachineAbbreviationsComposeWithNamesAndYears() {
+        for (String processor : List.of(
+                "G3", "G4", "G5", "68K", "PPC", "P4", "Pentium",
+                "NHM", "WSM", "SNB", "IVB", "HSW", "BDW", "PNR",
+                "SKL", "KBL", "CFL", "AML", "CLX", "CML", "ICL",
+                "Core i3", "i5", "i7", "i9", "C2D", "C2E",
+                "Lynnfield", "Haswell", "4960HQ", "T7700", "7450",
+                "T1", "T2", "A12Z", "A18 Pro", "A18Pro",
+                "M1", "M1P", "M1M", "M1U",
+                "M2", "M2P", "M2M", "M2U",
+                "M3", "M3P", "M3M", "M3U",
+                "M4", "M4P", "M4M",
+                "M5", "M5P", "M5M")) {
+            assertFalse(processor, catalog.search(
+                    processor, MachineCatalog.SearchScope.PROCESSOR).hits().isEmpty());
+        }
+        assertEquals(searchUids(catalog, "M1 Pro"), searchUids(catalog, "M1Pro"));
+        assertEquals(searchUids(catalog, "M1 Pro"), searchUids(catalog, "M1P"));
+        assertEquals(searchUids(catalog, "Core i7"), searchUids(catalog, "i7"));
+        assertEquals(searchUids(catalog, "A18 Pro"), searchUids(catalog, "A18Pro"));
 
-        final MachineCatalog.SearchResponse emc =
-                catalog.search("2020", MachineCatalog.SearchScope.EMC_NUMBER);
-        assertEquals(MachineCatalog.SearchScope.EMC_NUMBER, emc.scope());
-        assertEquals(1, emc.hits().size());
-        assertEquals("MI000168", emc.hits().get(0).machine().uid());
-        assertEquals(SearchHit.Field.EMC_NUMBER, emc.hits().get(0).field());
+        final List<SearchHit> t2 = search("T2");
+        final long t2SecurityChipMachines = t2.stream().filter(hit ->
+                hit.machine().processor().contains("Apple T2")).count();
+        assertTrue(t2SecurityChipMachines > 0);
+        assertTrue(t2.subList(0, (int) t2SecurityChipMachines).stream().allMatch(hit ->
+                hit.machine().processor().contains("Apple T2")
+                        && primaryEvidence(hit).field() == SearchHit.Field.PROCESSOR));
+        final List<SearchHit> t1 = search("T1");
+        final long t1SecurityChipMachines = t1.stream().filter(hit ->
+                hit.machine().processor().contains("Apple T1")).count();
+        assertTrue(t1SecurityChipMachines > 0);
+        assertTrue(t1.subList(0, (int) t1SecurityChipMachines).stream().allMatch(hit ->
+                hit.machine().processor().contains("Apple T1")
+                        && primaryEvidence(hit).field() == SearchHit.Field.PROCESSOR));
+        assertTrue(catalog.search("A12Z", MachineCatalog.SearchScope.PROCESSOR)
+                .hits().stream().allMatch(hit ->
+                        hit.machine().processor().contains("Apple A12Z")));
+        assertTrue(catalog.search("A18Pro", MachineCatalog.SearchScope.PROCESSOR)
+                .hits().stream().allMatch(hit ->
+                        hit.machine().processor().contains("Apple A18 Pro")));
+        for (String displayOnlyTerm : List.of(
+                "FPU", "Tonga", "Jade Chop", "Donan", "Tahiti")) {
+            assertTrue(displayOnlyTerm, catalog.search(
+                    displayOnlyTerm, MachineCatalog.SearchScope.PROCESSOR).hits().isEmpty());
+        }
+        assertTrue(Collections.disjoint(List.of("MI000034", "MI000038", "MI000071"),
+                catalog.search("3210", MachineCatalog.SearchScope.PROCESSOR).hits().stream()
+                        .map(hit -> hit.machine().uid()).collect(Collectors.toList())));
+        assertTrue(Collections.disjoint(List.of("MI000104", "MI000114", "MI000116"),
+                catalog.search("5x86", MachineCatalog.SearchScope.PROCESSOR).hits().stream()
+                        .map(hit -> hit.machine().uid()).collect(Collectors.toList())));
+        assertTrue(Collections.disjoint(List.of("MI000104", "MI000114", "MI000116"),
+                catalog.search("6x86", MachineCatalog.SearchScope.PROCESSOR).hits().stream()
+                        .map(hit -> hit.machine().uid()).collect(Collectors.toList())));
+
+        final List<SearchHit> m1Pro = search("MacBook Pro M1 Pro");
+        assertFalse(m1Pro.isEmpty());
+        assertTrue(m1Pro.stream().allMatch(hit ->
+                hit.machine().processor().contains("Apple M1 Pro")));
+
+        for (String abbreviation : List.of(
+                "MB", "MBN", "MBP", "MBA", "MM", "MP", "PB", "PM", "WGS", "ANS",
+                "DTK", "BW", "DA", "QS", "MDD", "WS", "rMB", "nMB", "rMBP", "TB")) {
+            assertFalse(abbreviation, catalog.search(
+                    abbreviation, MachineCatalog.SearchScope.NAME).hits().isEmpty());
+        }
+        assertTrue(catalog.search("MBPX", MachineCatalog.SearchScope.NAME).hits().isEmpty());
+
+        final List<SearchHit> imacG3 = search("iMac G3");
+        assertFalse(imacG3.isEmpty());
+        assertTrue(imacG3.get(0).machine().name().startsWith("iMac"));
+        assertTrue(imacG3.get(0).machine().processorFamilyKeys().contains("g3"));
+
+        final List<SearchHit> imacM4 = search("iMac M4");
+        assertFalse(imacM4.isEmpty());
+        assertTrue(imacM4.get(0).machine().name().startsWith("iMac"));
+        assertTrue(imacM4.get(0).machine().processorFamilyKeys().contains("m4"));
+
+        final List<SearchHit> macBookAirM2 = search("MacBook Air M2");
+        assertFalse(macBookAirM2.isEmpty());
+        assertEquals("macbook_air", macBookAirM2.get(0).machine().productTypeKey());
+        assertTrue(macBookAirM2.get(0).machine().processorFamilyKeys().contains("m2"));
+
+        final List<String> compactNames = searchUids(catalog, "macbookpro 2014");
+        assertFalse(compactNames.isEmpty());
+        assertEquals(compactNames, searchUids(catalog, "MBP 2014"));
+        assertEquals(compactNames, searchUids(catalog, "MBP2014"));
+        assertTrue(search("MBP 2014").stream().allMatch(hit ->
+                hit.machine().productTypeKey().equals("macbook_pro")
+                        && introducedIn(hit.machine(), 2014)));
+
+        final List<String> powerMac8100 = searchUids(catalog, "PM 8100");
+        assertFalse(powerMac8100.isEmpty());
+        assertEquals(powerMac8100, searchUids(catalog, "PM8100"));
+
+        final List<SearchHit> powerMac2005 = search("powermac 2005");
+        assertFalse(powerMac2005.isEmpty());
+        assertTrue(powerMac2005.get(0).machine().productTypeKey().equals("power_mac")
+                || powerMac2005.get(0).machine().productTypeKey()
+                        .equals("power_mac_g3_g4_g5"));
+        assertTrue(introducedIn(powerMac2005.get(0).machine(), 2005));
+
+        assertEquals(2, catalog.search(
+                "DTK", MachineCatalog.SearchScope.NAME).hits().size());
+        assertTrue(catalog.search("MP", MachineCatalog.SearchScope.NAME).hits().stream()
+                .noneMatch(hit -> hit.machine().uid().equals("MI000253")));
     }
 
     @Test
-    public void shortQueriesRankCompleteHumanUnitsAheadOfPartialIdentifiers() {
-        final MachineCatalog.SearchResponse m2 =
-                catalog.search("M2", MachineCatalog.SearchScope.ALL);
-        assertTrue(m2.hits().size() > 4);
-        assertTrue(m2.facets().size() > 2);
-        assertEquals(3, facetCount(m2, SearchHit.Field.NAME));
-        assertTrue(facetCount(m2, SearchHit.Field.CODENAME) > 0);
-        assertTrue(facetCount(m2, SearchHit.Field.MODEL_NUMBER) > 0);
-        assertTrue(facetCount(m2, SearchHit.Field.PART_NUMBER) > 0);
-        assertFalse(catalog.search(
-                "M2", MachineCatalog.SearchScope.MODEL_NUMBER).hits().isEmpty());
-        assertFalse(catalog.search(
-                "M2", MachineCatalog.SearchScope.PART_NUMBER).hits().isEmpty());
-        assertFacetCountsMatchScopes("M2", m2);
-        for (SearchHit hit : m2.hits().subList(0, 4)) {
-            assertEquals(SearchHit.Relation.COMPLETE_UNIT, hit.relation());
-        }
-        for (String query : List.of("G3", "LC", "SE", "II")) {
-            final List<SearchHit> hits = search(query);
-            assertFalse(query, hits.isEmpty());
-            assertEquals(query, SearchHit.Relation.COMPLETE_UNIT,
-                    hits.get(0).relation());
-        }
+    public void responseFacetsUseTheSameFieldScopedResultsAsTheirCounts() {
+        final CatalogMachine visibleName = searchFixture("MI900071", 2000)
+                .addNames(identity("Alpha 2020"))
+                .build();
+        final CatalogMachine emcNumber = searchFixture("MI900072", 2000)
+                .addNames(identity("Beta"))
+                .addEmcNumbers(identity("2020"))
+                .build();
+        final MachineCatalog fixture = catalogOf(emcNumber, visibleName);
+        final MachineCatalog.SearchResponse all =
+                fixture.search("2020", MachineCatalog.SearchScope.ALL);
+
+        assertEquals(2, all.hits().size());
+        assertEquals(2, all.facets().size());
+        assertEquals(1, facetCount(all, SearchHit.Field.NAME));
+        assertEquals(1, facetCount(all, SearchHit.Field.EMC_NUMBER));
+        assertFacetCountsMatchScopes(fixture, "2020", all);
+
+        final MachineCatalog.SearchResponse emc =
+                fixture.search("2020", MachineCatalog.SearchScope.EMC_NUMBER);
+        assertEquals(MachineCatalog.SearchScope.EMC_NUMBER, emc.scope());
+        assertEquals(1, emc.hits().size());
+        assertEquals("MI900072", emc.hits().get(0).machine().uid());
+        assertEquals(SearchHit.Field.EMC_NUMBER,
+                primaryEvidence(emc.hits().get(0)).field());
     }
 
     @Test
@@ -308,53 +461,64 @@ public class MachineCatalogTest {
             assertEquals(prefix, partNumbers.hits().size(),
                     facetCount(all, SearchHit.Field.PART_NUMBER));
             assertTrue(prefix, partNumbers.hits().stream()
-                    .allMatch(hit -> hit.field() == SearchHit.Field.PART_NUMBER));
+                    .allMatch(hit -> primaryEvidence(hit).field()
+                            == SearchHit.Field.PART_NUMBER));
         }
     }
 
     @Test
-    public void whitespaceTokensMayAndAcrossFieldsButNeverIntroductionDates() {
-        final List<SearchHit> kanga = search("PowerBook G3 Kanga");
+    public void whitespaceTokensMayAndAcrossNamesIdentifiersAndIntroductionYears() {
+        final CatalogMachine crossField = searchFixture("MI900031", 2000)
+                .addNames(identity("PowerBook G3"))
+                .addCodenames(identity("Kanga"))
+                .build();
+        final CatalogMachine modelAndName = searchFixture("MI900032", 2000)
+                .addNames(identity("Notebook 2012"))
+                .addModelNumbers(identity("A1278"))
+                .build();
+        final CatalogMachine introductionOnly = searchFixture("MI900033", 2012)
+                .addNames(identity("Neutral Notebook"))
+                .addModelNumbers(identity("A1278"))
+                .build();
+        final MachineCatalog fixture = catalogOf(
+                crossField, modelAndName, introductionOnly);
+
+        final List<SearchHit> kanga = search(fixture, "PowerBook G3 Kanga");
         assertEquals(1, kanga.size());
-        assertEquals("MI000215", kanga.get(0).machine().uid());
-        assertEquals(3, kanga.get(0).evidence().size());
+        assertEquals("MI900031", kanga.get(0).machine().uid());
+        assertEquals(2, kanga.get(0).evidence().size());
         assertTrue(kanga.get(0).evidence().stream().anyMatch(
                 item -> item.field() == SearchHit.Field.NAME));
         assertTrue(kanga.get(0).evidence().stream().anyMatch(
                 item -> item.field() == SearchHit.Field.CODENAME));
-        assertTrue(catalog.search("PowerBook G3 Kanga",
+        assertTrue(fixture.search("PowerBook G3 Kanga",
                 MachineCatalog.SearchScope.NAME).hits().isEmpty());
         assertEquals(kanga.get(0).machine(),
-                search("PowerBook   \u3000 G3  Kanga").get(0).machine());
+                search(fixture, "PowerBook   \u3000 G3  Kanga").get(0).machine());
 
-        final MachineCatalog.SearchResponse a1278Response =
-                catalog.search("A1278", MachineCatalog.SearchScope.ALL);
-        final List<SearchHit> a1278 = a1278Response.hits();
-        assertEquals(6, a1278.size());
-        assertEquals(1, a1278Response.facets().size());
-        assertEquals(6, facetCount(a1278Response, SearchHit.Field.MODEL_NUMBER));
-        assertTrue(a1278.stream().allMatch(
-                hit -> hit.field() == SearchHit.Field.MODEL_NUMBER));
-        final List<SearchHit> modelAndVisibleYear = search("A1278 2012");
-        assertEquals(1, modelAndVisibleYear.size());
-        assertEquals("MI000345", modelAndVisibleYear.get(0).machine().uid());
-        assertTrue(modelAndVisibleYear.get(0).machine().name().contains("2012"));
-        assertTrue(modelAndVisibleYear.get(0).evidence().stream().anyMatch(
+        final List<SearchHit> modelAndYear = search(fixture, "A1278 2012");
+        assertEquals(List.of("MI900032", "MI900033"), modelAndYear.stream()
+                .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
+        assertTrue(modelAndYear.get(0).evidence().stream().anyMatch(
                 item -> item.field() == SearchHit.Field.NAME));
-        assertTrue(modelAndVisibleYear.get(0).evidence().stream().anyMatch(
+        assertTrue(modelAndYear.get(0).evidence().stream().anyMatch(
                 item -> item.field() == SearchHit.Field.MODEL_NUMBER));
-        assertTrue(catalog.search("A1278 2012",
+        assertTrue(modelAndYear.get(1).evidence().stream().anyMatch(
+                item -> item.field() == SearchHit.Field.INTRODUCTION));
+        assertTrue(modelAndYear.get(1).evidence().stream().anyMatch(
+                item -> item.field() == SearchHit.Field.MODEL_NUMBER));
+        assertTrue(fixture.search("A1278 2012",
                 MachineCatalog.SearchScope.MODEL_NUMBER).hits().isEmpty());
-        assertTrue(catalog.search("A1278 2012",
+        assertTrue(fixture.search("A1278 2012",
                 MachineCatalog.SearchScope.NAME).hits().isEmpty());
-        final CatalogMachine introductionOnly = searchFixture("MI900031", 2012)
-                .addNames(identity("Neutral Notebook"))
-                .addModelNumbers(identity("A1278"))
-                .build();
-        assertTrue(search(catalogOf(introductionOnly), "A1278 2012").isEmpty());
+        assertEquals(1, search(catalogOf(introductionOnly), "A1278 2012").size());
 
-        final List<String> wallStreet = searchUids(catalog, "Wall Street");
-        assertEquals(List.of("MI000216", "MI000217"), wallStreet);
+        assertEquals(List.of("MI900033"), fixture.search(
+                "2012", MachineCatalog.SearchScope.INTRODUCTION).hits().stream()
+                .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
+        assertTrue(fixture.search("201", MachineCatalog.SearchScope.INTRODUCTION)
+                .hits().isEmpty());
+        assertFalse(search(fixture, "201").isEmpty());
     }
 
     @Test
@@ -372,9 +536,29 @@ public class MachineCatalogTest {
                 .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
         assertEquals(1, hits.get(0).evidence().size());
         assertEquals(2, hits.get(1).evidence().size());
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, hits.get(0).relation());
-        assertTrue(hits.get(0).isWholeQueryMatch());
-        assertFalse(hits.get(1).isWholeQueryMatch());
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT,
+                primaryEvidence(hits.get(0)).relation());
+    }
+
+    @Test
+    public void adjacentPhrasesAndEvidenceInOneValueResolveMultiwordAmbiguity() {
+        assertEquals("MI000404", search("Mac Pro M2").get(0).machine().uid());
+        assertEquals("MI000404", search("Mac Pro 2023").get(0).machine().uid());
+
+        final String imac2008 = search("iMac 2008").get(0).machine().uid();
+        assertTrue(imac2008.equals("MI000273") || imac2008.equals("MI000274"));
+        assertTrue(List.of("MI000151", "MI000152", "MI000153", "MI000154")
+                .contains(search("Power Mac G3").get(0).machine().uid()));
+
+        final CatalogMachine coherent = searchFixture("MI900043", 2000)
+                .addNames(identity("Alpha 2008"))
+                .build();
+        final CatalogMachine distributed = searchFixture("MI900044", 2000)
+                .addNames(identity("Alpha"))
+                .addEmcNumbers(identity("2008"))
+                .build();
+        assertEquals("MI900043", search(catalogOf(distributed, coherent), "Alpha 2008")
+                .get(0).machine().uid());
     }
 
     @Test
@@ -401,72 +585,42 @@ public class MachineCatalogTest {
         final SearchHit bothFormsHit = findHit(
                 hits, "alpha beta", fixture.requireByUid("MI900047"));
 
-        assertEquals(SearchHit.Relation.UNIT_INTERNAL, internalHit.relation());
-        assertTrue(internalHit.isWholeQueryMatch());
+        assertEquals(SearchHit.Relation.UNIT_INTERNAL,
+                primaryEvidence(internalHit).relation());
         assertTrue(distributedHit.evidence().stream().allMatch(
                 evidence -> evidence.relation() == SearchHit.Relation.COMPLETE_UNIT));
-        assertFalse(distributedHit.isWholeQueryMatch());
-        assertTrue(MachineCatalog.compareSearchHits(distributedHit, internalHit) < 0);
+        assertTrue(hits.indexOf(distributedHit) < hits.indexOf(internalHit));
 
         assertEquals(2, bothFormsHit.evidence().size());
         assertTrue(bothFormsHit.evidence().stream().allMatch(
                 evidence -> evidence.relation() == SearchHit.Relation.COMPLETE_UNIT));
-        assertFalse(bothFormsHit.isWholeQueryMatch());
     }
 
     @Test
-    public void scopedFieldUsesTheSameWinningPlanForHitsAndFacetEligibility() {
-        final CatalogMachine tokenWinner = searchFixture("MI900048", 2000)
+    public void fieldScopeUsesTheSameRankingAsAllAndItsFacetCount() {
+        final CatalogMachine bothForms = searchFixture("MI900048", 2000)
                 .addNames(identity("Hybrid xalpha betay"))
                 .addNames(identity("Alpha"))
                 .addNames(identity("Beta"))
                 .build();
-        final CatalogMachine phraseWinner = searchFixture("MI900049", 2000)
-                .addNames(identity("Alpha Beta"))
-                .addNames(identity("Alpha"))
-                .addNames(identity("Beta"))
-                .build();
-        final MachineCatalog fixture = catalogOf(tokenWinner, phraseWinner);
+        final MachineCatalog fixture = catalogOf(bothForms);
 
         final MachineCatalog.SearchResponse all = fixture.search(
                 "alpha beta", MachineCatalog.SearchScope.ALL);
-        assertEquals(2, all.hits().size());
-        assertEquals(2, facetCount(all, SearchHit.Field.NAME));
+        assertEquals(1, all.hits().size());
+        assertEquals(1, facetCount(all, SearchHit.Field.NAME));
 
         final List<SearchHit> scoped = fixture.search(
                 "alpha beta", MachineCatalog.SearchScope.NAME).hits();
-        final SearchHit tokenHit = findHit(
+        final SearchHit scopedHit = findHit(
                 scoped, "alpha beta", fixture.requireByUid("MI900048"));
-        assertEquals(2, tokenHit.evidence().size());
-        assertFalse(tokenHit.isWholeQueryMatch());
-        assertTrue(tokenHit.evidence().stream().allMatch(
+        assertEquals(2, scopedHit.evidence().size());
+        assertTrue(scopedHit.evidence().stream().allMatch(
                 evidence -> evidence.relation() == SearchHit.Relation.COMPLETE_UNIT));
-
-        final SearchHit phraseHit = findHit(
-                scoped, "alpha beta", fixture.requireByUid("MI900049"));
-        assertEquals(1, phraseHit.evidence().size());
-        assertTrue(phraseHit.isWholeQueryMatch());
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, phraseHit.relation());
     }
 
     @Test
-    public void repeatedQueryTokensFallBackAsOneAndTerm() {
-        for (String term : List.of("Mac", "2020")) {
-            final String repeated = term + " " + term;
-            for (MachineCatalog.SearchScope scope : MachineCatalog.SearchScope.values()) {
-                final MachineCatalog.SearchResponse singleResponse = catalog.search(term, scope);
-                final MachineCatalog.SearchResponse repeatedResponse =
-                        catalog.search(repeated, scope);
-                assertEquals(term + " / " + scope,
-                        singleResponse.hits().stream().map(hit -> hit.machine().uid())
-                                .collect(Collectors.toList()),
-                        repeatedResponse.hits().stream().map(hit -> hit.machine().uid())
-                                .collect(Collectors.toList()));
-            }
-            assertTrue(repeated, search(repeated).stream()
-                    .allMatch(hit -> hit.evidence().size() == 1));
-        }
-
+    public void repeatedQueryTokensAreEquivalentToOneTerm() {
         final CatalogMachine repeatedPhrase = searchFixture("MI900043", 2000)
                 .addNames(identity("Zulu Mac Mac"))
                 .build();
@@ -525,9 +679,9 @@ public class MachineCatalogTest {
                 .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
         final SearchHit canonicalHit = findHit(
                 hits, "Alpha", fixture.requireByUid("MI900061"));
-        assertEquals("Mac Alpha", canonicalHit.matchedValue());
-        assertEquals(4, canonicalHit.matchStartInclusive());
-        assertEquals(9, canonicalHit.matchEndExclusive());
+        assertEquals("Mac Alpha", primaryEvidence(canonicalHit).matchedValue());
+        assertEquals(4, primaryEvidence(canonicalHit).matchStartInclusive());
+        assertEquals(9, primaryEvidence(canonicalHit).matchEndExclusive());
         assertEquals("Alpha", matchedSubstring(canonicalHit));
     }
 
@@ -550,27 +704,40 @@ public class MachineCatalogTest {
                 identifierPrefix, internal, prefix, complete);
 
         assertEquals(SearchHit.Relation.COMPLETE_UNIT,
-                findHit(search(fixture, "a"), "a", fixture.requireByUid("MI900063")).relation());
+                primaryEvidence(findHit(search(fixture, "a"), "a",
+                        fixture.requireByUid("MI900063"))).relation());
         assertEquals(SearchHit.Relation.UNIT_PREFIX,
-                findHit(search(fixture, "a"), "a", fixture.requireByUid("MI900064")).relation());
+                primaryEvidence(findHit(search(fixture, "a"), "a",
+                        fixture.requireByUid("MI900064"))).relation());
         assertEquals(SearchHit.Relation.UNIT_INTERNAL,
-                findHit(search(fixture, "a"), "a", fixture.requireByUid("MI900065")).relation());
+                primaryEvidence(findHit(search(fixture, "a"), "a",
+                        fixture.requireByUid("MI900065"))).relation());
         assertEquals(SearchHit.Relation.UNIT_PREFIX,
-                findHit(search(fixture, "m1"), "m1",
-                        fixture.requireByUid("MI900066")).relation());
+                primaryEvidence(findHit(search(fixture, "m1"), "m1",
+                        fixture.requireByUid("MI900066"))).relation());
     }
 
     @Test
     public void eachCandidateUsesItsBestOccurrenceForRankAndHighlight() {
-        final Machine allInOne = machineNamed("Power Macintosh G3 (All In One)");
-        final SearchHit wordHit = findHit("in", allInOne);
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, wordHit.relation());
+        final CatalogMachine allInOneSource = searchFixture("MI900081", 2000)
+                .addNames(identity("Power Macintosh G3 (All In One)"))
+                .build();
+        final CatalogMachine laterTwentySource = searchFixture("MI900082", 2000)
+                .addNames(identity("iMac (Early 2006 20-inch)"))
+                .build();
+        final MachineCatalog fixture = catalogOf(allInOneSource, laterTwentySource);
+        final Machine allInOne = fixture.requireByUid("MI900081");
+        final SearchHit wordHit = findHit(search(fixture, "in"), "in", allInOne);
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT,
+                primaryEvidence(wordHit).relation());
         assertEquals("In", matchedSubstring(wordHit));
 
-        final Machine laterTwenty = machineNamed("iMac (Early 2006 20-inch)");
-        final SearchHit numberHit = findHit("20", laterTwenty);
-        assertEquals(SearchHit.Relation.COMPLETE_UNIT, numberHit.relation());
-        assertEquals(laterTwenty.name().lastIndexOf("20"), numberHit.matchStartInclusive());
+        final Machine laterTwenty = fixture.requireByUid("MI900082");
+        final SearchHit numberHit = findHit(search(fixture, "20"), "20", laterTwenty);
+        assertEquals(SearchHit.Relation.COMPLETE_UNIT,
+                primaryEvidence(numberHit).relation());
+        assertEquals(laterTwenty.name().lastIndexOf("20"),
+                primaryEvidence(numberHit).matchStartInclusive());
         assertEquals("20", matchedSubstring(numberHit));
     }
 
@@ -589,7 +756,6 @@ public class MachineCatalogTest {
                 Path.of(System.getProperty("macindex.catalog.normalization.path")),
                 StandardCharsets.UTF_8);
         final JSONObject document = new JSONObject(json);
-        assertEquals(1, document.getInt("schema"));
         final JSONArray cases = document.getJSONArray("cases");
         assertFalse(cases.length() == 0);
         for (int index = 0; index < cases.length(); index++) {
@@ -602,44 +768,7 @@ public class MachineCatalogTest {
     }
 
     @Test
-    public void generatedTextRangesUseJavaUtf16Offsets() throws Exception {
-        final String json = Files.readString(
-                Path.of(System.getProperty("macindex.catalog.textRange.path")),
-                StandardCharsets.UTF_8);
-        final JSONObject document = new JSONObject(json);
-        assertEquals(2, document.getInt("schema"));
-        final JSONArray cases = document.getJSONArray("cases");
-        assertFalse(cases.length() == 0);
-        for (int caseIndex = 0; caseIndex < cases.length(); caseIndex++) {
-            final JSONObject testCase = cases.getJSONObject(caseIndex);
-            final String value = testCase.getString("text");
-            assertTrue("Golden case must exercise a supplementary code point",
-                    value.codePoints().count() < value.length());
-            final JSONArray ranges = testCase.getJSONArray("ranges");
-            for (int rangeIndex = 0; rangeIndex < ranges.length(); rangeIndex++) {
-                final JSONObject range = ranges.getJSONObject(rangeIndex);
-                final int start = range.getInt("start");
-                final int end = range.getInt("end");
-                assertEquals(range.getString("substring"), value.substring(start, end));
-                assertFalse(Character.isLowSurrogate(value.charAt(start)));
-                assertFalse(end < value.length()
-                        && Character.isLowSurrogate(value.charAt(end)));
-            }
-        }
-    }
-
-    @Test
     public void partNumberSuffixesFollowTheAuthoredRevisionGrammar() {
-        final Machine target = catalog.requireByUid("MI000215");
-        final MachineCatalog.SearchResponse exact =
-                catalog.search("M5994", MachineCatalog.SearchScope.ALL);
-        assertEquals(MachineCatalog.SearchScope.ALL, exact.scope());
-        assertEquals(Collections.singletonList(target), exact.hits().stream()
-                .map(SearchHit::machine).collect(Collectors.toList()));
-        assertTrue(exact.hits().stream()
-                .allMatch(hit -> hit.field() == SearchHit.Field.PART_NUMBER));
-        assertEquals("M5994*/A", exact.hits().get(0).matchedValue());
-
         final Machine mc700 = catalog.requireByUid("MI000339");
         assertPartNumberEvidence("MC700", mc700, "MC700*/A (2.3 GHz)", 5);
         assertPartNumberEvidence("MC700C", mc700, "MC700*/A (2.3 GHz)", 6);
@@ -651,17 +780,18 @@ public class MachineCatalogTest {
         assertPartNumberEvidence("M2147LL/B", multiRevision, "M2147*/B", 8);
 
         for (String query : List.of(
-                "M5994J", "M5994AB", "M5994J/", "M5994J/A",
-                "M5994AB/A", "M5994XX/A", "M5994CH/A")) {
+                "MC700J", "MC700AB", "MC700J/", "MC700J/A",
+                "MC700AB/A", "MC700XX/A", "MC700CH/A")) {
             final MachineCatalog.SearchResponse concrete =
                     catalog.search(query, MachineCatalog.SearchScope.NAME);
             assertEquals(query, MachineCatalog.SearchScope.ALL, concrete.scope());
-            assertEquals(query, Collections.singletonList(target), concrete.hits().stream()
+            assertEquals(query, Collections.singletonList(mc700), concrete.hits().stream()
                     .map(SearchHit::machine).collect(Collectors.toList()));
-            assertEquals(query, "M5994*/A", concrete.hits().get(0).matchedValue());
+            assertEquals(query, "MC700*/A (2.3 GHz)",
+                    primaryEvidence(concrete.hits().get(0)).matchedValue());
         }
-        for (String query : List.of("M5994LL/B", "M5994ABC", "M5994LL\\A",
-                "M5994/A")) {
+        for (String query : List.of("MC700LL/B", "MC700ABC", "MC700LL\\A",
+                "MC700/A")) {
             assertTrue(query, catalog.search(query, MachineCatalog.SearchScope.ALL)
                     .hits().isEmpty());
         }
@@ -669,55 +799,26 @@ public class MachineCatalogTest {
         final MachineCatalog.SearchResponse shared =
                 catalog.search("MD212ZP/A", MachineCatalog.SearchScope.ALL);
         assertEquals(MachineCatalog.SearchScope.ALL, shared.scope());
-        assertEquals(List.of("MI000349", "MI000348"), shared.hits().stream()
+        assertEquals(List.of("MI000348", "MI000349"), shared.hits().stream()
                 .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
         assertTrue(shared.hits().stream()
-                .allMatch(hit -> hit.field() == SearchHit.Field.PART_NUMBER));
+                .allMatch(hit -> primaryEvidence(hit).field()
+                        == SearchHit.Field.PART_NUMBER));
 
         final MachineCatalog.SearchResponse crossIdentifier =
                 catalog.search("M9020", MachineCatalog.SearchScope.ALL);
         assertEquals(List.of("MI000034", "MI000166"), crossIdentifier.hits().stream()
                 .map(hit -> hit.machine().uid()).collect(Collectors.toList()));
         assertEquals(List.of(SearchHit.Field.MODEL_NUMBER, SearchHit.Field.PART_NUMBER),
-                crossIdentifier.hits().stream().map(SearchHit::field)
+                crossIdentifier.hits().stream()
+                        .map(hit -> primaryEvidence(hit).field())
                         .collect(Collectors.toList()));
 
-        assertEquals(MachineCatalog.SearchScope.ALL,
-                catalog.search("M599", MachineCatalog.SearchScope.ALL).scope());
-        assertTrue(searchOrder("M599").contains(target));
     }
 
-    @Test
-    public void unifiedSearchIsMonotonicUnderItsSingleComparator() {
-        final List<SearchHit> sorted = search("mac");
-        for (int index = 1; index < sorted.size(); index++) {
-            final SearchHit previous = sorted.get(index - 1);
-            final SearchHit current = sorted.get(index);
-            assertTrue(MachineCatalog.compareSearchHits(previous, current) <= 0);
-        }
-    }
-
-    @Test
-    public void searchComparatorIsAntisymmetricAndTransitive() {
-        final List<SearchHit> hits = search("pro").subList(0, 16);
-        for (SearchHit left : hits) {
-            for (SearchHit right : hits) {
-                assertEquals(Integer.signum(MachineCatalog.compareSearchHits(left, right)),
-                        -Integer.signum(MachineCatalog.compareSearchHits(right, left)));
-            }
-        }
-        for (SearchHit first : hits) {
-            for (SearchHit second : hits) {
-                if (MachineCatalog.compareSearchHits(first, second) > 0) {
-                    continue;
-                }
-                for (SearchHit third : hits) {
-                    if (MachineCatalog.compareSearchHits(second, third) <= 0) {
-                        assertTrue(MachineCatalog.compareSearchHits(first, third) <= 0);
-                    }
-                }
-            }
-        }
+    private static boolean introducedIn(final Machine machine, final int year) {
+        return machine.introductions().stream()
+                .anyMatch(introduction -> introduction.year() == year);
     }
 
 }

@@ -24,6 +24,8 @@ public class UpdateCheckerTest {
         assertNull(outcome.error);
         assertTrue(outcome.result.isUpdateAvailable());
         assertEquals("4.10.0", outcome.result.getLatest().getVersion());
+        assertEquals("https://macindex.paizhang.info/downloads",
+                outcome.result.getLatest().getReleasePage());
     }
 
     @Test
@@ -69,25 +71,56 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void versionAndReleaseValidationRejectAmbiguity() throws Exception {
-        assertTrue(UpdateChecker.compareVersions("4.10.0", "4.9.9") > 0);
-        assertEquals("4.10.0", UpdateChecker.normalizeVersion(" v4.10.0 "));
-        assertEquals("https://github.com/paizhangliu/MacIndex/releases/tag/v4.10.0",
-                UpdateChecker.normalizeReleasePage(
-                        "https://github.com/paizhangliu/MacIndex/releases/tag/v4.10.0",
-                        "github.com", "/paizhangliu/MacIndex/releases"));
+    public void invalidWebsiteVersionFallsBackToGitHub() {
+        final UpdateChecker checker = new UpdateChecker(Runnable::run, (url, github) ->
+                github
+                        ? "{\"tag_name\":\"v4.10.1\","
+                                + "\"html_url\":\"https://github.com/paizhangliu/"
+                                + "MacIndex/releases/tag/v4.10.1\"}"
+                        : "{\"version\":\"v4.10.0-beta\","
+                                + "\"releasePage\":\"https://macindex.paizhang.info/"
+                                + "downloads\"}");
+
+        final Outcome outcome = run(checker, "4.10.0");
+
+        assertNull(outcome.error);
+        assertEquals("4.10.1", outcome.result.getLatest().getVersion());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void versionValidationRejectsPrerelease() {
-        UpdateChecker.normalizeVersion("v4.10.0-beta");
+    @Test
+    public void invalidWebsiteReleasePageFallsBackToGitHub() {
+        final String expectedPage =
+                "https://github.com/paizhangliu/MacIndex/releases/tag/v4.10.1";
+        final UpdateChecker checker = new UpdateChecker(Runnable::run, (url, github) ->
+                github
+                        ? "{\"tag_name\":\"v4.10.1\",\"html_url\":\""
+                                + expectedPage + "\"}"
+                        : "{\"version\":\"v4.10.0\","
+                                + "\"releasePage\":\"https://macindex.paizhang.info.evil/"
+                                + "downloads\"}");
+
+        final Outcome outcome = run(checker, "4.10.0");
+
+        assertNull(outcome.error);
+        assertEquals(expectedPage, outcome.result.getLatest().getReleasePage());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void releaseValidationRejectsPathPrefixLookalike() throws Exception {
-        UpdateChecker.normalizeReleasePage(
-                "https://github.com/paizhangliu/MacIndex/releases-malicious/tag/v4.10.0",
-                "github.com", "/paizhangliu/MacIndex/releases");
+    @Test
+    public void invalidGithubReleasePathIsReportedThroughTheUpdateFlow() {
+        final UpdateChecker checker = new UpdateChecker(Runnable::run, (url, github) -> {
+            if (!github) {
+                throw new IOException("website unavailable");
+            }
+            return "{\"tag_name\":\"v4.10.1\","
+                    + "\"html_url\":\"https://github.com/paizhangliu/MacIndex/"
+                    + "releases-malicious/tag/v4.10.1\"}";
+        });
+
+        final Outcome outcome = run(checker, "4.10.0");
+
+        assertNull(outcome.result);
+        assertTrue(outcome.error instanceof UpdateChecker.UpdateUnavailableException);
+        assertTrue(outcome.error.getCause() instanceof IllegalArgumentException);
     }
 
     private static Outcome run(final UpdateChecker checker, final String currentVersion) {

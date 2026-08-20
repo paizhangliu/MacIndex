@@ -19,6 +19,7 @@ class AppStateSerializerTest {
         assertTrue(state.preferences.useNavigationButtons)
         assertTrue(state.preferences.highlightCompareDifferences)
         assertEquals(1L, state.library.nextFavouriteFolderId)
+        assertEquals(0, state.registeredAppVersionCode)
     }
 
     @Test
