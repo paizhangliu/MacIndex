@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="information_specs_no_sound">该机型没有开机音或宕机音</string>
+    <string name="information_specs_everymac">点击下方来浏览更加详尽的数据</string>
     <string name="information_specs_high_vol_warning">当前音量较高，是否继续播放？\n选择“仍要播放”可暂时不再提示。\n你可以在偏好设置中关闭此警告。</string>
     <string name="setting_sort_comment">收藏与备注排序</string>
     <string name="setting_sort_comment_description">按照推出时间而非添加顺序排列收藏与备注。</string>
@@ -88,9 +89,9 @@
     <string name="search_help_title">搜索帮助</string>
     <string name="search_help_content">可以直接搜索以下信息，也可以用空格组合多个条件：\n\n• 机型名称、常用缩写和无空格写法，例如 MacBook Pro、MBP、MacBookPro、MBP2014\n• 机型开发代号，例如 Gossamer、J185\n• 各类标识符：型号 A1278、机型标识符 MacBookPro18,3、Gestalt 标识符 313、部件号 MC700CH/A、EMC 号 3442\n• 处理器代际、系列、Intel 开发代号和具体型号，例如 M1 Pro、i7、Haswell、SNB、4960HQ、T7700、PPC、7450；也可以搜索 T1、T2 安全芯片\n• 完整的推出年份，例如 2014\n\n组合示例：iMac M4、MacBook Air M2、MBP 2014、J185 iMac20,1、Tsunami 9500。\n\n搜索不区分英文字母大小写。\n\n搜索限制：\n\n• 同一机型的多个速度或配置版本可能合并为一个条目。请搜索机型系列，例如输入 8100，而不是 8100/80。MC700CH/A 这类部件号仍然支持。\n• 处理器系列与具体型号之间请使用空格。例如输入 i7 4960HQ 或 4960HQ，不要输入 i7-4960HQ。搜索处理器时，也不要添加 Intel、Apple 或 PowerPC 等前缀。\n• 输入的每个词都必须能在同一台机型中找到。请直接输入值，不要添加字段名称或其他说明词。例如输入 J185，而不是“Codename: J185”。\n• 不搜索主频、内存、存储、缓存、核心数量、端口等详细参数。\n• 只识别已经支持的常用缩写，不会推断昵称或自动纠正拼写。年份只接受完整的四位数字，例如 2014；不要输入 2014年或具体月份。</string>
     <string name="specs_help_title">参数页帮助</string>
-    <string name="specs_help_content">• 点击顶部图片播放可用的开机音或宕机音\n• 长按顶部图片查看大图\n• 长按任一参数复制该项信息\n• 点击 EveryMac 标志浏览更多资料</string>
+    <string name="specs_help_content">• 点击顶部图片播放可用的开机音或宕机音\n• 长按顶部图片查看大图\n• 长按任一参数复制该项信息</string>
     <string name="compare_help_title">比较页帮助</string>
-    <string name="compare_help_content">• 点击机型名称打开参数页\n• 点击机型图片播放可用的开机音或宕机音\n• 长按机型图片查看大图\n• 长按任一参数复制该项比较\n• 点击 EveryMac 标志浏览更多资料</string>
+    <string name="compare_help_content">• 点击机型名称打开参数页\n• 点击机型图片播放可用的开机音或宕机音\n• 长按机型图片查看大图\n• 长按任一参数复制该项比较</string>
     <string name="help_confirm">确定</string>
     <string name="menu_search">机型搜索</string>
     <string name="menu_random">试试手气</string>
@@ -243,6 +244,7 @@
     <string name="about_release_history">版本历史</string>
     <string name="open_source_licenses_failed">MacIndex 无法打开第三方许可证页面，请重试。</string>
     <string name="machine_image_unavailable">无法载入此机型的图片</string>
+    <string name="viewimage_rotate">图片仅供参考\n旋转设备可切换显示方向</string>
     <string name="sound_play_failed">无法播放此声音</string>
     <string name="comment_save_failed">MacIndex 无法保存此备注。请检查设备的可用存储空间，然后重试。</string>
     <string name="main_browse_save_failed">MacIndex 无法保存主页状态。请检查设备的可用存储空间，然后重试。</string>

@@ -2,6 +2,7 @@
     <string name="app_name" translatable="false">MacIndex</string>
     <string name="brand_everymac" translatable="false">EveryMac</string>
     <string name="information_specs_no_sound">This machine has no startup or death sounds</string>
+    <string name="information_specs_everymac">Tap below to access more specifications</string>
     <string name="information_specs_high_vol_warning">The current volume is high. Continue playback?\nTap \"Play Anyway\" to dismiss this warning temporarily.\nYou can disable this warning in Preferences.</string>
     <string name="setting_sort_comment">Bookmark/Comment Sorting</string>
     <string name="setting_sort_comment_description">Sort bookmarks and comments by introduction date rather than by the order in which they were added.</string>
@@ -95,9 +96,9 @@
     <string name="search_help_title">Search Help</string>
     <string name="search_help_content">You can search any of the following, or combine terms with spaces:\n\n• Machine names, common abbreviations, and names without spaces, such as MacBook Pro, MBP, MacBookPro, and MBP2014\n• Machine codenames, such as Gossamer and J185\n• Identifiers: Model Number A1278, Model Identifier MacBookPro18,3, Gestalt ID 313, Part Number MC700CH/A, and EMC Number 3442\n• Processor generations, families, Intel codenames, and models, such as M1 Pro, i7, Haswell, SNB, 4960HQ, T7700, PPC, and 7450; T1 and T2 security chips are also searchable\n• Complete introduction years, such as 2014\n\nExamples of combined searches: iMac M4, MacBook Air M2, MBP 2014, J185 iMac20,1, and Tsunami 9500.\n\nSearch is not case-sensitive.\n\nSearch limitations:\n\n• Speed and configuration variants of the same machine may be combined into one entry. Search for the machine family—for example, use 8100 rather than 8100/80. Part Numbers such as MC700CH/A are still supported.\n• Separate processor families and models with a space: use i7 4960HQ or 4960HQ, not i7-4960HQ. For processor searches, omit prefixes such as Intel, Apple, and PowerPC.\n• Every term must match the same machine. Enter values directly, without field labels or other descriptive words: use J185, not “Codename: J185.”\n• Detailed specifications such as clock speed, memory, storage, cache, core count, and ports are not searched.\n• Only supported abbreviations are recognized; nicknames and spelling errors are not inferred. Years must contain exactly four digits, such as 2014; months are not searched.</string>
     <string name="specs_help_title">Specifications Help</string>
-    <string name="specs_help_content">• Tap the top image to play available startup or death sounds\n• Press and hold the top image to view it full size\n• Press and hold any specification to copy it\n• Tap the EveryMac logo for more information</string>
+    <string name="specs_help_content">• Tap the top image to play available startup or death sounds\n• Press and hold the top image to view it full size\n• Press and hold any specification to copy it</string>
     <string name="compare_help_title">Compare Help</string>
-    <string name="compare_help_content">• Tap a machine name to open its Specifications page\n• Tap a machine image to play available startup or death sounds\n• Press and hold a machine image to view it full size\n• Press and hold any specification to copy the comparison\n• Tap the EveryMac logo for more information</string>
+    <string name="compare_help_content">• Tap a machine name to open its Specifications page\n• Tap a machine image to play available startup or death sounds\n• Press and hold a machine image to view it full size\n• Press and hold any specification to copy the comparison</string>
     <string name="help_confirm">OK</string>
     <string name="menu_search">Search</string>
     <string name="menu_random">I\'m Feeling Lucky</string>
@@ -255,6 +256,7 @@
     <string name="about_release_history">Version History</string>
     <string name="open_source_licenses_failed">MacIndex could not open the third-party licenses page. Please try again.</string>
     <string name="machine_image_unavailable">This machine image is unavailable</string>
+    <string name="viewimage_rotate">Image for reference only\nRotate your device to change the orientation</string>
     <string name="sound_play_failed">This sound could not be played</string>
     <string name="comment_save_failed">MacIndex could not save this comment. Check available device storage, then try again.</string>
     <string name="main_browse_save_failed">MacIndex could not save the main page state. Check available device storage, then try again.</string>
