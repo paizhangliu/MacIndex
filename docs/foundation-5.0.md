@@ -7,7 +7,7 @@ maintenance contract, not a future migration plan.
 
 MacIndex has two facts with different owners:
 
-1. The machine catalog is trusted, immutable release content signed inside the APK.
+1. The machine catalog is one complete, immutable asset bundle shipped in the APK.
 2. User settings and private library data are mutable, backed up, and updated atomically.
 
 The Android runtime loads one compiled catalog and one small user-state store. UI layers consume
@@ -27,8 +27,8 @@ The deterministic build pipeline is:
 catalog/machines/*.toml + taxonomy/resource/compat manifests
     -> Python validation and named-field textproto
     -> pinned protoc 4.34.1 deterministic encoding
-    -> catalog.pb + generated resource registry
-    -> APK
+    -> catalog.pb + pictures + logos + sounds
+    -> APK assets/catalog/
 ```
 
 The compiler validates the release-content reference closure, including:
@@ -42,15 +42,19 @@ The compiler validates the release-content reference closure, including:
 - released 4.9.1 names, validated against the target machines' search names;
 - missing and orphaned catalog-owned runtime resources.
 
-`catalog.pb` contains typed dates, links, enums, resource keys, text ranges, and one structured
+`catalog.pb` contains the UID migration table, typed dates, links, enums, resource keys, text
+ranges, and one structured
 `{ value, optional qualifier }` entry for every name, alias, codename, and identifier. Display and
-search derive from the same entry rather than parallel protobuf fields. Pictures, logos, and audio
-remain independently compressed resources and are loaded on demand.
+search derive from the same authored entry rather than parallel authoring fields. The payload also
+contains compiler-generated search projections for finite abbreviations, processor terms,
+introduction years, and whitespace-free name mappings. The surrounding asset directory contains
+the exact pictures, logos, and audio referenced by that payload.
 
 ## Runtime catalog
 
-`CatalogLoader` parses the packaged payload once. Build-time validation owns complete catalog
-integrity; runtime only constructs the indexes needed to operate the trusted signed asset.
+`CatalogLoader` parses `assets/catalog/catalog.pb` once. Build-time validation owns the reference
+closure between that payload and its bundled resources. Runtime constructs only the indexes needed
+to use it.
 `MachineCatalog` is immutable and process-lived. Its public boundary uses `Machine` and stable UID
 only:
 
@@ -68,20 +72,46 @@ match over the normalized search names already cached in each machine. It does n
 compatibility JSON, duplicate those names in protobuf, build a second name index, or use substring
 search semantics.
 
-Search and catalog projections are synchronous calculations over the bundled immutable records. Normalized
-search fields are cached at catalog construction using NFKC, trim, and `Locale.ROOT` lowercase.
+Catalog-specific search projections and query vocabulary are compiled into the payload. Android
+therefore does not parse processor prose, resolve abbreviation selectors, maintain a second alias
+table, or scan every machine to rediscover semantic phrases and Part Number stems. Runtime consumes
+the immutable vocabulary, normalizes user input using NFKC, trim, and `Locale.ROOT` lowercase, then
+applies the generic matching and relevance algorithm.
 The searchable facts are machine names and aliases, machine codenames, model numbers, part
-numbers, model identifiers, Gestalt IDs, and EMC numbers. Display-only codename qualifiers,
-processor codenames and processor prose are excluded. Introduction dates are not a search field;
-a year is found only when it is actually part of another searchable value such as the visible
-machine name.
+numbers, model identifiers, Gestalt IDs, EMC numbers, and introduction years. Names and official
+aliases also have a compiler-generated whitespace-free form, so `macbookpro` and `powermac` retain
+normal name-search semantics without becoming authored aliases. Processor projection reads only
+the marked model headings and emits supported generation, family, model, and Intel-codename terms;
+Apple M-series development codenames, core codenames, frequency, cache, core counts, and unmarked
+prose remain excluded. Stable processor abbreviations
+are authored in `catalog/search_aliases.json` and include `68K`,
+`PPC`, `P4`, `C2D`, `C2E`, the Intel platform forms `NHM`, `WSM`, `SNB`, `IVB`, `HSW`, `BDW`,
+`PNR`, `SKL`, `KBL`, `CFL`, `AML`, `CLX`, `CML`, and `ICL`, plus compact Apple-silicon forms
+such as `M1Pro` and `M1P`. The same marked-heading projection exposes `T1`, `T2`, `A12Z`, and
+`A18 Pro`; `A18Pro` is its compact form.
 
-The submitted phrase and its whitespace-token AND form are both evaluated; the stronger semantic
-evidence wins, while a continuous phrase breaks an otherwise equal tie. Tokens may be satisfied
-by different fields of the same machine. Every query length and searchable field follows the same
-contains-matching rule; relevance ranking, rather than recall exceptions, places complete units
-and stronger coverage first. Every machine appears at most once, while its `SearchHit` may carry
-several pieces of evidence so the UI can explain and highlight a cross-field result.
+Machine abbreviations are the other finite exact-token table in `catalog/search_aliases.json`.
+Series terms are `MB`, `MBN`, `MBP`, `MBA`,
+`MM`, `MP`, `PB`, `PM`, `WGS`, `ANS`, and `DTK`; generation or feature terms are `BW`, `DA`, `QS`,
+`MDD`, `WS`, `rMB`, `nMB`, `rMBP`, and `TB`. They participate in the same whitespace-token AND
+matching as catalog facts and are not recognized as substrings.
+
+Introduction years are also exact tokens: `2008` can match the 2008 introduction fact, while
+fragments such as `20`, `200`, or `08` do not produce year matches. A complete year still composes
+normally with another term, as in `macbookpro 2014`.
+
+The complete query phrase and whitespace-token AND forms are both evaluated. Adjacent query words that
+already form a complete name, codename, or processor phrase in the catalog are also evaluated
+together. Processor names such as `M1 Pro` remain atomic; other phrases retain the distributed AND
+alternative. Tokens may be satisfied by different fields of the same machine, but otherwise equal
+results prefer an adjacent phrase and then prefer more query terms supported by one displayed
+catalog value. Every query length and searchable field follows the same contains-matching rule;
+relevance ranking, rather than recall exceptions, places complete units and stronger coverage
+first. Ordinary ASCII, full-width, and CJK punctuation separates words; slash and hyphen remain
+searchable syntax, and a comma between digits remains part of an identifier such as
+`MacBookPro8,1`. Letter-to-digit transitions inside values such as `J313` or `MD313` are not
+semantic boundaries. Every machine appears at most once, while its `SearchHit` may carry several
+pieces of evidence so the UI can explain and highlight a cross-field result.
 
 Searchable Part Number data stores the actual stem and known revisions. Details render each family
 as `STEM*/REV`, while search accepts the stem, a one- or two-letter region prefix, an optional slash,
@@ -92,12 +122,14 @@ still keeps exact matches from the other identifier fields visible.
 Ranking compares the quality of the textual evidence: complete semantic units precede prefixes
 and interior matches, then query coverage and the position inside that unit are considered. When
 the textual evidence is otherwise equal, a visible canonical-name explanation is preferred over a
-codename or hidden identifier explanation. True ties use the visible machine name's
-locale-independent natural order and UID. Release date, catalog order and field-enum order never
-participate.
+codename or hidden identifier explanation. True ties use the homepage category order,
+then the earliest introduction, then the visible machine name's
+locale-independent natural order and UID. Catalog order and field-enum order never participate.
+These relevance rules remain client behavior: the Catalog supplies typed evidence, not weights,
+ranking configuration, or executable rules.
 
-The search page is one continuous list. If one query matches at least two fields, temporary `All`
-and field chips let the user refine only that submitted query; they are not saved as an application
+The search page updates its one continuous list as the user types. If one query matches at least
+two fields, temporary `All` and field chips let the user refine only that current query; they are not saved as an application
 preference and never silently hide results. A canonical-name match is
 bolded directly in the title. Other evidence is shown as `Field: value`, with only the matched
 portion bolded and no unrelated date. A one-result search remains a normal row that the user
@@ -108,16 +140,19 @@ Browse order and fixed product navigation are produced by the catalog itself. Ra
 uses `scopeMachines`, where every UID occurs exactly once and presentation grouping cannot alter
 its probability.
 
-## Resources
+## Catalog and resources
 
-`MachineResourceRegistry` is generated from the build-only resource manifest. UI code asks for
-typed `LogoAsset` and sound resources rather than maintaining switches over names or raw resource
-IDs. Logo artwork is cropped in the source tree and stored as density-independent resources;
-runtime layout uses each drawable's intrinsic aspect ratio.
+The bundled Catalog owns its parameters, machine pictures, catalog logos, and sounds together.
+Machine records contain their resolved media file keys and logo night treatment; UI code does not
+maintain a second Android-resource switch or registry. Static application artwork such as the app
+logo and About-page logos remains in the APK because it is not catalog data.
 
 Machine images are decoded off the main thread by `LifecycleMachineImageLoader`. Requests are
 latest-wins per view, stale results are recycled, and cancellation cannot strand an unowned
 bitmap. Bitmap and MediaPlayer instances never enter persistent state or a ViewModel.
+
+Catalog content changes ship with an app release. There is no independent Catalog version,
+installer, download state, activation state, hash registry, or rollback copy.
 
 ## User state
 
@@ -129,6 +164,7 @@ bitmap. Bitmap and MediaPlayer instances never enter persistent state or a ViewM
 - favourite folders with monotonic `folderId` and `nextFolderId`;
 - compare list and selection;
 - skipped update version;
+- the last registered app version code;
 - one durable pending notice.
 
 Appearance is the single intentional exception. `ThemeBootstrapStore` is its only source so the
@@ -163,6 +199,7 @@ There is one public migration: the released 4.9.1 SharedPreferences format to 5.
   residue is cleaned but never becomes part of 5.0 state.
 - Comments, favourite folders, compare ordering, and selections preserve their original order.
 - released machine names resolve exactly through the catalog's existing search names.
+- the released `lastKnownVersion` value becomes the registered app version code.
 - the ambiguous PowerBook Duo Dock Series record is removed and reported.
 - a malformed user-data class is discarded as a class; other classes remain intact.
 - Proto persistence succeeds before legacy keys are cleaned, so interruption retries safely.
@@ -180,9 +217,19 @@ There is one public migration: the released 4.9.1 SharedPreferences format to 5.
 - the process-scoped automatic update coordinator;
 - global system-bar policy.
 
-`AppStartup` publishes only `Loading`, `Ready(catalog, repository)`, or typed `Fatal`. Internally
-it loads the catalog, opens/migrates user state, reconciles UIDs, and only then publishes Ready.
-AndroidX SplashScreen holds Main content during this one startup.
+`AppStartup` publishes only `Loading`, `Ready(catalog, repository)`, or typed `Fatal`. It loads the
+bundled Catalog, opens or migrates user state, and registers the current app version. If that
+version has not been registered before, the same atomic DataStore update reconciles comments,
+favourites, and compare UIDs through the Catalog's retirement table and then records the version.
+Failure cannot advance the registered version, so the operation retries on the next launch.
+Missing UIDs without a replacement are removed and reported through the existing saved-data
+notice. A previously registered version is not reconciled again. Only after these steps succeed
+does startup publish Ready. AndroidX SplashScreen holds Main content during this startup.
+
+The UID table is cumulative and every replacement points directly to a machine active in the
+bundled Catalog, so an app may skip releases without a chained migration runner. The same resolver
+is used when importing an older user-data export: replaced UIDs move to their current machine,
+while permanently retired or unknown UIDs follow the existing removal preview.
 
 Current Java Activities use a thin lifecycle adapter. Pages that do not need catalog data do not
 wait for it. There is no blocking `requireReady`, Activity-owned recovery loop, static
@@ -199,8 +246,8 @@ same exact compatibility resolver used during preference migration.
 The retained Views/multi-Activity UI is an adapter over the final foundation, not part of it.
 
 - Main, Search, Favourite, Comment, Compare, Specs, and ViewImage hold UID or immutable Machine.
-- Search saves its query and submitted state across Activity recreation, then synchronously
-  recomputes the unified results.
+- Search saves its query and temporary field scope across Activity recreation, then synchronously
+  recomputes the live unified results.
 - Favourite and Comment render directly from the latest immutable user state. Lifecycle replay of
   an unchanged state is suppressed by the shared lifecycle adapter.
 - Compare separates its structural/media render key from highlight state. Highlight changes only
